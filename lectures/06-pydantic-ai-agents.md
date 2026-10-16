@@ -431,6 +431,8 @@ This week: **open PR #2** and keep PR #1 moving ([rules](../README.md#open-sourc
 
 ## Working with AI assistants
 
+Connect this agent to [the product loop and Mastra comparison](../guides/agent-driven-development.md#the-product-loop). Your coding assistant changes source code during development; this Pydantic AI agent handles product input at runtime. They need different tools, permissions, and checks.
+
 **Pattern 1: pin the version.** "I use pydantic-ai-slim 2.57 (from `uv pip show pydantic-ai-slim`). Use `output_type`, `instructions`, `result.output` and `@agent.tool` with `RunContext`. Here is my `schemas.py`. Write the agent." *Verify:* `grep -rnE "result_type|result\.data|usage\(\)|google-gla|system_prompt" app tests` prints nothing, and the tests pass with the guard on.
 
 **Pattern 2: tests from failures.** "Write a `FunctionModel` test where the model first returns an invalid value, then a valid one; assert that the endpoint returns the valid one." *Verify:* delete the rule it protects. The test must fail.

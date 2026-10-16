@@ -324,6 +324,8 @@ Next week you look for a real issue or documentation gap in your best candidate.
 
 ## Working with AI assistants
 
+Read [the development loop](../guides/agent-driven-development.md#the-development-loop): turn a request into acceptance criteria, a small candidate change, and evidence. Use its task brief with your chosen coding assistant; distinguish repository guidance from enforced permissions.
+
 1. **Explain an error.** Paste a PARD, then add: "Explain the cause in two sentences and give the smallest fix. Don't touch unrelated files."
 2. **Predict, then run.** "Explain each flag of `docker run -d --rm -p 8080:8000 python:3.14-slim`, without showing output." Predict, then run it.
 3. **Scope review.** "Here is my product sketch. Which user story is too big for ten weeks? Suggest a narrower one."
