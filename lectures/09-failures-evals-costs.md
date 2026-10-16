@@ -5,6 +5,26 @@
 
 **Date:** Monday 14 December 2026, 16:00 Israel time, on Zoom · **You leave with:** failure tests for every way the AI path can break, and a small evaluation dataset with committed results
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Today you break your stack on purpose: stop the AI service mid-demo, feed the model garbage, let it loop, make it slow. Every failure ends with a test, a status code and a sentence a user can act on. You also get a number for how good your AI feature is, and a cap on what one click can cost.

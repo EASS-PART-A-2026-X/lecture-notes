@@ -5,6 +5,26 @@
 
 **Date:** Monday 23 November 2026, 16:00 Israel time, on Zoom · **You leave with:** a small domain agent in its own service; second upstream PR opened
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Paste a messy recipe, get back clean, validated JSON. You build a small agent that turns free text into a Pydantic model your code can trust, served by its own FastAPI app on port 8001, and you test it with no network, no API key and no bill. In Lecture 7 it becomes your third service.

@@ -5,6 +5,26 @@
 
 **Date:** Monday 21 December 2026, 16:00 Israel time, on Zoom · **You leave with:** a release candidate: green CI, a passing clean-checkout test, hardened containers, a runbook README and a `v1.0.0-rc1` tag
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Until today, "it works" meant "on my laptop". Now a robot checks every push, a script plays the grader on a fresh clone, and your containers lose every privilege they don't need. You finish by tagging a release candidate that a stranger can start, test and break using only your README.

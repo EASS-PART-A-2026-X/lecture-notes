@@ -11,7 +11,13 @@
 
 In this course you build, test, run, debug, and explain a useful full-stack application, and you contribute accepted changes to established open-source projects.
 
-**On this page:** [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
+**On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
+
+## Start here
+
+1. **Prepare for the first meeting:** follow [Lecture 1's setup checklist](lectures/01-environment-git-docker-ai.md#before-you-start) and check your tools before class.
+2. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
+3. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
 ## Calendar and 13-meeting schedule
 

@@ -5,6 +5,26 @@
 
 **Date:** Monday 2 November 2026, 16:00 Israel time, on Zoom · **You leave with:** a backend whose data survives restarts, locally and in Docker, and your first upstream PR opened
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Restart your Lecture 2 API and every record is gone. Today you give it a real memory, SQLite through SQLModel, without changing the HTTP contract or `tests/test_recipes.py`. Then you ship it as a Docker image whose data survives the container being deleted. Upstream, last week's issue becomes a reproduced bug, a focused change and an opened PR.
