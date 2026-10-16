@@ -4,6 +4,8 @@ title: EASS · Class X
 description: HIT · Engineering of Advanced Software Solutions · Semester A 2026–2027
 lang: en
 timezone: Asia/Jerusalem
+url: https://eass-part-a-2026-x.github.io
+baseurl: /lecture-notes
 theme: just-the-docs
 plugins:
   - jekyll-optional-front-matter # .md files without front matter become pages

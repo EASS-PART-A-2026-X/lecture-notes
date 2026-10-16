@@ -5,6 +5,26 @@
 
 **Date:** Monday 19 October 2026, 18:00 Israel time (after HIT's opening-event break), on Zoom ([calendar notes](../README.md#calendar-and-13-meeting-schedule)) · **You leave with:** a working environment, a one-page product sketch, and 2–3 open-source candidates you checked yourself
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Today you build the workbench for the whole semester: a tiny FastAPI app on your laptop, a container running Python 3.14, a one-page product idea, and 2–3 checked open-source projects. The win you can show: `curl http://localhost:8000/health` prints `{"status":"ok"}` from code you committed and pushed.

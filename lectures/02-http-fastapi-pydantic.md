@@ -5,6 +5,26 @@
 
 **Date:** Monday 26 October 2026, 16:00 Israel time, on Zoom (clocks changed on 25 October; see the [calendar notes](../README.md#calendar-and-13-meeting-schedule)) · **You leave with:** a tested CRUD API for your own domain
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Turn last week's `/health` skeleton into a real API: create, list, read, update and delete your records. Bad input bounces off with a precise `422`, and ten tests prove it in under a second. Storage is a Python dict for now; next week it becomes a database, and the tests stay exactly the same.

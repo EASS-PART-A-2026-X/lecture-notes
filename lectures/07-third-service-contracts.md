@@ -5,6 +5,26 @@
 
 **Date:** Monday 30 November 2026, 16:00 Israel time, on Zoom · **You leave with:** a working frontend → backend → AI service flow, with tests for its failures · **Due today:** EX2, see [Assignments](../README.md#assignments-and-deadlines)
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Today your three services start talking. A user pastes messy recipe text into the browser. The frontend sends it to the backend, the backend asks the AI service, checks the answer against a contract and saves a clean recipe. Then you unplug the AI service on purpose. The user should see a calm "try again in a minute", not a stack trace or a spinner that never stops.

@@ -7,6 +7,17 @@
 
 No new material: you work on your own product and PRs; the instructor may reorder agenda items. Rules and deadlines live in the [course README](../README.md). Commands use Recipe Box names; substitute yours.
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Meeting 11 · Integration and upstream-review clinic](#meeting-11--integration-and-upstream-review-clinic)
+- [Meeting 12 · Demo rehearsal, troubleshooting and evidence review](#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review)
+- [Meeting 13 · Final demos and individual technical discussion](#meeting-13--final-demos-and-individual-technical-discussion)
+- [Individual technical discussion · question bank](#individual-technical-discussion--question-bank)
+- [Read more](#read-more)
+
+</details>
+
 ## Meeting 11 · Integration and upstream-review clinic
 
 **Purpose (Monday 28 December 2026):** a stack that starts from a clean clone, and a written next step for every open upstream PR.

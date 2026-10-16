@@ -9,6 +9,35 @@
   &[open] > summary { margin-bottom: 0.5rem; }
 }
 
+// Keep section links and keyboard focus clear when navigating long lectures.
+.main-content {
+  h1, h2, h3, h4, h5, h6 { scroll-margin-top: 5rem; }
+
+  a:focus-visible, button:focus-visible, summary:focus-visible,
+  [tabindex="0"]:focus-visible {
+    outline: 3px solid $link-color;
+    outline-offset: 3px;
+  }
+
+  details > summary {
+    min-height: 2.75rem;
+    padding: 0.5rem 0;
+    cursor: pointer;
+  }
+
+  .lecture-toc {
+    margin-top: 1.5rem;
+
+    ul { margin-bottom: 0; }
+    li { break-inside: avoid; }
+    a { display: inline-block; padding: 0.25rem 0; }
+
+    @media (min-width: 50rem) {
+      ul { columns: 2; column-gap: 2rem; }
+    }
+  }
+}
+
 // Print and the course PDF (.github/scripts/build_pdf.py): content only, nothing cut off.
 @media print {
   // Named fonts (Liberation comes with `playwright install --with-deps`) keep the PDF small and the same everywhere.
@@ -16,9 +45,10 @@
   body { font-family: "Helvetica Neue", Arial, "Liberation Sans", sans-serif; }
   code, pre { font-family: Menlo, Consolas, "Liberation Mono", monospace !important; }
   .side-bar, .main-header, .main-content > hr, .main-content > footer,
-  .anchor-heading { display: none !important; }
+  .anchor-heading, .lecture-toc { display: none !important; }
   .main-content-wrap { padding: 0 !important; }
   .main-content details { border-color: $grey-dk-000; }
+  .main-content details > summary { min-height: 0; padding: 0; }
   div.highlight { overflow: visible !important; }
   pre.highlight, pre.highlight code { font-size: 0.8rem; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
   .table-wrapper { overflow: visible !important; box-shadow: none !important; } // shadows print as images

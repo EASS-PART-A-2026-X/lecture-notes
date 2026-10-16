@@ -5,6 +5,26 @@
 
 **Date:** Monday 9 November 2026, 16:00 Israel time, on Zoom · **You leave with:** your first working end-to-end user flow in the browser
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 So far only `curl` and `/docs` can use your product. Today it gets a face: a Streamlit page where a person lists, adds, edits and deletes records, each click traveling browser → frontend → backend → SQLite. The win: on a screen share, a classmate tells you what to click and completes all four flows in under a minute, with no terminal.

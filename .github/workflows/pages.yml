@@ -5,13 +5,15 @@ name: Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions: {} # each job asks for what it needs
 
-# One deployment at a time; let a running deployment finish.
+# PR checks run independently; let a running main deployment finish.
 concurrency:
-  group: pages
+  group: pages-${{ github.event.pull_request.number || 'deploy' }}
   cancel-in-progress: false
 
 jobs:
@@ -21,7 +23,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read # check out the repository
-      pages: read # configure-pages reads the site's URL and base path
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,14 +33,10 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
-      - id: pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-
       - name: Build the website
-        run: bundle exec jekyll build --baseurl "$BASE_PATH"
+        run: bundle exec jekyll build --strict_front_matter
         env:
           JEKYLL_ENV: production
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -52,12 +49,20 @@ jobs:
       - name: Build the course PDF
         run: uv run .github/scripts/build_pdf.py _site "$BASE_URL"
         env:
-          BASE_URL: ${{ steps.pages.outputs.base_url }}
+          BASE_URL: https://eass-part-a-2026-x.github.io/lecture-notes
+
+      - name: Test the site checker
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
+      - name: Check local links, anchors and assets
+        run: python3 .github/scripts/check_site.py _site https://eass-part-a-2026-x.github.io/lecture-notes
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name != 'pull_request'
 
   deploy:
     name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 10

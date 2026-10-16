@@ -5,6 +5,26 @@
 
 **Date:** Monday 7 December 2026, 16:00 Israel time, on Zoom. HIT's Hanukkah holiday is Sunday 6 December; this class runs as normal · **You leave with:** the whole stack starting with one command; third upstream PR opened
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Lecture 7 needed three terminals and a good memory for ports. Today one file replaces all of it. A grader clones your repository, runs `docker compose up --build`, opens <http://localhost:8501> and pastes a recipe: no API keys, no setup beyond Docker. Then you delete the containers, bring them back, and your data is still there.

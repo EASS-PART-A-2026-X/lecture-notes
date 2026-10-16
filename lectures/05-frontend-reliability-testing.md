@@ -5,6 +5,26 @@
 
 **Date:** Monday 16 November 2026, 16:00 Israel time, on Zoom · **You leave with:** a usable interface and one automated product flow
 
+<details markdown="1" class="lecture-toc">
+<summary>On this page</summary>
+
+- [Mission](#mission)
+- [Before you start](#before-you-start)
+- [Concepts](#concepts)
+- [Live demo](#live-demo)
+- [Hands-on lab](#hands-on-lab)
+- [Break it on purpose](#break-it-on-purpose)
+- [Open-source track](#open-source-track)
+- [Working with AI assistants](#working-with-ai-assistants)
+- [Completion check](#completion-check)
+- [Quick quiz](#quick-quiz)
+- [Stretch goals](#stretch-goals)
+- [Common pitfalls](#common-pitfalls)
+- [Instructor notes](#instructor-notes)
+- [Read more](#read-more)
+
+</details>
+
 ## Mission
 
 Your Recipe Box works on a good day. Today it learns to behave on a bad one: an empty list, nonsense input, a backend that is switched off. You finish with screens that always say what is happening and what to do next, and a robot that clicks through one real product flow in a real browser.
