@@ -353,6 +353,8 @@ Evidence week. Fill the [evidence table](../README.md#evidence-table) in your pr
 
 ## Working with AI assistants
 
+Try the [software factory lab](../guides/software-factory-lab.md): identify which revision each check covers, inspect a review finding after green tests, and explain why publishing a PR and releasing a product are separate outcomes.
+
 - **Workflow review against a checklist.** "Review my ci.yml: SHA-pinned actions with version comments, `contents: read`, `persist-credentials: false`, `uv sync --locked`, `AI_MODEL=test`, no secrets, logs on failure, `down -v` always." *Verify:* actionlint, zizmor, then a real run.
 - **Threat model.** Paste your architecture diagram (never `.env`) and ask for the five likeliest risks, each with a control. *Verify:* each control exists in your code, or goes on your list.
 - **Spot the outdated suggestion:** `actions/checkout@v4` or another floating tag (setup-uv v10 has no `v10` tag at all); `pip install -r requirements.txt` in CI; `uv sync --frozen`, which skips the lock check; `permissions: write-all`.

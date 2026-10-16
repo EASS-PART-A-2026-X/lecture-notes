@@ -605,6 +605,8 @@ You write every maintainer-facing word yourself ([contribution etiquette](../REA
 
 ## Working with AI assistants
 
+Use [trace → case → evaluation → repair](../guides/agent-driven-development.md#from-trace-to-improvement) to diagnose one failure and measure one change. A deterministic fake tests the agent's control flow; a real-model evaluation measures output quality on the selected cases.
+
 - **Failure inventory first.** "Here are my `ai_client.py` and tests. List every way `/extract` can fail and which layer, if any, should retry it. No code yet." *Verify:* against your table; retrying at two layers is wrong.
 - **One proving test.** "Write a parametrized test proving 429 and 502 are tried once, using `httpx.MockTransport`." *Verify:* drill 1 must make it fail.
 - **Eval inputs, not answers.** Ask for messy inputs; you write the expected outputs.

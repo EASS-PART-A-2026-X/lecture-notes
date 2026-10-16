@@ -31,6 +31,8 @@ defaults:
   - { scope: { path: "lectures/09-*" }, values: { title: "9 · Failures and evals", nav_order: 10 } }
   - { scope: { path: "lectures/10-*" }, values: { title: "10 · CI and release", nav_order: 11 } }
   - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 12 } }
+  - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 13 } }
+  - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 14 } }
 
 # Just the Docs
 search:

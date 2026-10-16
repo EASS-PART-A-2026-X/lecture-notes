@@ -11,6 +11,8 @@
 
 In this course you build, test, run, debug, and explain a useful full-stack application, and you contribute accepted changes to established open-source projects.
 
+**Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery.
+
 **On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
 
 ## Start here
@@ -122,6 +124,8 @@ In your product README, add one row per PR with these seven fields:
 ## Working method, AI use, assessment and reproducibility
 
 **AI assistants.** AI coding tools are allowed from week 1. You must understand and verify everything you submit. Your product README includes a short AI-use note: the tools you used, the help you received, and the checks you performed. Prompt logs are not needed.
+
+Practice the [work-order → candidate → verification loop](guides/agent-driven-development.md#the-development-loop) with the assistant available to you, such as Codex, Claude Code, or OpenCode. The guides add formative exercises and optional framework comparisons; assignment requirements, deadlines, and grading stay as stated here. No particular commercial coding assistant, Mastra installation, or Airflow deployment is required.
 
 **Assessment.** Assessment covers working behavior, understandable design, tests, reproducibility, documentation, contribution evidence, and your individual understanding. You individually explain your own product work and each of your contributions, including how you verified them, even if you build in a pair.
 
