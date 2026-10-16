@@ -1,0 +1,50 @@
+# Course website, built by .github/workflows/pages.yml (Jekyll 4 + Just the Docs).
+# Pages keep no front matter (GitHub shows it as a table); layout, nav titles and order are set here.
+title: EASS · Class X
+description: HIT · Engineering of Advanced Software Solutions · Semester A 2026–2027
+lang: en
+timezone: Asia/Jerusalem
+theme: just-the-docs
+plugins:
+  - jekyll-optional-front-matter # .md files without front matter become pages
+  - jekyll-readme-index          # README.md becomes the home page
+  - jekyll-relative-links        # [text](lectures/01-x.md) links become .html links
+optional_front_matter:
+  remove_originals: true
+readme_index:
+  remove_originals: true
+
+# Sidebar: short titles in course order. Paths match the file-name prefix, so slugs can change.
+defaults:
+  - { scope: { path: "" }, values: { layout: default } }
+  - { scope: { path: README.md }, values: { title: "Home", nav_order: 1 } }
+  - { scope: { path: "lectures/01-*" }, values: { title: "1 · Setup, Git and Docker", nav_order: 2 } }
+  - { scope: { path: "lectures/02-*" }, values: { title: "2 · HTTP and FastAPI", nav_order: 3 } }
+  - { scope: { path: "lectures/03-*" }, values: { title: "3 · Persistence", nav_order: 4 } }
+  - { scope: { path: "lectures/04-*" }, values: { title: "4 · Browser frontend", nav_order: 5 } }
+  - { scope: { path: "lectures/05-*" }, values: { title: "5 · Frontend testing", nav_order: 6 } }
+  - { scope: { path: "lectures/06-*" }, values: { title: "6 · Pydantic AI agents", nav_order: 7 } }
+  - { scope: { path: "lectures/07-*" }, values: { title: "7 · The third service", nav_order: 8 } }
+  - { scope: { path: "lectures/08-*" }, values: { title: "8 · Docker Compose", nav_order: 9 } }
+  - { scope: { path: "lectures/09-*" }, values: { title: "9 · Failures and evals", nav_order: 10 } }
+  - { scope: { path: "lectures/10-*" }, values: { title: "10 · CI and release", nav_order: 11 } }
+  - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 12 } }
+
+# Just the Docs
+search:
+  heading_level: 3
+  previews: 2
+heading_anchors: true
+enable_copy_code_button: true
+back_to_top: true
+back_to_top_text: Back to top
+# aux_links are printed as-is (no baseurl), so the PDF path includes /lecture-notes.
+aux_links:
+  Download the course PDF: [/lecture-notes/EASS-Class-X-course.pdf]
+  GitHub repository: [https://github.com/EASS-PART-A-2026-X/lecture-notes]
+
+# Hide the theme's own Dart Sass deprecation warnings so real build problems stand out.
+sass:
+  quiet_deps: true
+  silence_deprecations: [import]
+  sourcemap: never

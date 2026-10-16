@@ -1,0 +1,28 @@
+// Collapsible answers (<details markdown="1">).
+.main-content details {
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+
+  > summary { font-weight: 600; }
+  &[open] > summary { margin-bottom: 0.5rem; }
+}
+
+// Print and the course PDF (.github/scripts/build_pdf.py): content only, nothing cut off.
+@media print {
+  // Named fonts (Liberation comes with `playwright install --with-deps`) keep the PDF small and the same everywhere.
+  html { font-size: 13px; }
+  body { font-family: "Helvetica Neue", Arial, "Liberation Sans", sans-serif; }
+  code, pre { font-family: Menlo, Consolas, "Liberation Mono", monospace !important; }
+  .side-bar, .main-header, .main-content > hr, .main-content > footer,
+  .anchor-heading { display: none !important; }
+  .main-content-wrap { padding: 0 !important; }
+  .main-content details { border-color: $grey-dk-000; }
+  div.highlight { overflow: visible !important; }
+  pre.highlight, pre.highlight code { font-size: 0.8rem; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .table-wrapper { overflow: visible !important; box-shadow: none !important; } // shadows print as images
+  td, th { overflow-wrap: anywhere; }
+  h1, h2, h3, h4, summary { break-after: avoid; }
+  tr, img { break-inside: avoid; }
+}
