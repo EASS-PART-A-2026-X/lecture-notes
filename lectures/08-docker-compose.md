@@ -95,6 +95,13 @@ The file below binds the published ports to `127.0.0.1` for local demonstrations
 
 `BACKEND_URL` is `http://backend:8000` because Streamlit's Python runs *inside the frontend container*. A React app runs in the browser, so it would need the published `http://localhost:8000` plus CORS.
 
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Compose service boundaries, scroll horizontally">
+    <img src="../assets/diagrams/service-boundaries.svg" alt="The host browser reaches the published frontend. Streamlit Python calls backend:8000 inside Compose; the backend calls ai-service:8001. Only the backend uses the database volume. The AI port is not published to the host." width="640" height="900">
+  </div>
+  <figcaption><strong>Choose the URL from the caller's location.</strong> Point to the caller before naming its destination. This map uses the default frontend port; the backend's separate loopback port for curl and /docs is omitted. Predict what breaks if backend code calls localhost:8001, then use the <a href="../guides/system-walkthrough.md#read-the-service-map">walkthrough's diagnosis question</a>. <a href="../assets/diagrams/service-boundaries.svg">Open the full-size service map</a>.</figcaption>
+</figure>
+
 ### Volumes: where the SQLite file lives
 
 The named volume `backend-data` is mounted at `/app/data`, and `DATABASE_URL` is `sqlite:////app/data/app.db`: `sqlite:///` plus the absolute path, four slashes. `docker compose down` removes containers and the network but **keeps volumes**; `down -v` deletes them too, and the seed runs again.

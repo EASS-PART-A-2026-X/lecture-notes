@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 642" role="img" aria-labelledby="title desc">
+<title id="title">The runtime extractor proposes; application code executes and validates</title>
+<desc id="desc">A validated extraction request enters the application-controlled agent loop. A model response may request a registered tool or propose a final output. Application code validates tool arguments and executes the registered read-only domain functions, returning their results to the model. Proposed output passes schema and domain checks before a typed result is accepted. Invalid output can receive feedback within the retry budget. A failure or exhausted limit stops with a recorded error. Backend persistence occurs outside this agent loop.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
+<rect width="640" height="642" fill="#fff"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#172554" text-anchor="middle">
+  <text x="320" y="31" font-size="22" font-weight="700">Inside the product's extraction agent</text>
+  <text x="320" y="57" font-size="17" fill="#475569">The application controls the tools, checks, and stopping rules</text>
+  <rect x="160" y="82" width="320" height="58" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+  <text x="320" y="118" font-size="21" font-weight="700">Validated extraction request</text>
+  <g fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)">
+    <path d="M320 140 V180"/>
+    <path d="M260 268 V297 H152 V338"/>
+    <path d="M380 268 V297 H488 V338"/>
+    <path d="M28 390 H16 V224 H188"/>
+    <path d="M612 390 H624 V224 H452"/>
+    <path d="M488 454 V540"/>
+  </g>
+  <rect x="192" y="184" width="256" height="84" rx="6" fill="#f5f6ff" stroke="#4051b5" stroke-width="2"/>
+  <text x="320" y="217" font-size="22" font-weight="700">Model response</text>
+  <text x="320" y="244" font-size="17">Proposes an action or output</text>
+  <text x="128" y="323" text-anchor="end" font-size="17" fill="#475569">Tool request</text><text x="466" y="323" text-anchor="end" font-size="17" fill="#475569">Proposed output</text>
+  <rect x="28" y="342" width="248" height="112" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+  <text x="152" y="373" font-size="21" font-weight="700">Application tool code</text>
+  <text x="152" y="400" font-size="17">Validate arguments; execute</text><text x="152" y="425" font-size="17">registered read-only functions</text>
+  <rect x="360" y="342" width="252" height="112" rx="6" fill="#effaf6" stroke="#167d65" stroke-width="2"/>
+  <text x="486" y="373" font-size="21" font-weight="700">Output checks</text>
+  <text x="486" y="400" font-size="17">Schema + domain rules</text><text x="486" y="425" font-size="17">Check allowed tags</text>
+  <text x="105" y="199" font-size="16" fill="#475569">Tool result</text>
+  <text x="538" y="177" font-size="16" fill="#805010">Invalid? Feedback</text><text x="538" y="199" font-size="16" fill="#805010">within retry budget</text>
+  <text x="516" y="503" font-size="17" fill="#16614f">Valid</text>
+  <rect x="360" y="544" width="252" height="72" rx="6" fill="#effaf6" stroke="#167d65" stroke-width="2"/>
+  <text x="486" y="574" font-size="21" font-weight="700">Typed result</text><text x="486" y="600" font-size="16">Backend owns the later save</text>
+  <rect x="28" y="530" width="248" height="86" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
+  <text x="152" y="559" font-size="19" font-weight="700">Failure or limit reached?</text><text x="152" y="586" font-size="18">Stop with an error.</text><text x="152" y="607" font-size="16">No accepted extraction to save</text>
+</g>
+</svg>

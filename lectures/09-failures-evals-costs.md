@@ -29,7 +29,7 @@
 
 ## Mission
 
-Today you break your stack on purpose: stop the AI service mid-demo, feed the model garbage, let it loop, make it slow. Every failure ends with a test, a status code and a sentence a user can act on. You also get a number for how good your AI feature is, and a cap on what one click can cost.
+Today you break your stack on purpose: stop the AI service mid-demo, feed the model garbage, let it loop, make it slow. Every failure ends with a test, a status code and a sentence a user can act on. You also measure the AI feature's quality and apply stopping rules to its work and usage.
 
 ## Before you start
 
@@ -94,16 +94,53 @@ Each layer outwaits the worst case inside it, or it gives up while the inner lay
 frontend      "Paste a recipe" read timeout: 100 s
   backend     3 attempts x 30 s read + backoff 0.5 s + 1 s = 91.5 s (silent ai)
     ai-service    asyncio.timeout(25 s) per attempt, then 504
-      model       UsageLimits: 5 requests, 5 tool calls, 20,000 tokens
+      model       UsageLimits: 5 loop steps, 5 tool calls, 20,000-token threshold
 ```
 
 ### Malformed output and cost limits
 
 After `retries=2`, Pydantic AI raises `UnexpectedModelBehavior` ([Lecture 6](06-pydantic-ai-agents.md)). Until today it was an unhandled 500 in the ai-service (Lecture 6), which the backend mapped to 503 "unavailable" (Lecture 7), although the service was up. Today it becomes 502 Bad Gateway, passed on without a retry.
 
-`UsageLimits` caps one agent run (requests, tool calls, tokens, and `cost_limit` in USD); exceeding a cap raises `UsageLimitExceeded`. The default `request_limit=50` is far too generous for a 2-request extraction. `result.usage` (a property in v2) reports the counts.
+`UsageLimits` stops an agent run with `UsageLimitExceeded`. In the checked Pydantic AI version, `request_limit` counts agent-loop steps; provider/transport retries and fallback attempts can add requests outside that counter. Token limits are checked against usage reported by responses, so a response can cross the threshold before the run stops. See the [usage API](https://pydantic.dev/docs/ai/api/pydantic-ai/usage/) and [source at the course's 2.57.0 verification version](https://github.com/pydantic/pydantic-ai/blob/v2.57.0/pydantic_ai_slim/pydantic_ai/usage.py).
 
-Worst case for one click: a spent budget stops at 5 requests, because 429 is never retried; only a busy or slow ai-service is retried, so at most 3 × 5 = **15 model requests** and 60,000 tokens. Multiply by your provider's token price.
+Three backend attempts with five counted steps each allow up to **15 counted agent steps** in this configuration. That arithmetic is not a ceiling on provider requests, tokens, or billing. A timed-out caller also cannot assume remote inference stopped. Combine request/input/output controls, selective retries, provider controls where available, and measured usage. `cost_limit` needs available pricing data and cannot undo work already billed. The offline route stays free of provider calls.
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Usage threshold, scroll horizontally">
+    <img src="../assets/diagrams/usage-threshold.svg" alt="An illustrative run has 18,500 reported tokens. A response adds 3,000, so the observed total is 21,500, beyond the 20,000 threshold. The check then raises; it cannot undo processed tokens." width="640" height="500">
+  </div>
+  <figcaption><strong>A stopping threshold is not a prepaid allowance.</strong> The bars use synthetic counters, not a measured model run or bill. Explain when the check learns the response's usage, then reproduce the counterexample below. <a href="../assets/diagrams/usage-threshold.svg">Open the full-size usage diagram</a>.</figcaption>
+</figure>
+
+<div markdown="1" class="learning-practice">
+
+**Optional counter exercise, no model call:** save this complete file in `ai-service/tests/test_usage_limits.py`, then run `uv run pytest tests/test_usage_limits.py`. These two checks exercise the public usage-counter API, not provider billing or cancellation. Course CI extracts and runs the same file.
+
+```python
+# ai-service/tests/test_usage_limits.py
+import pytest
+from pydantic_ai import UsageLimitExceeded
+from pydantic_ai.usage import RequestUsage, RunUsage, UsageLimits
+
+
+def test_next_step_is_blocked_at_the_request_limit():
+    limits = UsageLimits(request_limit=5)
+    limits.check_before_request(RunUsage(requests=4))
+    with pytest.raises(UsageLimitExceeded):
+        limits.check_before_request(RunUsage(requests=5))
+
+
+def test_a_reported_response_can_cross_the_token_threshold():
+    limits = UsageLimits(total_tokens_limit=20_000)
+    usage = RunUsage(requests=1, input_tokens=18_000, output_tokens=500)
+    limits.check_before_request(usage)  # below the threshold before this response
+    usage.incr(RequestUsage(input_tokens=2_000, output_tokens=1_000))
+    assert usage.total_tokens == 21_500  # reported work is already above 20,000
+    with pytest.raises(UsageLimitExceeded):
+        limits.check_tokens(usage)
+```
+
+</div>
 
 ### Task evaluations
 
@@ -709,7 +746,7 @@ Apply each step to **your** domain.
    ```
 
    Test it with pytest's `caplog`: the counts appear, the input text does not. *Checkpoint:* after one paste, `docker compose logs ai-service` shows a line like `INFO:ai-service:extract ok: requests=2 tool_calls=2 tokens=143`.
-5. **Optional spend cap** for real-model runs: pass `cost_limit=Decimal(...)` only when an `AI_COST_LIMIT_USD` variable is set, so tests and CI never see `CostNotFoundWarning`.
+5. **Optional cost stopping rule** for real-model runs: pass `cost_limit=Decimal(...)` only when an `AI_COST_LIMIT_USD` variable is set, so tests and CI never see `CostNotFoundWarning`. Check pricing availability and provider-side controls; this is not a guarantee of a final invoice amount.
 6. **Your eval dataset:** 8–10 messy cases, one a prompt injection, with expected outputs you write; three or more deterministic evaluators; a baseline. Commit a dated README results table and a `tests/test_evals.py` that keeps the harness running in CI.
 7. **Drill your stack** with the drills below.
 
@@ -775,7 +812,7 @@ curl -s -o /dev/null -w "%{http_code} in %{time_total}s\n" -X POST \
 docker compose up --wait
 ```
 
-Expect `25 passed` and `12 passed` for Recipe Box (13 with lab step 4's `caplog` test), an eval table with an Averages row, and `503 in 1.5…s`.
+Expect `25 passed` in the backend and `12 passed` in the AI service for the core Recipe Box examples, an eval table with an Averages row, and `503 in 1.5…s`. The optional usage-counter exercise adds two AI-service tests; lab step 4's `caplog` test adds one more.
 
 - [ ] Retries in one layer: timeouts, connect errors, 503 and 504; at most 3 attempts, with backoff.
 - [ ] One try each for 429, 502, 500, other 4xx and a broken 200, proven by tests.
@@ -800,9 +837,9 @@ Only the **ReadTimeout and the 503**, which are transient. A retried 429 hits th
 </details>
 
 <details markdown="1">
-<summary>Q3. One paste, request_limit=5, total_tokens_limit=20,000, 3 backend attempts. What is the worst case, and which failure causes it?</summary>
+<summary>Q3. Do five counted steps and a 20,000-token threshold guarantee at most 15 provider requests and 60,000 billed tokens across three attempts?</summary>
 
-**15 model requests and 60,000 tokens**, when every attempt times out or hits the 25 s cap (504): each attempt is a fresh run with its own limits. A budget overrun stops at 5, because 429 is never retried.
+**No.** Three fresh runs allow up to 15 counted agent-loop steps here. Provider retries/fallback work may add requests; a response can cross a token threshold before the check observes it. Recipe Box does not retry budget-exhaustion 429, but that policy does not refund prior work or guarantee remote cancellation. Record observed usage and the controls actually enforced.
 
 </details>
 
@@ -850,7 +887,7 @@ Suggested flow:
 5. Write two eval cases together and read one failing assertion.
 6. Lab, then drill 3 for everyone.
 7. Open-source round: each student states merged and open counts; anyone short of three merged starts a spare contribution this week.
-8. Quiz Q1–Q5, then the exit ticket: your worst-case model requests per click.
+8. Quiz Q1–Q5, then the exit ticket: which counter limits your loop, and what usage remains outside that guarantee?
 
 Stress one rule: retry at one layer only, because every retry costs money. Students get stuck on tenacity sleeping in tests, `reraise=True`, the eval's module path, and too-clean eval cases.
 

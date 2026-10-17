@@ -60,7 +60,14 @@ In Lecture 4 the page handled success and a backend 422. A usable screen handles
 | Loading | "Loading recipes..." while waiting | `st.spinner` |
 | Empty | What to do first, not a blank area | `st.info` |
 | Error | What went wrong and the next step | `st.error`, then `st.stop()` if nothing else can work |
-| Success | Confirmation after a write | `st.success` |
+| Content | Returned rows and useful actions; confirmation after a successful write | Render the list; `st.success` for a completed write |
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="UI request states, scroll horizontally">
+    <img src="../assets/diagrams/ui-request-states.svg" alt="A list request starts in loading and ends with content, an empty list with a first action, or an actionable error. A user reload starts a new request. A write is confirmed only after backend success." width="640" height="530">
+  </div>
+  <figcaption><strong>Separate an empty result from a failed request.</strong> Both can show zero rows, but only one established that the list was empty. Trace the four states through the tests below. This diagram does not add automatic retries or a second source of truth. <a href="../assets/diagrams/ui-request-states.svg">Open the full-size state diagram</a>.</figcaption>
+</figure>
 
 By default Streamlit shows uncaught exceptions, with the full traceback, in the browser: useful to you, confusing to users. The course rule: **expected failures are handled in code, and a traceback in the browser is a bug.** `st.error` renders with the ARIA role `alert`, so screen readers announce it. Put the meaning in words, never in the red color alone.
 

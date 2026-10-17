@@ -328,19 +328,32 @@ def test_timeouts_are_explicit():
 
 The full file also tests success (stored, exact request bytes), a read timeout, and invalid input with zero calls.
 
-**5. The frontend flow.** In `frontend/api.py`:
+**5. The frontend flow.** In the Lecture 5 `frontend/api.py`, replace `_friendly` with the complete function below, then add `AI_TIMEOUT` and `create_from_text`. Keep the existing imports, types, `_request`, and CRUD functions; this is a file edit, not a standalone replacement module.
 
 ```python
 # frontend/api.py
 # from-text waits for the AI: allow more than the backend's own 30 s read
 # timeout, so the backend (not the browser) reports a slow AI service.
 AI_TIMEOUT = httpx.Timeout(100.0, connect=2.0)
-# ...
+
+
+def _friendly(response: httpx.Response) -> str:
+    match response.status_code:
+        case 422:
+            problems = [
+                f"{err['loc'][-1]}: {err['msg']}" for err in response.json()["detail"]
+            ]
+            return "Please fix: " + "; ".join(problems)
+        case 404:
+            return "That recipe no longer exists. Reload the page."
         case 503:
             return "AI service is unavailable, try again in a minute."
         case 502:
             return "AI returned something unusable. Try rewording the recipe text."
-# ...
+        case code:
+            return f"The backend failed ({code}). Check its logs."
+
+
 def create_from_text(text: str) -> Recipe:
     return _request(
         "POST", "/recipes/from-text", json={"text": text}, timeout=AI_TIMEOUT

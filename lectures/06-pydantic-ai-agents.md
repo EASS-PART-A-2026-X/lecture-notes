@@ -28,7 +28,7 @@
 
 ## Mission
 
-Paste a messy recipe, get back clean, validated JSON. You build a small agent that turns free text into a Pydantic model your code can trust, served by its own FastAPI app on port 8001, and you test it with no network, no API key and no bill. In Lecture 7 it becomes your third service.
+Paste a messy recipe, get back validated JSON. You build a small agent that turns free text into a typed result with schema and domain checks, served by its own FastAPI app on port 8001, and you test it with no network, no API key and no bill. Accuracy needs task evaluations too. In Lecture 7 it becomes your third service.
 
 ## Before you start
 
@@ -72,6 +72,13 @@ response  call final_result({... "tags": ["vegan"]})
 ```
 
 The model only *proposes*. Your code decides what is accepted.
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Runtime agent loop, scroll horizontally">
+    <img src="../assets/diagrams/runtime-agent-loop.svg" alt="The model proposes a registered tool call or an output. Application code validates tool arguments and runs domain functions. Output passes schema and domain checks, or receives bounded retry feedback. Failure or an exhausted limit stops the run; backend persistence happens later." width="640" height="642">
+  </div>
+  <figcaption><strong>Follow execution, not just the model's words.</strong> This simplifies the extraction loop shown in the trace. Typed output can still contain a factual mistake. The extractor's tools read domain data and calculate values; the <a href="../guides/software-factory-lab.md">development factory</a> has a different task and delivery authority. <a href="../assets/diagrams/runtime-agent-loop.svg">Open the full-size agent diagram</a>.</figcaption>
+</figure>
 
 ### Structured output
 

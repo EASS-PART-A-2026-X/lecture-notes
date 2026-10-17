@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 530" role="img" aria-labelledby="title desc">
+<title id="title">Four states of a list request</title>
+<desc id="desc">Starting or reloading a list begins in loading. A successful response with rows shows content. A successful response with an empty list shows an empty state and a first action. A failed request shows an error and a next step. A user-initiated reload starts a new loading cycle. Confirm a write only after the backend succeeds; then refresh the authoritative list. The diagram does not prescribe automatic retries.</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
+<rect width="640" height="530" fill="#fff"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#172554" text-anchor="middle">
+  <text x="320" y="32" font-size="22" font-weight="700">One list request, four visible states</text>
+  <text x="320" y="59" font-size="17" fill="#475569">Start or reload → loading → one observed outcome</text>
+  <rect x="204" y="90" width="232" height="88" rx="6" fill="#f5f6ff" stroke="#4051b5" stroke-width="2"/>
+  <text x="320" y="123" font-size="22" font-weight="700">Loading</text>
+  <text x="320" y="151" font-size="17">A request is pending</text>
+  <g fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)">
+    <path d="M270 178 V211 H118 V275"/>
+    <path d="M320 178 V275"/>
+    <path d="M370 178 V211 H522 V275"/>
+  </g>
+  <g fill="#fff"><rect x="50" y="233" width="136" height="25"/><rect x="242" y="233" width="156" height="25"/><rect x="454" y="233" width="136" height="25"/></g>
+  <g font-size="16" fill="#475569"><text x="118" y="250">200 + rows</text><text x="320" y="250">200 + empty list</text><text x="522" y="250">Request failed</text></g>
+  <rect x="28" y="280" width="180" height="128" rx="6" fill="#effaf6" stroke="#167d65" stroke-width="2"/>
+  <rect x="230" y="280" width="180" height="128" rx="6" fill="#f5f6ff" stroke="#4051b5" stroke-width="2"/>
+  <rect x="432" y="280" width="180" height="128" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
+  <text x="118" y="316" font-size="22" font-weight="700">Content</text><text x="118" y="346" font-size="17">Render returned rows</text><text x="118" y="373" font-size="17">and allowed actions</text>
+  <text x="320" y="316" font-size="22" font-weight="700">Empty</text><text x="320" y="346" font-size="17">Explain the first step:</text><text x="320" y="373" font-size="17">“Add a recipe”</text>
+  <text x="522" y="316" font-size="22" font-weight="700">Error</text><text x="522" y="346" font-size="17">Say what to do next;</text><text x="522" y="373" font-size="17">hide the traceback</text>
+  <text x="320" y="448" font-size="17" fill="#475569">A user-initiated reload starts another loading cycle.</text>
+  <rect x="28" y="468" width="584" height="44" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
+  <text x="320" y="495" font-size="17">After a write: confirm backend success, then refresh the list.</text>
+</g>
+</svg>

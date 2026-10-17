@@ -7,7 +7,7 @@
 uv run --locked .github/scripts/check_examples.py
 
 Temporary projects contain copied snippets, never a second maintained example.
-These checks cover three complete checkpoints, a grader clinic, and a storage lab,
+These checks cover three complete checkpoints, a grader/usage clinic, and a storage lab,
 not all later lecture excerpts, real-model quality, Docker networking, or a browser flow.
 """
 
@@ -151,15 +151,25 @@ def main() -> None:
         clinic = root / "lecture-09"
         snippets = blocks("lectures/09-failures-evals-costs.md")
         write(clinic, "test_eval_clinic.py", take(snippets, "# eval_clinic.py"))
-        print("Lecture 9: six offline grader and slice-gate checks", flush=True)
-        check(clinic, 6)
+        write(
+            clinic,
+            "test_usage_limits.py",
+            take(snippets, "# ai-service/tests/test_usage_limits.py"),
+        )
+        print(
+            "Lecture 9: eight offline grader, slice-gate, and usage checks", flush=True
+        )
+        check(clinic, 8)
         studio = root / "industry-studio"
         snippets = blocks("guides/industry-studio.md")
         for relative in ("store.py", "test_store.py"):
             write(studio, relative, take(snippets, f"# {relative}"))
-        print("Industry studio: ten ownership and real SQLite concurrency checks", flush=True)
+        print(
+            "Industry studio: ten ownership and real SQLite concurrency checks",
+            flush=True,
+        )
         check(studio, 10)
-    print("PASS: 44 executable reference checks, lint, and formatting", flush=True)
+    print("PASS: 46 executable reference checks, lint, and formatting", flush=True)
 
 
 if __name__ == "__main__":

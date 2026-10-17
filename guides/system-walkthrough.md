@@ -108,7 +108,7 @@ outer request budget
   ≥ local work + Σ(attempt duration) + Σ(backoff) + response margin
 ```
 
-**Illustrative arithmetic:** three attempts taking at most 2 seconds each, two waits of 0.5 and 1 second, and 1 second reserved for local/response work require up to 8.5 seconds. This is not a configured Recipe Box deadline. Lecture 9's agent timeout applies per extraction attempt and increases the frontend read allowance to 100 seconds for its bounded retry sequence. Keep those settings together: retaining Lecture 7's shorter frontend timeout would cut that sequence short. Phase timeouts still are not a strict whole-request deadline.
+**Illustrative arithmetic:** three attempts taking at most 2 seconds each, two waits of 0.5 and 1 second, and 1 second reserved for local/response work require up to 8.5 seconds. This is not a configured Recipe Box deadline. Lectures 7 and 9 use a 100-second frontend read allowance for extraction; ordinary CRUD keeps Lecture 5's shorter timeout. Lecture 9 adds a per-attempt agent deadline and bounded retries. Keep those settings together: copying the shorter CRUD timeout into the extraction call can cut that sequence short. Phase timeouts still are not a strict whole-request deadline.
 
 The course first teaches phase timeouts, then a model-call deadline and bounded retries. For a production adaptation, enforce a total deadline at the owning boundary, pass a *remaining* budget to supported downstream operations, and skip attempts that cannot fit. Avoid stacked retry loops at several layers; retry only failures the contract permits, with bounded backoff and jitter where synchronized retries would amplify load. A client timeout does not prove remote work stopped; check cancellation support and side effects separately.
 
