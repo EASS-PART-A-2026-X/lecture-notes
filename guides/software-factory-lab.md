@@ -14,6 +14,7 @@ For the practical connection between configuration, skills, and delivery evidenc
 - [What you will learn](#what-you-will-learn)
 - [The instructor's Airflow factory](#the-instructors-airflow-factory)
 - [Part A — replay a complete change](#part-a--replay-a-complete-change)
+- [Read the delivery milestones](#read-the-delivery-milestones)
 - [Part B — commission a change in your product](#part-b--commission-a-change-in-your-product)
 - [Part C — challenge the evidence](#part-c--challenge-the-evidence)
 - [From a local loop to orchestration](#from-a-local-loop-to-orchestration)
@@ -38,12 +39,14 @@ By the end, explain:
 
 Yossi's [`ariflow-swfactory`](https://github.com/zozo123/ariflow-swfactory) is a substantial case study. Its managed architecture gives Airflow lifecycle scheduling, gives bounded stage agents implementation work, and keeps publication under a trusted control plane. Candidate evidence binds inputs, outputs, diffs, and retained artifacts to identified revisions.
 
-For teaching, extract this sequence:
+Trace one request through the numbered stages. The repair arrow has a limit; a passing check does not grant publication permission.
 
-```text
-work order → specification → plan → bounded implementation/repair
-           → verification → review → authorized delivery
-```
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Factory lifecycle, scroll horizontally">
+    <img src="../assets/diagrams/factory-lifecycle.svg" alt="Work order, specification, and plan lead to implementation and verification. Failed checks return through a bounded repair loop; passing checks lead to review and separately authorized delivery. An exhausted budget or unresolved gate stops the run." width="640" height="656">
+  </div>
+  <figcaption><strong>Follow the candidate and the authority.</strong> This teaching map simplifies the lifecycle; it is not an exact Airflow DAG or evidence that a gate was enforced. Review can reveal a missing case after checks pass. If that changes the source, return through verification before delivery. <a href="../assets/diagrams/factory-lifecycle.svg">Open the full-size lifecycle diagram</a>.</figcaption>
+</figure>
 
 The repository's [lifecycle documentation](https://github.com/zozo123/ariflow-swfactory/blob/b2de672bca6e7a8eb3cb33471396384e16eb555c/docs/lifecycle.md) separates a stable control workflow from issue-specific work. Its [candidate-evidence design](https://github.com/zozo123/ariflow-swfactory/blob/b2de672bca6e7a8eb3cb33471396384e16eb555c/docs/candidate-evidence.md) asks a precise question: which candidate bytes and procedure support this result?
 
@@ -53,6 +56,8 @@ You will first run a small local fixture replay. It uses scripted agent outputs;
 
 Use a separate directory outside your product. You need Git and [uv](https://docs.astral.sh/uv/); dependency installation needs network access. The pinned example uses Python 3.12, independently of your course product's Python version. Let uv provision that interpreter if needed.
 
+<div markdown="1" class="factory-command">
+
 ```bash
 git clone https://github.com/zozo123/ariflow-swfactory.git
 cd ariflow-swfactory
@@ -60,6 +65,8 @@ git checkout b2de672bca6e7a8eb3cb33471396384e16eb555c
 uv sync --locked
 uv run swfactory demo
 ```
+
+</div>
 
 This snapshot was replayed on **16 October 2026**. It needs no model key, GitHub token, Docker, Airflow, or Rust. The replay makes local Git changes in its demonstration workspace and delivers to a local remote; it opens no GitHub PR. Its fixture approvals are automatic, not human approval evidence.
 
@@ -82,6 +89,30 @@ Discuss with a partner:
 - What would you still need before claiming a real agent solved the task or a live deployment worked?
 
 If installation is unavailable, inspect the pinned repository's [`demo/scripted`](https://github.com/zozo123/ariflow-swfactory/tree/b2de672bca6e7a8eb3cb33471396384e16eb555c/demo/scripted) patches and review file. Label that activity **artifact inspection**, not an executed replay.
+
+<div markdown="1" class="factory-delivery-map">
+
+## Read the delivery milestones
+
+Here is one possible repository delivery path. Each step needs its own evidence; reaching one does not establish the next.
+
+<ol class="factory-milestones">
+  <li><strong>Local candidate</strong><span>Identified source, retained checks, and a review record. The replay's local <code>pr.md</code> stops here.</span></li>
+  <li><strong>Remote PR</strong><span>An actual PR URL and CI results for its current candidate. A local report is not a GitHub PR.</span></li>
+  <li><strong>Merged</strong><span>A merge record identifying what reached the target branch, with the required checks satisfied.</span></li>
+  <li><strong>Deployed and checked</strong><span>A deployment record identifying the running revision, plus a check of the requested user journey.</span></li>
+</ol>
+
+</div>
+
+Publishing, merging, and deploying require the authority defined by the task and repository policy. **The scripted replay demonstrates local delivery only.** It does not open a GitHub PR, merge a branch, or verify a live deployment.
+
+<details markdown="1" class="factory-check">
+<summary>Predict first: the replay printed pr.md. Is the feature live?</summary>
+
+No. Inspect what the file records and label the result **local delivery**. A real PR, merge, deployment, and working user journey each need separate observations. Do not infer them from a filename or a passing local suite.
+
+</details>
 
 ## Part B — commission a change in your product
 
@@ -122,6 +153,24 @@ Delivery: local candidate / PR URL / merge SHA / deployed revision, as applicabl
 ```
 
 Record only states actually reached. If a command was unavailable or a test failed, say so. If you change the candidate after verification, rerun the affected checks and update the record. A trustworthy CI run records the revision it checked; typing a SHA into a note alone does not bind evidence to those bytes.
+
+### Evidence follows the revision
+
+Suppose the missing-recipe test passes on candidate A. You then edit the error handler, producing candidate B. Follow the two evidence records below: what is known about B before its checks run?
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Candidate evidence, scroll horizontally">
+    <img src="../assets/diagrams/factory-evidence.svg" alt="Checks on candidate A produce evidence about A. Editing source creates candidate B, whose behavior is not established by A's passing result. Run affected checks on B and retain a record tied to B before review and promotion." width="640" height="570">
+  </div>
+  <figcaption><strong>A result is a claim about a particular candidate.</strong> A and B are illustrative labels, not real commit hashes. Retain the checked source identity, commands, environment, and output. If B fails, record the failure and use the remaining repair budget; do not copy A's passing status. <a href="../assets/diagrams/factory-evidence.svg">Open the full-size evidence diagram</a>.</figcaption>
+</figure>
+
+<details markdown="1" class="factory-check">
+<summary>Predict first: seven tests passed, then the reviewer requested a new failure case. What next?</summary>
+
+Write a relevant case and inspect its result. If it exposes a defect, repair it within the budget. Commit the resulting candidate, rerun the affected checks from that revision, and retain the new evidence. Review the remaining gap before any authorized promotion. The earlier pass still describes the earlier candidate and coverage.
+
+</details>
 
 ## Part C — challenge the evidence
 
