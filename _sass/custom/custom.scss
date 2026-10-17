@@ -81,5 +81,6 @@
 }
 
 @media print {
-  .main-content .walkthrough-command, .main-content .walkthrough-quiz { break-inside: avoid; }
+  .main-content .walkthrough-command, .main-content .walkthrough-quiz,
+  .main-content .studio-quiz { break-inside: avoid; }
 }

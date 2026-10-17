@@ -270,10 +270,6 @@ class StoreChecks(unittest.TestCase):
         title, final_version = read(self.path, "alice", 1)
         self.assertIn(title, ["Editor A", "Editor B"])
         self.assertEqual(final_version, 2)
-
-
-if __name__ == "__main__":
-    unittest.main()
 ```
 
 Run `python3 -m unittest -v test_store` in that folder. Expected: **10 tests pass**. The two workers use separate real connections to the same temporary file; the test does not assume which editor wins. No paid calls, host database, shared user data or sleep-based race timing is involved.
@@ -318,21 +314,21 @@ Work in small batches and measure outcomes. Number of generated lines, prompt le
 
 ## Check your understanding
 
-<details markdown="1">
+<details markdown="1" class="studio-quiz">
 <summary>Can an HTTP client claim to be Alice by passing subject="alice"?</summary>
 
 Not in a correctly integrated product. The fixture calls a storage function directly. The HTTP adapter must obtain identity from its verified authentication context and must not accept a client-selected subject as proof of identity. Ownership checks depend on that trust boundary; this storage lab does not test the identity layer.
 
 </details>
 
-<details markdown="1">
+<details markdown="1" class="studio-quiz">
 <summary>Why include the expected version in UPDATE rather than only checking it beforehand?</summary>
 
 Another writer can commit between an earlier check and a later unconditional update. The predicate makes matching the expected version a condition of the mutation itself. After one writer advances the version, the stale writer changes zero rows. The race test checks this property with separate real connections.
 
 </details>
 
-<details markdown="1">
+<details markdown="1" class="studio-quiz">
 <summary>Should a conflict handler fetch the latest version and retry the old edit automatically?</summary>
 
 That can overwrite a change the user has not reviewed. Keep the draft, show the current record, and let the user reconcile or cancel according to the product contract. Distinguish a stale-write conflict from a transport failure and from a response lost after commit.
@@ -355,12 +351,10 @@ An assistant may draft test cases or critique the diff. Predict the result first
 
 Reviewed **17 October 2026**. These are primary sources for the practices used here, not a ranking of employers, tools or courses. The scenario, code, synthetic data and studio activities are original.
 
-- [DORA: Balancing AI tensions, March 2026](https://dora.dev/insights/balancing-ai-tensions/) discusses verification effort, small batches, production-readiness gaps, tool sprawl and maintaining expertise. It motivates the complete change cycle here; observational findings do not guarantee an individual student's productivity.
-- [Google: what to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html) and [review comments](https://google.github.io/eng-practices/review/reviewer/comments.html) inform the focused review exercise.
-- [OWASP API1:2023, object-level authorization](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) explains why identifying a record is not permission to act on it and why authorization needs tests.
-- [Python 3.14 SQLite documentation](https://docs.python.org/3.14/library/sqlite3.html), [SQLite transactions](https://www.sqlite.org/lang_transaction.html) and [UPDATE](https://www.sqlite.org/lang_update.html) document parameter binding, transactions, connection lifetime and conditional mutation used in the lab.
-- [Alembic autogeneration limitations](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) explains why generated migrations need review. [MDN conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Conditional_requests) covers the optional HTTP precondition design.
-- [Current MIT/Stanford teaching references and conference-to-experiment routine](learning-map.md#teaching-references) complement these professional practices with specifications, evaluation and engineering judgment.
+- [DORA, March 2026](https://dora.dev/insights/balancing-ai-tensions/) discusses verification, small batches, production readiness and maintaining expertise. Its observational findings do not guarantee individual productivity.
+- Google's [review criteria](https://google.github.io/eng-practices/review/reviewer/looking-for.html) and [review comments](https://google.github.io/eng-practices/review/reviewer/comments.html) inform the review exercise; [OWASP API1:2023](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) motivates tested record authorization.
+- [Python 3.14 SQLite](https://docs.python.org/3.14/library/sqlite3.html), [SQLite transactions](https://www.sqlite.org/lang_transaction.html) and [UPDATE](https://www.sqlite.org/lang_update.html) document the lab's database behavior. [Alembic limitations](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) and [MDN conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Conditional_requests) support the optional migration and HTTP designs.
+- The [MIT/Stanford references and conference-to-experiment routine](learning-map.md#teaching-references) connect specifications, evaluation and engineering judgment.
 
 ---
 
