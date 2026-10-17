@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 570" role="img" aria-labelledby="title desc">
+  <title id="title">Evidence belongs to the source revision that was checked</title>
+  <desc id="desc">Checks run on candidate A produce evidence about A. A source edit creates candidate B. Evidence about A does not establish that B passes. Run the affected checks on B and retain evidence about B before promotion. A and B are illustrative revision labels. A reliable record identifies the checked source, procedure, environment, and results.</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
+  <rect width="640" height="570" fill="#fff"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#172554">
+    <text x="24" y="32" font-size="21" font-weight="700">A passing result has a scope</text>
+    <text x="24" y="58" font-size="16" fill="#475569">A and B below are illustrative source revisions</text>
+    <g fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)">
+      <path d="M204 138 H248"/><path d="M416 138 H460"/>
+      <path d="M114 184 V250"/><path d="M114 344 V410"/>
+      <path d="M204 456 H248"/><path d="M416 456 H460"/>
+    </g>
+    <g fill="#f5f6ff" stroke="#4051b5" stroke-width="2">
+      <rect x="24" y="92" width="180" height="92" rx="6"/>
+      <rect x="252" y="92" width="164" height="92" rx="6"/>
+      <rect x="464" y="92" width="152" height="92" rx="6"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="114" y="128" font-size="21" font-weight="700">Candidate A</text><text x="114" y="156" font-size="17">Committed source</text>
+      <text x="334" y="128" font-size="21" font-weight="700">Check A</text><text x="334" y="156" font-size="17">Observed pass</text>
+      <text x="540" y="128" font-size="21" font-weight="700">Evidence A</text><text x="540" y="156" font-size="17">Describes A</text>
+    </g>
+    <text x="132" y="221" font-size="17" fill="#805010" font-weight="700">Edit source</text>
+    <rect x="24" y="254" width="180" height="90" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
+    <text x="114" y="289" font-size="21" text-anchor="middle" font-weight="700">Candidate B</text><text x="114" y="317" font-size="17" text-anchor="middle">Changed behavior</text>
+    <rect x="252" y="254" width="364" height="90" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
+    <text x="274" y="288" font-size="20" fill="#805010" font-weight="700">B has not been verified.</text>
+    <text x="274" y="315" font-size="17" fill="#805010">A's result is still about A, not B.</text>
+    <text x="132" y="381" font-size="17" fill="#16614f" font-weight="700">Rerun affected checks on B</text>
+    <g fill="#effaf6" stroke="#167d65" stroke-width="2">
+      <rect x="24" y="414" width="180" height="88" rx="6"/>
+      <rect x="252" y="414" width="164" height="88" rx="6"/>
+      <rect x="464" y="414" width="152" height="88" rx="6"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="114" y="448" font-size="21" font-weight="700">Candidate B</text><text x="114" y="475" font-size="17">Clean checkout</text>
+      <text x="334" y="448" font-size="21" font-weight="700">Check B</text><text x="334" y="475" font-size="17">Observe the result</text>
+      <text x="540" y="448" font-size="21" font-weight="700">Evidence B</text><text x="540" y="475" font-size="17">Describes B</text>
+    </g>
+    <text x="320" y="539" text-anchor="middle" font-size="17" fill="#475569">Record source + procedure + environment + results before review.</text>
+  </g>
+</svg>

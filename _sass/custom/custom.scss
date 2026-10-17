@@ -85,6 +85,48 @@
   .main-content .studio-quiz { break-inside: avoid; }
 }
 
+// Delivery is a sequence of observed states, not a single green status.
+.main-content .factory-milestones {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  list-style: none;
+  counter-reset: factory-step;
+
+  > li {
+    margin: 0;
+    padding: 0.75rem 0 0;
+    border-top: 3px solid #4051b5;
+    counter-increment: factory-step;
+  }
+  > li::before {
+    position: static;
+    display: block;
+    content: "0" counter(factory-step);
+    margin: 0 0 0.5rem;
+    padding: 0;
+    color: #4051b5;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  strong, span { display: block; }
+  span { margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.5; }
+  @media (max-width: 48rem) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 28rem) { grid-template-columns: 1fr; }
+}
+@media print {
+  .main-content .factory-milestones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    break-inside: avoid;
+    > li { break-inside: avoid; }
+  }
+  .main-content .factory-check, .main-content .factory-command,
+  .main-content .factory-delivery-map, .main-content .factory-controls { break-inside: avoid; }
+}
+
 // The simulator uses the course's existing type and colors; labels carry meaning.
 .main-content .inference-lab {
   border: 1px solid #cbd5e1;
