@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -36,6 +37,18 @@ So far only `curl` and `/docs` can use your product. Today it gets a face: a Str
 - Your Lecture 3 backend runs with `uv run fastapi dev` on port 8000, and `GET /recipes` (or your resource) returns the seed rows ([Lecture 3](03-persistence-and-first-pr.md)). If Lecture 3's `backend` container still holds port 8000, stop it first with `docker rm -f backend` (the named volume keeps its data).
 - You know your API's field names: open `http://localhost:8000/docs`.
 - Two terminals: one for the backend, one for the frontend. On Windows, both run inside WSL2.
+
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Trace a click through browser, Streamlit server, HTTP client, backend, and database.
+- Explain reruns, stable widget keys, session state, and why a write needs fresh displayed data.
+- Show validation feedback while preserving the backend as the authority for accepted input.
+
+**Predict first:** Where does the HTTP request originate in Streamlit, and how would that change with browser-side React?
+
+**Bridge if needed:** [Processes and HTTP contracts](../guides/engineering-foundations.md#http-json-and-contracts). These questions are formative practice; the existing completion check and assignment requirements remain the target.
 
 ## Concepts
 
@@ -110,6 +123,8 @@ app.add_middleware(
 ```
 
 Streamlit's calls are server-side Python, so the Streamlit version needs no CORS settings. Whatever the framework, a CLI alone is not a frontend.
+
+CORS is a browser access rule, not authentication or authorization: `curl` is not subject to that browser rule. A product with private user records must enforce ownership and access in the backend, even when its UI validates input.
 
 ## Live demo
 

@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,6 +36,18 @@ Your Recipe Box works on a good day. Today it learns to behave on a bad one: an 
 - The Lecture 3 backend: `uv run fastapi dev` in `backend/` serves `http://localhost:8000/health` ([Lecture 3](03-persistence-and-first-pr.md)).
 - You can read a 422 `detail` list ([Lecture 2](02-http-fastapi-pydantic.md)).
 - Google Chrome, or about half a gigabyte of free disk for Playwright's own Chromium (start that download early).
+
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Demonstrate loading, empty, error, and success states with an actionable next step.
+- Explain the HTTP boundary substitute in AppTest and what a real browser/backend test adds.
+- Use accessible locators and waiting assertions; prove a relevant test detects a deliberate fault.
+
+**Predict first:** If all mocked UI tests pass while the real backend is stopped, what has and has not been established?
+
+**Bridge if needed:** [Testing layers](../guides/engineering-foundations.md#tests-evaluations-and-observability). These questions are formative practice; the existing completion check and assignment requirements remain the target.
 
 ## Concepts
 
@@ -66,6 +79,8 @@ Three rules keep this boundary clean:
 3. **The boundary speaks in typed values.** `api.py` returns a `Recipe` (a `TypedDict` mirroring the backend's `RecipePublic`) or raises a `BackendError` whose message is safe to show. httpx exceptions never leak out.
 
 `api.py` is the waiter: the diner never enters the kitchen, and a kitchen fire becomes "your order will be late".
+
+`TypedDict` helps static checking; it does not validate a received JSON body at runtime. These tests establish the selected response shapes against the backend contract. A stricter client can add runtime response validation; do not mistake a type annotation for an executed check.
 
 ### Translating failures into words
 

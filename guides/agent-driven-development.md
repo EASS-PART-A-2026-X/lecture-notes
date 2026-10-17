@@ -4,6 +4,8 @@
 
 [Course guide](../README.md) · [Software factory lab](software-factory-lab.md)
 
+New to the tools or model terminology? Use [Student setup](student-setup.md) and [Models and AI literacy](models-and-ai-literacy.md), then follow the [class-by-class learning map](learning-map.md).
+
 **Use across the semester.** Start with the development loop in week 1. Return to the product loop in Lecture 6 and the evaluation loop in Lecture 9. These are formative activities and optional extensions to the existing assignments.
 
 <details markdown="1" class="lecture-toc">

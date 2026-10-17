@@ -17,9 +17,11 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ## Start here
 
-1. **Prepare for the first meeting:** follow [Lecture 1's setup checklist](lectures/01-environment-git-docker-ai.md#before-you-start) and check your tools before class.
-2. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
-3. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
+1. **Set up before class:** use [Student setup](guides/student-setup.md) for Windows/WSL, macOS, Linux, GitHub, and a choice of AI tools. Run its ready-for-class checks; no paid AI plan is required.
+2. **Understand the path:** read the [learning map](guides/learning-map.md). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
+3. **Prepare for the first meeting:** follow [Lecture 1's setup checklist](lectures/01-environment-git-docker-ai.md#before-you-start) and check your tools before class.
+4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
+5. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
 ## Calendar and 13-meeting schedule
 

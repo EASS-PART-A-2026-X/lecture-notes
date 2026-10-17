@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,6 +36,18 @@ Lecture 7 needed three terminals and a good memory for ports. Today one file rep
 - The three-service flow and its tests from [Lecture 7](07-third-service-contracts.md).
 - Docker Desktop running; on Windows, inside WSL2 with Ubuntu integration on. `docker compose version` prints v2.
 - Stop Lecture 7's three dev servers. They hold ports 8000, 8001 and 8501.
+
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Locate code, configuration, network addresses, credentials, and persistent data in the Compose stack.
+- Explain service DNS, published ports, health/startup ordering, and the limits of those controls.
+- Start from a clean checkout and distinguish a data-preserving restart from a deliberate reset.
+
+**Predict first:** A service was healthy at startup and later fails. What does depends_on guarantee, and what must the application still handle?
+
+**Bridge if needed:** [Failures across processes](../guides/engineering-foundations.md#failure-retries-and-asynchronous-work). These questions are formative practice; the existing completion check and assignment requirements remain the target.
 
 ## Concepts
 
@@ -70,7 +83,9 @@ curl    -> localhost:8000 ->     backend     :8000  -> volume backend-data (/app
 (nothing at localhost:8001)      ai-service  :8001  (no ports: internal only)
 ```
 
-`ports: ["HOST:CONTAINER"]` publishes a port on your laptop. Publish only what a person uses: the frontend, and the backend for `curl` and `/docs`. The AI service gets **no** `ports:`, so nobody can bypass the backend.
+`ports: ["HOST:CONTAINER"]` publishes a port on your laptop. Publish only what a person uses: the frontend, and the backend for `curl` and `/docs`. The AI service gets **no** `ports:`, so it is not published at `localhost:8001`. Other containers on the same network can still reach it; this is exposure reduction, not caller authentication. See [Docker's port-publishing rules](https://docs.docker.com/engine/network/port-publishing/) and Lecture 10's service-token example.
+
+The file below binds the published ports to `127.0.0.1` for local demonstrations. Containers still use their service names internally. Deliberately exposing a product to other machines needs a separate deployment and access-control decision.
 
 `BACKEND_URL` is `http://backend:8000` because Streamlit's Python runs *inside the frontend container*. A React app runs in the browser, so it would need the published `http://localhost:8000` plus CORS.
 
@@ -91,7 +106,7 @@ A clean checkout has no `.env`, so `AI_MODEL` is `test` (`TestModel`: no key, no
 
 A `healthcheck` runs a command inside the container every `interval`; after `retries` failures in a row it is `unhealthy` (failures during `start_period` don't count). `depends_on` with `condition: service_healthy` orders startup: AI service, then backend, then frontend. A bare `depends_on` waits only for *started*, not *ready*. `up --wait` blocks until all are healthy, which is what CI and graders use. The checks use Python's `urllib`, because `python:3.14-slim` has no curl.
 
-The backend's `/health` deliberately **does not** call the AI service. Otherwise an AI outage would mark the backend unhealthy and take CRUD down with it; Lecture 7's 503 covers that case. A stricter *readiness* check may test what the service cannot work without, such as its database.
+The backend's `/health` deliberately **does not** call the AI service: an AI outage should not label otherwise usable CRUD as unhealthy. Lecture 7's 503 covers that feature failure. A stricter *readiness* check may test what the service cannot work without, such as its database. Compose startup ordering is not continuous failure recovery; an unhealthy check alone does not stop or restart this backend. The application must still handle later dependency failures.
 
 ### Secrets
 
@@ -153,7 +168,7 @@ name: recipe-box
 services:
   ai-service:
     build: ./ai-service
-    # No "ports:" on purpose: only the backend reaches it, on the compose network.
+    # No host port: reachable on the Compose network, not published at localhost:8001.
     env_file:
       - path: .env # your real settings and keys (git-ignored)
         required: false # a clean checkout has no .env and still starts
@@ -177,7 +192,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "${BACKEND_PORT:-8000}:8000" # host:container
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000" # host IP:host port:container port
     environment:
       DATABASE_URL: sqlite:////app/data/app.db # 4 slashes = absolute path
       AI_SERVICE_URL: http://ai-service:8001 # the service name is a DNS name
@@ -202,7 +217,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "${FRONTEND_PORT:-8501}:8501"
+      - "127.0.0.1:${FRONTEND_PORT:-8501}:8501"
     environment:
       BACKEND_URL: http://backend:8000 # Streamlit calls the API server-side
     depends_on:
@@ -393,7 +408,7 @@ Nothing: `localhost` is the backend's own container, where nothing listens on 80
 <details markdown="1">
 <summary>Q3. (Lecture 7) The ai-service container is stopped. What happens when a user pastes a recipe, and what does the backend's /health say?</summary>
 
-The backend returns `503 {"detail": "AI service unavailable"}`, and the UI says "AI service is unavailable, try again in a minute." `/health` still says `{"status":"ok"}` and CRUD keeps working, by design: health that depended on the AI service would take the backend down too.
+The backend returns `503 {"detail": "AI service unavailable"}`, and the UI says "AI service is unavailable, try again in a minute." `/health` still says `{"status":"ok"}` and CRUD keeps working, by design. A dependency-sensitive probe would mark the backend unhealthy too, even though ordinary CRUD is still usable; it would not itself stop this Compose container.
 
 </details>
 
