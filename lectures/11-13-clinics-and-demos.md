@@ -30,6 +30,8 @@ No new material: you work on your own product and PRs; the instructor may reorde
 
 Use the [learning map's recovery path](../guides/learning-map.md#when-you-are-behind) when several symptoms share one prerequisite failure.
 
+**Optional clinic station:** use the [industry studio](../guides/industry-studio.md) for a reproduced defect, a reviewable repair and a five-minute individual explanation. Choose the station that addresses a current product gap; no extra submission is required.
+
 ### What you bring
 
 - Your [Lecture 10](10-ci-security-release.md) release candidate, running.

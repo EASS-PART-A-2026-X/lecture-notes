@@ -29,6 +29,8 @@ Read [Engineering contracts](guides/engineering-contracts.md) to connect manifes
 
 The [visual system walkthrough](guides/system-walkthrough.md) follows one request through containers, contracts, database commits, and recovery. Use it alongside Lectures 3 and 7–10.
 
+For professional practice alongside the weekly work, use the [industry engineering studio](guides/industry-studio.md): read an unfamiliar repository, specify and review a change, protect private records, handle concurrent edits, and rehearse data/release recovery. Its runnable extension and studio activities are optional and need no paid accounts.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.

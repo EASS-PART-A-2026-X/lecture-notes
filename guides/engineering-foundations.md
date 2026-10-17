@@ -104,6 +104,8 @@ A queue can decouple a long task from an HTTP request, but then the product need
 
 Keep provider keys in the AI service, validate outside model control, and expose only the tools the task needs. Prompts and repository instructions guide behavior; application code and execution controls enforce permissions. Local classroom HTTP is a development setup; publicly deployed sensitive traffic needs an appropriate HTTPS and identity/access configuration.
 
+For a runnable counterexample, the [industry studio](industry-studio.md#lab-private-records-and-concurrent-edits) checks per-record ownership and uses an atomic version predicate to reject stale saves. Its identity is a trusted test fixture, not a login implementation.
+
 ## Tests, evaluations, and observability
 
 Ask what each check can establish:

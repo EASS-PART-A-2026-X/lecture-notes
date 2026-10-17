@@ -42,6 +42,8 @@ Until today, "it works" meant "on my laptop". Now a robot checks every push, a s
 
 **Visual review:** [One request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.
 
+**Professional practice:** [Rehearse schema evolution, recovery and the complete change cycle](../guides/industry-studio.md#evolve-data-without-losing-it) in the industry studio. This optional activity deepens the current checkpoint without changing the assignment.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
