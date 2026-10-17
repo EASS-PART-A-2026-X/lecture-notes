@@ -38,6 +38,10 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+}
+
 // Print and the course PDF (.github/scripts/build_pdf.py): content only, nothing cut off.
 @media print {
   // Named fonts (Liberation comes with `playwright install --with-deps`) keep the PDF small and the same everywhere.

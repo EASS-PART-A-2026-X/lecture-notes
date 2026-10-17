@@ -17,6 +17,7 @@ Use the [visual system walkthrough](system-walkthrough.md) to connect service bo
 
 - [How to read a lecture](#how-to-read-a-lecture)
 - [The class-by-class path](#the-class-by-class-path)
+- [Visual checkpoints](#visual-checkpoints)
 - [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [A repeatable study cycle](#a-repeatable-study-cycle)
 - [Engineering studio and review criteria](#engineering-studio-and-review-criteria)
@@ -61,6 +62,22 @@ Instructions identify the directory where a command runs. Code marked “excerpt
 | [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Working user journey, individual answers, verified merged PRs |
 
 The open-source track runs alongside all of these classes. Each student needs three qualifying **merged** PRs by the README's deadline. Start early, obey upstream policies, and write maintainer-facing text yourself. A local product PR is useful practice but does not satisfy that requirement.
+
+## Visual checkpoints
+
+Use a diagram to make a prediction, then follow the code and run the relevant check. The picture explains a model of the system; it is not execution evidence.
+
+| When studying | Trace this visual | Explain without the assistant |
+|---|---|---|
+| Classes 1–3: processes and state | [Database commit boundary](system-walkthrough.md#follow-the-commit-boundary) | What is still only a candidate, and what has been committed? |
+| Classes 4–5: a usable UI | [Four request states](../lectures/05-frontend-reliability-testing.md#four-states-every-screen-needs) | Why are an empty response and a failed request different? |
+| Class 6: the runtime agent | [Model proposal, tool execution, output checks](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) | Which code executes a tool and which check accepts the output? |
+| Classes 7–8: service boundaries | [Compose service map](../lectures/08-docker-compose.md#networking-where-is-localhost) | Which process sends each HTTP call, and which URL can it resolve? |
+| Class 9: usage and failure | [Token threshold counterexample](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) | Can already processed usage cross a configured threshold? |
+| Class 10 and clinics: delivery | [Factory lifecycle and evidence](software-factory-lab.md#the-instructors-airflow-factory) | Which revision was checked, and what delivery milestone was actually reached? |
+| Model foundations and optional inference | [Training/runtime data map](models-and-ai-literacy.md#a-visual-data-lifecycle) and [latency experiment](local-inference.md#latency-experiment) | What changes weights, what supplies context, and where does the request spend time? |
+
+Cover the caption, trace one ordinary case and one failure, and name what the diagram leaves out. Then run the lesson's completion check. No extra submission is required.
 
 ## What is required and what is a choice
 
@@ -116,12 +133,12 @@ These are feedback criteria, not replacement marks. A student should be able to 
 
 ## Verified reference checkpoints
 
-The course repository automatically executes three complete reference checkpoints and two standalone labs on every pull request and publication:
+The course repository automatically executes three complete reference checkpoints and the standalone exercises below on every pull request and publication:
 
 - **Lecture 2:** the ten API tests covering CRUD, rejected input, pagination, partial updates, and test isolation.
 - **Lecture 3:** the unchanged API tests plus file-backed restart and idempotent-seed checks.
 - **Lecture 6:** six deterministic agent tests covering the endpoint, validation retry, structured output, and domain tools. Real model requests are disabled by the test fixture.
-- **Lecture 9:** six standard-library checks of the [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score), including grader counterexamples, misleading averages, and missing critical cases.
+- **Lecture 9:** six standard-library checks of the [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score), plus two [usage-counter checks](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) showing a blocked next step and an observed token overrun. No provider calls are made.
 - **Industry studio:** ten SQLite checks, including denied access, stale writes, inert SQL-looking input, and two concurrent writers on separate connections. This is an optional storage lab, not a new complete HTTP application.
 
 The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read. The inference visualization separately has nine Node checks covering its arithmetic, input boundaries and static worked-example consistency; it does not measure a real model.
@@ -132,7 +149,7 @@ If you have cloned **this course-notes repository**, you can run its checks from
 uv run --locked .github/scripts/check_examples.py
 ```
 
-The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, six agent tests, six grader/gate checks, and ten industry-studio checks pass (44 total), followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
+The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, six agent tests, eight grader/gate/usage checks, and ten industry-studio checks pass (46 total), followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
 
 These checks establish that those three complete examples work with the recorded dependencies. They do not prove every later excerpt is a standalone program, a real model extracts accurately, or a browser/deployment works. Later lectures deliberately ask you to extend earlier files; use their completion checks and failure drills. When reporting a problem, include the lecture link, dependency versions, exact command, and redacted error.
 

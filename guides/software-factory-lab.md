@@ -96,7 +96,7 @@ If installation is unavailable, inspect the pinned repository's [`demo/scripted`
 
 Here is one possible repository delivery path. Each step needs its own evidence; reaching one does not establish the next.
 
-<ol class="factory-milestones">
+<ol class="factory-milestones" role="list" aria-label="Delivery milestones">
   <li><strong>Local candidate</strong><span>Identified source, retained checks, and a review record. The replay's local <code>pr.md</code> stops here.</span></li>
   <li><strong>Remote PR</strong><span>An actual PR URL and CI results for its current candidate. A local report is not a GitHub PR.</span></li>
   <li><strong>Merged</strong><span>A merge record identifying what reached the target branch, with the required checks satisfied.</span></li>

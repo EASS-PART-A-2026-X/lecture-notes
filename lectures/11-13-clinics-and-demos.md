@@ -315,7 +315,7 @@ For the instructor; students may practice with it. "Listen for" lists what a goo
 <details markdown="1">
 <summary>Q18. Which failures do you retry, how often, and which never?</summary>
 
-**Listen for:** Retry at one layer only: the backend retries transport failures (timeouts, connect errors) and ai-service 503/504, at most 3 attempts with backoff; never 429 (budget spent), 502 (the agent already retried the model), 500 or other 4xx. Every retry costs money. `POST /extract` stores nothing, so repeating it is safe; the frontend never retries `POST /recipes/from-text`.
+**Listen for:** The backend selectively retries transport failures and ai-service 503/504, at most 3 attempts with backoff; never its budget-exhaustion 429, 502, 500 or other 4xx. Repeating stateless extraction avoids duplicate database writes but can repeat inference work and cost. The frontend never retries `POST /recipes/from-text`; provider/transport retries also need inspection.
 
 </details>
 
@@ -329,7 +329,7 @@ For the instructor; students may practice with it. "Listen for" lists what a goo
 <details markdown="1">
 <summary>Q20. How do you stop one request from running up a model bill?</summary>
 
-**Listen for:** `UsageLimits` on requests, tool calls and tokens; a wall-clock timeout (504); an exceeded budget makes the ai-service answer 429, which the backend never retries and reports as 503.
+**Listen for:** `UsageLimits`, bounded HTTP attempts, and a wall-clock timeout; a budget-exhaustion 429 is not retried and becomes a backend 503. Token/cost stopping checks can observe an overrun after work occurs; counted agent steps do not cover every provider retry. Check provider controls, pricing availability, and actual usage rather than promising a hard bill ceiling.
 
 </details>
 
