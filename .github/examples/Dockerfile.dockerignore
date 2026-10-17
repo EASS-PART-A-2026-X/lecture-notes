@@ -1,0 +1,9 @@
+# This verification image needs only the checker, lock, and two printed chapters.
+**
+!.github/
+!.github/scripts/
+!.github/scripts/check_examples.py
+!.github/scripts/check_examples.py.lock
+!lectures/
+!lectures/02-http-fastapi-pydantic.md
+!lectures/06-pydantic-ai-agents.md

@@ -39,6 +39,7 @@ defaults:
   - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 18 } }
   - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference and transformers", nav_order: 19 } }
   - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 20 } }
+  - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 21 } }
 
 # Just the Docs
 search:

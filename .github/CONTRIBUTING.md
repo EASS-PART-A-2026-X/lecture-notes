@@ -19,6 +19,9 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
 node --test .github/scripts/test_search.cjs
 uv run --locked .github/scripts/check_examples.py
+python3 .github/scripts/check_compose.py
+docker build -f .github/examples/Dockerfile -t eass-course-checkpoints:local .
+docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges --memory 1g --cpus 2 --pids-limit 128 eass-course-checkpoints:local
 uv run .github/scripts/build_pdf.py install
 uv run .github/scripts/build_pdf.py _site https://eass-part-a-2026-x.github.io/lecture-notes
 python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -26,6 +29,8 @@ python3 .github/scripts/check_site.py _site https://eass-part-a-2026-x.github.io
 ```
 
 The example checker extracts the complete Lecture 2 API and Lecture 6 AI-service code and tests directly from Markdown into temporary projects. It follows the printed continuation/import edits, runs all 16 tests, lint, and formatting, then removes the projects. It does not reconstruct later partial-file excerpts or measure real-model quality. Python 3.14 and the committed script lockfile make the check repeatable; update dependencies deliberately with `uv lock --script .github/scripts/check_examples.py --upgrade`, then rerun the checker and review API changes against official documentation. Never make a broken example pass by silently rewriting its behavior in the checker.
+
+The Compose checker parses the actual Lecture 8 YAML and validates its topology without starting services or printing resolved environment values. The verification image copies only the two complete lecture examples and their checker/lockfile, prepares dependencies during build, and runs the checks offline as a non-root user. This does not reconstruct the later partial application or replace the student product’s full Compose/browser/persistence checks.
 
 The PDF must be built before the link check because every page links to it. The checker makes no network requests: it verifies local destinations, heading fragments, assets and duplicate IDs. Check changed external links separately in their official source.
 

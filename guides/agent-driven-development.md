@@ -10,6 +10,8 @@ New to the tools or model terminology? Use [Student setup](student-setup.md) and
 
 Use [Local inference](local-inference.md) to follow the model-server path, and [Agent sandboxes](agent-sandboxes.md) to design the execution boundary around tools. A local model does not contain generated code.
 
+For the practical connection between configuration, skills, and delivery evidence, use [Engineering contracts: manifests, skills, factories, and evaluations](engineering-contracts.md). It includes Docker reference checks, Compose validation, and a skill-comparison exercise.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 

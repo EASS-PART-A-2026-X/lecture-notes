@@ -38,6 +38,8 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 
 **Serving measurements:** [Local inference](../guides/local-inference.md#measure-and-diagnose) separates load, queue, prefill, and decode time; its synthetic example supports analysis without a model download. Compare task quality as well as tokens per second.
 
+**Engineering practice:** [Manifests, skills, factories, and evaluations](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

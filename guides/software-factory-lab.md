@@ -6,6 +6,8 @@
 
 **Suggested time:** 45–60 minutes, after you have written and run backend tests. Revisit the delivery questions in Lecture 10. This is formative practice with a separate demonstration repository; it adds no assignment or infrastructure requirement.
 
+For the practical connection between configuration, skills, and delivery evidence, use [Engineering contracts: manifests, skills, factories, and evaluations](engineering-contracts.md). It includes Docker reference checks, Compose validation, and a skill-comparison exercise.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 

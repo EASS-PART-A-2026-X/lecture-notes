@@ -39,6 +39,8 @@ Lecture 7 needed three terminals and a good memory for ports. Today one file rep
 
 **Execution boundary:** [Agent sandboxes](../guides/agent-sandboxes.md) distinguishes Compose, restricted containers, OS sandboxes, gVisor, and microVMs. Its known-script lab demonstrates filesystem and network restrictions. [Local inference](../guides/local-inference.md#connect-an-agent-without-changing-its-authority) explains a model server as an optional dependency of the existing AI service.
 
+**Engineering practice:** [Manifests, skills, factories, and evaluations](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
