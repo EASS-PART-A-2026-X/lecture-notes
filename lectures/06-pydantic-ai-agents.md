@@ -39,6 +39,8 @@ Paste a messy recipe, get back clean, validated JSON. You build a small agent th
 
 **Concept bridge:** [Local inference and transformers](../guides/local-inference.md) explains how model requests become tokens, tool requests, and validated results, with optional local-server routes. [Agent sandboxes](../guides/agent-sandboxes.md) explains how tool authority is enforced. Read the concepts; GPU/server installation is optional.
 
+**Visual practice:** trace the [training/runtime data map](../guides/models-and-ai-literacy.md#a-visual-data-lifecycle) and predict one result in the [inference latency experiment](../guides/local-inference.md#latency-experiment). These distinguish model computation, context and the application authority boundary.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

@@ -17,7 +17,7 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
-node --test .github/scripts/test_search.cjs
+node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs
 uv run --locked .github/scripts/check_examples.py
 python3 .github/scripts/check_compose.py
 docker build -f .github/examples/Dockerfile -t eass-course-checkpoints:local .
@@ -39,3 +39,5 @@ The rendered search-handler tests use Node.js's built-in test runner (Node 18 or
 For content edits, check the previous/next lecture links and the collapsible section list. Keep section links in sync when renaming a heading. For UI edits, check desktop and a narrow mobile viewport, keyboard focus, the mobile menu, search, table scrolling and a quiz disclosure. Keep tables scrollable without creating horizontal overflow on the whole page. Lecture section links, quiz disclosures and course text must remain usable without JavaScript; the small course script only adds keyboard access to overflowing tables.
 
 Open a focused PR with the problem, resulting behavior and checks run. Pull requests build the site and PDF and check internal links. Only `main` publishes to GitHub Pages. Coordinate with other agents by fetching the latest `main` before starting and before finalizing your branch; never overwrite their work.
+
+The inference teaching calculator has nine Node tests for its equations, stage comparisons, edge cases, input rejection and rendered static fallback. It is a fixed-rate synthetic model, not a real-model benchmark. Verify its controls, invalid-input state and static/print fallback when editing it.

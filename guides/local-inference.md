@@ -17,6 +17,7 @@
 - [Choose a serving tool](#choose-a-serving-tool)
 - [Optional local request lab](#optional-local-request-lab)
 - [Connect an agent without changing its authority](#connect-an-agent-without-changing-its-authority)
+- [Latency experiment](#latency-experiment)
 - [Measure and diagnose](#measure-and-diagnose)
 - [Quick quiz](#quick-quiz)
 - [Sources](#sources)
@@ -161,6 +162,76 @@ The inference runtime is a dependency of the AI application service. An optional
 Before changing the configured provider/base URL, verify: ordinary completion, the required structured output, one permitted tool call, malformed arguments, an unavailable server, and a deadline. Reuse Lecture 6's deterministic tests and Lecture 9's quality cases. Pydantic AI documents [compatible providers](https://ai.pydantic.dev/models/openai/#openai-compatible-models); use its configuration for your installed version instead of changing only the model-name string.
 
 `localhost` inside a container refers to that container. A host inference server is not automatically reachable from `ai-service`; a Compose-hosted server uses its service DNS name and container port. Reaching a host service depends on the platform and bind/firewall configuration. Do not “fix” a connection error by exposing an unauthenticated inference server on every interface. See the [sandbox guide](agent-sandboxes.md#network-and-model-access) for the separate network-policy decision.
+
+## Latency experiment
+
+**A 15-minute predict → change → explain exercise.** This is a fixed-rate arithmetic model with invented inputs, not a benchmark, GPU sizing tool, or prediction of any named server. It makes no model calls and sends no input anywhere. The PDF and browsers without JavaScript retain the worked warm-request example.
+
+<div id="inference-lab" class="inference-lab" aria-labelledby="latency-lab-title">
+<h3 id="latency-lab-title">Where does the waiting time go?</h3>
+<p id="latency-lab-help">Change one assumption at a time. Tokens are model-specific units, not word counts. Rates are assumptions for this exercise.</p>
+<form hidden aria-describedby="latency-lab-help" autocomplete="off">
+<div class="lab-fields">
+<label for="lab-input">Input tokens<input id="lab-input" name="inputTokens" type="number" required min="1" max="1000000" step="1" value="4000"></label>
+<label for="lab-output">Output tokens<input id="lab-output" name="outputTokens" type="number" required min="1" max="10000" step="1" value="200"></label>
+<label for="lab-prefill">Prefill rate (tokens/s)<input id="lab-prefill" name="prefillRate" type="number" required min="0.1" max="1000000" step="0.1" value="2000"></label>
+<label for="lab-decode">Decode rate (tokens/s)<input id="lab-decode" name="decodeRate" type="number" required min="0.1" max="1000000" step="0.1" value="40"></label>
+<label for="lab-queue">Queue delay (s)<input id="lab-queue" name="queueSeconds" type="number" required min="0" max="3600" step="0.1" value="0.5"></label>
+<label for="lab-load">Model load delay (s)<input id="lab-load" name="loadSeconds" type="number" required min="0" max="3600" step="0.1" value="0"></label>
+</div>
+<div class="lab-presets"><button type="button" data-preset="warm">Warm request</button><button type="button" data-preset="long">Long prompt</button><button type="button" data-preset="cold">Cold and queued</button></div>
+</form>
+<p data-error role="status" hidden>Enter values within the listed bounds: positive whole token counts, positive rates, and non-negative delays. Results are hidden until the settings are valid.</p>
+<div data-results>
+<p data-summary role="status" aria-live="polite" aria-atomic="true">Estimated total 7.5 s; first token 2.525 s.</p>
+<div class="lab-chart" aria-hidden="true"><span data-stage="load" style="width:0%"></span><span data-stage="queue" style="width:6.666667%"></span><span data-stage="prefill" style="width:26.666667%"></span><span data-stage="decode" style="width:66.666666%"></span></div>
+<ul class="lab-stage-key"><li style="--stage-color:#475569">Load: <output aria-live="off" data-value="load">0 s</output></li><li style="--stage-color:#b7791f">Queue: <output aria-live="off" data-value="queue">0.5 s</output></li><li style="--stage-color:#4051b5">Prefill: <output aria-live="off" data-value="prefill">2 s</output></li><li style="--stage-color:#167d65">Decode: <output aria-live="off" data-value="decode">5 s</output></li></ul>
+<p>Total response: <output aria-live="off" data-value="total">7.5 s</output> · First token: <output aria-live="off" data-value="firstToken">2.525 s</output></p>
+</div>
+<noscript><p>Interactive controls require JavaScript. Use the worked values and equations below to do the same exercise on paper.</p></noscript>
+</div>
+
+The equations are deliberately small:
+
+```text
+prefill_seconds = input_tokens / assumed_prefill_tokens_per_second
+ decode_seconds = output_tokens / assumed_decode_tokens_per_second
+  total_seconds = load + queue + prefill + decode
+    first_token ≈ load + queue + prefill + (1 / assumed_decode_rate)
+```
+
+The warm example uses 4,000 input tokens, 200 output tokens, prefill at 2,000 tokens/s, decode at 40 tokens/s, a 0.5 s queue, and no load delay: `0 + 0.5 + 2 + 5 = 7.5 s`. First-token time includes the first decode step. A complete response with one output token finishes at that same point in this model.
+
+<div class="learning-practice" markdown="1">
+
+**Predict before using a preset or revealing the answer.**
+
+<details markdown="1">
+<summary>1. Four times as many input tokens, with all assumed rates fixed: does the whole response take four times as long?</summary>
+
+No. Prefill grows from 2 to 8 s; decode remains 5 s and queue remains 0.5 s. Total is **13.5 s**, not 30 s. Try “Long prompt.” This arithmetic holds the rates fixed; real prompt scaling and scheduling need measurements.
+
+</details>
+
+<details markdown="1">
+<summary>2. Halve output from 200 to 100 tokens in the warm example. What happens to the first token and total?</summary>
+
+Decode falls from 5 to 2.5 s, so total becomes **5 s**. The first token remains **2.525 s** under these assumptions. Shorter output can reduce completeness or quality: evaluate the actual task too.
+
+</details>
+
+<details markdown="1">
+<summary>3. Cold load is 8 s and queue is 3 s. Does doubling decode speed remove the long wait?</summary>
+
+The cold preset totals **18 s**. Doubling decode speed changes decode from 5 to 2.5 s, so total is still **15.5 s**. Load, queue and prefill remain. First locate the dominant stage rather than optimizing the most visible metric.
+
+</details>
+
+</div>
+
+**What this leaves out:** network transfer, tokenization, framework/tool work, validation, retries, multiple agent calls, scheduling overlap, changing batch sizes and rates that depend on context length or hardware. It cannot decide a production timeout or predict quality. Prefix caching can reduce repeated **prefill** work; it does not automatically shorten output generation. See [vLLM's prefix-caching explanation](https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/), then measure your actual setup.
+
+**Transfer:** close the answers and explain which component dominates each example. Then change one different assumption, calculate the expected result on paper, and check it. Revisit the exercise in Lecture 9 when deciding which timing evidence to collect. The course CI checks the equations and edge cases; a real serving experiment remains separate.
 
 ## Measure and diagnose
 
