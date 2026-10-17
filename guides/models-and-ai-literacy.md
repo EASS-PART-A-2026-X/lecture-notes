@@ -14,6 +14,7 @@ For the mechanics behind this choice, read [Local inference and transformers](lo
 - [Six things to distinguish](#six-things-to-distinguish)
 - [What a model can and cannot establish](#what-a-model-can-and-cannot-establish)
 - [Tokens, context, memory, and retrieval](#tokens-context-memory-and-retrieval)
+- [A visual data lifecycle](#a-visual-data-lifecycle)
 - [Choose by the task](#choose-by-the-task)
 - [A dated model landscape](#a-dated-model-landscape)
 - [Cost, latency, and local models](#cost-latency-and-local-models)
@@ -62,6 +63,31 @@ Pydantic validation helps with the first and selected business rules. It does no
 - **Fine-tuning:** additional model training for a defined behavior or task. It is outside the required course project; start with a clear task, useful context, tools, and evaluations.
 
 Provide a small relevant context pack: outcome, constraints, exact failure, relevant code/schema, and verification command. Ask the assistant to retrieve more only when needed. Preserve durable decisions in the repository, rather than depending on a long chat to remember them.
+
+## A visual data lifecycle
+
+The word “data” hides different engineering responsibilities. First trace the arrows, then classify an example without looking back at the table.
+
+<figure class="course-diagram">
+<div class="diagram-scroll" role="region" tabindex="0" aria-label="Training and runtime diagram, scroll horizontally">
+<img src="../assets/diagrams/training-and-runtime.svg" width="640" height="860" alt="Training uses curated data and optimization to produce versioned weights. A runtime request and retrieved context pass through a harness and inference using those weights; backend checks decide which operations may commit.">
+</div>
+<figcaption>Training updates weights through a separate process. Ordinary runtime context does not automatically become training. This simplified view omits repeated tool iterations; the harness still checks each tool action. <a href="../assets/diagrams/training-and-runtime.svg">Open the full-size diagram</a>.</figcaption>
+</figure>
+
+| Data use | What changes? | What must you check? |
+|---|---|---|
+| Pretraining or fine-tuning corpus | Weights through an explicit training/optimization process | Provenance, permission, task fit, quality and evaluation separation |
+| Development cases | Prompts, tools or code as you inspect failures and iterate | They stop being unseen checks after you use their answers to improve the system |
+| Held-out evaluation cases | Your evidence about the fixed candidate | Independent expected answers, related examples kept in the same split, contamination and honest failure reporting |
+| Retrieved documents or tool results | Evidence/context supplied to a run | Access filtering, freshness, citations and hostile instructions; retrieval is not retraining |
+| Feedback and traces stored by an application | Application records until a separate process uses them | What is collected, retention/access, redaction and the actual provider/product data policy |
+
+A provider may have a separate data-use policy; “inference does not update these weights” does not establish that a service never stores or later uses requests. Check the relevant product settings and terms before supplying private material. Use instructor-authored synthetic examples for classroom experiments.
+
+**Worked distinction:** putting an updated recipe in a retrieval store changes what a request can find. Fine-tuning a model on examples changes weights through training. Neither grants the resulting agent permission to edit a private recipe.
+
+**Practice:** classify (a) fixing a mislabeled development case, (b) attaching an internal document to a request, and (c) collecting a user rating. State what changes immediately, who can access the data, and what additional process would be needed to change weights. Compare your reasoning with the table; return to [Lecture 9's evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) for leakage and grader checks. The examples and diagram here are original; [Hugging Face's architecture lesson](https://huggingface.co/learn/llm-course/chapter1/4) supplies the model-training background.
 
 ## Choose by the task
 

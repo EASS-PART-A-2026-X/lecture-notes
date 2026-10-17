@@ -84,3 +84,32 @@
   .main-content .walkthrough-command, .main-content .walkthrough-quiz,
   .main-content .studio-quiz { break-inside: avoid; }
 }
+
+// The simulator uses the course's existing type and colors; labels carry meaning.
+.main-content .inference-lab {
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #4051b5;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  .lab-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  label { display: block; font-weight: 600; }
+  input { display: block; width: 100%; min-width: 0; min-height: 2.75rem; margin-top: 0.25rem; padding: 0.5rem; border: 1px solid #64748b; border-radius: 3px; font: inherit; }
+  input[aria-invalid="true"] { border: 2px solid #9c2525; }
+  input:focus-visible { outline: 3px solid $link-color; outline-offset: 3px; }
+  .lab-presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+  button { min-height: 2.75rem; padding: 0.5rem 0.75rem; border: 1px solid #4051b5; border-radius: 3px; background: #f5f6ff; color: #24316d; font: inherit; cursor: pointer; }
+  .lab-chart { display: flex; height: 1.5rem; margin: 1rem 0; overflow: hidden; }
+  [data-stage="load"] { background: #475569; }
+  [data-stage="queue"] { background: #b7791f; }
+  [data-stage="prefill"] { background: #4051b5; }
+  [data-stage="decode"] { background: #167d65; }
+  .lab-stage-key { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0; list-style: none; }
+  .lab-stage-key li::before { position: static; content: ""; display: inline-block; width: 0.75rem; height: 0.75rem; margin-right: 0.3rem; background: var(--stage-color); }
+  [data-error] { color: #8b1f1f; }
+  @media (max-width: 36rem) { .lab-fields { grid-template-columns: 1fr; } }
+}
+@media print {
+  .main-content .inference-lab { break-inside: avoid; padding: 0.75rem; }
+  .main-content .inference-lab form { display: none !important; }
+  .main-content .learning-practice { break-inside: avoid; }
+}

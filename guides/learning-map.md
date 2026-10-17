@@ -88,6 +88,10 @@ Read [local inference and transformers](local-inference.md) before Lecture 6 and
 
 Keep the required AI-use note short: tool, kind of help, and verification performed. Keep task/model settings and dated results with evaluations. Full prompt transcripts are not required.
 
+For difficult concepts, use a worked example, predict a small variation, then solve a fresh variation with the answer hidden. Return to it after a delay and explain the mechanism aloud. Try this with the [training/runtime data map](models-and-ai-literacy.md#a-visual-data-lifecycle) and [inference latency experiment](local-inference.md#latency-experiment), then revisit them in Lectures 6 and 9.
+
+This teaching routine draws on the IES guide's [worked-example, graphics and retrieval recommendations](https://ies.ed.gov/ncee/wwc/PracticeGuide/1) and CMU's [goal-directed practice and feedback principles](https://www.cmu.edu/teaching/principles/learning.html), reviewed 17 October 2026. These sources inform the activity design; this course has not run a study demonstrating a particular learning gain.
+
 ## Engineering studio and review criteria
 
 Use this 25-minute formative routine on one small change during the existing lab. It adds practice, not another submission or grading category.
@@ -120,7 +124,7 @@ The course repository automatically executes three complete reference checkpoint
 - **Lecture 9:** six standard-library checks of the [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score), including grader counterexamples, misleading averages, and missing critical cases.
 - **Industry studio:** ten SQLite checks, including denied access, stale writes, inert SQL-looking input, and two concurrent writers on separate connections. This is an optional storage lab, not a new complete HTTP application.
 
-The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read.
+The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read. The inference visualization separately has nine Node checks covering its arithmetic, input boundaries and static worked-example consistency; it does not measure a real model.
 
 If you have cloned **this course-notes repository**, you can run its checks from the repository root:
 
