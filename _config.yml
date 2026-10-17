@@ -40,6 +40,7 @@ defaults:
   - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference and transformers", nav_order: 19 } }
   - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 20 } }
   - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 21 } }
+  - { scope: { path: "guides/system-walkthrough.md" }, values: { title: "Visual system walkthrough", nav_order: 22 } }
 
 # Just the Docs
 search:

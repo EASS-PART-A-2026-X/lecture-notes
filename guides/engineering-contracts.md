@@ -71,7 +71,7 @@ docker run --rm --network none --cap-drop ALL \
 python3 .github/scripts/check_compose.py
 ```
 
-The build downloads pinned dependencies and runs the complete Lecture 2/6 examples. The image then repeats those 16 tests, lint, and formatting as a non-root user **without external networking**, with no host mount or supplied secret. Temporary test files live inside the disposable container. This checks the printed examples in a Linux environment; it is not a student starter application or a sandbox for arbitrary hostile code.
+The build downloads pinned dependencies and runs the complete Lecture 2/3/6 examples. The image then repeats those 28 tests, lint, and formatting as a non-root user **without external networking**, with no host mount or supplied secret. Temporary test files live inside the disposable container. This checks the printed examples in a Linux environment; it is not a student starter application or a sandbox for arbitrary hostile code.
 
 The last command extracts the actual Lecture 8 Compose YAML, asks Docker's parser to resolve it, and checks its three-service topology, default offline model, loopback publications, service URLs, health ordering, and data-volume declaration. It starts no services and prints no resolved environment values. Configuration validity is not a successful integration run: your own product still needs `docker compose up --build --wait`, its user flow, outage handling, and persistence checks from Lectures 8–10. Never run `down -v` against data you need to retain.
 

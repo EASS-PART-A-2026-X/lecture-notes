@@ -6,6 +6,8 @@
 
 **Use as a bridge, not a second textbook.** The course assumes basic Python. If a readiness question exposes a gap, use the relevant section, try a small example, and return to the lecture. The target is a system you can explain and debug.
 
+Use the [visual system walkthrough](system-walkthrough.md) to connect service boundaries, validation, database commits, deadlines, and failure recovery to one user journey.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 

@@ -6,7 +6,7 @@ ENV UV_CACHE_DIR=/opt/uv-cache \
     PYDANTIC_AI_NO_BANNER=1
 WORKDIR /course
 COPY .github/scripts/check_examples.py .github/scripts/check_examples.py.lock .github/scripts/
-COPY lectures/02-http-fastapi-pydantic.md lectures/06-pydantic-ai-agents.md lectures/
+COPY lectures/02-http-fastapi-pydantic.md lectures/03-persistence-and-first-pr.md lectures/06-pydantic-ai-agents.md lectures/
 # Prepare pinned dependencies while networking is available; fail on broken text.
 RUN uv run --locked .github/scripts/check_examples.py
 RUN useradd --create-home --uid 10001 verifier \

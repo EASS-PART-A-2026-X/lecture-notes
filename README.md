@@ -27,6 +27,8 @@ For how models run and how agents execute tools, use [Local inference and transf
 
 Read [Engineering contracts](guides/engineering-contracts.md) to connect manifests, skills, factories, and evaluations to your Docker/Compose workflow. It compares current practitioner guidance and gives concrete checks without adding a platform requirement.
 
+The [visual system walkthrough](guides/system-walkthrough.md) follows one request through containers, contracts, database commits, and recovery. Use it alongside Lectures 3 and 7–10.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.
