@@ -2,13 +2,13 @@
 # requires-python = ">=3.14,<3.15"
 # dependencies = ["fastapi[standard]", "httpx2", "pydantic-ai-slim", "pytest", "ruff", "sqlmodel"]
 # ///
-"""Execute the complete Lectures 2, 3, and 6 examples directly from the teaching text.
+"""Execute the complete Lectures 2, 3, and 6 examples and Lecture 9 clinic directly from the teaching text.
 
 uv run --locked .github/scripts/check_examples.py
 
 Temporary projects contain copied snippets, never a second maintained example.
-These checks cover three complete checkpoints, not all later lecture excerpts,
-real-model quality, Docker networking, or a browser flow.
+These checks cover three complete checkpoints and a standalone grader clinic,
+not all later lecture excerpts, real-model quality, Docker networking, or a browser flow.
 """
 
 import os
@@ -148,7 +148,12 @@ def main() -> None:
             flush=True,
         )
         check(ai, 6)
-    print("PASS: 28 executable lecture checks, lint, and formatting", flush=True)
+        clinic = root / "lecture-09"
+        snippets = blocks("lectures/09-failures-evals-costs.md")
+        write(clinic, "test_eval_clinic.py", take(snippets, "# eval_clinic.py"))
+        print("Lecture 9: six offline grader and slice-gate checks", flush=True)
+        check(clinic, 6)
+    print("PASS: 34 executable lecture checks, lint, and formatting", flush=True)
 
 
 if __name__ == "__main__":

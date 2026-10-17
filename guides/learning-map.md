@@ -19,7 +19,9 @@ Use the [visual system walkthrough](system-walkthrough.md) to connect service bo
 - [A repeatable study cycle](#a-repeatable-study-cycle)
 - [Engineering studio and review criteria](#engineering-studio-and-review-criteria)
 - [Verified reference checkpoints](#verified-reference-checkpoints)
+- [Choose the smallest useful AI system](#choose-the-smallest-useful-ai-system)
 - [Teaching references](#teaching-references)
+- [Turn a conference idea into evidence](#turn-a-conference-idea-into-evidence)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
 - [Instructor pacing and readiness review](#instructor-pacing-and-readiness-review)
@@ -108,11 +110,12 @@ These are feedback criteria, not replacement marks. A student should be able to 
 
 ## Verified reference checkpoints
 
-The course repository automatically executes three complete reference checkpoints on every pull request and publication:
+The course repository automatically executes three complete reference checkpoints and a standalone evaluation clinic on every pull request and publication:
 
 - **Lecture 2:** the ten API tests covering CRUD, rejected input, pagination, partial updates, and test isolation.
 - **Lecture 3:** the unchanged API tests plus file-backed restart and idempotent-seed checks.
 - **Lecture 6:** six deterministic agent tests covering the endpoint, validation retry, structured output, and domain tools. Real model requests are disabled by the test fixture.
+- **Lecture 9:** six standard-library checks of the [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score), including grader counterexamples, misleading averages, and missing critical cases.
 
 The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read.
 
@@ -122,9 +125,25 @@ If you have cloned **this course-notes repository**, you can run its checks from
 uv run --locked .github/scripts/check_examples.py
 ```
 
-The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, and six agent tests pass, followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
+The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, six agent tests, and six grader/gate checks pass (34 total), followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
 
 These checks establish that those three complete examples work with the recorded dependencies. They do not prove every later excerpt is a standalone program, a real model extracts accurately, or a browser/deployment works. Later lectures deliberately ask you to extend earlier files; use their completion checks and failure drills. When reporting a problem, include the lecture link, dependency versions, exact command, and redacted error.
+
+## Choose the smallest useful AI system
+
+There are several valid designs. State the user problem first, then choose a mechanism and a check. The required course project keeps its existing bounded AI feature and three-service architecture; the alternatives below are design literacy and optional extensions.
+
+| Your problem | A useful starting point | What to verify before adding complexity |
+|---|---|---|
+| Rules and fields are fully known | Ordinary Python and schema validation | Boundary cases and rejected inputs; a model may be unnecessary |
+| The steps are known but text is messy | Fixed workflow with one structured model call | Field accuracy, abstention/error path, latency and budget |
+| Answers need changing or private documents | Retrieval plus cited evidence | Retrieval recall, source freshness, access filtering **before** retrieval, and whether claims follow the source |
+| The next action depends on intermediate results | One bounded agent with narrow tools | Allowed/denied actions, stop conditions, failures and final state |
+| A single agent lacks a genuinely separate capability/context | Compare a specialist handoff with the single-agent baseline | Same tasks/budget; coordination errors, duplicated work and integration ownership |
+| Repeated failures remain after fixing context/tools | Compare prompt optimization; consider training only with suitable data/resources | Separate development/check data, provenance, gains by slice, and operational cost |
+| Remote inference is unavailable or unsuitable | Offline fake for control tests; optionally a local model for quality experiments | Hardware fit, license, structured output/tool support and task quality—not just tokens/second |
+
+A framework packages choices; it does not decide the product contract. Learn the request/tool/state loop in [Lecture 6](../lectures/06-pydantic-ai-agents.md), compare [agent frameworks and harnesses](agent-driven-development.md), then measure one change in [Lecture 9's evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score). Do not introduce an orchestrator, vector database, queue, Kubernetes cluster, or second model merely to fill a technology checklist.
 
 ## Teaching references
 
@@ -132,7 +151,33 @@ Reviewed **17 October 2026**. MIT's current public [6.102 Software Construction 
 
 Stanford's [CS146S: The Modern Software Developer, Fall 2026](https://themodernsoftware.dev/) describes specification-driven work, agent context and tools, iterative evaluation, and software factories. Those themes inform this course's bounded coding-agent workflow and factory lab. Here, students apply them to the same undergraduate Python product rather than adding a second framework or project.
 
-The studio exercises and review criteria on this page are original adaptations for this course. Use the linked courses as further reading; this course retains its own prerequisites, assignments, calendar, and assessment policy.
+MIT's [6.S950 Agency with AI, Fall 2026](https://agencyai.mit.edu/) adds delegation judgment, context/harness design, evaluation, and auditing artifacts and judges. We use those **published syllabus themes** to motivate the grader clinic. As of this review, its evaluation/auditing pages announce slides for [17 November](https://agencyai.mit.edu/w9/) and [24 November](https://agencyai.mit.edu/w10/); those future slides were not reviewed. The course has ML and algorithms prerequisites, so its full research-project scope is not assumed here.
+
+Stanford's [CS329Z Engineering AI Agents, Fall 2026](https://cs329z.stanford.edu/) organizes agent engineering around decomposition, data, and evaluation. Its [project guidance](https://cs329z.stanford.edu/project.html) calls for baselines, reproducible environments and failure analysis beyond a successful demo. This informs our small experiment record, slice analysis and grader counterexamples. Its NLP background and research-report requirements do not become prerequisites or new assessment requirements for this course.
+
+The studio exercises, synthetic data, code, decision table, and review criteria here are original teaching material. The linked syllabi provide inspiration and further reading; this course retains its own prerequisites, assignments, calendar, and assessment policy. No MIT/Stanford affiliation or equivalence is implied.
+
+## Turn a conference idea into evidence
+
+**Source snapshot: 17 October 2026.** Conference programs are useful maps of practitioners' concerns. A session title or abstract is not independent evidence that a technique improves your product. The references here were checked as official programs/abstracts; this review does not claim to have watched every recording or reproduced a speaker's results.
+
+| Official source | Relevant published topics | A bounded course experiment |
+|---|---|---|
+| [AI Engineer World's Fair 2026](https://ai.engineer/worldsfair/2026), 29 June–2 July | Software factories, harnesses, context, evaluations, local AI, inference, sandboxes; listed recordings include production evals and tool selection | Compare focused context/tool exposure with the same agent's broader catalog on the same cases; keep denied-action checks in the tool runner |
+| [USENIX SREcon26 Americas: The Ironies of AI²](https://www.usenix.org/conference/srecon26americas/presentation/reed), 25 March | Interaction between automation, AI and operators during incidents | Rehearse an AI-service outage: separate observed evidence from an assistant's hypothesis, keep the human release owner, and verify recovery |
+
+Choose **one** optional experiment after the core product works. Use the [factory lab](software-factory-lab.md) for delivery evidence, [local inference](local-inference.md) for serving tradeoffs, [sandboxes](agent-sandboxes.md) for enforced permissions, or the [system walkthrough](system-walkthrough.md) for a service-failure rehearsal. You do not need a conference ticket or commercial tool subscription.
+
+Keep a six-line research note:
+
+1. **Source and status:** primary URL, author/date, and whether you read a syllabus, abstract, paper, docs, or watched a recording. Mark planned material as planned.
+2. **Claim:** one precise behavior, with the environment and limitations in which it is supposed to hold.
+3. **Hypothesis:** what should improve in your product, compared with what simpler baseline?
+4. **Experiment:** fixed case IDs, component changed, permissions, budget, and a check that could disprove the claim.
+5. **Observed result:** counts by slice plus failures, latency/usage where relevant; distinguish measured, simulated, and untested claims.
+6. **Decision:** adopt, revise, or reject, with a remaining limitation and the exact revision.
+
+For example, “a smaller tool catalog helps” becomes a comparison of task completion, wrong-tool attempts and usage on the same scenarios. Removing a tool the task actually needs may reduce success. A faster run with the wrong final state is a failure. For the outage rehearsal, an agent's plausible explanation is a hypothesis until a health probe, trace, or controlled reproduction supports it. Read-only investigation and permission to restart or deploy are separate authorities.
 
 ## When you are behind
 

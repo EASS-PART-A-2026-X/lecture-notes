@@ -123,7 +123,7 @@ Use two model settings you already have access to, or two instructor-provided ou
 5. Test the proposed change or score the extraction. Inspect surprising outcomes yourself; the assistant should not be the sole judge of its own answer.
 6. Choose the smallest/fastest option that meets the task's quality and access constraints, or explain why neither is suitable.
 
-Report observations about this task and these cases. A few classroom runs do not establish a universal model ranking. Keep a held-out case so repeatedly rewriting a prompt does not merely memorize the development examples. Lecture 9 expands this into the required evaluation dataset.
+Report observations about this task and these cases. A few classroom runs do not establish a universal model ranking. Keep a held-out case so repeatedly rewriting a prompt does not merely memorize the development examples. Lecture 9 expands this into the required evaluation dataset. Its optional [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) shows why a higher average can hide a critical regression and how to test a grader without a model.
 
 ## Use AI to learn
 
