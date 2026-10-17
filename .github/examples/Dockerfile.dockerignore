@@ -1,4 +1,4 @@
-# This verification image needs only the checker, lock, and four printed chapters.
+# This verification image needs only the checker, lock, four printed chapters, and one studio guide.
 **
 !.github/
 !.github/scripts/
@@ -9,3 +9,5 @@
 !lectures/06-pydantic-ai-agents.md
 !lectures/03-persistence-and-first-pr.md
 !lectures/09-failures-evals-costs.md
+!guides/
+!guides/industry-studio.md

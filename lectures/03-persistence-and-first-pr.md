@@ -39,6 +39,8 @@ Restart your Lecture 2 API and every record is gone. Today you give it a real me
 
 **Visual review:** [One request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.
 
+**Professional practice:** [Explore authorization and concurrent edits at the storage boundary](../guides/industry-studio.md#lab-private-records-and-concurrent-edits) in the industry studio. This optional activity deepens the current checkpoint without changing the assignment.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

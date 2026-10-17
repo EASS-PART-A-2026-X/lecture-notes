@@ -8,6 +8,8 @@
 
 For the practical connection between configuration, skills, and delivery evidence, use [Engineering contracts: manifests, skills, factories, and evaluations](engineering-contracts.md). It includes Docker reference checks, Compose validation, and a skill-comparison exercise.
 
+Use the [industry engineering studio](industry-studio.md) to practice repository reading, acceptance criteria, code review, record authorization, concurrency, migration and operational judgment. It maps these skills to the existing classes and offers an optional tested database lab.
+
 Use the [visual system walkthrough](system-walkthrough.md) to connect service boundaries, validation, database commits, deadlines, and failure recovery to one user journey.
 
 <details markdown="1" class="lecture-toc">
@@ -110,12 +112,13 @@ These are feedback criteria, not replacement marks. A student should be able to 
 
 ## Verified reference checkpoints
 
-The course repository automatically executes three complete reference checkpoints and a standalone evaluation clinic on every pull request and publication:
+The course repository automatically executes three complete reference checkpoints and two standalone labs on every pull request and publication:
 
 - **Lecture 2:** the ten API tests covering CRUD, rejected input, pagination, partial updates, and test isolation.
 - **Lecture 3:** the unchanged API tests plus file-backed restart and idempotent-seed checks.
 - **Lecture 6:** six deterministic agent tests covering the endpoint, validation retry, structured output, and domain tools. Real model requests are disabled by the test fixture.
 - **Lecture 9:** six standard-library checks of the [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score), including grader counterexamples, misleading averages, and missing critical cases.
+- **Industry studio:** ten SQLite checks, including denied access, stale writes, inert SQL-looking input, and two concurrent writers on separate connections. This is an optional storage lab, not a new complete HTTP application.
 
 The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read.
 
@@ -125,7 +128,7 @@ If you have cloned **this course-notes repository**, you can run its checks from
 uv run --locked .github/scripts/check_examples.py
 ```
 
-The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, six agent tests, and six grader/gate checks pass (34 total), followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
+The first run downloads the pinned Python dependencies. Expected: ten API tests, twelve persistence tests, six agent tests, six grader/gate checks, and ten industry-studio checks pass (44 total), followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
 
 These checks establish that those three complete examples work with the recorded dependencies. They do not prove every later excerpt is a standalone program, a real model extracts accurately, or a browser/deployment works. Later lectures deliberately ask you to extend earlier files; use their completion checks and failure drills. When reporting a problem, include the lecture link, dependency versions, exact command, and redacted error.
 

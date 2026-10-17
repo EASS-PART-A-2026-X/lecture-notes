@@ -36,6 +36,8 @@ Turn last week's `/health` skeleton into a real API: create, list, read, update 
 - Your product sketch's **data sketch**: it becomes today's Pydantic model.
 - Your open-source shortlist.
 
+**Professional practice:** [Specify acceptance criteria and review one small change](../guides/industry-studio.md#specify-and-review-a-small-change) in the industry studio. This optional activity deepens the current checkpoint without changing the assignment.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
