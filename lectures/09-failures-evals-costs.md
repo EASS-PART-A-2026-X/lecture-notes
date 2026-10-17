@@ -13,6 +13,7 @@
 - [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
+- [Evaluation clinic: audit the score](#evaluation-clinic-audit-the-score)
 - [Hands-on lab](#hands-on-lab)
 - [Break it on purpose](#break-it-on-purpose)
 - [Open-source track](#open-source-track)
@@ -558,6 +559,130 @@ Run `uv run python -m evals.run_evals` in `ai-service/`. With `AI_MODEL` unset, 
 ```
 
 The marks are IsInstance, TitleMatches, MinutesClose and ServingsMatch, in that order; ✔ means passed and ✗ means failed. Read one failure aloud: with no colon in the chatty text, the baseline's title is a whole sentence. `tests/test_evals.py` (2 tests) keeps the harness working in CI: `12 passed`.
+
+## Evaluation clinic: audit the score
+
+**Optional 25-minute studio, no model or API key needed.** Use this before trusting your first results table. It strengthens the existing evaluation exercise; it adds no graded deliverable. A green harness establishes that measurement runs, not that the measurement represents useful behavior.
+
+### Define the experiment before changing the agent
+
+Write one sentence for each item. For Recipe Box: extract a recipe from supplied text; use a fixed tool catalog and synthetic ingredients; stop at a validated result or the existing request/time budget; score expected fields **and** forbidden tool actions separately. A fluent answer cannot cancel an unauthorized action.
+
+| Record | What a classmate needs to reproduce it |
+|---|---|
+| Task and environment | Request, tool responses, starting state, allowed actions, stopping budget |
+| Data provenance | Who wrote/checked the expected answer, source or synthetic origin, permission to use it; no personal data |
+| Split and slices | Development cases versus untouched check cases; ordinary, ambiguous, missing-field, injection examples |
+| Comparison | Same case IDs, environment, grader version, budgets and retry policy for baseline and candidate |
+| Result | Passed/total for each slice, failures/timeouts included, attempts, usage, latency, date and exact revision/model settings |
+
+Keep the current 8–10 cases small and understandable. Set aside a few cases before tuning; do not put their answers in agent instructions. Once inspected and used to repair the agent, they become development/regression cases: write fresh unseen checks for the next comparison. Synthetic paraphrases of the same recipe are related examples, not independent evidence of generalization. Tiny slices expose problems but provide uncertain estimates; `1/1` is not proof of universal safety.
+
+### A higher average can hide a worse system
+
+These are **invented classroom outcomes**, not results from a model, vendor, or conference. Seven ordinary cases and one injection case are evaluated once per candidate:
+
+| Slice | Baseline | Candidate | What happened? |
+|---|---|---|---|
+| Ordinary extraction | 5/7 (71.4%) | 7/7 (100%) | Two ordinary failures repaired |
+| Injection: prohibited action avoided | 1/1 (100%) | 0/1 (0%) | A critical boundary regressed |
+| All cases | 6/8 (75%) | 7/8 (87.5%) | The aggregate hides the regression |
+
+Decide the gate **before** seeing the candidate. In this exercise, no observed injection failure is acceptable and aggregate quality must not fall. That blocks this candidate. It is a classroom policy for these cases, not a claim of certified security. In your product, enforce permissions outside the model and test denials too; an output-only grader cannot see a tool action unless the harness records it.
+
+### Run and challenge a tiny grader
+
+Save this complete file as `eval_clinic.py` in a scratch folder. Run `python3 eval_clinic.py` (Python 3.10 or newer). It uses only the standard library; Docker and Compose are unnecessary for this in-process arithmetic/grader check. The course CI also executes this exact printed file in its restricted Linux verification image.
+
+```python
+# eval_clinic.py
+import unittest
+
+
+def grade(expected, actual):
+    # A deliberately narrow extraction rubric, not a general semantic judge.
+    if not isinstance(actual, dict):
+        return False
+    title, minutes = actual.get("title"), actual.get("minutes")
+    return (
+        isinstance(title, str)
+        and title.strip().casefold() == expected["title"].strip().casefold()
+        and type(minutes) is int  # bool is an int subclass; reject it explicitly
+        and 1 <= minutes <= 1440
+        and abs(minutes - expected["minutes"]) <= 2
+    )
+
+
+def counts(rows):
+    # Rows are (slice, observed pass/fail), not model-generated self-ratings.
+    return sum(passed for _, passed in rows), len(rows)
+
+
+def gate(rows, baseline):
+    critical = [passed for name, passed in rows if name == "injection"]
+    return (
+        bool(rows)
+        and bool(baseline)
+        and bool(critical)  # absence of a critical slice cannot mean safety
+        and all(critical)
+        and counts(rows)[0] / len(rows) >= counts(baseline)[0] / len(baseline)
+    )
+
+
+BASELINE = [("ordinary", True)] * 5 + [
+    ("ordinary", False),
+    ("ordinary", False),
+    ("injection", True),
+]
+CANDIDATE = [("ordinary", True)] * 7 + [("injection", False)]
+EXPECTED = {"title": "Hummus", "minutes": 10}
+
+
+class GraderChecks(unittest.TestCase):
+    def test_accepts_normalization_and_tolerance_boundary(self):
+        self.assertTrue(grade(EXPECTED, {"title": " hummus ", "minutes": 12}))
+
+    def test_rejects_outside_tolerance(self):
+        self.assertFalse(grade(EXPECTED, {"title": "Hummus", "minutes": 13}))
+
+    def test_rejects_wrong_title_despite_valid_shape(self):
+        wrong = {"title": "Soup", "minutes": 10}
+        self.assertTrue(bool(wrong))  # this weak grader would accept nonsense
+        self.assertFalse(grade(EXPECTED, wrong))
+
+    def test_rejects_missing_output_and_bool_minutes(self):
+        for actual in (None, {}, {"title": "Hummus", "minutes": True}):
+            with self.subTest(actual=actual):
+                self.assertFalse(grade(EXPECTED, actual))
+
+    def test_higher_average_does_not_override_critical_failure(self):
+        self.assertEqual(counts(BASELINE), (6, 8))
+        self.assertEqual(counts(CANDIDATE), (7, 8))
+        self.assertTrue(gate(BASELINE, BASELINE))
+        self.assertFalse(gate(CANDIDATE, BASELINE))
+
+    def test_missing_critical_slice_or_empty_run_blocks(self):
+        self.assertFalse(gate([], BASELINE))
+        self.assertFalse(gate([("ordinary", True)], BASELINE))
+        self.assertFalse(gate(BASELINE, []))
+
+
+if __name__ == "__main__":
+    print("Synthetic baseline: 6/8; candidate: 7/8; candidate gate: BLOCK")
+    unittest.main()
+```
+
+Expected: the printed synthetic comparison and **6 tests pass**. The tests detect mistakes in the rubric and gate; they do not run an agent or measure real-model quality. The tolerance, title normalization, and minute range are explicit choices for this miniature rubric. Adapt them to your contract rather than treating them as universal rules. The gate assumes both runs already contain the same curated case IDs and slice assignments; validate that alignment in a real runner and keep raw per-case evidence.
+
+**Now challenge it:** temporarily replace the body of `grade` with `return bool(actual)`. The wrong-title and missing/bool tests must fail. Restore the grader. Ask what a grader that only checks valid JSON would miss: wrong facts, missing ingredients, or forbidden tool use. For subjective quality, independently label a small sample with a written rubric and inspect disagreements before trusting an LLM judge. Keep judge model/prompt/version, and test swapped answer order if using pairwise judgments. Never let the system being assessed supply its own authoritative expected answers.
+
+### Close the loop on one failure
+
+Spend five minutes reading a redacted trace, five labeling the cause, ten changing one component and rerunning the **same** cases, and five explaining the tradeoff. Distinguish retrieval/context failure, tool/schema failure, model reasoning/output failure, and a faulty expected answer or grader. Repair the responsible component; switching the model is one hypothesis, not the default diagnosis.
+
+For nondeterministic runs, record every attempt, including failures and timeouts; state the repeat count and total budget. “At least one success in three tries” and “all three tries succeed” answer different questions. Do not silently keep the best answer or compare one candidate's three attempts with another's single attempt. Report latency and usage alongside quality; do not infer production reliability from a few classroom samples.
+
+The one-paragraph result note can say: **hypothesis → fixed setup/cases → baseline versus candidate by slice → one inspected failure → decision and limitation**. This provides useful evidence even when the candidate is rejected or a paid model is unavailable.
 
 ## Hands-on lab
 
