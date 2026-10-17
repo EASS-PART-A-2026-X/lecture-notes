@@ -25,6 +25,8 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 For how models run and how agents execute tools, use [Local inference and transformers](guides/local-inference.md) and [Agent sandboxes](guides/agent-sandboxes.md). The guides connect to Lectures 6, 8, 9, and 10; hardware-intensive experiments remain optional.
 
+Read [Engineering contracts](guides/engineering-contracts.md) to connect manifests, skills, factories, and evaluations to your Docker/Compose workflow. It compares current practitioner guidance and gives concrete checks without adding a platform requirement.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.

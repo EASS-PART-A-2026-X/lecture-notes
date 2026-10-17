@@ -38,6 +38,8 @@ Until today, "it works" meant "on my laptop". Now a robot checks every push, a s
 
 **Execution and release:** [Agent sandboxes](../guides/agent-sandboxes.md#review-and-release) separates disposable candidate execution, trusted verification, and release credentials. Container resource limits and agent budgets do not replace authorization.
 
+**Engineering practice:** [Manifests, skills, factories, and evaluations](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

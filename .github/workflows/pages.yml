@@ -49,6 +49,14 @@ jobs:
       - name: Execute complete lecture examples
         run: uv run --locked .github/scripts/check_examples.py
 
+      - name: Validate the printed Compose manifest
+        run: python3 .github/scripts/check_compose.py
+
+      - name: Run printed examples in a restricted Linux container
+        run: |
+          docker build -f .github/examples/Dockerfile -t eass-course-checkpoints:ci .
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges --memory 1g --cpus 2 --pids-limit 128 eass-course-checkpoints:ci
+
       - name: Install Chromium for Playwright
         run: uv run .github/scripts/build_pdf.py install
 
