@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,6 +36,18 @@ Restart your Lecture 2 API and every record is gone. Today you give it a real me
 - Your Lecture 2 open-source issue or doc gap, plus any maintainer replies.
 - Docker Desktop running: `docker run --rm hello-world` prints a greeting ([Lecture 1](01-environment-git-docker-ai.md)). On Windows, work inside WSL2 (Ubuntu).
 - In `backend/`: `uv add sqlmodel`.
+
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Trace one request through its session to a committed row, and explain what survives a restart.
+- Change persistence while preserving the API contract and its existing tests.
+- Distinguish an idempotent seed, a schema migration, a persistent volume, and a backup.
+
+**Predict first:** Why can a response look correct after flush() yet fail the restart test without commit()?
+
+**Bridge if needed:** [State and transactions](../guides/engineering-foundations.md#state-transactions-and-ownership). These questions are formative practice; the existing completion check and assignment requirements remain the target.
 
 ## Concepts
 
@@ -329,10 +342,10 @@ Build, run with a named volume, add a recipe, delete the container, run a new on
 
 ```bash
 docker build -t recipe-box-backend .
-docker run -d --name backend -p 8000:8000 -v backend-data:/app/data recipe-box-backend
+docker run -d --name backend -p 127.0.0.1:8000:8000 -v backend-data:/app/data recipe-box-backend
 curl -s --json '{"title": "Falafel", "minutes": 60}' localhost:8000/recipes
 docker rm -f backend
-docker run -d --name backend -p 8000:8000 -v backend-data:/app/data recipe-box-backend
+docker run -d --name backend -p 127.0.0.1:8000:8000 -v backend-data:/app/data recipe-box-backend
 curl -s localhost:8000/recipes
 docker exec backend id
 ```
@@ -420,7 +433,7 @@ uv run ruff check .
 uv run ruff format --check .
 docker build -t recipe-box-backend .
 docker rm -f backend
-docker run -d --name backend -p 8000:8000 -v backend-data:/app/data recipe-box-backend
+docker run -d --name backend -p 127.0.0.1:8000:8000 -v backend-data:/app/data recipe-box-backend
 curl -s localhost:8000/health
 ```
 
@@ -487,8 +500,8 @@ Optional, once the required path works.
 - `ResourceWarning: unclosed database` (an error under `filterwarnings`) → an engine was never disposed → `engine.dispose()` in teardown and lifespan.
 - A 500 on `PATCH {"title": null}` with `NOT NULL constraint failed: recipe.title` → `None` copied into a required column → dump with `exclude_none=True`.
 - Container exits with `unable to open database file` → user 10001 cannot write `/app/data`, for example a bind-mounted host folder or a volume that an older image filled as root → mount a fresh named volume (`-v backend-data:/app/data`); Docker copies the image folder's ownership into an empty volume.
-- A new field is missing from the table → `create_all` never alters tables → delete the local `data/app.db` or use Alembic.
-- `docker run` reports `address already in use` or `port is already allocated` → `fastapi dev` still holds 8000 → stop it or use `-p 8080:8000`.
+- A new field is missing from the table → `create_all` never alters tables → reset only a disposable demo database, or use Alembic. Preserve real data and test its backup/restore before migrating it.
+- `docker run` reports `address already in use` or `port is already allocated` → `fastapi dev` still holds 8000 → stop it or use `-p 127.0.0.1:8080:8000`.
 - `docker run` reports `Conflict. The container name "/backend" is already in use` → a container from an earlier run still exists → `docker rm -f backend`, then run again (a named volume keeps the data).
 - Build fails with "The lockfile at `uv.lock` needs to be updated, but `--locked` was provided" → `pyproject.toml` changed without relocking → `uv lock`, commit `uv.lock`.
 - A second, empty `app.db` appears elsewhere → the relative URL follows the working directory → start from `backend/`.

@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,6 +36,18 @@ Until today, "it works" meant "on my laptop". Now a robot checks every push, a s
 - The failure tests and evals from [Lecture 9](09-failures-evals-costs.md), green in all three services.
 - Your product on GitHub with `main` as the default branch, and `gh auth status` succeeding.
 
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Explain what the CI jobs check on which revision, and reproduce the documented clean-checkout path.
+- Identify the limits of network isolation, input validation, dependency pins, and a shared service token.
+- Show the runbook, release candidate, retained data, and a recovery plan appropriate to your product.
+
+**Predict first:** If an image tag moves or a database schema changes, is reverting a Git commit enough to reproduce or recover the previous system?
+
+**Bridge if needed:** [Release and data lifecycle](../guides/engineering-foundations.md#a-release-has-a-data-lifecycle). These questions are formative practice; the existing completion check and assignment requirements remain the target.
+
 ## Concepts
 
 ### CI: the same checks on every push
@@ -53,16 +66,18 @@ CI never calls a paid model: `AI_MODEL=test`, and Lecture 6's conftest guard `mo
 
 ### Reproducible means pinned
 
-The same commit should build the same thing next month. Pin every layer:
+Commit enough configuration to repeat the intended environment and explain remaining moving parts:
 
-| Layer | Pinned by |
+| Layer | Selected or pinned by |
 |---|---|
 | Python packages | `uv.lock`, enforced by `uv sync --locked` |
-| Python | `.python-version` and the `python:3.14-slim` base image |
+| Python | `.python-version` and the `python:3.14-slim` base image select the 3.14 line; patch/base-image contents can change |
 | uv itself | `uv:0.13.1` in each Dockerfile, `version: "0.13.1"` in CI |
 | CI actions | a full commit SHA, with the version as a comment |
 
 `--locked` fails when `uv.lock` no longer matches `pyproject.toml`; `--frozen` would quietly use the stale lock. A tag like `@v7` can be moved to new code by whoever controls the action's repository; a 40-character SHA cannot.
+
+An image tag such as `python:3.14-slim` can move too. Strict image identity requires a digest and a recorded platform; update that digest deliberately for security fixes. Lockfiles improve dependency reproducibility but do not freeze external APIs, remote models, or mutable image tags. The course examples track a Python minor line rather than claiming bit-for-bit builds forever.
 
 ### Least privilege, layer by layer
 
@@ -70,7 +85,7 @@ Give each part only what it needs, so a bug or a stolen token can do little:
 
 - **CI token:** `permissions: contents: read`, and `persist-credentials: false` so checkout does not leave the token in `.git/config` for later steps.
 - **Containers:** non-root uid 10001, `cap_drop: [ALL]` (no Linux capabilities) and `no-new-privileges` (no escalation through setuid programs).
-- **Network:** no `ports:` for the ai-service, so only the backend reaches it.
+- **Network:** no host-published port for the ai-service; network peers can still reach it. Use network policy and service authentication where the deployment requires them.
 - **Model:** usage limits and a timeout per request; no tool that writes, deletes or runs code.
 
 ### Secrets and the leaked-key procedure
@@ -88,6 +103,8 @@ GitHub's push protection blocks some recognized key formats when it is enabled. 
 
 Every input is untrusted. `extra="forbid"`, length limits and `limit` ≤ 100 reject unexpected data with 422; SQLModel sends values as bound parameters, never pasted into SQL; the agent treats pasted text as data. Recipe Box has no user accounts (JWT is not required), but a third service reachable by more than your backend deserves a check. **401** means "who are you?"; **403** means "I know you, and no".
 
+Authentication establishes identity; authorization checks whether that identity may perform this operation on this record. Neither schema validation nor CORS implements ownership checks. The shared token below authenticates a service, not a human user, and does not turn the classroom demo into a private multi-user deployment. Keep demonstrations on synthetic data; plan HTTPS and an appropriate identity/access design before exposing private records publicly.
+
 ```python
 # ai-service/app/security.py (optional shared secret between services)
 import os
@@ -102,13 +119,13 @@ def require_internal_token(
 ) -> None:
     expected = os.getenv("AI_SHARED_SECRET", "")
     if not expected:
-        return  # not configured: the compose network is the only boundary
+        return  # classroom mode: no service-token authentication is enforced
     sent = (x_internal_token or "").encode()
     if not secrets.compare_digest(sent, expected.encode()):  # constant time
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 ```
 
-Attach it with `@app.post("/extract", dependencies=[Depends(require_internal_token)])`. The backend sends the header by passing `headers={"X-Internal-Token": token} if token else {}` to its `httpx.Client`. Unset, the check is off, so a clean checkout still needs zero secrets. `compare_digest` takes as long for a wrong first character as for a wrong last one, so timing leaks nothing.
+Attach it with `@app.post("/extract", dependencies=[Depends(require_internal_token)])`. The backend sends the header by passing `headers={"X-Internal-Token": token} if token else {}` to its `httpx.Client`. Unset, the check is off, so a clean checkout still needs zero secrets. `compare_digest` avoids content-dependent short-circuit comparison; it does not eliminate every possible timing side channel or replace transport security.
 
 ```python
 # ai-service/tests/test_security.py
@@ -442,7 +459,7 @@ Suggested flow:
 6. Lab, with the security review in pairs.
 7. Release-candidate round: each student shows a green run and a tag, or names the blocker.
 
-Emphasize: pin everything, least privilege at every layer, rotate first. Students get stuck on stale `uv.lock` files, wrong smoke-test ports, uncommitted files and `gh auth`.
+Emphasize: distinguish exact pins from moving version lines, apply least privilege at every layer, rotate leaked keys first. Students get stuck on stale `uv.lock` files, wrong smoke-test ports, uncommitted files and `gh auth`.
 
 ## Read more
 

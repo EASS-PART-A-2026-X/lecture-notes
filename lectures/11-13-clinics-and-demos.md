@@ -22,6 +22,14 @@ No new material: you work on your own product and PRs; the instructor may reorde
 
 **Purpose (Monday 28 December 2026):** a stack that starts from a clean clone, and a written next step for every open upstream PR.
 
+### Learning checkpoint
+
+- Locate the first failing boundary using a small request, the relevant logs, and the expected contract.
+- Repair a reproduced integration problem and show the check that detects it.
+- Explain the next respectful action for each upstream review, with the student retaining authorship of maintainer-facing text.
+
+Use the [learning map's recovery path](../guides/learning-map.md#when-you-are-behind) when several symptoms share one prerequisite failure.
+
 ### What you bring
 
 - Your [Lecture 10](10-ci-security-release.md) release candidate, running.
@@ -59,6 +67,14 @@ Symptom: the app shows an error, or nothing
 ## Meeting 12 · Demo rehearsal, troubleshooting and evidence review
 
 **Purpose (Monday 4 January 2027):** demo from a fresh clone, survive one failure on purpose, and prove every merged PR.
+
+### Learning checkpoint
+
+- Follow the runbook from a clean checkout, rather than relying on an existing terminal or editor session.
+- Demonstrate a user flow, one controlled outage, and recovery while preserving the expected data.
+- Check the model/configuration used for the demonstration and explain the limits of the evaluation evidence.
+
+Use [engineering foundations](../guides/engineering-foundations.md#a-release-has-a-data-lifecycle) to distinguish a restart, reset, rollback, and restore. These are rehearsal questions, not additional submission requirements.
 
 ### What you bring
 
@@ -135,6 +151,14 @@ A PR passes when `state` is `MERGED` and `baseRefName` equals the `defaultBranch
 ## Meeting 13 · Final demos and individual technical discussion
 
 **Purpose (Monday 11 January 2027):** show it working and explain it in your own words.
+
+### Learning checkpoint
+
+- Trace a user action through your implementation and identify the state, tools, and checks involved.
+- Explain one failure, one design tradeoff, and one limitation without repeating an assistant's summary.
+- Show the existing assignment and contribution evidence, and distinguish merged, released, and deployed states.
+
+The [individual-understanding prompts](../guides/learning-map.md#individual-understanding) are practice for this discussion; grading remains as stated in the course guide.
 
 ### What you bring
 
@@ -271,9 +295,9 @@ For the instructor; students may practice with it. "Listen for" lists what a goo
 ### Docker Compose
 
 <details markdown="1">
-<summary>Q16. Why can the backend reach the ai-service by name when your laptop cannot reach it at all?</summary>
+<summary>Q16. Why does the backend use the ai-service name while localhost:8001 on your laptop fails?</summary>
 
-**Listen for:** `localhost` is the container itself; Compose DNS resolves service names; no `ports:`, so nothing bypasses the backend.
+**Listen for:** `localhost` is the container itself; Compose DNS resolves service names; the AI service has no host-published port. Other network peers can still reach it, so that setting is not caller authentication.
 
 </details>
 
@@ -343,6 +367,29 @@ For the instructor; students may practice with it. "Listen for" lists what a goo
 <summary>Q25. A review you disagreed with, or a PR that stalled: what did you do?</summary>
 
 **Listen for:** Answered with evidence, in their own words; for a stall: fixed CI, nudged once, started another contribution in parallel.
+
+</details>
+
+### AI tools, models, and engineering judgment
+
+<details markdown="1">
+<summary>Q26. Which assistant and model helped you, what could they access, and what did you verify?</summary>
+
+**Listen for:** The editor/chat/harness is distinguished from its model/provider and the product's `AI_MODEL`; relevant context and permissions are identified; actual commands, results, and the reviewed diff support the claims. A statement that the model “said it passed” is not execution evidence.
+
+</details>
+
+<details markdown="1">
+<summary>Q27. Why is your chosen model suitable for this task, and what evidence could change your choice?</summary>
+
+**Listen for:** Task-specific cases and capabilities, semantic quality, observed usage/latency where available, account access and cost limits; model/configuration/date recorded where exposed. A free or automatic model route is acceptable. Explain unknowns and avoid universal rankings from a few examples.
+
+</details>
+
+<details markdown="1">
+<summary>Q28. Your fake-model tests and schema checks pass. What remains uncertain?</summary>
+
+**Listen for:** Real-model quality, facts and domain meaning, unseen cases, real integration failures, and authorization can require different checks. A model's tool proposal is not authority to execute it. Point to the application's enforcement and a concrete evaluation or failure test.
 
 </details>
 

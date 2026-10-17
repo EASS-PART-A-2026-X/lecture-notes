@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,11 +36,25 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 - The backend AI client with explicit timeouts and the 503/502 mapping from [Lecture 7](07-third-service-contracts.md).
 - `TestModel`, `FunctionModel` and `models.ALLOW_MODEL_REQUESTS = False` from [Lecture 6](06-pydantic-ai-agents.md).
 
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Apply Recipe Box's selective retry policy without duplicating a saved record or multiplying unbounded work.
+- Distinguish deterministic control tests, baseline scores, real-model evaluations, and unseen cases.
+- Record the configuration, observed quality, usage, and failure behavior before and after one change.
+
+**Predict first:** Why can retrying stateless extraction be acceptable while retrying the surrounding create operation may duplicate a record?
+
+**Bridge if needed:** [Model comparison and held-out cases](../guides/models-and-ai-literacy.md#a-small-comparison-exercise). These questions are formative practice; the existing completion check and assignment requirements remain the target.
+
 ## Concepts
 
 ### Six ways the AI path fails
 
 "Paste a recipe" looks like one button, but it crosses three processes and a model:
+
+The table is **Recipe Box's contract and retry policy**, not a universal rule for every API. For example, another service's 429 can describe a rate limit with its own documented recovery behavior.
 
 | Failure | How it shows up | Backend retries? | User finally gets |
 |---|---|---|---|
@@ -62,7 +77,7 @@ Each layer retries what it owns. The agent retries the model; the backend retrie
 
 ### Is it safe to repeat?
 
-POST is not idempotent ([Lecture 2](02-http-fastapi-pydantic.md)), yet retrying `POST /extract` is safe: it stores nothing. The frontend must **not** retry `POST /recipes/from-text`: if the first attempt saved a recipe and only its answer was lost, a retry saves a duplicate.
+POST does not guarantee idempotency ([Lecture 2](02-http-fastapi-pydantic.md)). Retrying this `POST /extract` does not duplicate a saved record because it stores nothing, although it can repeat model work and cost. The frontend must **not** retry `POST /recipes/from-text`: if the first attempt saved a recipe and only its answer was lost, a retry saves a duplicate.
 
 ### Timeout budgets, outside in
 
@@ -86,6 +101,8 @@ Worst case for one click: a spent budget stops at 5 requests, because 429 is nev
 ### Task evaluations
 
 A unit test asks "does my code handle this output?" with a fake model. An **evaluation** asks "how good is the model at my task?" with realistic inputs and expected results. In Pydantic Evals, a `Dataset` holds `Case`s and small `Evaluator`s return a bool (an assertion) or a float (a score). Start with a **baseline**, a naive regex parser behind `FunctionModel`: offline, free, and the number a real model must beat.
+
+Keep a few cases out of prompt development and use them to check the final change. Record the actual model/provider, date, relevant settings, and available usage/latency measurements; automatic routing may hide the exact model, which you should report as unknown. A tiny dataset supports a bounded comparison, not a universal model ranking. See the [comparison exercise](../guides/models-and-ai-literacy.md#a-small-comparison-exercise).
 
 ## Live demo
 

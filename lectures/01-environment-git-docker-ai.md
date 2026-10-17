@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,6 +36,20 @@ Today you build the workbench for the whole semester: a tiny FastAPI app on your
 - **Windows:** use WSL2 (Ubuntu). Every command on these pages runs *inside* Ubuntu, not PowerShell.
 - **The night before:** run the version commands from demo step 1. If one fails, ask for help with the [PARD template](#asking-for-help-the-pard-template).
 
+Need installation steps or an assistant choice? Start with [Student setup](../guides/student-setup.md). It covers Cursor, GitHub Copilot, Codex, ChatGPT, Gemini, OpenCode/Z.ai, and a manual fallback. Choose one route; your editor and model do not change the course requirements.
+
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Identify the working directory, uv project, running server, and Git branch before changing code.
+- Explain image versus container, host versus container port, and commit versus push versus merge.
+- Give an assistant one bounded task, inspect its diff, and demonstrate the actual result.
+
+**Predict first:** If an editor says a file was saved but the server still shows old behavior, which directory and process would you inspect first?
+
+**Bridge if needed:** [Student setup](../guides/student-setup.md). These questions are formative practice; the existing completion check and assignment requirements remain the target.
+
 ## Concepts
 
 ### Your toolchain
@@ -45,7 +60,7 @@ Today you build the workbench for the whole semester: a tiny FastAPI app on your
 | uv | Installs Python, manages environments and dependencies | `uv --version` |
 | Git and gh | Version history; the GitHub CLI for repos and PRs | `gh --version` |
 | Docker and Compose v2 | Runs software in isolated containers | `docker compose version` |
-| Editor | VS Code or any editor with Python support | `code --version` |
+| Editor | VS Code, Cursor, or any editor with Python support | Open the product folder and its terminal; `code --version` is optional |
 
 ### uv: one tool for Python and dependencies
 
@@ -65,6 +80,8 @@ A **commit** is a snapshot plus a message saying why. A **branch** is a movable 
 - An **image** is a frozen filesystem plus a default command, such as "Debian + Python 3.14". Think of it as a class.
 - A **container** is a running instance of an image, like an object. It is a process with its own filesystem and network. Deleting it leaves the image untouched.
 - **Port mapping** `-p 8080:8000` forwards *host* port 8080 to *container* port 8000. It works like a phone extension: callers dial the building (8080), and reception forwards them to extension 8000.
+
+For a local-only demo, `-p 127.0.0.1:8080:8000` also selects the host interface. The runnable examples use loopback so the demo is not intentionally published to other machines on your network. The two-field form normally binds all host interfaces.
 
 ```text
 your laptop                                  container
@@ -213,11 +230,11 @@ gh pr merge --squash --delete-branch
 ```bash
 docker run --rm hello-world
 docker run --rm python:3.14-slim python -c "import sys; print(sys.version)"
-docker run -d --rm --name hello -p 8080:8000 python:3.14-slim python -m http.server 8000
+docker run -d --rm --name hello -p 127.0.0.1:8080:8000 python:3.14-slim python -m http.server 8000
 docker stop hello
 ```
 
-Line 2 prints `3.14.8 …` even without Python 3.14 on your laptop. While `hello` runs, <http://localhost:8080> shows a directory listing served from inside the container, and `docker ps` lists it; `docker stop` plus `--rm` deletes it. Pin `python:3.14-slim`: `python:3-slim` now means Python 3.15.
+Line 2 prints a `3.14.x` version even without Python 3.14 on your laptop. While `hello` runs, <http://localhost:8080> shows a directory listing served from inside the container, and `docker ps` lists it; `docker stop` plus `--rm` deletes it. Select the `python:3.14-slim` line: `python:3-slim` now means Python 3.15. Tags can receive updates; Lecture 10 explains exact image digests.
 
 **5. Check an open-source candidate.** FastAPI is used only to show the commands; it is not a recommendation.
 

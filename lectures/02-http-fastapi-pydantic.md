@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -35,11 +36,23 @@ Turn last week's `/health` skeleton into a real API: create, list, read, update 
 - Your product sketch's **data sketch**: it becomes today's Pydantic model.
 - Your open-source shortlist.
 
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Read a request's method, path, headers, and JSON body; predict its status and response shape.
+- Explain Create, Update, and Public models, including absent fields versus explicit null values.
+- Write an isolated test that checks behavior and fails when the protected rule is broken.
+
+**Predict first:** Why can deleting a missing record return 404 while DELETE remains idempotent?
+
+**Bridge if needed:** [HTTP and contracts](../guides/engineering-foundations.md#http-json-and-contracts). These questions are formative practice; the existing completion check and assignment requirements remain the target.
+
 ## Concepts
 
 ### HTTP: one request, one response
 
-The **client** (curl, a browser, later your frontend) asks, and the **server** (your FastAPI app) answers, like a kitchen that cooks only when an order arrives. HTTP is **stateless**: every request carries everything the server needs.
+The **client** (curl, a browser, later your frontend) asks, and the **server** (your FastAPI app) answers, like a kitchen that cooks only when an order arrives. HTTP is **stateless** at the protocol level: a request identifies the operation without requiring an ongoing conversation. Application code can still read database records or authenticated session state.
 
 ```http
 POST /recipes HTTP/1.1
@@ -70,7 +83,7 @@ Paths name **things** (`/recipes/42`); methods say what to do with them. `POST /
 | `PATCH /recipes/{recipe_id}` | Change only the fields sent | 200, or 404 | Yes, in this API |
 | `DELETE /recipes/{recipe_id}` | Delete one | 204, or 404 | Yes |
 
-**Idempotent** means doing it twice leaves the same end state as doing it once, like `f(x) = |x|`. `POST` behaves like `f(x) = x + 1`: two POSTs create two recipes. **Safe** means nothing changes at all, as with `GET`. `DELETE` is idempotent but not safe.
+**Idempotent** means repeating a request has the same intended effect as performing it once, like `f(x) = |x|`; responses need not be identical. This API's create `POST` behaves like `f(x) = x + 1`: two POSTs create two recipes. **Safe** means the client is not requesting a business-state change, as with `GET`; the server may still log the request. `DELETE` is idempotent but not safe. These distinctions follow [HTTP semantics](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2).
 
 ### Status codes you must own
 

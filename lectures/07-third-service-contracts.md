@@ -10,6 +10,7 @@
 
 - [Mission](#mission)
 - [Before you start](#before-you-start)
+- [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
 - [Live demo](#live-demo)
 - [Hands-on lab](#hands-on-lab)
@@ -36,6 +37,18 @@ Today your three services start talking. A user pastes messy recipe text into th
 - An `ai-service/` with `POST /extract` and `TestModel` tests, from [Lecture 6](06-pydantic-ai-agents.md).
 - Your EX2 work committed. Today builds on it; EX2 itself does not need the AI flow.
 
+## Learning checkpoint
+
+By the end, you should be able to:
+
+- Explain why this service boundary is useful and which network/operational costs it introduces.
+- Validate the request and response contract, including compatibility and documented failures.
+- Follow the timeout budget across callers and demonstrate that an AI outage leaves ordinary CRUD usable.
+
+**Predict first:** If the caller times out, do you know whether the remote operation completed? What evidence would you seek?
+
+**Bridge if needed:** [Service architecture](../guides/engineering-foundations.md#monoliths-services-and-microservices). These questions are formative practice; the existing completion check and assignment requirements remain the target.
+
 ## Concepts
 
 ### Why a separate process
@@ -44,10 +57,12 @@ Lecture 6 put the agent in its own project; today the backend calls it over HTTP
 
 - **Independent deploys:** change prompts or providers without redeploying the backend.
 - **Independent scaling:** run more copies of the slow part only.
-- **A separate failure domain:** if the AI service hangs, CRUD keeps working.
+- **A separate failure domain:** bounded calls let the backend report an AI outage while ordinary CRUD remains usable. Resource exhaustion can still propagate, so separation alone is not a resilience guarantee.
 - **Contained secrets:** only the AI service holds provider keys.
 
 The backend is a reception desk. Visitors (the frontend) talk only to reception, which checks the request, calls the specialist in the back office (the AI service), checks the answer, and files the result.
+
+This is a small service-based architecture for learning microservice boundaries. A separate service adds network, compatibility, testing, and operational work; a modular monolith can be appropriate outside this assignment. Read the [architecture tradeoffs](../guides/engineering-foundations.md#monoliths-services-and-microservices) and justify a boundary by responsibility and independent operation, rather than container count.
 
 ```text
 browser -> frontend :8501 --HTTP--> backend :8000 --HTTP--> ai-service :8001
