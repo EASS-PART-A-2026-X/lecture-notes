@@ -37,6 +37,8 @@ Paste a messy recipe, get back clean, validated JSON. You build a small agent th
 - PR #1 is open, and you know its review status.
 - No paid AI account is needed, today or later.
 
+**Concept bridge:** [Local inference and transformers](../guides/local-inference.md) explains how model requests become tokens, tool requests, and validated results, with optional local-server routes. [Agent sandboxes](../guides/agent-sandboxes.md) explains how tool authority is enforced. Read the concepts; GPU/server installation is optional.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

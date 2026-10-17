@@ -36,6 +36,8 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 - The backend AI client with explicit timeouts and the 503/502 mapping from [Lecture 7](07-third-service-contracts.md).
 - `TestModel`, `FunctionModel` and `models.ALLOW_MODEL_REQUESTS = False` from [Lecture 6](06-pydantic-ai-agents.md).
 
+**Serving measurements:** [Local inference](../guides/local-inference.md#measure-and-diagnose) separates load, queue, prefill, and decode time; its synthetic example supports analysis without a model download. Compare task quality as well as tokens per second.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

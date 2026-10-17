@@ -37,6 +37,8 @@ Lecture 7 needed three terminals and a good memory for ports. Today one file rep
 - Docker Desktop running; on Windows, inside WSL2 with Ubuntu integration on. `docker compose version` prints v2.
 - Stop Lecture 7's three dev servers. They hold ports 8000, 8001 and 8501.
 
+**Execution boundary:** [Agent sandboxes](../guides/agent-sandboxes.md) distinguishes Compose, restricted containers, OS sandboxes, gVisor, and microVMs. Its known-script lab demonstrates filesystem and network restrictions. [Local inference](../guides/local-inference.md#connect-an-agent-without-changing-its-authority) explains a model server as an optional dependency of the existing AI service.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
