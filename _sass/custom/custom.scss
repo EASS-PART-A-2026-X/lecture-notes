@@ -104,7 +104,7 @@
   [data-stage="prefill"] { background: #4051b5; }
   [data-stage="decode"] { background: #167d65; }
   .lab-stage-key { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0; list-style: none; }
-  .lab-stage-key li::before { position: static; content: ""; display: inline-block; width: 0.75rem; height: 0.75rem; margin-right: 0.3rem; background: var(--stage-color); }
+  .lab-stage-key li::before { position: static; content: ""; display: inline-block; width: 0.75rem; height: 0.75rem; margin: 0 0.3rem 0 0; padding: 0; background: var(--stage-color); }
   [data-error] { color: #8b1f1f; }
   @media (max-width: 36rem) { .lab-fields { grid-template-columns: 1fr; } }
 }
