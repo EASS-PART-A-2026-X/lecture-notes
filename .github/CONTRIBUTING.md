@@ -18,11 +18,14 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
 node --test .github/scripts/test_search.cjs
+uv run --locked .github/scripts/check_examples.py
 uv run .github/scripts/build_pdf.py install
 uv run .github/scripts/build_pdf.py _site https://eass-part-a-2026-x.github.io/lecture-notes
 python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 python3 .github/scripts/check_site.py _site https://eass-part-a-2026-x.github.io/lecture-notes
 ```
+
+The example checker extracts the complete Lecture 2 API and Lecture 6 AI-service code and tests directly from Markdown into temporary projects. It follows the printed continuation/import edits, runs all 16 tests, lint, and formatting, then removes the projects. It does not reconstruct later partial-file excerpts or measure real-model quality. Python 3.14 and the committed script lockfile make the check repeatable; update dependencies deliberately with `uv lock --script .github/scripts/check_examples.py --upgrade`, then rerun the checker and review API changes against official documentation. Never make a broken example pass by silently rewriting its behavior in the checker.
 
 The PDF must be built before the link check because every page links to it. The checker makes no network requests: it verifies local destinations, heading fragments, assets and duplicate IDs. Check changed external links separately in their official source.
 

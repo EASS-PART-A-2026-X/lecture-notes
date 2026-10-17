@@ -14,6 +14,7 @@
 - [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [A repeatable study cycle](#a-repeatable-study-cycle)
 - [Engineering studio and review criteria](#engineering-studio-and-review-criteria)
+- [Verified reference checkpoints](#verified-reference-checkpoints)
 - [Teaching references](#teaching-references)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
@@ -100,6 +101,25 @@ Suggested applications: class 2, API input partitions; class 3, seed/restart inv
 | Can someone reproduce the result? | Final commit, commands, environment assumptions, and observed results are recorded | Evidence refers to an earlier revision or an unknown model configuration |
 
 These are feedback criteria, not replacement marks. A student should be able to explain the evidence as well as produce it. An assistant can suggest cases and critique a diff; the student remains responsible for the contract and the observed result.
+
+## Verified reference checkpoints
+
+The course repository automatically executes two complete reference checkpoints on every pull request and publication:
+
+- **Lecture 2:** the ten API tests covering CRUD, rejected input, pagination, partial updates, and test isolation.
+- **Lecture 6:** six deterministic agent tests covering the endpoint, validation retry, structured output, and domain tools. Real model requests are disabled by the test fixture.
+
+The verifier copies code directly from the lecture text into temporary projects, follows the printed continuation/import instructions, and runs tests, lint, and formatting. It uses Python 3.14 and committed dependency versions. There is no separate example implementation to drift away from what students read.
+
+If you have cloned **this course-notes repository**, you can run its checks from the repository root:
+
+```bash
+uv run --locked .github/scripts/check_examples.py
+```
+
+The first run downloads the pinned Python dependencies. Expected: ten API tests and six agent tests pass, followed by lint/format checks. The temporary projects are removed afterwards. This command checks the notes; run your own product's test commands in your product repository too.
+
+These checks establish that those two complete examples work with the recorded dependencies. They do not prove every later excerpt is a standalone program, a real model extracts accurately, or a browser/deployment works. Later lectures deliberately ask you to extend earlier files; use their completion checks and failure drills. When reporting a problem, include the lecture link, dependency versions, exact command, and redacted error.
 
 ## Teaching references
 

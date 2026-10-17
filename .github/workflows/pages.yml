@@ -46,6 +46,9 @@ jobs:
           version: "0.13.1"
           enable-cache: false
 
+      - name: Execute complete lecture examples
+        run: uv run --locked .github/scripts/check_examples.py
+
       - name: Install Chromium for Playwright
         run: uv run .github/scripts/build_pdf.py install
 
