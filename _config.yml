@@ -37,6 +37,8 @@ defaults:
   - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 16 } }
   - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 17 } }
   - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 18 } }
+  - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference and transformers", nav_order: 19 } }
+  - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 20 } }
 
 # Just the Docs
 search:

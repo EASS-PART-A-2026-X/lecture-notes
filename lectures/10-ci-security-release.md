@@ -36,6 +36,8 @@ Until today, "it works" meant "on my laptop". Now a robot checks every push, a s
 - The failure tests and evals from [Lecture 9](09-failures-evals-costs.md), green in all three services.
 - Your product on GitHub with `main` as the default branch, and `gh auth status` succeeding.
 
+**Execution and release:** [Agent sandboxes](../guides/agent-sandboxes.md#review-and-release) separates disposable candidate execution, trusted verification, and release credentials. Container resource limits and agent budgets do not replace authorization.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

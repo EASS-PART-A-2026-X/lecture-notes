@@ -6,6 +6,8 @@
 
 **Read the basics in week 1; revisit selection and evaluation in weeks 6 and 9.** You are learning how to judge a model for a task. No particular provider, paid plan, or live model call is required.
 
+For the mechanics behind this choice, read [Local inference and transformers](local-inference.md): tokens, attention, prefill/decode, KV caches, quantization, and optional LM Studio/Ollama/llama.cpp/vLLM routes. Local serving and [agent sandboxing](agent-sandboxes.md) solve different problems.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 

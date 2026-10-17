@@ -23,6 +23,8 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
 5. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
+For how models run and how agents execute tools, use [Local inference and transformers](guides/local-inference.md) and [Agent sandboxes](guides/agent-sandboxes.md). The guides connect to Lectures 6, 8, 9, and 10; hardware-intensive experiments remain optional.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.

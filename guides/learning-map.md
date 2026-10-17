@@ -67,6 +67,8 @@ Use the assistant and model you can access. If a tool lacks a model picker or a 
 
 The [agent-driven engineering guide](agent-driven-development.md) connects development agents to runtime agents. The [factory lab](software-factory-lab.md) illustrates how a candidate change progresses through tests, review, and delivery. Both deepen the existing product work without adding another graded project.
 
+Read [local inference and transformers](local-inference.md) before Lecture 6 and revisit its measurements in Lecture 9. Use [agent sandboxes](agent-sandboxes.md) alongside Lectures 1, 6, 8, and 10. The concepts support the shared path; local hardware experiments and specialized sandbox infrastructure are optional.
+
 ## A repeatable study cycle
 
 **Before class:** check the prerequisites, read the mission, and predict one request or failure. Write down the first thing you cannot explain.

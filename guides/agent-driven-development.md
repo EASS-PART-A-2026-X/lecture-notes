@@ -8,6 +8,8 @@ New to the tools or model terminology? Use [Student setup](student-setup.md) and
 
 **Use across the semester.** Start with the development loop in week 1. Return to the product loop in Lecture 6 and the evaluation loop in Lecture 9. These are formative activities and optional extensions to the existing assignments.
 
+Use [Local inference](local-inference.md) to follow the model-server path, and [Agent sandboxes](agent-sandboxes.md) to design the execution boundary around tools. A local model does not contain generated code.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 
