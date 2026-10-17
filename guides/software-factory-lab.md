@@ -194,15 +194,11 @@ In the instructor factory, Airflow owns the managed lifecycle. A stage agent can
 
 Before adding parallel agents, define input revisions, separate workspaces, budgets, and who integrates the results. Test the combined candidate after integration. Sibling agents starting from the same code and instructions do not provide independent evidence merely because there are several of them.
 
-<div markdown="1" class="factory-controls">
-
 Separate three controls when discussing a harness:
 
 - **Guidance:** project instructions and skills describe how to work.
 - **Execution:** runtime restrictions determine which files, commands, network destinations, and credentials are accessible.
 - **Promotion:** trusted CI and repository policy determine whether a candidate may be published, merged, or released.
-
-</div>
 
 A worktree isolates source changes, not processes or credentials. A successful check supports a bounded claim, not permission. A merged PR can still await deployment. Define completion at the level the user actually requested.
 

@@ -124,7 +124,7 @@
     > li { break-inside: avoid; }
   }
   .main-content .factory-check, .main-content .factory-command,
-  .main-content .factory-delivery-map, .main-content .factory-controls { break-inside: avoid; }
+  .main-content .factory-delivery-map { break-inside: avoid; }
 }
 
 // The simulator uses the course's existing type and colors; labels carry meaning.
