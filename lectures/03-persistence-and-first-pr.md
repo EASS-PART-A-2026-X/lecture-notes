@@ -37,6 +37,8 @@ Restart your Lecture 2 API and every record is gone. Today you give it a real me
 - Docker Desktop running: `docker run --rm hello-world` prints a greeting ([Lecture 1](01-environment-git-docker-ai.md)). On Windows, work inside WSL2 (Ubuntu).
 - In `backend/`: `uv add sqlmodel`.
 
+**Visual review:** [One request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
@@ -106,10 +108,10 @@ Locally, data is `backend/data/app.db`; git-ignore `data/` and `*.db`, because a
 
 The instructor converts Recipe Box to SQLite, rerunning the unchanged tests after each file.
 
-The models. `Field` now comes from `sqlmodel`: Pydantic's own `Field` does not know `index=True` and emits a deprecation warning, which your `filterwarnings = ["error"]` turns into a failure. `RecipeUpdate` keeps its Lecture 2 fields but extends `SQLModel`; `RecipePublic` still adds `id`.
+The complete models. `Field` now comes from `sqlmodel`: Pydantic's own `Field` does not know `index=True` and emits a deprecation warning, which your `filterwarnings = ["error"]` turns into a failure. `RecipeUpdate` keeps its Lecture 2 fields but extends `SQLModel`; `RecipePublic` still adds `id`.
 
 ```python
-# backend/app/models.py (excerpt)
+# backend/app/models.py
 from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
 
@@ -118,8 +120,8 @@ class RecipeBase(SQLModel):
     title: str = Field(min_length=1, max_length=200, index=True)
     minutes: int = Field(ge=1, le=24 * 60)
     servings: int = Field(default=2, ge=1, le=50)
-    ingredients: str = Field(default="", max_length=5000)  # one per line
-    tags: str = Field(default="", max_length=500)  # comma-separated
+    ingredients: str = Field(default="", max_length=5000)
+    tags: str = Field(default="", max_length=500)
 
 
 class Recipe(RecipeBase, table=True):
@@ -128,6 +130,20 @@ class Recipe(RecipeBase, table=True):
 
 class RecipeCreate(RecipeBase):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+
+class RecipeUpdate(SQLModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    minutes: int | None = Field(default=None, ge=1, le=24 * 60)
+    servings: int | None = Field(default=None, ge=1, le=50)
+    ingredients: str | None = Field(default=None, max_length=5000)
+    tags: str | None = Field(default=None, max_length=500)
+
+
+class RecipePublic(RecipeBase):
+    id: int
 ```
 
 The engine and the session dependency:
@@ -168,10 +184,10 @@ def get_session() -> Iterator[Session]:
 SessionDep = Annotated[Session, Depends(get_session)]
 ```
 
-The lifespan and one route. `main.py` always says `db.engine`, never `from app.db import engine`: the restart test below swaps `db.engine`, and a name imported once would keep pointing at the real file.
+The complete lifespan, helpers, and routes. `main.py` always says `db.engine`, never `from app.db import engine`: the restart test below swaps `db.engine`, and a name imported once would keep pointing at the real file.
 
 ```python
-# backend/app/main.py (excerpt)
+# backend/app/main.py
 from contextlib import asynccontextmanager
 from typing import Annotated
 
@@ -185,27 +201,74 @@ from app.seed import seed_if_empty
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db.create_db_and_tables()  # startup
+    db.create_db_and_tables()
     with Session(db.engine) as session:
         seed_if_empty(session)
     yield
-    db.engine.dispose()  # shutdown: close pooled connections
+    db.engine.dispose()
 
 
 app = FastAPI(title="Recipe Box API", lifespan=lifespan)
 
 
+def save(session: Session, recipe: Recipe) -> Recipe:
+    session.add(recipe)
+    session.commit()
+    session.refresh(recipe)
+    return recipe
+
+
+def get_or_404(session: Session, recipe_id: int) -> Recipe:
+    recipe = session.get(Recipe, recipe_id)
+    if recipe is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="Recipe not found")
+    return recipe
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.get("/recipes", response_model=list[RecipePublic])
+def list_recipes(
+    session: db.SessionDep,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+) -> list[Recipe]:
+    query = select(Recipe).order_by(Recipe.id).offset(offset).limit(limit)
+    return list(session.exec(query).all())
+
+
 @app.post("/recipes", response_model=RecipePublic, status_code=status.HTTP_201_CREATED)
 def create_recipe(body: RecipeCreate, session: db.SessionDep) -> Recipe:
     return save(session, Recipe.model_validate(body))
+
+
+@app.get("/recipes/{recipe_id}", response_model=RecipePublic)
+def get_recipe(recipe_id: int, session: db.SessionDep) -> Recipe:
+    return get_or_404(session, recipe_id)
+
+
+@app.patch("/recipes/{recipe_id}", response_model=RecipePublic)
+def update_recipe(recipe_id: int, body: RecipeUpdate, session: db.SessionDep) -> Recipe:
+    recipe = get_or_404(session, recipe_id)
+    recipe.sqlmodel_update(body.model_dump(exclude_unset=True, exclude_none=True))
+    return save(session, recipe)
+
+
+@app.delete("/recipes/{recipe_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_recipe(recipe_id: int, session: db.SessionDep) -> None:
+    session.delete(get_or_404(session, recipe_id))
+    session.commit()
 ```
 
-The other routes follow the same shape. `save()` does `add`, `commit` and `refresh`; `get_or_404()` uses `session.get(Recipe, recipe_id)`; the list runs `select(Recipe).order_by(Recipe.id).offset(offset).limit(limit)`; `DELETE` calls `session.delete()`, then `commit()`. `PATCH` calls `recipe.sqlmodel_update(body.model_dump(exclude_unset=True, exclude_none=True))`, so only the fields the client sent change.
+All routes preserve Lecture 2's contract. `save()` does `add`, `commit` and `refresh`; `get_or_404()` uses `session.get(Recipe, recipe_id)`; the list runs `select(Recipe).order_by(Recipe.id).offset(offset).limit(limit)`; `DELETE` calls `session.delete()`, then `commit()`. `PATCH` calls `recipe.sqlmodel_update(body.model_dump(exclude_unset=True, exclude_none=True))`, so only the fields the client sent change.
 
 The seed:
 
 ```python
-# backend/app/seed.py (excerpt)
+# backend/app/seed.py
 from sqlmodel import Session, select
 
 from app.models import Recipe
@@ -218,7 +281,20 @@ SEED: list[dict] = [
         "ingredients": "4 eggs\n1 can tomatoes\n1 onion\n1 tsp paprika",
         "tags": "breakfast,vegetarian",
     },
-    # Hummus and Lentil soup follow, same shape
+    {
+        "title": "Hummus",
+        "minutes": 15,
+        "servings": 4,
+        "ingredients": "chickpeas\ntahini\nlemon",
+        "tags": "vegan,quick",
+    },
+    {
+        "title": "Lentil soup",
+        "minutes": 40,
+        "servings": 4,
+        "ingredients": "lentils\ncarrot\nonion",
+        "tags": "vegan",
+    },
 ]
 
 

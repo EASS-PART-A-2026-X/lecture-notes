@@ -1,4 +1,4 @@
-# This verification image needs only the checker, lock, and two printed chapters.
+# This verification image needs only the checker, lock, and three printed chapters.
 **
 !.github/
 !.github/scripts/
@@ -7,3 +7,4 @@
 !lectures/
 !lectures/02-http-fastapi-pydantic.md
 !lectures/06-pydantic-ai-agents.md
+!lectures/03-persistence-and-first-pr.md

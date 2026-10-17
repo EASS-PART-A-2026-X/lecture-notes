@@ -1,13 +1,13 @@
 # /// script
 # requires-python = ">=3.14,<3.15"
-# dependencies = ["fastapi[standard]", "httpx2", "pydantic-ai-slim", "pytest", "ruff"]
+# dependencies = ["fastapi[standard]", "httpx2", "pydantic-ai-slim", "pytest", "ruff", "sqlmodel"]
 # ///
-"""Execute the complete Lecture 2 and 6 examples directly from the teaching text.
+"""Execute the complete Lectures 2, 3, and 6 examples directly from the teaching text.
 
 uv run --locked .github/scripts/check_examples.py
 
 Temporary projects contain copied snippets, never a second maintained example.
-These checks cover two complete checkpoints, not all later lecture excerpts,
+These checks cover three complete checkpoints, not all later lecture excerpts,
 real-model quality, Docker networking, or a browser flow.
 """
 
@@ -100,6 +100,29 @@ def main() -> None:
         print("Lecture 2: the ten API contract tests", flush=True)
         check(api, 10)
 
+        persistence = root / "lecture-03"
+        snippets = blocks("lectures/03-persistence-and-first-pr.md")
+        for relative in (
+            "app/models.py",
+            "app/db.py",
+            "app/main.py",
+            "app/seed.py",
+            "tests/conftest.py",
+            "tests/test_restart.py",
+        ):
+            write(persistence, relative, take(snippets, f"# backend/{relative}"))
+        # The API contract tests remain exactly the same after the storage change.
+        write(
+            persistence,
+            "tests/test_recipes.py",
+            (api / "tests/test_recipes.py").read_text(),
+        )
+        print(
+            "Lecture 3: unchanged API contract plus restart and idempotent seed",
+            flush=True,
+        )
+        check(persistence, 12)
+
         ai = root / "lecture-06"
         snippets = blocks("lectures/06-pydantic-ai-agents.md")
         for relative in (
@@ -125,7 +148,7 @@ def main() -> None:
             flush=True,
         )
         check(ai, 6)
-    print("PASS: 16 executable lecture checks, lint, and formatting", flush=True)
+    print("PASS: 28 executable lecture checks, lint, and formatting", flush=True)
 
 
 if __name__ == "__main__":

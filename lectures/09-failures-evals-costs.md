@@ -40,6 +40,8 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 
 **Engineering practice:** [Manifests, skills, factories, and evaluations](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
 
+**Visual review:** [One request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.
+
 ## Learning checkpoint
 
 By the end, you should be able to:

@@ -56,3 +56,30 @@
   h1, h2, h3, h4, summary { break-after: avoid; }
   tr, img { break-inside: avoid; }
 }
+
+// Repository-native diagrams retain labels and captions on the site and in print.
+.main-content .course-diagram {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: #fff;
+
+  .diagram-scroll { overflow-x: auto; }
+  img { display: block; width: 100%; min-width: 30rem; max-width: 36rem; height: auto; margin: 0 auto; }
+  figcaption { margin-top: 0.75rem; line-height: 1.5; color: #334155; }
+}
+
+@media print {
+  .main-content .course-diagram {
+    break-inside: avoid;
+    padding: 0.5rem;
+    .diagram-scroll { overflow: visible; }
+    img { min-width: 0; max-width: 28rem; max-height: 40rem; }
+    figcaption { font-size: 0.9rem; }
+  }
+}
+
+@media print {
+  .main-content .walkthrough-command, .main-content .walkthrough-quiz { break-inside: avoid; }
+}

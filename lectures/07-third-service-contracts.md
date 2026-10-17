@@ -37,6 +37,8 @@ Today your three services start talking. A user pastes messy recipe text into th
 - An `ai-service/` with `POST /extract` and `TestModel` tests, from [Lecture 6](06-pydantic-ai-agents.md).
 - Your EX2 work committed. Today builds on it; EX2 itself does not need the AI flow.
 
+**Visual review:** [One request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.
+
 ## Learning checkpoint
 
 By the end, you should be able to:
