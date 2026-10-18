@@ -581,8 +581,10 @@ This week: **open PR #3**, and keep #1 and #2 moving ([rules](../README.md#open-
 
 Prove a stranger can start your stack. Stop yours with `docker compose down`, commit and push today's work, then use a fresh clone of your repository:
 
+Replace `YOUR-REPO` with your course product repository name; its owner is the course organization.
+
 ```bash
-git clone https://github.com/YOU/YOUR-REPO.git ~/clean-check
+git clone https://github.com/EASS-PART-A-2026-X/YOUR-REPO.git ~/clean-check
 cd ~/clean-check
 docker compose -p clean-check up --build --wait
 curl -s localhost:8000/health

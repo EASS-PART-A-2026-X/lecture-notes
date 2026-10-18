@@ -8,6 +8,8 @@
 
 **Required account:** each student needs their own **free GitHub account with a verified email** for repositories, pull requests, and course submissions. An existing personal account is fine. Follow [Connect Git and GitHub](#connect-git-and-github) below; a paid GitHub plan and GitHub Education approval are not required.
 
+**Required project location:** your course product repository belongs to **[EASS-PART-A-2026-X](https://github.com/EASS-PART-A-2026-X)**, the same organization as the course material. Your personal account identifies your contributions; the organization owns the project repository. See [Join the course organization](#join-the-course-organization).
+
 **You will be able to:** say which terminal runs each course command, show that uv, Git, the GitHub CLI and Docker work on your laptop, and, in Part B, keep or undo an assistant's change with Git.
 
 **Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
@@ -226,6 +228,15 @@ Git stores history on your laptop; GitHub hosts repositories; `gh` operates GitH
 
 For education benefits, GitHub's [student activation guide](https://docs.github.com/en/copilot/how-tos/copilot-on-github/set-up-copilot/enable-copilot/set-up-for-students) separates student verification from activating Copilot Student. Approval may take time; use another route while you wait. A payment page is never a course requirement. If you use a private product repository, arrange grader access through the instructor's submission instructions, and never grant an assistant broad access to unrelated repositories.
 
+### Join the course organization
+
+1. Give the instructor your **GitHub username** through the course channel. Accept the organization or assigned project repository invitation while signed in to that account. An organization membership and access to a particular private repository are different permissions; the instructor arranges the access you need.
+2. Agree a unique product repository name with the instructor. In GitHub's repository creation form, select **EASS-PART-A-2026-X** as **Owner**. In the CLI, always include the owner: `gh repo create EASS-PART-A-2026-X/study-planner --private --source=. --remote=origin --push` (replace `study-planner` with the agreed name; run this only in Part B, after your first commit). Without the owner prefix, `gh repo create` defaults to your personal account. See [GitHub's repository creation guide](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository) and the [CLI manual](https://cli.github.com/manual/gh_repo_create).
+3. If the organization is missing from the Owner menu or creation is denied, ask the instructor to grant the intended access or create an **empty** project repository for you. Lecture 1 shows how to connect that existing repository. Do not create a personal replacement for submission. If you already started in a personal repository, ask the instructor to arrange its transfer while preserving its history.
+4. After the first push in Part B, run `gh repo view --json nameWithOwner,url` from the product folder. Check that `nameWithOwner` begins with `EASS-PART-A-2026-X/`, and that all contributors and graders can access the repository. Organization ownership alone does not prove that everyone has access. Submit this organization repository URL for every assignment.
+
+Keep course product code in its own repository, separate from `lecture-notes`. Your external open-source forks and PRs continue to follow each upstream project's contribution process.
+
 ### Choose and configure one assistant
 
 Documentation checked **17 October 2026**. Features, model access, eligibility, and quotas vary by account and change often. Use official installers and your own account. These are setup routes, not promises of unlimited free use. Open only the route you chose.
@@ -296,6 +307,7 @@ Tick these before Monday 19 October. Nothing here needs a course repository yet.
 
 - [ ] My laptop passes the [laptop check](#check-your-laptop-first), or I have told the instructor what fails.
 - [ ] I can sign in to **my own free GitHub account** in the browser, my email is verified, and I have secured the account with two-factor authentication and saved its recovery codes privately.
+- [ ] I have given the instructor my GitHub username and accepted any course access invitation provided; if access is missing, I have reported it before class.
 - [ ] In the terminal I will use in class, the [Verify](#verify) commands print versions (uv 0.12 or newer), and `uv python install 3.14` has run.
 - [ ] `docker run --rm hello-world` prints `Hello from Docker!`, and I can say what `docker images` and `docker ps -a` show afterwards.
 - [ ] `gh auth status` shows **that same GitHub username**, and my Git email is my noreply address.
@@ -308,7 +320,7 @@ In class, Lecture 1's [live demo](../lectures/01-environment-git-docker-ai.md#li
 
 ### Your repository and health check
 
-1. A repository named after **your** product (for example `study-planner`) at `~/eass/<your-product>`, pushed to your GitHub account. Recipe Box is only the lecture demo.
+1. A repository named after **your** product (for example `study-planner`) at `~/eass/<your-product>`, pushed to **`EASS-PART-A-2026-X/<your-product>`** with your own GitHub login. Recipe Box is only the lecture demo. Use the name and access agreed with the instructor.
 2. A practice pull request on your own repository, merged. It never counts toward the three upstream PRs.
 3. From `backend/`, `uv run fastapi dev` starts the server, and in a second terminal `curl http://localhost:8000/health` prints `{"status":"ok"}`.
 
@@ -389,7 +401,7 @@ It replaces your working copy of `README.md` with the last committed version, so
 
 ### Ready-for-Lecture-2 checklist
 
-- [ ] `~/eass/<your-product>` is on GitHub, and its practice PR is merged (`gh pr list --state merged` shows it).
+- [ ] `gh repo view --json nameWithOwner,url` identifies `EASS-PART-A-2026-X/<your-product>`, the instructor can access it, and its practice PR is merged (`gh pr list --state merged` shows it).
 - [ ] From `backend/`, `uv run fastapi dev` starts, and `curl http://localhost:8000/health` prints `{"status":"ok"}`.
 - [ ] I compared an assistant's explanation (or a classmate's, on the manual route) with my own, and I can say which part I verified.
 - [ ] I can read `git diff`, discard an edit with `git restore <file>`, and delete an experiment branch.
@@ -408,7 +420,7 @@ Find your symptom, run the first check, then apply the safe fix. If it still fai
 | `'compose' is not a docker command` | `docker compose version` | Update Docker Desktop, or install the [Compose plugin](https://docs.docker.com/compose/install/linux/) on Linux. Do not install the retired `docker-compose` v1 |
 | Push rejected with `GH007: Your push would publish a private email address` | `git config user.email` | Set your noreply address (above), run `git commit --amend --reset-author --no-edit`, then push again |
 | Git asks for a username and password | `gh auth status` | `gh auth setup-git`, then push again. GitHub does not accept your account password for Git |
-| Git push denied (`403`, or "permission denied") | `gh auth status` and `git remote -v` | Push to a repository you own, logged in as the right account |
+| Organization missing, repository creation denied, or Git push denied (`403`, or "permission denied") | `gh auth status` and `git remote -v`; check the repository owner | Sign in as your own invited account, accept the course invitation, and ask the instructor to fix access or create the repository under `EASS-PART-A-2026-X`; do not substitute a personal repository |
 | Installs are slow, or the server misses your edits | `pwd` starts with `/mnt/c` | Clone or move the project to `~/eass/<your-product>` and reopen it from Ubuntu |
 | Docker Desktop on a Mac will not start, or reports the wrong architecture | Apple menu → About This Mac: chip or processor | Reinstall the Docker Desktop build for Apple silicon or Intel |
 | `no space left on device` during a pull or build | `docker system df` and your free disk space | `docker system prune` removes stopped containers, unused networks, dangling images and build cache after asking; it keeps volumes. Free other disk space if needed |

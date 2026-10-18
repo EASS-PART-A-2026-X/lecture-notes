@@ -132,7 +132,7 @@ Use [engineering foundations](../guides/engineering-foundations.md#a-release-has
 
 ### What you bring
 
-- Your repository URL, and a partner to clone it. If your repo is private, invite your partner beforehand with `gh api --method PUT repos/YOU/REPO/collaborators/PARTNER` (they accept the invite; on a personal repo this grants write access, so remove them afterwards), or share your screen while they dictate the steps.
+- Your project URL under **`https://github.com/EASS-PART-A-2026-X/<your-product>`**, and a partner to clone it. For a private repository, ask the instructor or authorized repository administrator to arrange read access for the rehearsal, or share your screen while your partner dictates the steps. Keep course contributor access intact; do not grant broad organization access for a rehearsal.
 - Your release candidate tag (`v1.0.0-rc.1` or later) on a commit with green CI.
 - A short demo script, plus your filled-in evidence table and AI-use note. The script starts with your product's purpose in one sentence, then performs your [Lecture 1 operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live ("after X does A, then B; afterwards C holds"), then one failure, then one test.
 

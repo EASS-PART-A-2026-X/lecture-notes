@@ -367,7 +367,27 @@ git add .
 git status                 # after: seven paths under "Changes to be committed"
 git diff --staged --stat
 git commit -m "Add backend skeleton with /health"
-gh repo create recipe-box --private --source=. --remote=origin --push
+```
+
+Publish to **EASS-PART-A-2026-X**, the course organization. The instructor uses `recipe-box` for the demo; students replace it with their agreed, unique product name. Confirm [organization access](../guides/student-setup.md#join-the-course-organization) first. Choose **one** route:
+
+- **You have permission to create the project repository:**
+
+  ```bash
+  gh repo create EASS-PART-A-2026-X/recipe-box --private --source=. --remote=origin --push
+  ```
+
+- **The instructor already created an empty project repository for you:** connect to that repository instead of running `gh repo create`. Replace the demo name below. If it already contains commits, ask the instructor how to preserve both histories before pushing.
+
+  ```bash
+  git remote add origin https://github.com/EASS-PART-A-2026-X/recipe-box.git
+  git push -u origin main
+  ```
+
+Then check the owner and continue:
+
+```bash
+gh repo view --json nameWithOwner,url
 git switch -c add-product-sketch
 ```
 
@@ -383,7 +403,7 @@ git switch main
 git pull
 ```
 
-`gh pr merge` merges on GitHub; `git pull` brings that merge back to your laptop. `--public` works too; how graders get access is part of the submission instructions provided by the instructor. A PR on your own repo never counts toward the three upstream PRs.
+`gh pr merge` merges on GitHub; `git pull` brings that merge back to your laptop. The repository owner must be `EASS-PART-A-2026-X`. Keep the visibility and contributor/grader access agreed with the instructor; organization ownership does not automatically grant every student access. A PR on your course product repository never counts toward the three upstream PRs.
 
 **4. Docker in four commands** (any folder). *Observe the real result.*
 
@@ -442,7 +462,7 @@ Do every step for **your own** domain. Steps 1–7 are **core today**. Drill 4 i
 
 2. **Create your repo and `/health`** with demo step 2, named after your product (for example `study-planner`). **Checkpoint:** the curl prints `{"status":"ok"}`, and `/docs` opens.
 
-3. **Publish, branch, then write your product sketch.** Run demo step 3 up to `git switch -c add-product-sketch` (with your product's name in `gh repo create`), then write the sketch in `README.md` at the repo root on that branch:
+3. **Publish, branch, then write your product sketch.** Run demo step 3 up to `git switch -c add-product-sketch`, using your agreed product name and retaining the `EASS-PART-A-2026-X/` owner prefix. Use the existing-repository route if the instructor created it. Check the organization owner with `gh repo view --json nameWithOwner,url`, then write the sketch in `README.md` at the repo root on that branch:
 
    ```markdown
    # <Product name>

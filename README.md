@@ -120,6 +120,8 @@ Scope and safety:
 
 Deadlines are at 23:59 Israel time on the dates below. Submit through the submission channel provided by the instructor.
 
+**Project repository (required):** keep your course product in the [EASS-PART-A-2026-X organization](https://github.com/EASS-PART-A-2026-X), the same organization that owns these lecture notes. Submit its URL in the form `https://github.com/EASS-PART-A-2026-X/<your-product>` for EX1, EX2 and EX3; grow the same repository throughout the course. Each student uses their own GitHub account to contribute. Follow the [organization access steps](guides/student-setup.md#join-the-course-organization) before creating it, agree a unique product repository name with the instructor, and confirm grader access. Keep product code in its own repository. Open-source contributions still go to the qualifying projects' upstream repositories.
+
 | Assignment | Deadline | What you hand in |
 |---|---|---|
 | EX1 — Backend | Mon 9 Nov 2026 | CRUD API with Pydantic validation, persistent data, tests, a backend Dockerfile, and setup, run, and test instructions |
