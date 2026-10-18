@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800" role="img" aria-labelledby="t d">
+  <title id="t">One agent run, stacked for a phone screen</title>
+  <desc id="d">POST /extract starts a run. The model request sends the instructions, the tool schemas and the whole history; in the retry test the history grows from 1 to 3 to 5 messages, and the model replies with one proposal. A tool call goes to your tool code: if it runs, the result is sent back to the model; bad arguments or ModelRetry send a retry prompt back; any other error stops the run. A final_result call goes to the output checks: a valid output becomes the typed result; a failed check sends a retry prompt back; when retries are used up the run stops. Everything sent back starts another model request. A stopped run is HTTP 500 today; Lecture 9 maps it.</desc>
+  <defs>
+    <marker id="ak" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#3b4453"/></marker>
+    <marker id="an" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#1d4e89"/></marker>
+    <marker id="ax" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#9b2c2c"/></marker>
+    <marker id="ag" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#2a6a47"/></marker>
+  </defs>
+  <rect width="360" height="800" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="16" y="30" font-size="21" font-weight="700">One agent run</text>
+    <text x="16" y="52" font-size="16" fill="#535c6b">The model proposes; your code decides.</text>
+
+    <rect x="30" y="66" width="240" height="52" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="150" y="88" font-size="18" font-weight="700" text-anchor="middle">POST /extract</text>
+    <text x="150" y="110" font-size="16" text-anchor="middle">extract_agent.run(…)</text>
+    <path d="M150 118 V138" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)"/>
+    <text x="158" y="134" font-size="16">starts a run</text>
+
+    <rect x="30" y="142" width="240" height="120" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="150" y="166" font-size="18" font-weight="700" text-anchor="middle">Model request</text>
+    <text x="150" y="189" font-size="16" text-anchor="middle">sends: instructions, tool</text>
+    <text x="150" y="209" font-size="16" text-anchor="middle">schemas, the whole history</text>
+    <text x="150" y="231" font-size="16" text-anchor="middle">history: 1 → 3 → 5 msgs</text>
+    <text x="150" y="252" font-size="16" text-anchor="middle">replies: one proposal</text>
+
+    <g fill="none" stroke="#1d4e89" stroke-width="2.5">
+      <path d="M220 262 V308" marker-end="url(#an)"/>
+      <path d="M44 262 V280 H14 V520 H26" marker-end="url(#an)"/>
+      <path d="M270 358 H294"/>
+      <path d="M270 564 H294 V200 H274" marker-end="url(#an)"/>
+    </g>
+    <text x="228" y="292" font-size="16">tool call</text>
+    <text x="52" y="286" font-size="16">final_result call</text>
+    <text x="288" y="478" font-size="16" fill="#1d4e89" text-anchor="end">back to the model</text>
+
+    <rect x="30" y="312" width="240" height="140" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="150" y="336" font-size="18" font-weight="700" text-anchor="middle">Your tool code</text>
+    <g font-size="16">
+      <text x="56" y="363">runs → result sent back</text>
+      <text x="56" y="387">bad args → retry prompt</text>
+      <text x="56" y="411">ModelRetry → retry prompt</text>
+      <text x="56" y="435">other error → run stops</text>
+    </g>
+    <rect x="40" y="352" width="10" height="10" fill="#1d4e89"/>
+    <rect x="40" y="376" width="10" height="10" fill="#84540c"/>
+    <rect x="40" y="400" width="10" height="10" fill="#84540c"/>
+    <rect x="40" y="424" width="10" height="10" fill="#9b2c2c"/>
+
+    <rect x="30" y="494" width="240" height="112" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="150" y="518" font-size="18" font-weight="700" text-anchor="middle">Output checks</text>
+    <g font-size="16">
+      <text x="56" y="545">valid → typed result</text>
+      <text x="56" y="569">fails → retry prompt</text>
+      <text x="56" y="593">retries used up → stops</text>
+    </g>
+    <rect x="40" y="534" width="10" height="10" fill="#2a6a47"/>
+    <rect x="40" y="558" width="10" height="10" fill="#84540c"/>
+    <rect x="40" y="582" width="10" height="10" fill="#9b2c2c"/>
+
+    <g fill="none" stroke="#9b2c2c" stroke-width="2.5">
+      <path d="M270 430 H338"/>
+      <path d="M270 588 H338"/>
+      <path d="M338 430 V754 H274" marker-end="url(#ax)"/>
+    </g>
+    <text x="332" y="666" font-size="16" fill="#9b2c2c" text-anchor="end">stops</text>
+
+    <path d="M150 606 V638" fill="none" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#ag)"/>
+    <text x="158" y="628" font-size="16" font-weight="700" fill="#2a6a47">valid</text>
+    <rect x="30" y="642" width="240" height="64" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="150" y="666" font-size="18" font-weight="700" fill="#2a6a47" text-anchor="middle">Typed result</text>
+    <text x="150" y="690" font-size="16" text-anchor="middle">RecipeExtraction as JSON</text>
+
+    <rect x="30" y="722" width="240" height="64" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="150" y="746" font-size="18" font-weight="700" fill="#9b2c2c" text-anchor="middle">The run stops</text>
+    <text x="150" y="770" font-size="16" text-anchor="middle">HTTP 500 today (Lecture 9)</text>
+  </g>
+</svg>
