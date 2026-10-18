@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 565" role="img" aria-labelledby="t d" width="640" height="565">
+  <title id="t">What exactly gets split?</title>
+  <desc id="d">Tensor parallelism divides tensors within layers; pipeline parallelism divides layers; expert parallelism places experts on devices; replicas process separate requests. Context parallelism distributes sequence work.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="565" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">What exactly gets split?</text>
+    <text x="24" y="65" font-size="18" fill="#0f1e3a" text-anchor="start">Tensor: split work inside a layer</text>
+    <rect x="24" y="83" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="111" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 1: tensor part</text>
+    <rect x="360" y="83" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="111" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 2: tensor part</text>
+    <path d="M282 120 L353 120" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="285" y="105" font-size="16" fill="#0f1e3a" text-anchor="start">combine</text>
+    <text x="24" y="180" font-size="18" fill="#0f1e3a" text-anchor="start">Pipeline: split consecutive layers</text>
+    <rect x="24" y="198" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="226" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 1: layers 1–8</text>
+    <rect x="360" y="198" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="226" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 2: layers 9–16</text>
+    <path d="M282 235 L353 235" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="285" y="220" font-size="16" fill="#0f1e3a" text-anchor="start">pass state</text>
+    <text x="24" y="295" font-size="18" fill="#0f1e3a" text-anchor="start">Expert: route tokens to selected experts</text>
+    <rect x="24" y="313" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="341" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 1: experts A/B</text>
+    <rect x="360" y="313" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="341" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 2: experts C/D</text>
+    <path d="M282 350 L353 350" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="285" y="335" font-size="16" fill="#0f1e3a" text-anchor="start">route</text>
+    <text x="24" y="410" font-size="18" fill="#0f1e3a" text-anchor="start">Replica: separate requests, full model copies</text>
+    <rect x="24" y="428" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="456" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 1: request X</text>
+    <rect x="360" y="428" width="255" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="456" font-size="18" fill="#0f1e3a" text-anchor="start">GPU 2: request Y</text>
+    <text x="24" y="535" font-size="16" fill="#0f1e3a" text-anchor="start">Context parallelism instead splits sequence/attention work.</text>
+  </g>
+</svg>

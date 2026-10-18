@@ -63,6 +63,8 @@ The arrows between them:
 
 </details>
 
+**Optional:** your editor's terminal is sufficient. On macOS, [cmux](https://cmux.com/docs) can organize terminals into labelled workspaces and panes. Keep a service's running process visible in one pane and run tests in another; check `pwd` and the Git branch before each command. A terminal layout does not isolate an agent or preserve every running process after a restart. Use the course's [sandbox guidance](agent-sandboxes.md) for isolation. Windows students continue to run course commands in Ubuntu/WSL 2.
+
 Four rules follow from the picture:
 
 1. **On Windows, type course commands in Ubuntu.** An Ubuntu prompt looks like `you@laptop:~$`; PowerShell looks like `PS C:\Users\you>`. PowerShell is only for the two `wsl` commands.

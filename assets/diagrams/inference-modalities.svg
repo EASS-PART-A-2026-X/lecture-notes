@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 425" role="img" aria-labelledby="t d" width="640" height="425">
+  <title id="t">Different outputs need different clocks</title>
+  <desc id="d">Text generates tokens; embeddings create vectors for retrieval; speech can cascade from transcription through a language model to speech synthesis; diffusion repeatedly refines a noisy latent before decoding an image.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="425" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">Different outputs need different clocks</text>
+    <text x="24" y="85" font-size="18" fill="#0f1e3a" text-anchor="start">Text</text>
+    <rect x="145" y="57" width="470" height="50" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="157" y="85" font-size="18" fill="#0f1e3a" text-anchor="start">Prompt → tokens → complete validated result</text>
+    <text x="24" y="165" font-size="18" fill="#0f1e3a" text-anchor="start">Retrieval</text>
+    <rect x="145" y="137" width="470" height="50" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="157" y="165" font-size="18" fill="#0f1e3a" text-anchor="start">Text → embedding vector → nearest documents</text>
+    <text x="24" y="245" font-size="18" fill="#0f1e3a" text-anchor="start">Voice</text>
+    <rect x="145" y="217" width="470" height="50" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="157" y="245" font-size="18" fill="#0f1e3a" text-anchor="start">Audio → ASR → language model → TTS</text>
+    <text x="24" y="325" font-size="18" fill="#0f1e3a" text-anchor="start">Diffusion</text>
+    <rect x="145" y="297" width="470" height="50" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="157" y="325" font-size="18" fill="#0f1e3a" text-anchor="start">Noisy latent → repeated refinement → image</text>
+    <text x="24" y="394" font-size="16" fill="#0f1e3a" text-anchor="start">Measure: useful text, retrieval quality, audible delay, image quality.</text>
+  </g>
+</svg>

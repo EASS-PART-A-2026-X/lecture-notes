@@ -25,7 +25,7 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ### Reading map
 
-Thirteen guides support the lectures. Only two are required; the rest are there when you need them.
+Fourteen guides support the lectures. Only two are required; the rest are there when you need them.
 
 | Guide | Status | When |
 |---|---|---|
@@ -36,6 +36,7 @@ Thirteen guides support the lectures. Only two are required; the rest are there 
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | Alongside your first assistant tasks (Lecture 1) and your agent (Lecture 6) |
 | [Agent sandboxes](guides/agent-sandboxes.md) | *Optional depth* | Its [Week 1 minimum](guides/agent-sandboxes.md#week-1-minimum) before your first agent session; the rest with Lectures 6, 8 and 10 |
 | [Local inference](guides/local-inference.md) | *Optional depth* | How models run and what a transformer computes; with Lectures 6 and 9. Hardware-intensive experiments stay optional |
+| [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | Visual overview of model choice, quantization, caching, speculation, batching, parallelism and serving; Lectures 6–10 |
 | [Engineering contracts](guides/engineering-contracts.md) | *Optional depth* | Manifests, skills, factories and evaluations next to your Docker/Compose workflow; Lectures 8–10 |
 | [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | One request through containers, contracts, commits and recovery; with Lectures 3 and 7–10 |
 | [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Repository reading, review, private records, concurrency and recovery; alongside the weekly work |

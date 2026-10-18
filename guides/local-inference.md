@@ -27,6 +27,8 @@
 
 </details>
 
+**Optional:** [Visual inference engineering](inference-engineering.md) explains the main optimization methods with ten original diagrams, worked examples and predict-then-reveal exercises. Use it alongside Lectures 6–10.
+
 ## Learning checkpoint
 
 Be able to trace text → tokens → model computation → generated tokens → validated application result. Explain why a larger context consumes resources, why an HTTP-compatible endpoint may still fail an agent task, and why local inference does not sandbox generated code.

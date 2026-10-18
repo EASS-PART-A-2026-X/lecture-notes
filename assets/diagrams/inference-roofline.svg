@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-labelledby="t d" width="640" height="440">
+  <title id="t">Two different limits on speed</title>
+  <desc id="d">A schematic roofline rises with arithmetic intensity until compute capacity caps performance. A second panel separates memory capacity, bandwidth, compute, and interconnect.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="440" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">Two different limits on speed</text>
+    <path d="M70 250 V80 M70 250 H570" fill="none" stroke="#3b4453" stroke-width="2" />
+    <path d="M70 250 L310 110 H570" fill="none" stroke="#1d4e89" stroke-width="4" />
+    <text x="80" y="73" font-size="16" fill="#0f1e3a" text-anchor="start">Attainable operations / second</text>
+    <text x="210" y="282" font-size="16" fill="#0f1e3a" text-anchor="start">Operations per byte moved</text>
+    <text x="90" y="174" font-size="18" fill="#0f1e3a" text-anchor="start">Bandwidth limit</text>
+    <text x="350" y="98" font-size="18" fill="#0f1e3a" text-anchor="start">Compute limit</text>
+    <text x="24" y="318" font-size="16" fill="#0f1e3a" text-anchor="start">Schematic: no measured hardware values.</text>
+    <rect x="24" y="340" width="286" height="78" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="368" font-size="18" fill="#0f1e3a" text-anchor="start">Capacity: does it fit?</text>
+    <text x="36" y="393" font-size="18" fill="#0f1e3a" text-anchor="start">Bandwidth: can data arrive?</text>
+    <rect x="330" y="340" width="286" height="78" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="342" y="368" font-size="18" fill="#0f1e3a" text-anchor="start">Compute: can we calculate?</text>
+    <text x="342" y="393" font-size="18" fill="#0f1e3a" text-anchor="start">Links: can devices cooperate?</text>
+  </g>
+</svg>

@@ -1572,6 +1572,8 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 
 ## Read more
 
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
+
 - [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome): user-journey budgets, fan-out arithmetic and repeated agent trials; optional depth.
 
 

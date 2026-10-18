@@ -739,6 +739,8 @@ Emphasize: the service name is the address, `down -v` deletes data, a clean chec
 
 ## Read more
 
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
+
 **Before the lab (≤15 min):** [Docker: control startup order](https://docs.docker.com/compose/how-tos/startup-order/). Read it with two questions: (1) what exactly does `condition: service_healthy` wait for, and what does it do after that? (2) which healthcheck settings decide how long `up --wait` waits before it gives up?
 
 **Go deeper (optional):**

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 425" role="img" aria-labelledby="t d" width="640" height="425">
+  <title id="t">Ready is a state, not a running process</title>
+  <desc id="d">A new replica starts its container, loads weights and warms the engine before readiness passes. The router sends traffic only to ready replicas. Queue and latency measurements inform scaling.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="425" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">Ready is a state, not a running process</text>
+    <rect x="24" y="75" width="280" height="90" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="103" font-size="18" fill="#0f1e3a" text-anchor="start">New replica</text>
+    <text x="36" y="128" font-size="18" fill="#0f1e3a" text-anchor="start">Container / weights / warm-up</text>
+    <path d="M304 120 L369 120" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="315" y="100" font-size="16" fill="#0f1e3a" text-anchor="start">check</text>
+    <rect x="380" y="75" width="235" height="90" rx="6" fill="#fbf6ec" stroke="#3b4453" stroke-width="2" />
+    <text x="392" y="103" font-size="18" fill="#0f1e3a" text-anchor="start">Ready?</text>
+    <text x="392" y="128" font-size="18" fill="#0f1e3a" text-anchor="start">Not yet: no traffic</text>
+    <path d="M495 165 L495 245" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="507" y="208" font-size="16" fill="#0f1e3a" text-anchor="start">passes</text>
+    <rect x="380" y="255" width="235" height="80" rx="6" fill="#f1f7f3" stroke="#3b4453" stroke-width="2" />
+    <text x="392" y="283" font-size="18" fill="#0f1e3a" text-anchor="start">Serve requests</text>
+    <text x="392" y="308" font-size="18" fill="#0f1e3a" text-anchor="start">Track errors / latency</text>
+    <path d="M380 295 L307 295" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="315" y="280" font-size="16" fill="#0f1e3a" text-anchor="start">report</text>
+    <rect x="24" y="255" width="280" height="80" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="283" font-size="18" fill="#0f1e3a" text-anchor="start">Scaling controller</text>
+    <text x="36" y="308" font-size="18" fill="#0f1e3a" text-anchor="start">Queue + load + latency</text>
+    <path d="M165 255 L165 165" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="35" y="210" font-size="16" fill="#0f1e3a" text-anchor="start">add capacity</text>
+    <text x="24" y="391" font-size="16" fill="#0f1e3a" text-anchor="start">Scale-to-zero saves idle cost but brings back cold starts.</text>
+  </g>
+</svg>

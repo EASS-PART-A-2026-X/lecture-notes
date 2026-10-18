@@ -38,6 +38,8 @@
 
 </details>
 
+**Optional:** [Visual inference engineering](inference-engineering.md) explains the main optimization methods with ten original diagrams, worked examples and predict-then-reveal exercises. Use it alongside Lectures 6–10.
+
 ## How to read a lecture
 
 1. **Before you start:** run the previous checkpoint. Bring a precise blocker if it fails.

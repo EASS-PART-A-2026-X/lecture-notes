@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 455" role="img" aria-labelledby="t d" width="640" height="455">
+  <title id="t">Reuse a prefix; still generate a new answer</title>
+  <desc id="d">Two requests share instructions and schema before different recipe text. Prefix reuse ends at the first changed token. A response cache instead reuses an entire previous answer.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="455" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">Reuse a prefix; still generate a new answer</text>
+    <text x="24" y="78" font-size="18" fill="#0f1e3a" text-anchor="start">Prompt A</text>
+    <rect x="140" y="52" width="280" height="60" rx="6" fill="#f1f7f3" stroke="#3b4453" stroke-width="2" />
+    <text x="152" y="80" font-size="18" fill="#0f1e3a" text-anchor="start">Same instructions + schema</text>
+    <rect x="438" y="52" width="178" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="450" y="80" font-size="18" fill="#0f1e3a" text-anchor="start">Lentil recipe</text>
+    <text x="24" y="158" font-size="18" fill="#0f1e3a" text-anchor="start">Prompt B</text>
+    <rect x="140" y="132" width="280" height="60" rx="6" fill="#f1f7f3" stroke="#3b4453" stroke-width="2" />
+    <text x="152" y="160" font-size="18" fill="#0f1e3a" text-anchor="start">Same instructions + schema</text>
+    <rect x="438" y="132" width="178" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="450" y="160" font-size="18" fill="#0f1e3a" text-anchor="start">Tomato recipe</text>
+    <text x="140" y="223" font-size="18" fill="#0f1e3a" text-anchor="start">Reuse eligible prefix KV state</text>
+    <text x="24" y="264" font-size="16" fill="#0f1e3a" text-anchor="start">Blocks illustrate prompt parts, not individual tokens.</text>
+    <rect x="24" y="290" width="592" height="60" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="318" font-size="18" fill="#0f1e3a" text-anchor="start">Prefix cache: save some prefill; decode a new answer.</text>
+    <rect x="24" y="370" width="592" height="60" rx="6" fill="#fbf6ec" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="398" font-size="18" fill="#0f1e3a" text-anchor="start">Response cache: reuse an answer only if still valid.</text>
+  </g>
+</svg>

@@ -930,6 +930,8 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 
 ## Read more
 
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
+
 - [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): optional release-decision exercise using reliability and critical-failure evidence.
 
 

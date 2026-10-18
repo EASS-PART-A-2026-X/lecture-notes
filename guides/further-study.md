@@ -25,6 +25,7 @@ Closer to the second (Stanford CS329Z), and also to MIT 6.1040: this course allo
 - [AI policies differ; ours is our own](#ai-policies-differ-ours-is-our-own)
 - [Course sites by topic](#course-sites-by-topic)
 - [Engineering sources to work through](#engineering-sources-to-work-through)
+- [Inference engineering book and companion](#inference-engineering-book-and-companion)
 - [Research papers](#research-papers)
 - [Accessibility standards](#accessibility-standards)
 - [What we could not verify](#what-we-could-not-verify)
@@ -201,6 +202,12 @@ Model answers:
 - **[Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)** and **Yao et al., [τ-bench](https://arxiv.org/abs/2406.12045), 2024:** distinguish tasks, trials and consistency. We reviewed the engineering discussion and the paper's abstract/metric framing; the clinic's matrix is synthetic and establishes no vendor comparison.
 
 Read for a specific question, state the source's assumptions, then bring back one check that could disprove your proposed application. Reputation helps find material; it does not establish that a pattern is needed in your product.
+
+## Inference engineering book and companion
+
+**Added and checked 18 October 2026.** Philip Kiely's [*Inference Engineering*](https://www.baseten.co/inference-engineering/book/) is publicly readable online without registration. Start with Chapter 1's product and measurement questions, then use the [visual course companion](inference-engineering.md#start-with-the-book) for a three-sitting route through Lectures 6–10, ten original diagrams and worked prediction exercises. Quantization, caching, batching and production measurement connect to Recipe Box; GPU kernels, multi-GPU serving and extra modalities remain optional depth.
+
+Gergely Orosz's [*What is inference engineering?*, 31 March 2026](https://newsletter.pragmaticengineer.com/p/what-is-inference-engineering) introduces the area with material adapted from Kiely's book. These are industry perspectives, not university endorsements or independent guarantees of performance. Follow the companion's links to the official engine documentation and primary papers; test an optimization against a fixed task and workload. No subscription, model download, GPU or extra account is required.
 
 ## Research papers
 

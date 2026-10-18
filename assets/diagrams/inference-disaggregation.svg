@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" role="img" aria-labelledby="t d" width="640" height="450">
+  <title id="t">Separate prefill from decode</title>
+  <desc id="d">A router sends a prompt to a prefill worker. That worker transfers KV state to a decode worker which generates the continuation. Cache transfer adds network cost; the pools can scale separately.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="450" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">Separate prefill from decode</text>
+    <rect x="24" y="80" width="250" height="75" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="108" font-size="18" fill="#0f1e3a" text-anchor="start">Request router</text>
+    <text x="36" y="133" font-size="18" fill="#0f1e3a" text-anchor="start">Checks load and cache</text>
+    <path d="M274 117 L360 117" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="290" y="101" font-size="16" fill="#0f1e3a" text-anchor="start">assign</text>
+    <rect x="370" y="80" width="245" height="75" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="382" y="108" font-size="18" fill="#0f1e3a" text-anchor="start">Prefill pool</text>
+    <text x="382" y="133" font-size="18" fill="#0f1e3a" text-anchor="start">Processes prompt</text>
+    <path d="M490 155 L490 235" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="355" y="200" font-size="16" fill="#0f1e3a" text-anchor="start">transfer KV state</text>
+    <rect x="370" y="245" width="245" height="75" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="382" y="273" font-size="18" fill="#0f1e3a" text-anchor="start">Decode pool</text>
+    <text x="382" y="298" font-size="18" fill="#0f1e3a" text-anchor="start">Generates continuation</text>
+    <path d="M370 282 L280 282" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="291" y="265" font-size="16" fill="#0f1e3a" text-anchor="start">return</text>
+    <rect x="24" y="245" width="250" height="75" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="273" font-size="18" fill="#0f1e3a" text-anchor="start">Client receives output</text>
+    <text x="36" y="298" font-size="18" fill="#0f1e3a" text-anchor="start">Still validate the result</text>
+    <rect x="24" y="355" width="591" height="65" rx="6" fill="#fbf6ec" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="383" font-size="18" fill="#0f1e3a" text-anchor="start">Benefit: tune and scale each phase separately.</text>
+    <text x="36" y="408" font-size="18" fill="#0f1e3a" text-anchor="start">Cost: transfer time, coordination and extra capacity.</text>
+  </g>
+</svg>

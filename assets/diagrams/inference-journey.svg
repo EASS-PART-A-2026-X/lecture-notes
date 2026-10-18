@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-labelledby="t d" width="640" height="440">
+  <title id="t">A token is not yet a saved recipe</title>
+  <desc id="d">The first token arrives before the complete candidate. Only a candidate passing validation reaches the database; rejected candidates return an error.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L9 5 L1 9 Z" fill="#3b4453" />
+    </marker>
+  </defs>
+  <rect width="640" height="440" fill="#ffffff" />
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif">
+    <text x="24" y="36" font-size="23" fill="#0f1e3a" text-anchor="start">A token is not yet a saved recipe</text>
+    <rect x="24" y="70" width="270" height="80" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="98" font-size="18" fill="#0f1e3a" text-anchor="start">Prompt + recipe text</text>
+    <text x="36" y="123" font-size="18" fill="#0f1e3a" text-anchor="start">Prefill builds attention state</text>
+    <path d="M294 110 L350 110" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="301" y="95" font-size="16" fill="#0f1e3a" text-anchor="start">sample</text>
+    <rect x="360" y="70" width="250" height="80" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="98" font-size="18" fill="#0f1e3a" text-anchor="start">First output token</text>
+    <text x="372" y="123" font-size="18" fill="#0f1e3a" text-anchor="start">User may see progress</text>
+    <path d="M485 150 L485 205" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="495" y="183" font-size="16" fill="#0f1e3a" text-anchor="start">finish decoding</text>
+    <rect x="360" y="215" width="250" height="80" rx="6" fill="#f3f6fa" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="243" font-size="18" fill="#0f1e3a" text-anchor="start">Complete candidate</text>
+    <text x="372" y="268" font-size="18" fill="#0f1e3a" text-anchor="start">Parse JSON; check rules</text>
+    <path d="M360 255 L294 255" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="298" y="240" font-size="16" fill="#0f1e3a" text-anchor="start">accept</text>
+    <rect x="24" y="215" width="270" height="80" rx="6" fill="#f1f7f3" stroke="#3b4453" stroke-width="2" />
+    <text x="36" y="243" font-size="18" fill="#0f1e3a" text-anchor="start">Backend commits recipe</text>
+    <text x="36" y="268" font-size="18" fill="#0f1e3a" text-anchor="start">Useful result is durable</text>
+    <path d="M485 295 L485 350" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#a)" />
+    <text x="495" y="327" font-size="16" fill="#0f1e3a" text-anchor="start">reject</text>
+    <rect x="360" y="360" width="250" height="50" rx="6" fill="#fbf3f2" stroke="#3b4453" stroke-width="2" />
+    <text x="372" y="388" font-size="18" fill="#0f1e3a" text-anchor="start">Error; no database write</text>
+  </g>
+</svg>
