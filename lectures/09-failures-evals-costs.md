@@ -1572,6 +1572,9 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 
 ## Read more
 
+- [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome): user-journey budgets, fan-out arithmetic and repeated agent trials; optional depth.
+
+
 **Before the lab (≤15 min):** [Tenacity documentation](https://tenacity.readthedocs.io/en/latest/). Guiding questions: which argument decides *whether* to retry, and which decides *how long* to wait? What does tenacity raise when it gives up without `reraise=True`?
 
 **Go deeper (optional):**

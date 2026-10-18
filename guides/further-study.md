@@ -24,6 +24,7 @@ Closer to the second (Stanford CS329Z), and also to MIT 6.1040: this course allo
 - [How this course was designed](#how-this-course-was-designed)
 - [AI policies differ; ours is our own](#ai-policies-differ-ours-is-our-own)
 - [Course sites by topic](#course-sites-by-topic)
+- [Engineering sources to work through](#engineering-sources-to-work-through)
 - [Research papers](#research-papers)
 - [Accessibility standards](#accessibility-standards)
 - [What we could not verify](#what-we-could-not-verify)
@@ -189,6 +190,17 @@ Model answers:
 ### ML systems
 
 - **[Stanford CS329S Machine Learning Systems Design](https://stanford-cs329s.github.io/)** (Winter 2022, the latest verified offering). *Published.* *Read for:* deployment, failure diagnosis, distribution shift and monitoring.
+
+## Engineering sources to work through
+
+**Added and reviewed 18 October 2026.** Use the [Systems reasoning clinics](systems-reasoning.md) to turn these primary resources into an original worked example, diagram, runnable lab or calculation. All are optional; no cloud account is needed.
+
+- **[Amazon Builders' Library: Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)** and **[AWS transactional outbox guidance](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html)**: intent identity and the boundary between a committed change and later delivery. The clinic's code is original, uses two SQLite files, and does not reproduce AWS services.
+- **[Google SRE: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/)** and **[Embracing Risk](https://sre.google/sre-book/embracing-risk/)**: define a user-journey measure and an error-budget decision. The clinic's counts are synthetic.
+- **Dean & Barroso, [The Tail at Scale](https://research.google/pubs/the-tail-at-scale/), CACM 2013:** a research starting point for latency tails. We verified the publication entry and abstract; the interactive fan-out arithmetic is our own simplified model.
+- **[Anthropic: Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)** and **Yao et al., [τ-bench](https://arxiv.org/abs/2406.12045), 2024:** distinguish tasks, trials and consistency. We reviewed the engineering discussion and the paper's abstract/metric framing; the clinic's matrix is synthetic and establishes no vendor comparison.
+
+Read for a specific question, state the source's assumptions, then bring back one check that could disprove your proposed application. Reputation helps find material; it does not establish that a pattern is needed in your product.
 
 ## Research papers
 

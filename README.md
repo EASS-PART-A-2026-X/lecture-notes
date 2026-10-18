@@ -25,7 +25,7 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ### Reading map
 
-Twelve guides support the lectures. Only two are required; the rest are there when you need them.
+Thirteen guides support the lectures. Only two are required; the rest are there when you need them.
 
 | Guide | Status | When |
 |---|---|---|
@@ -40,6 +40,7 @@ Twelve guides support the lectures. Only two are required; the rest are there wh
 | [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | One request through containers, contracts, commits and recovery; with Lectures 3 and 7–10 |
 | [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Repository reading, review, private records, concurrency and recovery; alongside the weekly work |
 | [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | A work order through a failed build, repair, review and delivery; after Lecture 10 or in the clinics |
+| [Systems reasoning clinics](guides/systems-reasoning.md) | *Optional depth* | Idempotency/outbox lab, reliability budgets and repeated agent trials; after Lectures 7–9 |
 | [Further study](guides/further-study.md) | *Optional depth* | Course sites and research behind this course's design; any time, never assessed |
 
 *Optional depth* activities need no paid accounts and never replace the required lecture checkpoints.

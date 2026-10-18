@@ -44,6 +44,9 @@ jobs:
       - name: Test inference teaching model
         run: node --test .github/scripts/test_inference_lab.cjs
 
+      - name: Test reliability teaching model
+        run: node --test .github/scripts/test_reliability_lab.cjs
+
       - name: Test course page helpers (schedule dates, next meeting, stepper)
         run: node --test .github/scripts/test_course_js.cjs
 
@@ -54,6 +57,9 @@ jobs:
 
       - name: Execute complete lecture examples
         run: uv run --locked .github/scripts/check_examples.py
+
+      - name: Execute printed delivery failure lab
+        run: uv run --no-project --python 3.14 python .github/scripts/check_reasoning_labs.py
 
       - name: Validate the printed Compose manifest
         run: python3 .github/scripts/check_compose.py
