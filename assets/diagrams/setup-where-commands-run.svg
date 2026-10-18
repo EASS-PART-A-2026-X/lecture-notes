@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 684" role="img" aria-labelledby="t d">
+  <title id="t">Where each command runs on a Windows laptop</title>
+  <desc id="d">Three places run programs. Windows apps: PowerShell for setup only, the editor window, the browser and the Docker Desktop app. WSL 2 Ubuntu runs every course command, holds your code under ~/eass/your-product and runs the dev server on port 8000. Docker Desktop's engine runs containers. PowerShell installs WSL; the editor opens the Ubuntu folder; the browser reaches the dev server at localhost:8000 and a published container at localhost:8080; the docker client in Ubuntu sends docker run to the engine, which creates the container. A warning says /mnt/c is the Windows C: drive and is slow for code. On macOS there is no WSL layer; on Linux everything runs on the machine itself.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1d4e89"/></marker>
+  </defs>
+  <rect width="640" height="684" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="12" y="34" font-size="22" font-weight="700">Where each command runs on a Windows laptop</text>
+
+    <!-- Windows apps -->
+    <rect x="12" y="52" width="616" height="140" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="26" y="78" font-size="19" font-weight="700">Windows apps</text>
+    <text x="616" y="78" font-size="16" fill="#535c6b" text-anchor="end">they show results</text>
+    <g stroke="#3b4453" stroke-width="2" fill="#ffffff">
+      <rect x="26" y="96" width="136" height="80" rx="6"/>
+      <rect x="174" y="96" width="136" height="80" rx="6"/>
+      <rect x="322" y="96" width="136" height="80" rx="6"/>
+      <rect x="470" y="96" width="144" height="80" rx="6"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="94" y="128" font-size="18" font-weight="700">PowerShell</text>
+      <text x="94" y="154" font-size="16" fill="#535c6b">setup only</text>
+      <text x="242" y="128" font-size="18" font-weight="700">Editor</text>
+      <text x="242" y="154" font-size="16" fill="#535c6b">the window</text>
+      <text x="390" y="128" font-size="18" font-weight="700">Browser</text>
+      <text x="390" y="154" font-size="16" fill="#535c6b">shows pages</text>
+      <text x="542" y="128" font-size="17" font-weight="700">Docker Desktop</text>
+      <text x="542" y="154" font-size="16" fill="#535c6b">starts the engine</text>
+    </g>
+
+    <g transform="translate(0 16)">
+    <!-- WSL 2 Ubuntu -->
+    <rect x="12" y="276" width="390" height="276" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2.5"/>
+    <text x="26" y="302" font-size="19" font-weight="700">WSL 2 · Ubuntu (Linux)</text>
+    <text x="26" y="330" font-size="17">every course command</text>
+    <text x="26" y="354" font-size="17">uv · git · gh · docker</text>
+    <rect x="26" y="374" width="200" height="58" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="2"/>
+    <text x="126" y="398" font-size="16" text-anchor="middle">~/eass/&lt;your-product&gt;</text>
+    <text x="126" y="420" font-size="16" fill="#535c6b" text-anchor="middle">your code</text>
+    <rect x="240" y="374" width="148" height="58" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="314" y="398" font-size="17" font-weight="700" text-anchor="middle">dev server</text>
+    <text x="314" y="420" font-size="16" fill="#535c6b" text-anchor="middle">port 8000</text>
+    <text x="26" y="470" font-size="17">docker client</text>
+    <rect x="26" y="488" width="362" height="52" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <path d="M38 498 L50 510 M50 498 L38 510" stroke="#9b2c2c" stroke-width="2.5"/>
+    <text x="58" y="510" font-size="16" fill="#9b2c2c" font-weight="700">/mnt/c/… is the Windows C: drive.</text>
+    <text x="58" y="530" font-size="16" fill="#9b2c2c">Slow for code: keep it under ~ instead.</text>
+
+    <!-- Docker engine -->
+    <rect x="416" y="276" width="212" height="276" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2.5"/>
+    <text x="456" y="302" font-size="19" font-weight="700">Docker engine</text>
+    <text x="456" y="326" font-size="16" fill="#535c6b">Docker Desktop's</text>
+    <text x="456" y="346" font-size="16" fill="#535c6b">own Linux distro</text>
+    <rect x="430" y="374" width="184" height="58" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="522" y="398" font-size="17" font-weight="700" text-anchor="middle">container</text>
+    <text x="522" y="420" font-size="16" fill="#535c6b" text-anchor="middle">port 8000 inside</text>
+    <text x="522" y="508" font-size="16" fill="#535c6b" text-anchor="middle">containers run</text>
+    <text x="522" y="528" font-size="16" fill="#535c6b" text-anchor="middle">only here</text>
+
+    </g>
+    <!-- Arrows -->
+    <g stroke="#1d4e89" stroke-width="3" fill="none" marker-end="url(#a)">
+      <path d="M94 176 V287"/>
+      <path d="M242 176 V287"/>
+      <path d="M368 176 V385"/>
+      <path d="M440 176 V385"/>
+      <path d="M140 480 H412"/>
+      <path d="M522 494 V453"/>
+    </g>
+    <g fill="#ffffff">
+      <rect x="38" y="222" width="112" height="28" rx="4"/>
+      <rect x="186" y="222" width="112" height="28" rx="4"/>
+      <rect x="304" y="202" width="128" height="28" rx="4"/>
+      <rect x="376" y="238" width="128" height="46" rx="4"/>
+    </g>
+    <g font-size="17" text-anchor="middle">
+      <text x="94" y="242">wsl --install</text>
+      <text x="242" y="242">opens folder</text>
+      <text x="368" y="222">localhost:8000</text>
+      <text x="440" y="258">localhost:8080</text>
+      <text x="440" y="278" font-size="16" fill="#535c6b">(published -p)</text>
+    </g>
+    <text x="300" y="472" font-size="17" text-anchor="middle">sends docker run</text>
+    <text x="532" y="480" font-size="16">creates</text>
+
+    <g transform="translate(0 16)">
+    <!-- macOS and Linux -->
+    <rect x="12" y="572" width="616" height="86" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="26" y="598" font-size="17"><tspan font-weight="700">macOS:</tspan> no WSL box. Terminal runs every command;</text>
+    <text x="26" y="620" font-size="17">Docker Desktop runs the engine in a Linux VM.</text>
+    <text x="26" y="644" font-size="17"><tspan font-weight="700">Linux:</tspan> commands and containers run on your machine.</text>
+    </g>
+  </g>
+</svg>

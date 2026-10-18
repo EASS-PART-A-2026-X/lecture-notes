@@ -13,23 +13,36 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 **Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery.
 
-**On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
+**On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [FAQ](#frequently-asked-questions) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
 
 ## Start here
 
-1. **Set up before class:** use [Student setup](guides/student-setup.md) for Windows/WSL, macOS, Linux, GitHub, and a choice of AI tools. Run its ready-for-class checks; no paid AI plan is required.
-2. **Understand the path:** read the [learning map](guides/learning-map.md). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
-3. **Prepare for the first meeting:** follow [Lecture 1's setup checklist](lectures/01-environment-git-docker-ai.md#before-you-start) and check your tools before class.
+1. **Set up before class:** complete **Part A** of [Student setup](guides/student-setup.md#part-a-before-the-first-meeting) (tools and accounts) for Windows/WSL, macOS or Linux. Part B happens at the end of Lecture 1. No paid AI plan is required.
+2. **Understand the path:** read the [learning map](guides/learning-map.md). Not sure your basics are solid? Take the 10-minute [readiness check](guides/engineering-foundations.md#readiness-check). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
+3. **Prepare for the first meeting:** read [Lecture 1's Before you start](lectures/01-environment-git-docker-ai.md#before-you-start) the evening before. If a check fails, bring one precise blocker written as PARD.
 4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
 5. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
-For how models run and how agents execute tools, use [Local inference and transformers](guides/local-inference.md) and [Agent sandboxes](guides/agent-sandboxes.md). The guides connect to Lectures 6, 8, 9, and 10; hardware-intensive experiments remain optional.
+### Reading map
 
-Read [Engineering contracts](guides/engineering-contracts.md) to connect manifests, skills, factories, and evaluations to your Docker/Compose workflow. It compares current practitioner guidance and gives concrete checks without adding a platform requirement.
+Twelve guides support the lectures. Only two are required; the rest are there when you need them.
 
-The [visual system walkthrough](guides/system-walkthrough.md) follows one request through containers, contracts, database commits, and recovery. Use it alongside Lectures 3 and 7–10.
+| Guide | Status | When |
+|---|---|---|
+| [Student setup](guides/student-setup.md) | *Required* | Part A before Lecture 1; Part B at the end of Lecture 1 |
+| [Learning map](guides/learning-map.md) | *Required* | In week 1, then its row for each class |
+| [Engineering foundations](guides/engineering-foundations.md) | *Bridge when stuck* | Its readiness check before Lecture 1; a section whenever a lecture's prerequisite check fails |
+| [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose an assistant or model, and before Lecture 6 |
+| [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | Alongside your first assistant tasks (Lecture 1) and your agent (Lecture 6) |
+| [Agent sandboxes](guides/agent-sandboxes.md) | *Optional depth* | Its [Week 1 minimum](guides/agent-sandboxes.md#week-1-minimum) before your first agent session; the rest with Lectures 6, 8 and 10 |
+| [Local inference](guides/local-inference.md) | *Optional depth* | How models run and what a transformer computes; with Lectures 6 and 9. Hardware-intensive experiments stay optional |
+| [Engineering contracts](guides/engineering-contracts.md) | *Optional depth* | Manifests, skills, factories and evaluations next to your Docker/Compose workflow; Lectures 8–10 |
+| [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | One request through containers, contracts, commits and recovery; with Lectures 3 and 7–10 |
+| [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Repository reading, review, private records, concurrency and recovery; alongside the weekly work |
+| [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | A work order through a failed build, repair, review and delivery; after Lecture 10 or in the clinics |
+| [Further study](guides/further-study.md) | *Optional depth* | Course sites and research behind this course's design; any time, never assessed |
 
-For professional practice alongside the weekly work, use the [industry engineering studio](guides/industry-studio.md): read an unfamiliar repository, specify and review a change, protect private records, handle concurrent edits, and rehearse data/release recovery. Its runnable extension and studio activities are optional and need no paid accounts.
+*Optional depth* activities need no paid accounts and never replace the required lecture checkpoints.
 
 ## Calendar and 13-meeting schedule
 
@@ -39,17 +52,17 @@ Ten planned lectures come first, then three flexible meetings.
 |---|---|---|---|
 | 1 | Mon 19 Oct 2026, 18:00 | [Environment, Git, Docker and AI-assisted coding](lectures/01-environment-git-docker-ai.md) | Working setup; product sketch; 2–3 open-source candidates |
 | 2 | Mon 26 Oct 2026 | [HTTP, FastAPI and Pydantic](lectures/02-http-fastapi-pydantic.md) | Tested CRUD API |
-| 3 | Mon 2 Nov 2026 | [Persistence and your first upstream PR](lectures/03-persistence-and-first-pr.md) | Persistent backend; first upstream PR opened |
-| 4 | Mon 9 Nov 2026 | [Browser frontend](lectures/04-browser-frontend.md) | First end-to-end user flow; EX1 due |
+| 3 | Mon 2 Nov 2026 | [Persistence and your first upstream PR](lectures/03-persistence-and-first-pr.md) | Persistent backend; **first upstream PR opened** |
+| 4 | Mon 9 Nov 2026 | [Browser frontend](lectures/04-browser-frontend.md) | First end-to-end user flow; **EX1 due** |
 | 5 | Mon 16 Nov 2026 | [Frontend reliability and testing](lectures/05-frontend-reliability-testing.md) | Usable interface; one automated product flow |
-| 6 | Mon 23 Nov 2026 | [Pydantic AI agents](lectures/06-pydantic-ai-agents.md) | Small domain agent; second upstream PR opened |
-| 7 | Mon 30 Nov 2026 | [The third service and its contract](lectures/07-third-service-contracts.md) | Full three-service flow; EX2 due |
-| 8 | Mon 7 Dec 2026 | [Docker Compose](lectures/08-docker-compose.md) | One-command stack startup; third upstream PR opened |
+| 6 | Mon 23 Nov 2026 | [Pydantic AI agents](lectures/06-pydantic-ai-agents.md) | Small domain agent; **second upstream PR opened** |
+| 7 | Mon 30 Nov 2026 | [The third service and its contract](lectures/07-third-service-contracts.md) | Full three-service flow; **EX2 due** |
+| 8 | Mon 7 Dec 2026 | [Docker Compose](lectures/08-docker-compose.md) | One-command stack startup; **third upstream PR opened** |
 | 9 | Mon 14 Dec 2026 | [Failures, evaluations and costs](lectures/09-failures-evals-costs.md) | Failure tests; small evaluation dataset with results |
 | 10 | Mon 21 Dec 2026 | [CI, security and release](lectures/10-ci-security-release.md) | Release candidate with runbook |
 | 11 | Mon 28 Dec 2026 | [Flexible: integration and upstream-review clinic](lectures/11-13-clinics-and-demos.md#meeting-11--integration-and-upstream-review-clinic) | Integrated stack; PR reviews followed up |
 | 12 | Mon 4 Jan 2027 | [Flexible: demo rehearsal, troubleshooting and evidence review](lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Rehearsed demo and individual explanation; evidence table reviewed |
-| 13 | Mon 11 Jan 2027 | [Final demos and individual technical discussion](lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Final demo; EX3 and open-source evidence due |
+| 13 | Mon 11 Jan 2027 | [Final demos and individual technical discussion](lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Final demo; **EX3 and open-source evidence due** |
 
 Notes, checked against the [HIT academic calendar](https://www.hit.ac.il/students/calender/) on 16 October 2026:
 
@@ -71,6 +84,26 @@ Your product has three application services:
 Data flows from user to frontend to backend to third service; only the backend touches persistent storage. You build the product individually or in a pair, and every student explains their own work.
 
 A database, Redis, proxy, or monitoring container is infrastructure, not your third service. Three containers alone do not prove three application services.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Three-service product diagram, scroll horizontally">
+    <img src="assets/diagrams/home-three-services.svg" alt="Browser to frontend to backend to AI service; only the backend reads and commits the database; the frontend never calls the database or the AI service." width="960" height="400">
+  </div>
+  <figcaption><strong>Who calls whom, and who owns the data.</strong> Arrows point from the caller to the service it calls; ports are the course defaults. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="assets/diagrams/home-three-services.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Browser** (the user's tab) **opens** the frontend's UI at port 8501.
+2. **Frontend** (Streamlit, React, or another web framework) **calls** the backend's HTTP API at port 8000. With React, the UI code runs inside the browser, but it still calls only the backend.
+3. **Backend** (FastAPI and Pydantic) validates every request, **reads and commits** the database, and **calls** the AI service over HTTP at port 8001 with validated input.
+4. **AI service** (Pydantic AI) returns a candidate result. It never opens the database; the backend validates the candidate before anything is saved.
+5. **Database** (for example, a SQLite file on a Docker volume) belongs to the backend alone.
+6. **Not allowed:** the frontend reading or writing the database directly (it would bypass validation), and the frontend calling the AI service directly (the backend always sits in between).
+7. **Not a third service:** a database, Redis, proxy or monitoring container is infrastructure.
+
+</details>
 
 Scope and safety:
 
@@ -135,7 +168,16 @@ In your product README, add one row per PR with these seven fields:
 
 **AI assistants.** AI coding tools are allowed from week 1. You must understand and verify everything you submit. Your product README includes a short AI-use note: the tools you used, the help you received, and the checks you performed. Prompt logs are not needed.
 
-Practice the [work-order → candidate → verification loop](guides/agent-driven-development.md#the-development-loop) with the assistant available to you, such as Codex, Claude Code, or OpenCode. The guides add formative exercises and optional framework comparisons; assignment requirements, deadlines, and grading stay as stated here. No particular commercial coding assistant, Mastra installation, or Airflow deployment is required.
+**AI use at a glance.** This table restates the rules on this page; it adds none.
+
+| | What it means for you |
+|---|---|
+| **Encouraged** | Using an assistant from week 1 to investigate, implement and verify changes. |
+| **Required** | Understanding and verifying everything you submit. A short AI-use note in your product README (tools, help received, checks performed). Explaining your own work individually. Writing all maintainer-facing text yourself. Reading each upstream project's CONTRIBUTING guide and AI-use policy before you start (some restrict AI-assisted work). |
+| **Not OK** | Submitting work you cannot explain. Letting an assistant write your PR descriptions, issue comments or review replies. |
+| **Recommended setup** | Keeping secrets and private user data out of Git, and automated tests that make no paid API calls (deterministic substitutes such as `TestModel`), as listed under "What a grader does" below. |
+
+Practice the [work-order → candidate → verification loop](guides/agent-driven-development.md#the-development-loop) with the assistant available to you, such as Codex, Claude Code, or OpenCode. The guides add formative exercises and optional framework comparisons; assignment requirements, deadlines, and grading stay as stated here. No particular commercial coding assistant or orchestration framework is required.
 
 **Assessment.** Assessment covers working behavior, understandable design, tests, reproducibility, documentation, contribution evidence, and your individual understanding. You individually explain your own product work and each of your contributions, including how you verified them, even if you build in a pair.
 
@@ -149,6 +191,28 @@ Practice the [work-order → candidate → verification loop](guides/agent-drive
 - The README gives the exact test command for each service.
 - Automated tests make no paid API calls; they use deterministic substitutes such as Pydantic AI's `TestModel`.
 - Separate instructions explain how to run with a real model.
+
+## Frequently asked questions
+
+### Do I need a paid account, a cloud subscription or a GPU?
+
+No. Every required step works with free tools: Docker Desktop is free for education use, automated tests use offline fakes such as `TestModel`, and a free local model (for example, through Ollama) works for real runs. If an AI tool asks for payment, switch to another [route in Student setup](guides/student-setup.md#choose-a-simple-route) or to the manual route.
+
+### My Git, SQL or shell skills are weak. Where do I start?
+
+Take the [readiness check](guides/engineering-foundations.md#readiness-check) in [Engineering foundations](guides/engineering-foundations.md). Each check that fails links to a short repair section, and each lecture's "Before you start" says which section it needs.
+
+### I am behind. What now?
+
+Follow [When you are behind](guides/learning-map.md#when-you-are-behind) in the learning map: find the earliest checkpoint that fails, repair it, and only then add the next layer. Tell the instructor early if installation rights, hardware or access block you.
+
+### Can I use AI tools?
+
+Yes, from week 1, under the rules in [AI use at a glance](#working-method-ai-use-assessment-and-reproducibility): you must understand and verify everything you submit, keep a short AI-use note, and write all maintainer-facing text yourself.
+
+### Where do I ask for help?
+
+In the channel the instructor provides. Write your question as [PARD](lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template) (problem, actions, result, desired), with secrets redacted, and include what you already tried.
 
 ## Official resources
 
