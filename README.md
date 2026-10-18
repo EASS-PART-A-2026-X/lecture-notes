@@ -44,6 +44,8 @@ Twelve guides support the lectures. Only two are required; the rest are there wh
 
 *Optional depth* activities need no paid accounts and never replace the required lecture checkpoints.
 
+**Want to see the complete reference running?** After Lecture 9, [reproduce the integrated reference](guides/system-walkthrough.md#reproduce-the-integrated-reference): assemble the printed code, run all three services, verify persistence and an AI outage, then trace the browser flow. It uses synthetic data and a deterministic model substitute, with no model account or GPU.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.

@@ -29,6 +29,7 @@
 - [Diagnose one failure at a time](#diagnose-one-failure-at-a-time)
 - [Know when a new pattern earns its complexity](#know-when-a-new-pattern-earns-its-complexity)
 - [Run the release rehearsal](#run-the-release-rehearsal)
+- [Reproduce the integrated reference](#reproduce-the-integrated-reference)
 - [Teaching references](#teaching-references)
 - [Quick quiz](#quick-quiz)
 
@@ -426,6 +427,82 @@ Then check persistence and the outage path, replacing `4` with your returned `id
 Redact keys and personal data from anything you paste.
 
 **Explain it individually:** trace one request without an assistant; name the authoritative write, the earliest rejecting boundary, one unproven property, and the evidence that would close that gap. Ask a reviewer to propose one counterexample, reproduce it if valid, and revise the implementation or contract accordingly.
+
+## Reproduce the integrated reference
+
+**Optional after Lecture 9; about 15 minutes plus downloads.** This is a diagnostic reference assembled from the code printed in Lectures 2–9. It helps you distinguish a problem in your product from a problem in the notes. Keep building your own domain product; this reference does not replace your assignment or contribution work.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Integrated product checks, scroll horizontally">
+    <img src="../assets/diagrams/integrated-checks.svg" alt="Three checks of the same product: request and validated commit, AI outage with CRUD still available, and container recreation with rows preserved in a named volume." width="760" height="610">
+  </div>
+  <figcaption><strong>Test each boundary with an observation.</strong> The automated check uses real HTTP and containers with TestModel; the browser walkthrough is separate. An AI outage here begins after healthy startup. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/integrated-checks.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. A browser action reaches Streamlit, which calls the backend over HTTP. The backend calls the AI service, validates its candidate, and commits to its own database. The automated check exercises HTTP; you verify the browser separately.
+2. After startup, stopping the AI service makes extraction return 503 without a partial AI record. Ordinary CRUD continues through the backend and its database. This does not change Lecture 8's startup health gating.
+3. `docker compose down` removes containers while the named volume remains. `up` recreates containers; the check reads the same IDs and values. Adding `--volumes` would deliberately delete the reference data.
+
+</details>
+
+### What the check actually proves
+
+| Boundary | Evidence collected | What remains separate |
+|---|---|---|
+| Printed code → running code | The assembler copies the named snippets and applies the continuation edits taught in the lectures; 25 backend, 11 AI-service and 9 frontend tests run | Your own product's changes and dependencies |
+| Containers → real HTTP | Three healthy services; frontend and backend loopback endpoints; backend calls the AI service by Compose DNS | A health check alone does not prove a user journey |
+| Candidate → durable record | An AI request crosses HTTP, passes consumer validation, and becomes a readable database row | `TestModel` returns placeholders; this does not measure extraction quality |
+| Restart → same data | `down` and `up` recreate containers while manual and AI-created rows remain in the named volume | Database backups, migrations and disaster recovery |
+| AI outage → bounded failure | A stopped AI service produces 503 within 10 seconds, saves no partial AI row, and leaves ordinary CRUD working; the AI flow recovers after restart | Other failures, production scale, and provider behavior |
+| Browser → complete journey | You add, edit, paste, reload and delete through the running interface below | The automated HTTP check does not drive a browser |
+
+### Run it, then explain it
+
+You need Git, Python 3, uv, Docker with Compose, and internet access for the first dependency/image downloads. No API key, paid account or GPU is needed. Run this in a **new terminal**, alongside your own product. The check uses ports **18000** and **18501** to avoid the lecture defaults; stop here if another application already uses them.
+
+From a fresh clone of the **course notes repository**, not your product repository:
+
+```bash
+git clone https://github.com/EASS-PART-A-2026-X/lecture-notes.git eass-notes-check
+cd eass-notes-check
+python3 .github/scripts/assemble_stack.py ../eass-reference-check
+python3 .github/scripts/check_stack.py ../eass-reference-check --project eass-check-manual --keep
+```
+
+On Windows, run these commands in WSL Ubuntu. The destination `../eass-reference-check` must not exist; the assembler refuses to overwrite your files. It copies the reference manifests and lockfiles, so `uv run --locked` and the printed Dockerfiles use the recorded dependencies. It applies Lecture 9's retry/failure edits, and leaves Lecture 10's optional service-token example out.
+
+**Checkpoint:** the output shows **25 + 11 + 9 passing tests**, then eight `PASS:` lines for the integrated checks. `../eass-reference-check/stack-check.json` records which boundaries passed. A failure exits with an error; read the first failing command before changing anything. Containers remain running with `--keep` so you can investigate.
+
+<div class="stepper" markdown="1">
+
+1. **Open the running interface.** Visit <http://localhost:18501>. Expand a seed recipe. Explain why the browser uses port 18501 while Streamlit calls `backend:8000` inside the Compose network.
+2. **Make a visible change.** Open “Add a recipe”, enter a unique title and save. Find it under “Recipes”, change its minutes and save again. Reload the browser: the stored value must remain.
+3. **Cross the AI boundary.** Open “Paste a recipe”, supply a short recipe and choose “Extract with AI”. The default is `TestModel`, so expect schema-valid placeholder content rather than a faithful extraction. Confirm that the resulting record appears under “Recipes”.
+4. **Locate the durable evidence.** Read `stack-check.json` and the earlier restart/outage results. Point to the named volume in `compose.yaml`. Explain why a picture or a green health endpoint alone would not establish persistence.
+5. **Clean up deliberately.** Follow the cleanup command below. It removes only this disposable reference project's containers, network and synthetic data volume. Your product is a different Compose project.
+
+</div>
+
+From the course notes checkout, after the browser review:
+
+```bash
+docker compose -f ../eass-reference-check/compose.yaml -p eass-check-manual down --volumes --remove-orphans
+```
+
+**Predict first:** which evidence would still pass if the model always returned a valid but unrelated recipe? Reveal the answer after your browser run.
+
+<details markdown="1">
+<summary>Check your answer</summary>
+
+The schema, transport, persistence, restart and outage checks can all pass. A deterministic substitute deliberately checks wiring and controls. To measure a real model, choose it explicitly using [Local inference](local-inference.md#reach-a-host-model-server-from-compose), then run Lecture 9's dataset with expected facts and failure slices. Record the model, settings and measured results separately; a successful request is not a quality evaluation. Keep secrets in the ignored `.env` of your own experiment, never in a shared report. The reference checker intentionally refuses a directory containing `.env`.
+
+</details>
+
+The Pages workflow repeats the 45 assembled unit checks and eight HTTP/lifecycle checks before deployment. These are additional to the existing 46 reference checks. The manual browser walkthrough remains a separate check; passing this reference does not certify every student's product.
+
 
 ## Teaching references
 
