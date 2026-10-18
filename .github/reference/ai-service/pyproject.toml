@@ -1,0 +1,16 @@
+[project]
+name = "recipe-box-ai-service"
+version = "0.1.0"
+requires-python = ">=3.14,<3.15"
+dependencies = ['fastapi[standard]==0.143.3', 'pydantic-ai-slim[openai]==2.57.0']
+
+[dependency-groups]
+dev = ["pytest==9.1.1"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.fastapi]
+entrypoint = "app.main:app"

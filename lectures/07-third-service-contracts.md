@@ -626,7 +626,19 @@ def create_from_text(text: str) -> Recipe:
     )
 ```
 
-In `frontend/streamlit_app.py`, change the tabs line to `browse, add, paste = st.tabs(["Recipes", "Add a recipe", "Paste a recipe"])` and append:
+In `frontend/streamlit_app.py`, replace the tabs line with the following, then append the form below:
+
+```python
+# frontend/streamlit_app.py (replace the tabs line)
+browse, add, paste = st.tabs(
+    ["Recipes", "Add a recipe", "Paste a recipe"],
+    key="recipe-tabs",
+    on_change="rerun",
+)
+```
+
+The stable key and `on_change="rerun"` track the selected tab in session state. A failed submission stays on “Paste a recipe”, where the error and the user's text remain visible, instead of returning to the first tab and hiding the message. Switching tabs now reruns the script; the forms still batch input until submission. A successful save announces its result above the tabs; choose “Recipes” to inspect the fresh list. This uses the [Streamlit 1.66 tab-state API](https://docs.streamlit.io/develop/api-reference/layout/st.tabs), checked 18 October 2026.
+
 
 ```python
 # frontend/streamlit_app.py (append)
@@ -671,6 +683,8 @@ def test_paste_success(backend):
         return_value=httpx.Response(201, json=saved)
     )
     at = start_app(backend, [])
+    at.session_state["recipe-tabs"] = "Paste a recipe"
+    at.run()
     at.text_area(key="paste-text").input(PASTE)
     at.button(key="paste-submit").click().run()
     assert json.loads(post.calls.last.request.content) == {"text": PASTE}
@@ -682,10 +696,14 @@ def test_paste_shows_ai_errors(backend, status):
     reply = httpx.Response(status, json={"detail": "fixed text from the backend"})
     backend.post("/recipes/from-text").mock(return_value=reply)
     at = start_app(backend, [])
+    at.session_state["recipe-tabs"] = "Paste a recipe"
+    at.run()
     at.text_area(key="paste-text").input(PASTE)
     at.button(key="paste-submit").click().run()
     assert not at.exception
     assert at.error[0].value == AI_ERRORS[status]
+    assert at.session_state["recipe-tabs"] == "Paste a recipe"
+    assert at.text_area(key="paste-text").value == PASTE
 ```
 
 They add three tests to your frontend suite (one success, two parametrized error cases).

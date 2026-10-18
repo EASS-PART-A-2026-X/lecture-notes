@@ -80,10 +80,29 @@ jobs:
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         if: github.event_name != 'pull_request'
 
+  integrated-stack:
+    name: Verify integrated lecture stack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.1"
+          enable-cache: false
+      - name: Assemble from teaching snippets and verify containers, HTTP, persistence and outage recovery
+        run: |
+          python3 .github/scripts/assemble_stack.py "$RUNNER_TEMP/eass-reference"
+          python3 .github/scripts/check_stack.py "$RUNNER_TEMP/eass-reference"
+
   deploy:
     name: Deploy to GitHub Pages
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, integrated-stack]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

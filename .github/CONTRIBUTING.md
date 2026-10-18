@@ -276,3 +276,11 @@ Before adding anything interactive, check that it:
 - keeps any animation inside `@media (prefers-reduced-motion: no-preference)`;
 - has a static fallback that is readable on GitHub, without JavaScript and in the PDF, and a text version (long description) for every complex figure or chart;
 - puts its script in `assets/js/course.js` (or a page-specific script loaded from `_includes/footer_custom.html`) with a Node test listed in `pages.yml` and above.
+
+## Integrated Lecture 9 reference
+
+`.github/scripts/assemble_stack.py NEW_DIRECTORY` reconstructs the printed examples through Lecture 9. It uses exact snippet headers and explicit continuation/function edits; it refuses an existing destination and fails if an edit target is ambiguous. Do not repair teaching mistakes only in the assembler. Change the lecture and verify both the checkpoint and assembled paths. `.github/reference/*` holds only the three dependency manifests and universal lockfiles, never a second maintained copy of the application.
+
+Run `python3 .github/scripts/check_stack.py NEW_DIRECTORY` after assembly. It runs 25 backend, 11 AI-service and 9 frontend tests, then builds the printed Dockerfiles/Compose file and exercises eight HTTP/lifecycle checks using `AI_MODEL=test`. It uses dedicated `eass-check-…` Compose projects and loopback ports 18000/18501 (overridable flags). It refuses `.env`, removes inherited model credentials and Compose overrides, and removes its disposable containers/volume on exit. `--keep` retains them for the separate manual browser review; clean up with the printed project name. Never run this against a student product or production data.
+
+The `integrated-stack` CI job must pass before Pages deploys. These checks cover the Lecture 9 wiring, not real-model extraction quality, every Lecture 10 extension, or an automated browser journey. Review the published walkthrough's browser steps with CUA and record the distinction. Update the manifests and locks together when deliberately changing dependencies, then rerun on Linux and check the full browser journey.
