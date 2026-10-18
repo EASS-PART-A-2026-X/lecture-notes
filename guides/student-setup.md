@@ -6,6 +6,8 @@
 
 **Setup has two parts.** Do **Part A** (tools and accounts) *before* the first meeting on Monday 19 October 2026, 18:00 Israel time. Allow 1–3 hours plus download time (estimate), and finish by **Sunday 18 October in the evening**. Do **Part B** (your repository, a practice pull request, `/health`, and a first assistant task) *at the end of Lecture 1*, after the live demo shows each step. Do not try Part B alone the night before. The course requires no paid AI subscription, model API key, GPU, or particular editor.
 
+**Required account:** each student needs their own **free GitHub account with a verified email** for repositories, pull requests, and course submissions. An existing personal account is fine. Follow [Connect Git and GitHub](#connect-git-and-github) below; a paid GitHub plan and GitHub Education approval are not required.
+
 **You will be able to:** say which terminal runs each course command, show that uv, Git, the GitHub CLI and Docker work on your laptop, and, in Part B, keep or undo an assistant's change with Git.
 
 **Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
@@ -194,7 +196,7 @@ An editor launcher such as `code` is convenient, not a requirement. If it is una
 
 Git stores history on your laptop; GitHub hosts repositories; `gh` operates GitHub from your terminal. Signing in to an AI tool does not authenticate GitHub. This is the course's one-time configuration; Lecture 1 refers to it instead of repeating it.
 
-1. **Create your own GitHub account** with an email you will keep, and turn on the account security GitHub offers.
+1. **Create or reuse your own free GitHub account.** Use [GitHub's signup page](https://github.com/signup) and [account setup guide](https://docs.github.com/en/account-and-profile/how-tos/account-management/creating-an-account-on-github), then verify an email address you can access. If you already have a personal account, keep it. Enable [two-factor authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) and store the recovery codes securely. Use your own account for your contributions; never share passwords, tokens, or recovery codes with a teammate or assistant. GitHub Education and Copilot are optional benefits, not prerequisites for this login.
 2. **Find your private commit email.** On GitHub, open Settings → Emails and select "Keep my email addresses private". GitHub shows an address of the form `ID+USERNAME@users.noreply.github.com`. GitHub uses a commit's email to link the commit to your account, so commits made with this address count as yours in your profile and in upstream projects, without publishing your personal address. If you also select "Block command line pushes that expose my email", a push made with your personal address is refused (see [When setup fails](#when-setup-fails)).
 3. **Run the one-time configuration** in Ubuntu, Terminal or your Linux shell, replacing both example values:
 
@@ -293,9 +295,10 @@ Claude Code's [quickstart](https://code.claude.com/docs/en/quickstart) requires 
 Tick these before Monday 19 October. Nothing here needs a course repository yet.
 
 - [ ] My laptop passes the [laptop check](#check-your-laptop-first), or I have told the instructor what fails.
+- [ ] I can sign in to **my own free GitHub account** in the browser, my email is verified, and I have secured the account with two-factor authentication and saved its recovery codes privately.
 - [ ] In the terminal I will use in class, the [Verify](#verify) commands print versions (uv 0.12 or newer), and `uv python install 3.14` has run.
 - [ ] `docker run --rm hello-world` prints `Hello from Docker!`, and I can say what `docker images` and `docker ps -a` show afterwards.
-- [ ] `gh auth status` shows I am logged in, and my Git email is my noreply address.
+- [ ] `gh auth status` shows **that same GitHub username**, and my Git email is my noreply address.
 - [ ] I can open a folder in my editor, and `pwd` in its terminal matches `pwd` in my Ubuntu or Mac terminal.
 - [ ] I have one assistant route or the manual fallback, and I know which account and limits it uses.
 

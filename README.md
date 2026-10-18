@@ -17,7 +17,7 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ## Start here
 
-1. **Set up before class:** complete **Part A** of [Student setup](guides/student-setup.md#part-a-before-the-first-meeting) (tools and accounts) for Windows/WSL, macOS or Linux. Part B happens at the end of Lecture 1. No paid AI plan is required.
+1. **Set up before class:** complete **Part A** of [Student setup](guides/student-setup.md#part-a-before-the-first-meeting) for Windows/WSL, macOS or Linux, including **your own free GitHub account with a verified email** and GitHub CLI login. Part B happens at the end of Lecture 1. No paid GitHub or AI plan is required.
 2. **Understand the path:** read the [learning map](guides/learning-map.md). Not sure your basics are solid? Take the 10-minute [readiness check](guides/engineering-foundations.md#readiness-check). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
 3. **Prepare for the first meeting:** read [Lecture 1's Before you start](lectures/01-environment-git-docker-ai.md#before-you-start) the evening before. If a check fails, bring one precise blocker written as PARD.
 4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.

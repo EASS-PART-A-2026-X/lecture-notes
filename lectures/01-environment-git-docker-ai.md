@@ -40,7 +40,7 @@ Today you build the workbench for the whole semester: a tiny FastAPI app on your
 
 ## Before you start
 
-You need Python basics, a terminal, a GitHub account, and admin rights on your laptop. **Windows:** use WSL2 (Ubuntu); every command on these pages runs *inside* Ubuntu, not PowerShell. Installation steps are in [Student setup, Part A](../guides/student-setup.md#part-a-before-the-first-meeting), which also helps you choose one assistant route or the manual fallback; your editor and model do not change the course requirements.
+You need Python basics, a terminal, your own free GitHub account with a verified email, and admin rights on your laptop. **Windows:** use WSL2 (Ubuntu); every command on these pages runs *inside* Ubuntu, not PowerShell. Installation steps are in [Student setup, Part A](../guides/student-setup.md#part-a-before-the-first-meeting), which also helps you choose one assistant route or the manual fallback; your editor and model do not change the course requirements.
 
 > **Prerequisite check:** about one minute each, the night before. If a check fails, follow its repair link, then ask for help with the [PARD template](#asking-for-help-the-pard-template) in the channel the instructor provides.
 >
