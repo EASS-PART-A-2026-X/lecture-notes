@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-labelledby="t d">
+  <title id="t">Is your merge commit M on the main branch? Four compare results and one false negative</title>
+  <desc id="d">The command compares M, the merge commit of your PR, with the main branch. Ahead: the main branch contains M and newer commits, so the PR counts. Identical: the main branch tip is M, so it counts. Behind: M is newer than the main branch tip, on a branch that has not reached main, so it does not count yet. Diverged: M is on a side branch and main moved on without it, so it does not count yet. False negative: a dev branch containing M was squash-merged into main as a new commit S. S contains the change, but M is not in main's history, so the command prints diverged; link S and ask the instructor. Solid lines are the main branch's history; dashed lines are commits not on main.</desc>
+  <rect width="640" height="520" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="30" text-anchor="middle" font-size="20" font-weight="700">compare M...main: is your merge commit M on main?</text>
+
+    <rect x="24" y="44" width="290" height="156" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="40" y="70" font-size="18" font-weight="700">ahead <tspan fill="#2a6a47">· counts</tspan></text>
+    <text x="40" y="93" font-size="16" fill="#535c6b">main has M plus newer work</text>
+    <path d="M54 146 H274" stroke="#1d4e89" stroke-width="3"/>
+    <circle cx="54" cy="146" r="8" fill="#1d4e89"/>
+    <circle cx="104" cy="146" r="8" fill="#1d4e89"/>
+    <circle cx="164" cy="146" r="14" fill="#ffffff" stroke="#1d4e89" stroke-width="3"/>
+    <text x="164" y="152" text-anchor="middle" font-size="16" font-weight="700">M</text>
+    <circle cx="224" cy="146" r="8" fill="#1d4e89"/>
+    <circle cx="274" cy="146" r="8" fill="#1d4e89"/>
+    <text x="274" y="186" text-anchor="middle" font-size="16" font-weight="700">main</text>
+
+    <rect x="326" y="44" width="290" height="156" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="342" y="70" font-size="18" font-weight="700">identical <tspan fill="#2a6a47">· counts</tspan></text>
+    <text x="342" y="93" font-size="16" fill="#535c6b">main's tip is M itself</text>
+    <path d="M356 146 H476" stroke="#1d4e89" stroke-width="3"/>
+    <circle cx="356" cy="146" r="8" fill="#1d4e89"/>
+    <circle cx="416" cy="146" r="8" fill="#1d4e89"/>
+    <circle cx="476" cy="146" r="14" fill="#ffffff" stroke="#1d4e89" stroke-width="3"/>
+    <text x="476" y="152" text-anchor="middle" font-size="16" font-weight="700">M</text>
+    <text x="476" y="186" text-anchor="middle" font-size="16" font-weight="700">main</text>
+
+    <rect x="24" y="212" width="290" height="156" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="40" y="238" font-size="18" font-weight="700">behind <tspan fill="#9b2c2c">· not on main yet</tspan></text>
+    <text x="40" y="261" font-size="16" fill="#535c6b">M is ahead of main's tip</text>
+    <path d="M54 314 H114" stroke="#1d4e89" stroke-width="3"/>
+    <path d="M114 314 H224" stroke="#84540c" stroke-width="3" stroke-dasharray="8 6"/>
+    <circle cx="54" cy="314" r="8" fill="#1d4e89"/>
+    <circle cx="114" cy="314" r="8" fill="#1d4e89"/>
+    <circle cx="170" cy="314" r="8" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <circle cx="224" cy="314" r="14" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <text x="224" y="320" text-anchor="middle" font-size="16" font-weight="700">M</text>
+    <text x="114" y="354" text-anchor="middle" font-size="16" font-weight="700">main</text>
+
+    <rect x="326" y="212" width="290" height="156" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="342" y="238" font-size="18" font-weight="700">diverged <tspan fill="#9b2c2c">· not on main yet</tspan></text>
+    <text x="342" y="261" font-size="16" fill="#535c6b">M is on a side branch</text>
+    <path d="M356 330 H576" stroke="#1d4e89" stroke-width="3"/>
+    <path d="M416 330 L466 290 H526" fill="none" stroke="#84540c" stroke-width="3" stroke-dasharray="8 6"/>
+    <circle cx="356" cy="330" r="8" fill="#1d4e89"/>
+    <circle cx="416" cy="330" r="8" fill="#1d4e89"/>
+    <circle cx="496" cy="330" r="8" fill="#1d4e89"/>
+    <circle cx="576" cy="330" r="8" fill="#1d4e89"/>
+    <circle cx="466" cy="290" r="8" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <circle cx="526" cy="290" r="14" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <text x="526" y="296" text-anchor="middle" font-size="16" font-weight="700">M</text>
+    <text x="576" y="360" text-anchor="middle" font-size="16" font-weight="700">main</text>
+
+    <rect x="24" y="380" width="592" height="104" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="40" y="404" font-size="18" font-weight="700">False negative: squash or rebase promotion</text>
+    <text x="40" y="436" font-size="16" font-weight="700">dev</text>
+    <path d="M90 430 H160" stroke="#84540c" stroke-width="3" stroke-dasharray="8 6"/>
+    <circle cx="90" cy="430" r="8" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <circle cx="160" cy="430" r="14" fill="#ffffff" stroke="#84540c" stroke-width="3"/>
+    <text x="160" y="436" text-anchor="middle" font-size="16" font-weight="700">M</text>
+    <text x="40" y="472" font-size="16" font-weight="700">main</text>
+    <path d="M90 466 H280" stroke="#1d4e89" stroke-width="3"/>
+    <circle cx="90" cy="466" r="8" fill="#1d4e89"/>
+    <circle cx="160" cy="466" r="8" fill="#1d4e89"/>
+    <circle cx="280" cy="466" r="14" fill="#1d4e89"/>
+    <text x="280" y="472" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">S</text>
+    <path d="M174 434 L262 458" fill="none" stroke="#3b4453" stroke-width="2" stroke-dasharray="3 4"/>
+    <text x="226" y="434" font-size="16">squash</text>
+    <text x="360" y="430" font-size="16">Prints diverged, but S has</text>
+    <text x="360" y="452" font-size="16">your change: link S on main</text>
+    <text x="360" y="474" font-size="16">and ask the instructor.</text>
+
+    <path d="M24 506 H58" stroke="#1d4e89" stroke-width="3"/>
+    <text x="66" y="511" font-size="16">in main's history</text>
+    <path d="M222 506 H256" stroke="#84540c" stroke-width="3" stroke-dasharray="8 6"/>
+    <text x="264" y="511" font-size="16">not on main</text>
+    <circle cx="372" cy="506" r="10" fill="#ffffff" stroke="#3b4453" stroke-width="2.5"/>
+    <text x="390" y="511" font-size="16">M = your PR's merge commit</text>
+  </g>
+</svg>

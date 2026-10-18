@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-labelledby="t d">
+  <title id="t">From release candidate to v1.0.0: every tag sits on a green SHA</title>
+  <desc id="d">Start when CI is green on a SHA, checked by SHA with gh run list. Tag v1.0.0-rc.N on that SHA, then rehearse from a clean clone of the tag. If the rehearsal needs a fix, commit and push it; that creates a new, unchecked SHA. Wait for CI on the new SHA. On success, return to the start and tag the next candidate, rc.N+1. On failure, fix and push again. If no fix is needed, tag v1.0.0 on the same green SHA, then demo in Meeting 13 from a clean clone of v1.0.0. Rules: tag only a SHA whose CI is green; a fix is a new SHA that needs its own run; never move a tag, make rc.N+1 instead.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#2a6a47"/></marker>
+    <marker id="r" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#9b2c2c"/></marker>
+  </defs>
+  <rect width="640" height="520" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="32" text-anchor="middle" font-size="21" font-weight="700">Every tag sits on a commit that CI checked</text>
+
+    <rect x="24" y="60" width="160" height="84" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="104" y="90" text-anchor="middle" font-size="18" font-weight="700">CI green</text>
+    <text x="104" y="113" text-anchor="middle" font-size="16">on this SHA,</text>
+    <text x="104" y="134" text-anchor="middle" font-size="16">checked by SHA</text>
+
+    <rect x="240" y="60" width="160" height="84" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="320" y="90" text-anchor="middle" font-size="18" font-weight="700">tag</text>
+    <text x="320" y="113" text-anchor="middle" font-size="16">v1.0.0-rc.N</text>
+    <text x="320" y="134" text-anchor="middle" font-size="16">on that SHA</text>
+
+    <rect x="456" y="60" width="160" height="84" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="536" y="90" text-anchor="middle" font-size="18" font-weight="700">rehearse</text>
+    <text x="536" y="113" text-anchor="middle" font-size="16">from a clean</text>
+    <text x="536" y="134" text-anchor="middle" font-size="16">clone of the tag</text>
+
+    <path d="M184 102 H234" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="212" y="94" text-anchor="middle" font-size="16">git tag</text>
+    <path d="M400 102 H450" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="428" y="94" text-anchor="middle" font-size="16">clone</text>
+
+    <path d="M536 144 V172" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="546" y="164" font-size="16">review</text>
+    <path d="M536 176 L616 218 L536 260 L456 218 Z" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="536" y="214" text-anchor="middle" font-size="17" font-weight="700">fix</text>
+    <text x="536" y="234" text-anchor="middle" font-size="17" font-weight="700">needed?</text>
+
+    <path d="M456 218 H406" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="430" y="208" text-anchor="middle" font-size="16">yes</text>
+    <rect x="240" y="180" width="160" height="80" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="320" y="207" text-anchor="middle" font-size="18" font-weight="700">commit, push</text>
+    <text x="320" y="230" text-anchor="middle" font-size="16">a new SHA:</text>
+    <text x="320" y="251" text-anchor="middle" font-size="16">not yet checked</text>
+
+    <path d="M240 220 H190" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="212" y="210" text-anchor="middle" font-size="16">wait</text>
+    <rect x="24" y="180" width="160" height="80" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="104" y="207" text-anchor="middle" font-size="18" font-weight="700">CI runs</text>
+    <text x="104" y="230" text-anchor="middle" font-size="16">on the new SHA</text>
+    <text x="104" y="251" text-anchor="middle" font-size="16">(its own evidence)</text>
+
+    <path d="M104 180 V150" fill="none" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#g)"/>
+    <text x="112" y="171" font-size="16" fill="#2a6a47" font-weight="700">success</text>
+
+    <path d="M104 260 V298 H320 V266" fill="none" stroke="#9b2c2c" stroke-width="2.5" marker-end="url(#r)"/>
+    <text x="212" y="318" text-anchor="middle" font-size="16" fill="#9b2c2c" font-weight="700">failure: fix and push again</text>
+
+    <path d="M536 260 V302" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="546" y="287" font-size="16">no</text>
+    <rect x="456" y="306" width="160" height="80" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="536" y="334" text-anchor="middle" font-size="18" font-weight="700">tag v1.0.0</text>
+    <text x="536" y="357" text-anchor="middle" font-size="16">on the same</text>
+    <text x="536" y="378" text-anchor="middle" font-size="16">green SHA</text>
+
+    <path d="M536 386 V420" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)"/>
+    <text x="526" y="408" text-anchor="end" font-size="16">clone the tag</text>
+    <rect x="456" y="424" width="160" height="72" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="536" y="454" text-anchor="middle" font-size="18" font-weight="700">demo</text>
+    <text x="536" y="478" text-anchor="middle" font-size="16">Meeting 13</text>
+
+    <rect x="24" y="348" width="400" height="148" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="44" y="378" font-size="18" font-weight="700">Rules</text>
+    <text x="44" y="406" font-size="16">• Tag only a SHA whose CI run is green.</text>
+    <text x="44" y="432" font-size="16">• A fix is a new SHA that needs its own run.</text>
+    <text x="44" y="458" font-size="16">• Never move a published tag; make rc.N+1.</text>
+    <text x="44" y="484" font-size="16" fill="#9b2c2c">• Never tag a red or unchecked SHA.</text>
+  </g>
+</svg>
