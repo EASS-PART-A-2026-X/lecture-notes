@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 600" role="img" aria-labelledby="t d">
+<title id="t">Who reads each artifact, and what enforces it</title>
+<desc id="d">Six rows, each read left to right: the artifact that declares something, the consumer that reads it, and the enforcement point that can refuse a violation. Row 1: a task YAML with network: denied is read by your runner, if one exists; nothing enforces it unless that runner does. Row 2: a Dockerfile with USER appuser is read by docker build; the container runtime starts the container as that user. Row 3: compose.yaml with 127.0.0.1:8000 is read by Docker Compose; Docker enforces the loopback port binding, the healthcheck and the volume. Row 4: a CI workflow with permissions: is read by the GitHub Actions runner; GitHub enforces the token permissions. Row 5: AGENTS.md project guidance is read by the coding harness and its model; nothing enforces it, because guidance is not a control. Row 6: SKILL.md with allowed-tools is read by the harness's skill loader; only the harness's permission rules or an operating-system sandbox restrict tools, because allowed-tools pre-approves tools and does not remove any. Green enforcement boxes can refuse; red boxes mean only text.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+</defs>
+<rect width="640" height="600" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a" text-anchor="middle">
+<text x="320" y="30" font-size="20" font-weight="700">Who reads it, and what actually enforces it?</text>
+<text x="320" y="54" font-size="16" fill="#535c6b">A file declares. A consumer reads. Only an enforcement point refuses.</text>
+
+<!-- column heads -->
+<g font-size="16" font-weight="700">
+<text x="88" y="90">Declared in</text>
+<text x="300" y="90">→ read by</text>
+<text x="532" y="90">→ enforced by</text>
+</g>
+
+<!-- arrows -->
+<g fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#an)">
+<path d="M166 136 H210"/><path d="M390 136 H434"/>
+<path d="M166 202 H210"/><path d="M390 202 H434"/>
+<path d="M166 268 H210"/><path d="M390 268 H434"/>
+<path d="M166 334 H210"/><path d="M390 334 H434"/>
+<path d="M166 400 H210"/><path d="M390 400 H434"/>
+<path d="M166 466 H210"/><path d="M390 466 H434"/>
+</g>
+
+<!-- artifacts -->
+<g fill="#f7f5ef" stroke="#3b4453" stroke-width="2">
+<rect x="12" y="108" width="152" height="56" rx="6"/>
+<rect x="12" y="174" width="152" height="56" rx="6"/>
+<rect x="12" y="240" width="152" height="56" rx="6"/>
+<rect x="12" y="306" width="152" height="56" rx="6"/>
+<rect x="12" y="372" width="152" height="56" rx="6"/>
+<rect x="12" y="438" width="152" height="56" rx="6"/>
+</g>
+<g font-size="16">
+<text x="88" y="131" font-weight="700">task.yaml</text><text x="88" y="153">network: denied</text>
+<text x="88" y="197" font-weight="700">Dockerfile</text><text x="88" y="219">USER appuser</text>
+<text x="88" y="263" font-weight="700">compose.yaml</text><text x="88" y="285">127.0.0.1:8000</text>
+<text x="88" y="329" font-weight="700">CI workflow</text><text x="88" y="351">permissions:</text>
+<text x="88" y="395" font-weight="700">AGENTS.md</text><text x="88" y="417">project guidance</text>
+<text x="88" y="461" font-weight="700">SKILL.md</text><text x="88" y="483">allowed-tools</text>
+</g>
+
+<!-- consumers -->
+<g fill="#f3f6fa" stroke="#1d4e89" stroke-width="2">
+<rect x="212" y="108" width="176" height="56" rx="6"/>
+<rect x="212" y="174" width="176" height="56" rx="6"/>
+<rect x="212" y="240" width="176" height="56" rx="6"/>
+<rect x="212" y="306" width="176" height="56" rx="6"/>
+</g>
+<g fill="#eff6f6" stroke="#22616b" stroke-width="2">
+<rect x="212" y="372" width="176" height="56" rx="6"/>
+<rect x="212" y="438" width="176" height="56" rx="6"/>
+</g>
+<g font-size="16">
+<text x="300" y="131">your runner,</text><text x="300" y="153">if one exists</text>
+<text x="300" y="197">docker build</text><text x="300" y="219">(image builder)</text>
+<text x="300" y="263">Docker Compose</text><text x="300" y="285">(compose up)</text>
+<text x="300" y="329">GitHub Actions</text><text x="300" y="351">runner</text>
+<text x="300" y="395">coding harness:</text><text x="300" y="417">the model reads it</text>
+<text x="300" y="461">harness skill</text><text x="300" y="483">loader</text>
+</g>
+
+<!-- enforcement -->
+<g fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2">
+<rect x="436" y="108" width="192" height="56" rx="6"/>
+<rect x="436" y="372" width="192" height="56" rx="6"/>
+</g>
+<g fill="#f1f7f3" stroke="#2a6a47" stroke-width="2">
+<rect x="436" y="174" width="192" height="56" rx="6"/>
+<rect x="436" y="240" width="192" height="56" rx="6"/>
+<rect x="436" y="306" width="192" height="56" rx="6"/>
+<rect x="436" y="438" width="192" height="56" rx="6"/>
+</g>
+<g font-size="16">
+<text x="532" y="131" font-weight="700" fill="#9b2c2c">none, unless that</text><text x="532" y="153" fill="#9b2c2c">runner enforces it</text>
+<text x="532" y="197" font-weight="700" fill="#2a6a47">container runtime</text><text x="532" y="219">starts it as that user</text>
+<text x="532" y="263" font-weight="700" fill="#2a6a47">Docker</text><text x="532" y="285">port bind, health, volume</text>
+<text x="532" y="329" font-weight="700" fill="#2a6a47">GitHub</text><text x="532" y="351">token permissions</text>
+<text x="532" y="395" font-weight="700" fill="#9b2c2c">none: guidance</text><text x="532" y="417" fill="#9b2c2c">is not a control</text>
+<text x="532" y="461" font-weight="700" fill="#2a6a47">permission rules</text><text x="532" y="483">or an OS sandbox</text>
+</g>
+
+<!-- notes -->
+<g font-size="16" text-anchor="start">
+<text x="12" y="524"><tspan font-weight="700">allowed-tools</tspan> pre-approves tools; it does not remove any.</text>
+<text x="12" y="548"><tspan font-weight="700">depends_on</tspan> orders startup only; an unpublished port is not a login.</text>
+</g>
+<g font-size="16" text-anchor="start">
+<rect x="12" y="566" width="22" height="18" rx="4" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="42" y="581">can refuse a violation</text>
+<rect x="240" y="566" width="22" height="18" rx="4" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+<text x="270" y="581">text only: nothing refuses</text>
+</g>
+</g>
+</svg>
