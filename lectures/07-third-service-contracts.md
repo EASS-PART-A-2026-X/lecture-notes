@@ -1100,6 +1100,9 @@ Emphasize that the backend validates the AI service's *response*. Students get s
 
 ## Read more
 
+- [One intent, repeated requests](../guides/systems-reasoning.md#one-intent-repeated-requests): optional replay and outbox clinic with an original SQLite failure lab.
+
+
 **Before the lab (≤15 min):** [HTTPX: timeouts](https://www.python-httpx.org/advanced/timeouts/). Read it with two questions: (1) which of the four limits would fire if the AI service accepted the connection and never answered? (2) what does `timeout=None` mean, and why is it never right for a call to another service?
 
 **Go deeper (optional):**

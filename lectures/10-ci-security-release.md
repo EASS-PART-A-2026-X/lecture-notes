@@ -930,6 +930,9 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 
 ## Read more
 
+- [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): optional release-decision exercise using reliability and critical-failure evidence.
+
+
 **Before the lab (≤15 min):** [Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions). Guiding questions: (1) What is the difference between a job and a step? (2) Which events can start a workflow, and which one does Recipe Box leave out on purpose?
 
 **Go deeper (optional):**

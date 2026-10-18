@@ -2994,3 +2994,30 @@ $ed-code-languages: (
     display: none !important;
   }
 }
+
+// The clinic's arithmetic workbench shares the course type and focus tokens.
+.main-content .reliability-lab {
+  border: 1px solid var(--ed-rule);
+  padding: 1.2rem;
+  margin-block: 1.5rem;
+  background: #f7f5ef;
+  .reliability-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  label { display: block; font-weight: 600; }
+  input { display: block; width: 100%; min-height: 44px; margin-top: .4rem; padding: .4rem; font: inherit; }
+  button { min-height: 44px; margin: .5rem .3rem .5rem 0; padding: .4rem .7rem; font: inherit; }
+  .reliability-bar { display: flex; height: 1.4rem; margin-block: .7rem; background: white; }
+  [data-fast-bar] { background: #24614d; }
+  [data-slow-bar] { background: #8c3034; }
+  [data-error] { color: #8c3034; font-weight: 600; }
+  @media (max-width: 36rem) { .reliability-inputs { grid-template-columns: 1fr; } }
+}
+@media print {
+  .main-content .reliability-lab form { display: none !important; }
+  .main-content .reliability-lab { break-inside: avoid; padding: .7rem; }
+}
+
+.main-content .reliability-lab input:focus-visible,
+.main-content .reliability-lab button:focus-visible {
+  outline: 3px solid var(--ed-ink);
+  outline-offset: 3px;
+}

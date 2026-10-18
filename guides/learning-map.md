@@ -94,6 +94,8 @@ Thirteen Monday meetings, 19 October 2026 to 11 January 2027. Meetings 1–10 ar
 
 The open-source track runs alongside every class: three qualifying **merged** PRs of your own by the README's deadline. A PR on your own product repository is practice and does not count.
 
+For a deeper optional clinic after the core checkpoint, use [Systems reasoning](systems-reasoning.md): prove replay/outbox behavior with eight SQLite tests, count user-facing failures, explore fan-out latency assumptions, and audit repeated agent trials. Pick one clinic; it adds no assessment or platform requirement.
+
 ## Visual checkpoints
 
 Use a diagram to make a prediction, then follow the code and run the relevant check. The picture explains a model of the system; it is not execution evidence. Cover the caption, trace one ordinary case and one failure, and name what the diagram leaves out.

@@ -44,7 +44,8 @@ defaults:
   - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 21 } }
   - { scope: { path: "guides/system-walkthrough.md" }, values: { title: "Visual system walkthrough", nav_order: 22 } }
   - { scope: { path: "guides/industry-studio.md" }, values: { title: "Industry engineering studio", nav_order: 23 } }
-  - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 24 } }
+  - { scope: { path: "guides/systems-reasoning.md" }, values: { title: "Systems reasoning clinics", nav_order: 24 } }
+  - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 25 } }
 
 # Just the Docs
 color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper, one oxblood accent
