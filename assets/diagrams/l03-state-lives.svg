@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 760" role="img" aria-labelledby="t d">
+<title id="t">Where does Recipe Box state live?</title>
+<desc id="d">Left, the production path of one request: POST /recipes reaches the unchanged route; SessionDep calls get_session, which opens one Session for the request. In the Session, add keeps the object pending in Python, flush sends the INSERT inside an open transaction, commit makes it durable, and close without commit rolls back. The Session borrows a connection from the Engine and its pool, one per process. COMMIT writes rows to the file data/app.db, which holds committed rows only. In Docker, /app/data is either in the container's writable layer, lost on docker rm, when run without -v, or in the named volume backend-data, kept until docker volume rm, when run with -v. Right, the tests: tests/conftest.py overrides get_session so every route gets one session on an in-memory sqlite:// database with StaticPool, and the lifespan never runs; tests/test_restart.py swaps db.engine for a file in tmp_path and runs two lifespans. Dashed arrows are test-only replacements. Bottom table, what survives: a dev reload loses uncommitted work and keeps the local file; a restart loses uncommitted work and keeps the local file, the container layer and the volume; docker rm -f loses the container layer and keeps the volume; docker volume rm loses the volume.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+</defs>
+<rect width="640" height="760" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Where does Recipe Box state live?</text>
+<text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">Left: one request in production. Right: where the tests hook in.</text>
+
+<!-- production boxes -->
+<g stroke-width="2">
+<rect x="20" y="74" width="280" height="56" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="164" width="280" height="136" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="334" width="280" height="56" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="422" width="280" height="56" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="528" width="285" height="58" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="335" y="528" width="285" height="58" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+</g>
+<g font-size="18" font-weight="700">
+<text x="34" y="98">POST /recipes</text>
+<text x="34" y="188">Session (one per request)</text>
+<text x="34" y="358">Engine + connection pool</text>
+<text x="34" y="446">data/app.db (the file)</text>
+<text x="34" y="551" fill="#9b2c2c">Container's own layer</text>
+<text x="349" y="551" fill="#2a6a47">Named volume backend-data</text>
+</g>
+<g font-size="16">
+<text x="34" y="120" fill="#535c6b">the route is unchanged</text>
+<text x="34" y="212">add: pending, Python only</text>
+<text x="34" y="235">flush: INSERT, transaction open</text>
+<text x="34" y="258">commit: COMMIT, durable</text>
+<text x="34" y="281">close, no commit: ROLLBACK</text>
+<text x="34" y="380" fill="#535c6b">one per process, one URL</text>
+<text x="34" y="468" fill="#535c6b">committed rows only</text>
+<text x="34" y="574">lost on docker rm -f</text>
+<text x="349" y="574">kept until docker volume rm</text>
+</g>
+
+<!-- production arrows -->
+<g fill="none" stroke="#1d4e89" stroke-width="2.5">
+<path d="M150 130 V158" marker-end="url(#an)"/>
+<path d="M150 300 V328" marker-end="url(#an)"/>
+<path d="M150 390 V416" marker-end="url(#an)"/>
+<path d="M150 478 V522" marker-end="url(#an)"/>
+<path d="M240 478 V500 H470 V522" marker-end="url(#an)"/>
+</g>
+<g font-size="16" fill="#1d4e89">
+<text x="162" y="151">SessionDep opens</text>
+<text x="162" y="321">borrows a connection</text>
+<text x="162" y="410">COMMIT writes</text>
+<text x="40" y="508">run without -v</text>
+<text x="300" y="494">run with -v backend-data</text>
+</g>
+
+<!-- test boxes -->
+<g stroke-width="2">
+<rect x="380" y="164" width="240" height="136" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<rect x="380" y="322" width="240" height="136" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+</g>
+<text x="394" y="110" font-size="18" font-weight="700">In the tests</text>
+<g font-size="17" font-weight="700">
+<text x="394" y="188">tests/conftest.py</text>
+<text x="394" y="346">tests/test_restart.py</text>
+</g>
+<g font-size="16">
+<text x="394" y="212">override get_session:</text>
+<text x="394" y="235">one session for all routes</text>
+<text x="394" y="258">sqlite:// + StaticPool</text>
+<text x="394" y="281" fill="#535c6b">lifespan never runs</text>
+<text x="394" y="370">db.engine → a file</text>
+<text x="394" y="393">in tmp_path</text>
+<text x="394" y="416">two with TestClient(app)</text>
+<text x="394" y="439" fill="#535c6b">= two lifespans, one file</text>
+</g>
+<g fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="7 5">
+<path d="M380 250 H308" marker-end="url(#ag)"/>
+<path d="M380 370 H308" marker-end="url(#ag)"/>
+</g>
+<g font-size="16" fill="#3b4453">
+<text x="344" y="242" text-anchor="middle">replaces</text>
+<text x="344" y="362" text-anchor="middle">swaps</text>
+</g>
+<line x1="394" y1="134" x2="430" y2="134" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="7 5"/>
+<text x="438" y="140" font-size="16" fill="#535c6b">= test-only replacement</text>
+
+<!-- survival table -->
+<rect x="20" y="604" width="600" height="148" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<g font-size="16" font-weight="700">
+<text x="32" y="628">What survives?</text>
+<text x="262" y="622" text-anchor="middle">Not</text>
+<text x="262" y="640" text-anchor="middle">committed</text>
+<text x="358" y="622" text-anchor="middle">Local</text>
+<text x="358" y="640" text-anchor="middle">app.db</text>
+<text x="456" y="622" text-anchor="middle">Container</text>
+<text x="456" y="640" text-anchor="middle">layer</text>
+<text x="560" y="622" text-anchor="middle">Volume</text>
+<text x="560" y="640" text-anchor="middle">backend-data</text>
+</g>
+<g stroke="#ddd7ca" stroke-width="1.5">
+<line x1="20" y1="650" x2="620" y2="650"/>
+<line x1="20" y1="676" x2="620" y2="676"/>
+<line x1="20" y1="702" x2="620" y2="702"/>
+<line x1="20" y1="728" x2="620" y2="728"/>
+</g>
+<g font-size="16">
+<text x="32" y="669">dev reload after a save</text>
+<text x="32" y="695">restart (stop, start)</text>
+<text x="32" y="721">docker rm -f backend</text>
+<text x="32" y="747">docker volume rm</text>
+</g>
+<g font-size="16" text-anchor="middle">
+<g fill="#9b2c2c" font-weight="700">
+<text x="262" y="669">lost</text>
+<text x="262" y="695">lost</text>
+<text x="262" y="721">lost</text>
+<text x="262" y="747">lost</text>
+<text x="456" y="721">LOST</text>
+<text x="560" y="747">LOST</text>
+</g>
+<g fill="#2a6a47" font-weight="700">
+<text x="358" y="669">kept</text>
+<text x="358" y="695">kept</text>
+<text x="456" y="695">kept</text>
+<text x="560" y="695">kept</text>
+<text x="560" y="721">kept</text>
+</g>
+<g fill="#535c6b">
+<text x="456" y="669">—</text>
+<text x="560" y="669">—</text>
+<text x="358" y="721">—</text>
+<text x="358" y="747">—</text>
+<text x="456" y="747">—</text>
+</g>
+</g>
+</g>
+</svg>

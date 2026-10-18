@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" role="img" aria-labelledby="t d">
+<title id="t">Trace one request: POST /recipes/from-text</title>
+<desc id="d">Five boxes in two processes. In the backend process: 1, the route create_recipe_from_text in app/main.py calls 2, AIClient.extract_recipe in app/ai_client.py, an ordinary function call inside the same process. AIClient sends an HTTP POST /extract over the network to the ai-service process: 3, the extract endpoint, which awaits 4, extract_agent.run in app/agent.py. The ai-service answers 200 with JSON. AIClient validates it, translates it into a RecipeCreate and returns it to the route, which calls 5, save, which commits the row and answers 201. The ai-service listens on port 8001 and never calls the backend. Solid arrows are calls inside one process; dashed arrows are HTTP over the network.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="at" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#22616b"/></marker>
+</defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="30" text-anchor="middle" font-size="21" font-weight="700">Trace one request: POST /recipes/from-text</text>
+<text x="320" y="53" text-anchor="middle" font-size="16" fill="#535c6b">Which arrows stay inside a process, and which cross the network?</text>
+
+<!-- process panels -->
+<rect x="20" y="66" width="260" height="276" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<rect x="360" y="66" width="260" height="276" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<g font-size="17" font-weight="700" fill="#535c6b">
+<text x="34" y="90">backend process</text>
+<text x="374" y="90">ai-service process</text>
+</g>
+
+<!-- boxes -->
+<g stroke-width="2">
+<rect x="34" y="102" width="232" height="58" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="34" y="190" width="232" height="58" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="34" y="280" width="232" height="50" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="374" y="190" width="232" height="58" rx="6" fill="#eff6f6" stroke="#22616b"/>
+<rect x="374" y="280" width="232" height="50" rx="6" fill="#eff6f6" stroke="#22616b"/>
+</g>
+<g font-size="17" font-weight="700">
+<text x="46" y="125">1  route in app/main.py</text>
+<text x="46" y="213">2  AIClient.extract_recipe</text>
+<text x="46" y="301">5  save(…): COMMIT</text>
+<text x="386" y="213">3  POST /extract</text>
+<text x="386" y="301">4  extract_agent.run</text>
+</g>
+<g font-size="16" fill="#535c6b">
+<text x="46" y="149">create_recipe_from_text</text>
+<text x="46" y="237">app/ai_client.py</text>
+<text x="46" y="322">then answer 201</text>
+<text x="386" y="237">the extract() endpoint</text>
+<text x="386" y="322">app/agent.py</text>
+<text x="374" y="124">listens on port 8001</text>
+<text x="374" y="148">never calls the backend</text>
+</g>
+
+<!-- in-process arrows -->
+<g fill="none" stroke="#1d4e89" stroke-width="2.5">
+<path d="M150 160 V184" marker-end="url(#an)"/>
+<path d="M150 248 V274" marker-end="url(#an)"/>
+</g>
+<g fill="none" stroke="#22616b" stroke-width="2.5">
+<path d="M490 248 V274" marker-end="url(#at)"/>
+</g>
+<g font-size="16">
+<text x="162" y="179" fill="#1d4e89">calls</text>
+<text x="162" y="268" fill="#1d4e89">returns</text>
+<text x="502" y="268" fill="#22616b">awaits</text>
+</g>
+
+<!-- network arrows -->
+<g fill="none" stroke="#3b4453" stroke-width="3" stroke-dasharray="8 5">
+<path d="M266 206 H368" marker-end="url(#an)"/>
+<path d="M374 234 H272" marker-end="url(#an)"/>
+</g>
+<g font-size="16" fill="#3b4453" text-anchor="middle">
+<text x="320" y="198">POST</text>
+<text x="320" y="258">200 JSON</text>
+</g>
+
+<!-- legend -->
+<line x1="20" y1="364" x2="56" y2="364" stroke="#1d4e89" stroke-width="2.5"/>
+<text x="64" y="370" font-size="16" fill="#535c6b">call inside one process</text>
+<line x1="300" y1="364" x2="336" y2="364" stroke="#3b4453" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="344" y="370" font-size="16" fill="#535c6b">HTTP over the network</text>
+</g>
+</svg>
