@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="t d">
+  <title id="t">Three controls, three different enforcers</title>
+  <desc id="d">Three stacked layers. Layer 1, guidance: AGENTS.md files and skills, enforced by nobody because only the model reads them; it can stop nothing by force and only steers the model; it cannot stop a model that ignores or misreads it. The model then proposes an action. Layer 2, execution: the sandbox and permission rules, enforced by the harness runtime or the operating system; it can stop file, network and credential access; it cannot stop a wrong edit inside the allowed workspace. A candidate commit is then pushed. Layer 3, promotion: CI and branch protection, enforced by trusted CI; it can stop merging or releasing a candidate whose required checks fail; it cannot stop a bad change that passes weak checks. Legend: a dashed border means advisory text read by the model; a solid border means enforced by software outside the model.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="640" height="480" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Three controls, three different enforcers</text>
+    <text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">Each stops different failures; none replaces another</text>
+
+    <!-- Band 1: guidance (advisory) -->
+    <rect x="16" y="72" width="608" height="100" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="7 5"/>
+    <!-- Band 2: execution -->
+    <rect x="16" y="208" width="608" height="100" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <!-- Band 3: promotion -->
+    <rect x="16" y="344" width="608" height="100" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+
+    <g stroke="#ddd7ca" stroke-width="2">
+      <path d="M240 84 V160"/><path d="M432 84 V160"/>
+      <path d="M240 220 V296"/><path d="M432 220 V296"/>
+      <path d="M240 356 V432"/><path d="M432 356 V432"/>
+    </g>
+
+    <g font-size="16">
+      <text x="32" y="100" font-size="19" font-weight="700">1 · Guidance</text>
+      <text x="32" y="126">AGENTS.md, skills</text>
+      <text x="32" y="150" font-weight="700">enforced by: nobody</text>
+      <text x="254" y="100" font-weight="700" fill="#2a6a47">Can stop</text>
+      <text x="254" y="126">nothing by force;</text>
+      <text x="254" y="150">it steers the model</text>
+      <text x="446" y="100" font-weight="700" fill="#9b2c2c">Cannot stop</text>
+      <text x="446" y="126">a model that ignores</text>
+      <text x="446" y="150">or misreads it</text>
+
+      <text x="32" y="236" font-size="19" font-weight="700">2 · Execution</text>
+      <text x="32" y="262">sandbox, permissions</text>
+      <text x="32" y="286" font-weight="700">enforced by: runtime, OS</text>
+      <text x="254" y="236" font-weight="700" fill="#2a6a47">Can stop</text>
+      <text x="254" y="262">file, network and</text>
+      <text x="254" y="286">credential access</text>
+      <text x="446" y="236" font-weight="700" fill="#9b2c2c">Cannot stop</text>
+      <text x="446" y="262">a wrong edit inside</text>
+      <text x="446" y="286">the workspace</text>
+
+      <text x="32" y="372" font-size="19" font-weight="700">3 · Promotion</text>
+      <text x="32" y="398">CI, branch protection</text>
+      <text x="32" y="422" font-weight="700">enforced by: trusted CI</text>
+      <text x="254" y="372" font-weight="700" fill="#2a6a47">Can stop</text>
+      <text x="254" y="398">merging or releasing</text>
+      <text x="254" y="422">a failing candidate</text>
+      <text x="446" y="372" font-weight="700" fill="#9b2c2c">Cannot stop</text>
+      <text x="446" y="398">a bad change that</text>
+      <text x="446" y="422">passes weak checks</text>
+    </g>
+
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)">
+      <path d="M120 172 V204"/>
+      <path d="M120 308 V340"/>
+    </g>
+    <text x="132" y="196" font-size="16">the model proposes an action</text>
+    <text x="132" y="332" font-size="16">a candidate commit is pushed</text>
+
+    <path d="M16 464 H48" stroke="#3b4453" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="56" y="469" font-size="16" fill="#535c6b">advisory: the model reads it</text>
+    <path d="M316 464 H348" stroke="#3b4453" stroke-width="2"/>
+    <text x="356" y="469" font-size="16" fill="#535c6b">enforced outside the model</text>
+  </g>
+</svg>

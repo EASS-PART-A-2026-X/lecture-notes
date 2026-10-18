@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-labelledby="t d">
+  <title id="t">Two agent loops, two different authorities</title>
+  <desc id="d">Two rows show the same loop. Top row, the coding agent loop at development time: it starts from a work order; the model proposes a step; it calls tools that edit repository files, run shell commands and use Git, which is broad authority because the tools act as you on your files, network and Git; the verifier is the test suite plus your review of the diff; a failed check sends it back to the model to repair; on pass it stops and reports the diff and the test output. Bottom row, the product agent loop at request time inside ai-service: it starts from text a user pasted; the model proposes a step; it can call two side-effect-free tools, allowed_tags, which returns the tag list, and hours_to_minutes, a pure unit conversion, so it has narrow authority with no files, no shell and no network; the verifier is the output schema plus the check_tags validator; invalid output goes back to the model to retry; it stops with valid output or when its retry and usage limits are hit. Colour is redundant: every box and arrow is labelled.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+    <marker id="o" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#84540c"/></marker>
+  </defs>
+  <rect width="640" height="560" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Two agent loops, two different authorities</text>
+
+    <!-- Row 1: coding agent -->
+    <text x="16" y="72" font-size="19" font-weight="700">Coding agent loop<tspan font-size="16" font-weight="400" fill="#535c6b"> · development time, you supervise</tspan></text>
+    <path d="M368 116 V106 H168 V114" fill="none" stroke="#84540c" stroke-width="2.5" marker-end="url(#o)"/>
+    <text x="269" y="98" text-anchor="middle" font-size="17" font-weight="700" fill="#84540c">fail → repair</text>
+    <rect x="104" y="116" width="128" height="70" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="168" y="144" text-anchor="middle" font-size="18" font-weight="700">Model</text>
+    <text x="168" y="168" text-anchor="middle" font-size="16">proposes a step</text>
+    <rect x="286" y="116" width="164" height="70" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="368" y="144" text-anchor="middle" font-size="18" font-weight="700">Verifier</text>
+    <text x="368" y="168" text-anchor="middle" font-size="16">tests + your review</text>
+    <rect x="498" y="116" width="130" height="70" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="563" y="140" text-anchor="middle" font-size="18" font-weight="700">Stop</text>
+    <text x="563" y="161" text-anchor="middle" font-size="16">report the diff</text>
+    <text x="563" y="180" text-anchor="middle" font-size="16">and test output</text>
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)">
+      <path d="M14 151 H100"/>
+      <path d="M232 151 H282"/>
+      <path d="M450 151 H494"/>
+      <path d="M150 186 V220"/>
+      <path d="M212 224 V190"/>
+    </g>
+    <text x="57" y="143" text-anchor="middle" font-size="16">starts:</text>
+    <text x="57" y="173" text-anchor="middle" font-size="16" font-weight="700">work order</text>
+    <text x="259" y="143" text-anchor="middle" font-size="16">check</text>
+    <text x="474" y="143" text-anchor="middle" font-size="16">pass</text>
+    <text x="158" y="211" font-size="16">call</text>
+    <text x="220" y="211" font-size="16">return</text>
+    <path d="M110 224 H300 V284 H110 A6 6 0 0 1 104 278 V230 A6 6 0 0 1 110 224 Z" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="202" y="248" text-anchor="middle" font-size="16">Tools: edit files,</text>
+    <text x="202" y="270" text-anchor="middle" font-size="16">run shell, use Git</text>
+    <path d="M300 224 H622 A6 6 0 0 1 628 230 V278 A6 6 0 0 1 622 284 H300 Z" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="318" y="248" font-size="17" font-weight="700" fill="#84540c">Broad authority</text>
+    <text x="318" y="270" font-size="16">acts as you: files, network, Git</text>
+
+    <path d="M16 300 H624" stroke="#ddd7ca" stroke-width="2"/>
+
+    <!-- Row 2: product agent -->
+    <text x="16" y="332" font-size="19" font-weight="700">Product agent loop<tspan font-size="16" font-weight="400" fill="#535c6b"> · request time, inside ai-service</tspan></text>
+    <path d="M368 376 V366 H168 V374" fill="none" stroke="#84540c" stroke-width="2.5" marker-end="url(#o)"/>
+    <text x="269" y="358" text-anchor="middle" font-size="17" font-weight="700" fill="#84540c">invalid → retry</text>
+    <rect x="104" y="376" width="128" height="70" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="168" y="404" text-anchor="middle" font-size="18" font-weight="700">Model</text>
+    <text x="168" y="428" text-anchor="middle" font-size="16">proposes a step</text>
+    <rect x="286" y="376" width="164" height="70" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="368" y="404" text-anchor="middle" font-size="18" font-weight="700">Verifier</text>
+    <text x="368" y="428" text-anchor="middle" font-size="16">schema + check_tags</text>
+    <rect x="498" y="376" width="130" height="70" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="563" y="400" text-anchor="middle" font-size="18" font-weight="700">Stop</text>
+    <text x="563" y="421" text-anchor="middle" font-size="16">valid output,</text>
+    <text x="563" y="440" text-anchor="middle" font-size="16">or limits hit</text>
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)">
+      <path d="M14 411 H100"/>
+      <path d="M232 411 H282"/>
+      <path d="M450 411 H494"/>
+      <path d="M150 446 V480"/>
+      <path d="M212 484 V450"/>
+    </g>
+    <text x="57" y="403" text-anchor="middle" font-size="16">starts:</text>
+    <text x="57" y="433" text-anchor="middle" font-size="16" font-weight="700">user text</text>
+    <text x="259" y="403" text-anchor="middle" font-size="16">check</text>
+    <text x="474" y="403" text-anchor="middle" font-size="16">pass</text>
+    <text x="158" y="471" font-size="16">call</text>
+    <text x="220" y="471" font-size="16">return</text>
+    <path d="M110 484 H300 V544 H110 A6 6 0 0 1 104 538 V490 A6 6 0 0 1 110 484 Z" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="202" y="508" text-anchor="middle" font-size="16">Tools: allowed_tags,</text>
+    <text x="202" y="530" text-anchor="middle" font-size="16">hours_to_minutes</text>
+    <path d="M300 484 H622 A6 6 0 0 1 628 490 V538 A6 6 0 0 1 622 544 H300 Z" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="318" y="508" font-size="17" font-weight="700" fill="#2a6a47">Narrow authority</text>
+    <text x="318" y="530" font-size="16">read-only: no files, shell or network</text>
+  </g>
+</svg>
