@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-labelledby="t d">
+<title id="t">Was the request sent?</title>
+<desc id="d">A timeline of one POST /recipes from the frontend's api.py to the backend, time flowing down, in three zones. Zone 1, nothing was sent: api.py tries to connect for up to 2 seconds and the connection is refused, the name does not resolve, or connecting times out; api.py raises BackendUnavailable, and retrying is safe because nothing happened. Zone 2, sent but no full reply: api.py sends the POST and the backend commits the row, but its reply 201 is lost or too slow (the read timeout allows 10 seconds per wait); api.py raises BackendNoAnswer, the outcome is unknown, and the row may already be saved, so the user reloads and checks before trying again. Zone 3, a reply arrived: a 2xx reply with a JSON body is success and raises nothing; a 4xx or 5xx reply becomes BackendError with a message; a 2xx reply whose body is not JSON means another server answered, so BackendError says check BACKEND_URL. Solid arrows are requests; dashed arrows are replies.</desc>
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3b4453"/></marker>
+</defs>
+<rect width="640" height="560" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a" text-anchor="middle">
+<text x="24" y="34" font-size="22" font-weight="700" text-anchor="start">Was the request sent?</text>
+<text x="24" y="60" font-size="16" fill="#535c6b" text-anchor="start">One POST /recipes. Time flows down. Solid arrow: request. Dashed: reply.</text>
+
+<rect x="24" y="124" width="592" height="128" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<rect x="24" y="260" width="592" height="152" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+<rect x="24" y="420" width="592" height="128" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+
+<rect x="24" y="76" width="88" height="36" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="68" y="100" font-size="18" font-weight="700">api.py</text>
+<rect x="152" y="76" width="96" height="36" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="200" y="100" font-size="18" font-weight="700">backend</text>
+<text x="272" y="100" font-size="17" font-weight="700" text-anchor="start">What api.py raises</text>
+
+<path d="M68 112 V546" stroke="#3b4453" stroke-width="2"/>
+<path d="M200 112 V546" stroke="#3b4453" stroke-width="2"/>
+
+<path d="M70 180 H170" fill="none" stroke="#3b4453" stroke-width="2.5"/>
+<path d="M174 170 L192 190 M192 170 L174 190" stroke="#9b2c2c" stroke-width="3.5"/>
+<text x="124" y="168" font-size="16">connects</text>
+<text x="134" y="212" font-size="16" fill="#9b2c2c">refused or</text>
+<text x="134" y="232" font-size="16" fill="#9b2c2c">no answer in 2 s</text>
+
+<path d="M70 292 H196" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="134" y="282" font-size="16">sends the POST</text>
+<rect x="193" y="298" width="14" height="36" rx="3" fill="#1d4e89"/>
+<text x="184" y="312" font-size="16" text-anchor="end">commits</text>
+<text x="184" y="330" font-size="16" text-anchor="end">the row</text>
+<path d="M198 376 H114" fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="7 5"/>
+<path d="M92 366 L110 386 M110 366 L92 386" stroke="#9b2c2c" stroke-width="3.5"/>
+<text x="156" y="366" font-size="16">replies 201</text>
+<text x="134" y="405" font-size="16" fill="#9b2c2c">lost or too slow</text>
+
+<path d="M198 474 H72" fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#ah)"/>
+<text x="134" y="464" font-size="16">a reply arrives</text>
+
+<g text-anchor="start" font-size="17">
+<text x="272" y="150" font-weight="700" fill="#2a6a47">1 · Nothing was sent</text>
+<text x="272" y="174">refused, unknown host name,</text>
+<text x="272" y="195">or no connection within 2 s</text>
+<text x="272" y="221" font-weight="700">→ BackendUnavailable</text>
+<text x="272" y="243">safe to retry: nothing happened</text>
+
+<text x="272" y="286" font-weight="700" fill="#84540c">2 · Sent, no full reply</text>
+<text x="272" y="310">read timeout (10 s per wait)</text>
+<text x="272" y="331">or a dropped connection</text>
+<text x="272" y="357" font-weight="700">→ BackendNoAnswer</text>
+<text x="272" y="381">outcome unknown: the row may</text>
+<text x="272" y="402">be saved, so reload and check</text>
+
+<text x="272" y="446" font-weight="700" fill="#1d4e89">3 · A reply arrived</text>
+<text x="272" y="470">2xx with JSON → no error</text>
+<text x="272" y="492">4xx or 5xx → BackendError</text>
+<text x="272" y="514">2xx, not JSON → BackendError</text>
+<text x="272" y="536">(wrong server: check BACKEND_URL)</text>
+</g>
+</g>
+</svg>

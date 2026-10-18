@@ -1,29 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 530" role="img" aria-labelledby="title desc">
-<title id="title">Four states of a list request</title>
-<desc id="desc">Starting or reloading a list begins in loading. A successful response with rows shows content. A successful response with an empty list shows an empty state and a first action. A failed request shows an error and a next step. A user-initiated reload starts a new loading cycle. Confirm a write only after the backend succeeds; then refresh the authoritative list. The diagram does not prescribe automatic retries.</desc>
-<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
-<rect width="640" height="530" fill="#fff"/>
-<g font-family="Arial, Helvetica, sans-serif" fill="#172554" text-anchor="middle">
-  <text x="320" y="32" font-size="22" font-weight="700">One list request, four visible states</text>
-  <text x="320" y="59" font-size="17" fill="#475569">Start or reload → loading → one observed outcome</text>
-  <rect x="204" y="90" width="232" height="88" rx="6" fill="#f5f6ff" stroke="#4051b5" stroke-width="2"/>
-  <text x="320" y="123" font-size="22" font-weight="700">Loading</text>
-  <text x="320" y="151" font-size="17">A request is pending</text>
-  <g fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)">
-    <path d="M270 178 V211 H118 V275"/>
-    <path d="M320 178 V275"/>
-    <path d="M370 178 V211 H522 V275"/>
-  </g>
-  <g fill="#fff"><rect x="50" y="233" width="136" height="25"/><rect x="242" y="233" width="156" height="25"/><rect x="454" y="233" width="136" height="25"/></g>
-  <g font-size="16" fill="#475569"><text x="118" y="250">200 + rows</text><text x="320" y="250">200 + empty list</text><text x="522" y="250">Request failed</text></g>
-  <rect x="28" y="280" width="180" height="128" rx="6" fill="#effaf6" stroke="#167d65" stroke-width="2"/>
-  <rect x="230" y="280" width="180" height="128" rx="6" fill="#f5f6ff" stroke="#4051b5" stroke-width="2"/>
-  <rect x="432" y="280" width="180" height="128" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
-  <text x="118" y="316" font-size="22" font-weight="700">Content</text><text x="118" y="346" font-size="17">Render returned rows</text><text x="118" y="373" font-size="17">and allowed actions</text>
-  <text x="320" y="316" font-size="22" font-weight="700">Empty</text><text x="320" y="346" font-size="17">Explain the first step:</text><text x="320" y="373" font-size="17">“Add a recipe”</text>
-  <text x="522" y="316" font-size="22" font-weight="700">Error</text><text x="522" y="346" font-size="17">Say what to do next;</text><text x="522" y="373" font-size="17">hide the traceback</text>
-  <text x="320" y="448" font-size="17" fill="#475569">A user-initiated reload starts another loading cycle.</text>
-  <rect x="28" y="468" width="584" height="44" rx="6" fill="#f8fafc" stroke="#475569" stroke-width="1.5"/>
-  <text x="320" y="495" font-size="17">After a write: confirm backend success, then refresh the list.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-labelledby="t d">
+<title id="t">One list request, four visible states</title>
+<desc id="d">State diagram for loading the recipe list. The user opens the page, which enters Loading while GET /recipes is pending and a spinner shows. From Loading there are four outcomes. If no reply arrives (a transport failure such as a refused connection or a timeout), the page goes to Error. If the backend answers 4xx or 5xx, the page also goes to Error. Error says what to do next and never shows a traceback. If the backend answers 200 with an empty list, the page goes to Empty, which explains the first step, Add a recipe. If it answers 200 with rows, the page goes to Content, which shows the rows and their actions. A dashed arrow leads from Error back to Loading: only the user reloading the page starts a new request. Empty and Error can both show zero rows; only Empty means the list really is empty. The frontend never retries on its own. Solid arrows mean the reply decides; dashed arrows mean the user acts.</desc>
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3b4453"/></marker>
+<marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d4e89"/></marker>
+</defs>
+<rect width="640" height="520" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a" text-anchor="middle">
+<text x="24" y="36" font-size="22" font-weight="700" text-anchor="start">One list request, four visible states</text>
+
+<path d="M24 61 H62" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="72" y="66" font-size="16" text-anchor="start">the reply decides</text>
+<path d="M226 61 H264" fill="none" stroke="#1d4e89" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#au)"/>
+<text x="274" y="66" font-size="16" text-anchor="start">the user acts</text>
+
+<circle cx="508" cy="84" r="7" fill="#0f1e3a"/>
+<path d="M508 92 V112" fill="none" stroke="#1d4e89" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#au)"/>
+<text x="494" y="90" font-size="16" text-anchor="end">user opens the page</text>
+
+<rect x="400" y="116" width="216" height="152" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2.5"/>
+<text x="508" y="166" font-size="22" font-weight="700">Loading</text>
+<text x="508" y="198" font-size="16">GET /recipes is pending;</text>
+<text x="508" y="220" font-size="16">the spinner shows</text>
+
+<rect x="24" y="116" width="172" height="152" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2.5"/>
+<text x="110" y="166" font-size="22" font-weight="700">Error</text>
+<text x="110" y="198" font-size="16">says what to do</text>
+<text x="110" y="220" font-size="16">next; never a</text>
+<text x="110" y="242" font-size="16">traceback</text>
+
+<path d="M398 150 H200" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="298" y="124" font-size="16">no reply arrives</text>
+<text x="298" y="142" font-size="16">(transport failure)</text>
+
+<path d="M398 198 H200" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="298" y="190" font-size="16">answers 4xx or 5xx</text>
+
+<path d="M198 246 H396" fill="none" stroke="#1d4e89" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#au)"/>
+<text x="298" y="238" font-size="16">user reloads the page</text>
+
+<path d="M410 270 V340" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="398" y="300" font-size="16" text-anchor="end">answers 200</text>
+<text x="398" y="320" font-size="16" text-anchor="end">with an empty list</text>
+
+<path d="M528 270 V340" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<text x="540" y="300" font-size="16" text-anchor="start">answers 200</text>
+<text x="540" y="320" font-size="16" text-anchor="start">with rows</text>
+
+<rect x="228" y="344" width="192" height="104" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2.5"/>
+<text x="324" y="376" font-size="22" font-weight="700">Empty</text>
+<text x="324" y="404" font-size="16">explains the first step:</text>
+<text x="324" y="426" font-size="16">“Add a recipe”</text>
+
+<rect x="440" y="344" width="176" height="104" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2.5"/>
+<text x="528" y="376" font-size="22" font-weight="700">Content</text>
+<text x="528" y="404" font-size="16">shows the rows</text>
+<text x="528" y="426" font-size="16">and their actions</text>
+
+<g font-size="16" fill="#535c6b" text-anchor="start">
+<text x="24" y="368">Error and Empty can</text>
+<text x="24" y="390">both show zero rows;</text>
+<text x="24" y="412">only Empty means the</text>
+<text x="24" y="434">list really is empty.</text>
+</g>
+
+<rect x="24" y="468" width="592" height="40" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<text x="320" y="494" font-size="16" font-weight="700">No automatic retries: only the user’s reload sends a new request.</text>
 </g>
 </svg>
