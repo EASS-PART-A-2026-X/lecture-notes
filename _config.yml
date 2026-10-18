@@ -17,13 +17,15 @@ readme_index:
   remove_originals: true
 
 # Sidebar: short titles in course order. Paths match the file-name prefix, so slugs can change.
+# The same order drives the previous/next pager (_includes/footer_custom.html) and the PDF.
+# Sidebar group labels (Start here, Lectures, Optional depth) are CSS in _sass/custom/custom.scss.
 defaults:
   - { scope: { path: "" }, values: { layout: default } }
   - { scope: { path: README.md }, values: { title: "Home", nav_order: 1 } }
   - { scope: { path: "guides/student-setup.md" }, values: { title: "Student setup", nav_order: 2 } }
-  - { scope: { path: "guides/models-and-ai-literacy.md" }, values: { title: "Models and AI literacy", nav_order: 3 } }
+  - { scope: { path: "guides/learning-map.md" }, values: { title: "Learning map", nav_order: 3 } }
   - { scope: { path: "guides/engineering-foundations.md" }, values: { title: "Engineering foundations", nav_order: 4 } }
-  - { scope: { path: "guides/learning-map.md" }, values: { title: "Learning map", nav_order: 5 } }
+  - { scope: { path: "guides/models-and-ai-literacy.md" }, values: { title: "Models and AI literacy", nav_order: 5 } }
   - { scope: { path: "lectures/01-*" }, values: { title: "1 · Setup, Git and Docker", nav_order: 6 } }
   - { scope: { path: "lectures/02-*" }, values: { title: "2 · HTTP and FastAPI", nav_order: 7 } }
   - { scope: { path: "lectures/03-*" }, values: { title: "3 · Persistence", nav_order: 8 } }
@@ -37,16 +39,19 @@ defaults:
   - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 16 } }
   - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 17 } }
   - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 18 } }
-  - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference and transformers", nav_order: 19 } }
+  - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference", nav_order: 19 } }
   - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 20 } }
   - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 21 } }
   - { scope: { path: "guides/system-walkthrough.md" }, values: { title: "Visual system walkthrough", nav_order: 22 } }
   - { scope: { path: "guides/industry-studio.md" }, values: { title: "Industry engineering studio", nav_order: 23 } }
+  - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 24 } }
 
 # Just the Docs
+color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper, one oxblood accent
 search:
   heading_level: 3
   previews: 2
+  rel_url: false # no tiny URL line under each result; titles and previews identify the page
 heading_anchors: true
 enable_copy_code_button: true
 back_to_top: true

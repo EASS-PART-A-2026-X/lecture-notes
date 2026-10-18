@@ -1,0 +1,35 @@
+// EASS design system: theme-level settings. Just the Docs imports this file after its own
+// !default variables and before the colour scheme and modules, so plain assignments here win.
+// Values derived from a changed variable are recomputed here, because the theme computed them
+// before this file was read. Components and tokens: custom.scss; colours: color_schemes/eass.scss.
+
+// Type. The theme's body font stays a sans for interface chrome (navigation, search, tables,
+// labels); custom.scss sets reading text in a serif. System fonts only (no font downloads):
+// macOS, Windows and Linux (Liberation, used by the PDF build) each have a match.
+$body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial,
+  "Liberation Sans", sans-serif;
+$mono-font-family: ui-monospace, "SFMono-Regular", "SF Mono", "Cascadia Mono", Menlo, Consolas,
+  "Liberation Mono", monospace;
+$body-line-height: 1.5;
+$content-line-height: 1.65;
+$body-heading-line-height: 1.2;
+
+// The theme's light grey (#959396, 2.9:1 on white) colours ordered-list numbers and breadcrumbs.
+$grey-dk-000: #535c6b;
+
+// Sidebar rhythm: 26 items and 3 group labels fit a 900 px tall window.
+$nav-list-item-height: 1.875rem;
+
+// Layout. A 54rem main column (50rem of content after the gutters) gives figures, tables and code
+// room while prose keeps a ~70-character measure. Only the values derived from the content width
+// are recomputed; the sidebar breakpoint (md) stays at the theme's 50rem.
+$border-radius: 3px;
+$content-width: 54rem;
+$search-results-width: $content-width - $nav-width;
+$media-queries: map-merge(
+  $media-queries,
+  (
+    md: 50rem,
+    lg: $content-width + $nav-width,
+  )
+);

@@ -44,6 +44,9 @@ jobs:
       - name: Test inference teaching model
         run: node --test .github/scripts/test_inference_lab.cjs
 
+      - name: Test course page helpers (schedule dates, next meeting, stepper)
+        run: node --test .github/scripts/test_course_js.cjs
+
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.13.1"
@@ -68,7 +71,7 @@ jobs:
         env:
           BASE_URL: https://eass-part-a-2026-x.github.io/lecture-notes
 
-      - name: Test the site checker
+      - name: Test the site checker and the rendered course components
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 
       - name: Check local links, anchors and assets
