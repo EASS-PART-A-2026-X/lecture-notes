@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-labelledby="t d">
+<title id="t">How curl localhost:8080 reaches a container</title>
+<desc id="d">Top: on the laptop, curl connects to 127.0.0.1:8080, where Docker listens for this laptop only. The option -p 127.0.0.1:8080:8000 forwards the connection into a Linux VM run by Docker Desktop (on Linux, the host itself) and on to port 8000 of the container, which has its own network and its own localhost. A server bound to 0.0.0.0:8000 answers 200 OK. A server bound to 127.0.0.1:8000 accepts only connections from inside the container, so the forwarded request gets no reply (curl error 52 on Docker Desktop). Bottom: the lifecycle of one container. docker run creates and starts a container from an image; it runs until its process exits or docker stop; an exited container is listed by docker ps -a until docker rm, or --rm, removes it. The image stays and is listed by docker images.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#2a6a47"/></marker>
+<marker id="ax" markerWidth="12" markerHeight="16" refX="6" refY="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M6 1 V15" stroke="#9b2c2c" stroke-width="3"/></marker>
+<marker id="ak" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+</defs>
+<rect width="640" height="520" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="29" text-anchor="middle" font-size="21" font-weight="700">How curl localhost:8080 reaches a container</text>
+<rect x="8" y="44" width="624" height="300" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<text x="22" y="67" font-size="16" font-weight="700" fill="#535c6b">YOUR LAPTOP (THE HOST)</text>
+<rect x="22" y="78" width="236" height="58" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="140" y="103" text-anchor="middle" font-size="18" font-weight="700">curl localhost:8080</text>
+<text x="140" y="126" text-anchor="middle" font-size="16" fill="#535c6b">or a browser tab</text>
+<rect x="372" y="78" width="246" height="58" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+<text x="495" y="103" text-anchor="middle" font-size="18" font-weight="700">127.0.0.1:8080</text>
+<text x="495" y="126" text-anchor="middle" font-size="16" fill="#535c6b">Docker listens, laptop only</text>
+<path d="M258 107 H366" stroke="#1d4e89" stroke-width="2.5" marker-end="url(#an)"/>
+<text x="314" y="98" text-anchor="middle" font-size="16" font-weight="700" fill="#1d4e89">connects</text>
+<rect x="22" y="166" width="596" height="168" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="36" y="188" font-size="16" fill="#535c6b">Linux VM run by Docker Desktop (on Linux: the host itself)</text>
+<rect x="36" y="198" width="568" height="128" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="50" y="221" font-size="17" font-weight="700">Container hello: its own network and its own localhost</text>
+<rect x="50" y="232" width="474" height="42" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="64" y="259" font-size="17" font-weight="700">server bound to 0.0.0.0:8000</text>
+<text x="512" y="259" text-anchor="end" font-size="17" font-weight="700" fill="#2a6a47">answers 200 OK</text>
+<rect x="50" y="280" width="474" height="42" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+<text x="64" y="307" font-size="17" font-weight="700">server bound to 127.0.0.1:8000</text>
+<text x="512" y="307" text-anchor="end" font-size="17" font-weight="700" fill="#9b2c2c">no reply (curl 52)</text>
+<path d="M576 136 V253" stroke="#1d4e89" stroke-width="2.5" fill="none"/>
+<path d="M576 253 H530" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#ag)"/>
+<path d="M576 253 V301 H530" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#ax)"/>
+<text x="566" y="157" text-anchor="end" font-size="17" font-weight="700" fill="#1d4e89" stroke="#f7f5ef" stroke-width="6" stroke-linejoin="round" paint-order="stroke">-p 127.0.0.1:8080:8000 forwards to port 8000</text>
+<rect x="8" y="356" width="624" height="156" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="2"/>
+<text x="22" y="379" font-size="16" font-weight="700" fill="#535c6b">LIFECYCLE OF ONE CONTAINER</text>
+<text x="618" y="379" text-anchor="end" font-size="16" font-weight="700" fill="#1d4e89">docker run = create + start</text>
+<g stroke-width="2">
+<rect x="22" y="394" width="110" height="46" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<rect x="160" y="394" width="90" height="46" rx="6" fill="#ffffff" stroke="#3b4453"/>
+<rect x="278" y="394" width="90" height="46" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="396" y="394" width="90" height="46" rx="6" fill="#fbf6ec" stroke="#84540c"/>
+<rect x="514" y="394" width="104" height="46" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+</g>
+<g text-anchor="middle" font-size="18" font-weight="700">
+<text x="77" y="423">image</text>
+<text x="205" y="423">created</text>
+<text x="323" y="423">running</text>
+<text x="441" y="423">exited</text>
+<text x="566" y="423">removed</text>
+</g>
+<g stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)">
+<path d="M132 417 H154"/>
+<path d="M250 417 H272"/>
+<path d="M368 417 H390"/>
+<path d="M486 417 H508"/>
+</g>
+<g text-anchor="middle" font-size="16" font-weight="700" fill="#0f1e3a">
+<text x="146" y="461">create</text>
+<text x="264" y="461">start</text>
+<text x="382" y="461">exit or stop</text>
+<text x="506" y="461">docker rm / --rm</text>
+</g>
+<g text-anchor="middle" font-size="16" fill="#535c6b">
+<text x="77" y="492">docker images</text>
+<text x="205" y="492">docker ps -a</text>
+<text x="323" y="492">docker ps</text>
+<text x="441" y="492">docker ps -a</text>
+<text x="566" y="492">gone</text>
+</g>
+</g>
+</svg>

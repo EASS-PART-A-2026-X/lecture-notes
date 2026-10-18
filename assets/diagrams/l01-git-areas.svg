@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="t d">
+<title id="t">Where does my change live?</title>
+<desc id="d">Four areas from left to right: working tree, staging area and local commits on your laptop, then GitHub. git add moves an edit from the working tree to the staging area, git commit records the staged snapshot in local history, and git push copies commits to GitHub. Back arrows: git pull brings commits from GitHub to your laptop; git restore --staged unstages a file and keeps the edit; git restore on a file overwrites the edit, which is lost. Brackets show that git diff compares the working tree with the staging area, and git diff --staged compares the staging area with the last commit. Colour is redundant: the danger arrow is also labelled "discards the edit".</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#9b2c2c"/></marker>
+</defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="31" text-anchor="middle" font-size="22" font-weight="700">Where does my change live?</text>
+<rect x="8" y="46" width="470" height="286" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<text x="22" y="69" font-size="16" font-weight="700" fill="#535c6b">ON YOUR LAPTOP</text>
+<rect x="484" y="46" width="148" height="286" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<text x="497" y="69" font-size="16" font-weight="700" fill="#535c6b">ON GITHUB</text>
+<g stroke-width="2.5" fill="none">
+<path d="M118 132 C132 96, 196 96, 210 130" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M274 132 C288 96, 352 96, 366 130" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M430 132 C450 96, 506 96, 526 130" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M212 220 C198 252, 132 252, 120 222" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M296 220 C292 318, 34 318, 32 224" stroke="#9b2c2c" stroke-dasharray="7 5" marker-end="url(#ar)"/>
+<path d="M526 220 C506 252, 450 252, 432 222" stroke="#1d4e89" marker-end="url(#an)"/>
+</g>
+<g font-size="18" font-weight="700" fill="#1d4e89" text-anchor="middle" stroke="#f7f5ef" stroke-width="6" stroke-linejoin="round" paint-order="stroke">
+<text x="164" y="94">git add</text>
+<text x="320" y="94">git commit</text>
+<text x="478" y="94">git push</text>
+<text x="166" y="268">git restore --staged</text>
+<text x="478" y="268">git pull</text>
+</g>
+<text x="164" y="322" text-anchor="middle" font-size="17" font-weight="700" fill="#9b2c2c" stroke="#f7f5ef" stroke-width="6" stroke-linejoin="round" paint-order="stroke">git restore &lt;file&gt; discards the edit</text>
+<g stroke="#3b4453" stroke-width="2">
+<rect x="20" y="134" width="134" height="84" rx="6" fill="#ffffff"/>
+<rect x="176" y="134" width="134" height="84" rx="6" fill="#ffffff"/>
+<rect x="332" y="134" width="134" height="84" rx="6" fill="#ffffff"/>
+<rect x="490" y="134" width="134" height="84" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+</g>
+<g text-anchor="middle">
+<text x="87" y="171" font-size="18" font-weight="700">Working tree</text>
+<text x="87" y="197" font-size="16" fill="#535c6b">files you edit</text>
+<text x="243" y="171" font-size="18" font-weight="700">Staging area</text>
+<text x="243" y="197" font-size="16" fill="#535c6b">the next commit</text>
+<text x="399" y="171" font-size="18" font-weight="700">Local commits</text>
+<text x="399" y="197" font-size="16" fill="#535c6b">your history</text>
+<text x="557" y="171" font-size="18" font-weight="700">origin</text>
+<text x="557" y="197" font-size="16" fill="#535c6b">your repo</text>
+</g>
+<g stroke="#3b4453" stroke-width="2" fill="none">
+<path d="M30 344 V354 H232 V344"/>
+<path d="M254 344 V354 H456 V344"/>
+</g>
+<g text-anchor="middle">
+<text x="131" y="378" font-size="18" font-weight="700">git diff</text>
+<text x="131" y="400" font-size="16" fill="#535c6b">edits not yet added</text>
+<text x="355" y="378" font-size="18" font-weight="700">git diff --staged</text>
+<text x="355" y="400" font-size="16" fill="#535c6b">what commit would record</text>
+</g>
+<g font-size="16" fill="#535c6b">
+<path d="M470 360 H498" stroke="#1d4e89" stroke-width="2.5" marker-end="url(#an)"/>
+<text x="506" y="366">moves a change</text>
+<path d="M470 392 H498" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#ar)"/>
+<text x="506" y="398">loses an edit</text>
+</g>
+</g>
+</svg>
