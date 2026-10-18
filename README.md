@@ -7,6 +7,7 @@
 - **Instructor:** Yossi Eliaz
 - **Meetings:** Mondays at 16:00 Israel time (Asia/Jerusalem) on Zoom; the first meeting, on 19 October, starts at 18:00. The link is provided by the instructor
 - **Required stack:** FastAPI, Pydantic, Pydantic AI, Docker
+- **Course website:** [Lectures, guides, labs and assignments](https://eass-part-a-2026-x.github.io/lecture-notes/)
 - **Course PDF:** [every page in one PDF](https://eass-part-a-2026-x.github.io/lecture-notes/EASS-Class-X-course.pdf), rebuilt on each update
 
 In this course you build, test, run, debug, and explain a useful full-stack application, and you contribute accepted changes to established open-source projects.
