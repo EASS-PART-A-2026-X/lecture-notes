@@ -61,6 +61,9 @@ jobs:
       - name: Execute printed delivery failure lab
         run: uv run --no-project --python 3.14 python .github/scripts/check_reasoning_labs.py
 
+      - name: Execute printed CLI interface lab
+        run: uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py
+
       - name: Validate the printed Compose manifest
         run: python3 .github/scripts/check_compose.py
 

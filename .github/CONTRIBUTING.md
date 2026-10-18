@@ -19,6 +19,7 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
 node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_course_js.cjs
 uv run --locked .github/scripts/check_examples.py
+uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py
 python3 .github/scripts/check_compose.py
 docker build -f .github/examples/Dockerfile -t eass-course-checkpoints:local .
 docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges --memory 1g --cpus 2 --pids-limit 128 eass-course-checkpoints:local
@@ -288,3 +289,7 @@ The `integrated-stack` CI job must pass before Pages deploys. These checks cover
 ## Systems reasoning clinic
 
 `uv run --no-project --python 3.14 python .github/scripts/check_reasoning_labs.py` extracts the two complete delivery-lab fences and executes their eight standard-library SQLite tests in a temporary directory. It models exception rollback, lost acknowledgement and concurrent retries; it is not a broker or power-loss test. Do not maintain a second copy of its code. `node --test .github/scripts/test_reliability_lab.cjs` checks the independent-branch arithmetic and rendered default/fallback/asset. The guide, original diagrams and live controls must remain clear without JavaScript, by keyboard at 320 px, and in the PDF. All figures and result matrices here are synthetic teaching material.
+
+## CLI interface lab
+
+`uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py` extracts the command and the two ordered test-file fences in `guides/cli-first-agents.md` and runs eight tests through the command's process interface. They cover help, human/JSON output, missing records, invalid identifiers, unsupported flags/operations and hostile text treated as data. No SDK, model or service is needed. These checks do not establish live-agent behavior or sandbox arbitrary processes. The teaching skill remains a Markdown example, never an automatically installed instruction file.

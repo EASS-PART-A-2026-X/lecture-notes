@@ -243,6 +243,8 @@ Separate **intent** from **observation**: the manifest requests a check; a resul
 
 ## Instructions, skills, tools, and hooks
 
+A CLI, a skill and MCP solve different problems. An existing command can be the simplest executable interface; a skill describes when and how to use tools; MCP can connect structured capabilities to compatible hosts. Choose from the task and enforced access boundary, rather than adding all three by default. Work through [CLI-first agents](cli-first-agents.md) for the complete command, its eight interface checks and a small skill example. The choice adds no required server or platform to the course product.
+
 A short repository instruction file (`AGENTS.md` or `CLAUDE.md`) holds stable project facts, and a work order holds today's outcome; both are guidance the model reads, not controls. The [agent-driven engineering guide](agent-driven-development.md#instructions-context-and-permissions) compares what Codex, Claude Code and OpenCode actually enforce and gives an `AGENTS.md` example to adapt.
 
 Put a repeatable, task-specific procedure in a **skill**, executable behavior in a **tool** or script, and use a **hook** only when your harness documents that event and how it is enforced. The [Agent Skills specification](https://agentskills.io/specification) defines a skill as a folder with a `SKILL.md` entry point whose front matter requires `name` and `description` (checked 18 October 2026). The description is a selection cue: what action, for which task, with which boundary? Supporting references and scripts load when relevant. Discovery paths, optional fields, invocation and permissions still vary by harness, so inspect the active skill and version rather than assuming installation means invocation.

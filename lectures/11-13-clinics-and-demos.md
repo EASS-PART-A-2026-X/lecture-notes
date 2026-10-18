@@ -191,6 +191,8 @@ Ungraded and in words; copy it into a message or a shared document. Inspired by 
 
 ### Grader-style self-check
 
+Use [Submission evidence](../guides/submission-evidence.md) for compact EX1–EX3 criteria and worked examples of what an observation does and does not prove.
+
 A grader follows the path in the [README](../README.md#working-method-ai-use-assessment-and-reproducibility). Walk it yourself first:
 
 - [ ] `.env.example` lists every setting without real values; `git check-ignore -v .env` names your ignore rule.

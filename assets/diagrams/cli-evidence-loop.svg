@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="510" viewBox="0 0 640 510" role="img" aria-labelledby="cli-title cli-desc">
+  <title id="cli-title">One command, one observable result</title>
+  <desc id="cli-desc">A task with an outcome and limits scopes a person or agent. The caller invokes a command, which validates arguments and returns a result with an exit status. Review and executable checks provide evidence for one revision. Skills describe procedures; permissions and sandboxes enforce access.</desc>
+  <defs>
+    <marker id="cli-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="640" height="510" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="32" y="36" font-size="22" font-weight="700">One command, one observable result</text>
+    <rect x="32" y="65" width="576" height="70" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="50" y="94" font-size="20" font-weight="700">Task: outcome + limits</text>
+    <text x="50" y="119" font-size="18">Keep the requested change and authority explicit.</text>
+    <path d="M166 137 V208" stroke="#3b4453" stroke-width="2.5" marker-end="url(#cli-arrow)"/>
+    <text x="178" y="177" font-size="18">scope</text>
+    <rect x="32" y="216" width="266" height="82" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="50" y="247" font-size="20" font-weight="700">Person or agent</text>
+    <text x="50" y="274" font-size="18">Selects a command</text>
+    <rect x="374" y="216" width="234" height="82" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="392" y="247" font-size="20" font-weight="700">CLI</text>
+    <text x="392" y="274" font-size="18">Validates arguments</text>
+    <path d="M300 260 H366" stroke="#3b4453" stroke-width="2.5" marker-end="url(#cli-arrow)"/>
+    <text x="332" y="246" font-size="18" text-anchor="middle">run</text>
+    <path d="M491 300 V363" stroke="#3b4453" stroke-width="2.5" marker-end="url(#cli-arrow)"/>
+    <text x="503" y="338" font-size="18">return</text>
+    <rect x="374" y="372" width="234" height="82" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="392" y="403" font-size="20" font-weight="700">Result + exit status</text>
+    <text x="392" y="430" font-size="18">Data or a visible error</text>
+    <rect x="32" y="372" width="266" height="82" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="50" y="403" font-size="20" font-weight="700">Review + checks</text>
+    <text x="50" y="430" font-size="18">Evidence for one revision</text>
+    <path d="M372 414 H306" stroke="#3b4453" stroke-width="2.5" marker-end="url(#cli-arrow)"/>
+    <text x="336" y="398" font-size="18" text-anchor="middle">check</text>
+    <text x="32" y="488" font-size="18" fill="#535c6b">Skills guide the steps; execution controls enforce access.</text>
+  </g>
+</svg>

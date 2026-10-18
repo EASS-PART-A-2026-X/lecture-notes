@@ -24,29 +24,31 @@ defaults:
   - { scope: { path: README.md }, values: { title: "Home", nav_order: 1 } }
   - { scope: { path: "guides/student-setup.md" }, values: { title: "Student setup", nav_order: 2 } }
   - { scope: { path: "guides/learning-map.md" }, values: { title: "Learning map", nav_order: 3 } }
-  - { scope: { path: "guides/engineering-foundations.md" }, values: { title: "Engineering foundations", nav_order: 4 } }
-  - { scope: { path: "guides/models-and-ai-literacy.md" }, values: { title: "Models and AI literacy", nav_order: 5 } }
-  - { scope: { path: "lectures/01-*" }, values: { title: "1 · Setup, Git and Docker", nav_order: 6 } }
-  - { scope: { path: "lectures/02-*" }, values: { title: "2 · HTTP and FastAPI", nav_order: 7 } }
-  - { scope: { path: "lectures/03-*" }, values: { title: "3 · Persistence", nav_order: 8 } }
-  - { scope: { path: "lectures/04-*" }, values: { title: "4 · Browser frontend", nav_order: 9 } }
-  - { scope: { path: "lectures/05-*" }, values: { title: "5 · Frontend testing", nav_order: 10 } }
-  - { scope: { path: "lectures/06-*" }, values: { title: "6 · Pydantic AI agents", nav_order: 11 } }
-  - { scope: { path: "lectures/07-*" }, values: { title: "7 · The third service", nav_order: 12 } }
-  - { scope: { path: "lectures/08-*" }, values: { title: "8 · Docker Compose", nav_order: 13 } }
-  - { scope: { path: "lectures/09-*" }, values: { title: "9 · Failures and evals", nav_order: 14 } }
-  - { scope: { path: "lectures/10-*" }, values: { title: "10 · CI and release", nav_order: 15 } }
-  - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 16 } }
-  - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 17 } }
-  - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 18 } }
-  - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference", nav_order: 19 } }
-  - { scope: { path: "guides/inference-engineering.md" }, values: { title: "Visual inference engineering", nav_order: 20 } }
-  - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 21 } }
-  - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 22 } }
-  - { scope: { path: "guides/system-walkthrough.md" }, values: { title: "Visual system walkthrough", nav_order: 23 } }
-  - { scope: { path: "guides/industry-studio.md" }, values: { title: "Industry engineering studio", nav_order: 24 } }
-  - { scope: { path: "guides/systems-reasoning.md" }, values: { title: "Systems reasoning clinics", nav_order: 25 } }
-  - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 26 } }
+  - { scope: { path: "guides/submission-evidence.md" }, values: { title: "Submission evidence", nav_order: 4 } }
+  - { scope: { path: "guides/engineering-foundations.md" }, values: { title: "Engineering foundations", nav_order: 5 } }
+  - { scope: { path: "guides/models-and-ai-literacy.md" }, values: { title: "Models and AI literacy", nav_order: 6 } }
+  - { scope: { path: "lectures/01-*" }, values: { title: "1 · Setup, Git and Docker", nav_order: 7 } }
+  - { scope: { path: "lectures/02-*" }, values: { title: "2 · HTTP and FastAPI", nav_order: 8 } }
+  - { scope: { path: "lectures/03-*" }, values: { title: "3 · Persistence", nav_order: 9 } }
+  - { scope: { path: "lectures/04-*" }, values: { title: "4 · Browser frontend", nav_order: 10 } }
+  - { scope: { path: "lectures/05-*" }, values: { title: "5 · Frontend testing", nav_order: 11 } }
+  - { scope: { path: "lectures/06-*" }, values: { title: "6 · Pydantic AI agents", nav_order: 12 } }
+  - { scope: { path: "lectures/07-*" }, values: { title: "7 · The third service", nav_order: 13 } }
+  - { scope: { path: "lectures/08-*" }, values: { title: "8 · Docker Compose", nav_order: 14 } }
+  - { scope: { path: "lectures/09-*" }, values: { title: "9 · Failures and evals", nav_order: 15 } }
+  - { scope: { path: "lectures/10-*" }, values: { title: "10 · CI and release", nav_order: 16 } }
+  - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 17 } }
+  - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 18 } }
+  - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 19 } }
+  - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference", nav_order: 20 } }
+  - { scope: { path: "guides/inference-engineering.md" }, values: { title: "Visual inference engineering", nav_order: 21 } }
+  - { scope: { path: "guides/agent-sandboxes.md" }, values: { title: "Agent sandboxes", nav_order: 22 } }
+  - { scope: { path: "guides/engineering-contracts.md" }, values: { title: "Manifests, skills and evals", nav_order: 23 } }
+  - { scope: { path: "guides/cli-first-agents.md" }, values: { title: "CLI-first agents", nav_order: 24 } }
+  - { scope: { path: "guides/system-walkthrough.md" }, values: { title: "Visual system walkthrough", nav_order: 25 } }
+  - { scope: { path: "guides/industry-studio.md" }, values: { title: "Industry engineering studio", nav_order: 26 } }
+  - { scope: { path: "guides/systems-reasoning.md" }, values: { title: "Systems reasoning clinics", nav_order: 27 } }
+  - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 28 } }
 
 # Just the Docs
 color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper, one oxblood accent

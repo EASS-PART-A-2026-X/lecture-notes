@@ -23,6 +23,7 @@
 <summary>On this page</summary>
 
 - [How to read a lecture](#how-to-read-a-lecture)
+- [Your minimum weekly route](#your-minimum-weekly-route)
 - [The class-by-class path](#the-class-by-class-path)
 - [Visual checkpoints](#visual-checkpoints)
 - [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
@@ -56,6 +57,20 @@
 
 Instructions identify the directory where a command runs. Code marked "excerpt," "append," or "the parts that change" updates earlier files; it is not always a complete replacement file. Keep a working Git checkpoint so you can inspect and reverse a mistaken edit.
 
+## Your minimum weekly route
+
+The full PDF is a reference. For the coming class, follow **one row** of the table below and these five steps:
+
+1. Run the previous completion check. If it fails, use its repair link and bring one PARD blocker.
+2. Read the next lecture's Mission and prerequisite check; predict one result before opening its answer. Use only the bridge sections needed to repair a gap.
+3. During and after class, work through that lecture's core demo and lab in your product, one checkpoint at a time.
+4. Reproduce one controlled failure, restore the intended behavior, then run the completion check and explain it without an assistant.
+5. Commit the working checkpoint. Keep the open-source track moving and use [Submission evidence](submission-evidence.md) when an assignment is due. Open optional guides after the core checkpoint works, or when a specific question needs them.
+
+**Time estimates are planning aids, not measured guarantees.** Ordinary preparation is about 10–30 minutes; first-time setup in Lecture 1's [Part A](student-setup.md#part-a-before-the-first-meeting) takes about 1–3 hours plus downloads and is the exception. Lab work is separate; use each lecture's “At a glance” estimate and record where you get stuck. The [student pilot](submission-evidence.md#a-student-setup-pilot) checks actual workload before anyone claims these estimates fit every laptop or learner.
+
+The modern engineering habits are part of the existing lecture work: explain the active process and Git revision in Lecture 1; separate model proposals from code-enforced authority in Lecture 6; measure failure and quality in Lecture 9; and verify the released revision in Lecture 10. A particular assistant, skill package, MCP server or inference runtime is never a substitute for those outcomes.
+
 ## The class-by-class path
 
 <figure class="course-diagram course-diagram--wide">
@@ -76,7 +91,7 @@ Thirteen Monday meetings, 19 October 2026 to 11 January 2027. Meetings 1–10 ar
 
 </details>
 
-| Class | Main engineering question | Evidence you should be able to explain | Prep before class (≤30 min) | Due / open-source checkpoint (README is the authority) |
+| Class | Main engineering question | Evidence you should be able to explain | Preparation / setup | Due / open-source checkpoint (README is the authority) |
 |---|---|---|---|---|
 | [1 — Workbench](../lectures/01-environment-git-docker-ai.md) | Which files, interpreter, process, and Git history am I using? | `/health` response, a reviewed practice PR, narrow product sketch | [Setup Part A](student-setup.md#part-a-before-the-first-meeting); [readiness check](engineering-foundations.md#readiness-check) | 2–3 open-source candidates |
 | [2 — API](../lectures/02-http-fastapi-pydantic.md) | What may clients send, and what do they receive? | CRUD contract, meaningful 422/404 cases, isolated API tests | Bridge: [HTTP, JSON, and contracts](engineering-foundations.md#http-json-and-contracts) | — |

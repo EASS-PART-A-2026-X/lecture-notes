@@ -20,17 +20,18 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 1. **Set up before class:** complete **Part A** of [Student setup](guides/student-setup.md#part-a-before-the-first-meeting) for Windows/WSL, macOS or Linux, including **your own free GitHub account with a verified email** and GitHub CLI login. Part B happens at the end of Lecture 1. No paid GitHub or AI plan is required.
 2. **Understand the path:** read the [learning map](guides/learning-map.md). Not sure your basics are solid? Take the 10-minute [readiness check](guides/engineering-foundations.md#readiness-check). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
 3. **Prepare for the first meeting:** read [Lecture 1's Before you start](lectures/01-environment-git-docker-ai.md#before-you-start) the evening before. If a check fails, bring one precise blocker written as PARD.
-4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3.
+4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3. Use [Submission evidence](guides/submission-evidence.md) to rehearse what each hand-in demonstrates.
 5. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
 ### Reading map
 
-Fourteen guides support the lectures. Only two are required; the rest are there when you need them.
+Sixteen guides support the lectures. Student setup and the learning map are required; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
 
 | Guide | Status | When |
 |---|---|---|
 | [Student setup](guides/student-setup.md) | *Required* | Part A before Lecture 1; Part B at the end of Lecture 1 |
 | [Learning map](guides/learning-map.md) | *Required* | In week 1, then its row for each class |
+| [Submission evidence](guides/submission-evidence.md) | *Submission reference* | Before EX1, EX2 and EX3; existing criteria, worked annotations and a setup pilot checklist |
 | [Engineering foundations](guides/engineering-foundations.md) | *Bridge when stuck* | Its readiness check before Lecture 1; a section whenever a lecture's prerequisite check fails |
 | [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose an assistant or model, and before Lecture 6 |
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | Alongside your first assistant tasks (Lecture 1) and your agent (Lecture 6) |
@@ -38,6 +39,7 @@ Fourteen guides support the lectures. Only two are required; the rest are there 
 | [Local inference](guides/local-inference.md) | *Optional depth* | How models run and what a transformer computes; with Lectures 6 and 9. Hardware-intensive experiments stay optional |
 | [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | Visual overview of model choice, quantization, caching, speculation, batching, parallelism and serving; Lectures 6–10 |
 | [Engineering contracts](guides/engineering-contracts.md) | *Optional depth* | Manifests, skills, factories and evaluations next to your Docker/Compose workflow; Lectures 8–10 |
+| [CLI-first agents](guides/cli-first-agents.md) | *Optional depth* | A working command, eight interface checks, focused skills and when MCP earns its complexity; after Lectures 6–10 |
 | [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | One request through containers, contracts, commits and recovery; with Lectures 3 and 7–10 |
 | [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Repository reading, review, private records, concurrency and recovery; alongside the weekly work |
 | [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | A work order through a failed build, repair, review and delivery; after Lecture 10 or in the clinics |

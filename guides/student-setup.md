@@ -14,6 +14,8 @@
 
 **Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
 
+**Instructor pilot:** use the [student setup pilot](submission-evidence.md#a-student-setup-pilot) to check real invitations, laptop setup, public-site access and grader cloning. Automated course checks cannot establish those account-specific results.
+
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 

@@ -107,6 +107,8 @@ Names overlap across products. Inspect what a component actually executes, persi
 
 ## The development loop
 
+**CLI-first practice:** start with the repository's existing `git`, `gh`, search, test and Compose commands. Read help when needed, ask for a small observable change, and inspect the actual result. Add a skill for a recurring procedure or an MCP integration when its host capabilities justify the extra interface. The [CLI-first lab](cli-first-agents.md) builds and checks a small command and tests where these choices help; no MCP server or commercial agent is required.
+
 Codex, Claude Code, and OpenCode are coding harnesses. The transferable habit is to give the agent a meaningful outcome and a way to check it. OpenAI's [Codex prompting guide](https://learn.chatgpt.com/docs/prompting) and Anthropic's [verification guidance](https://code.claude.com/docs/en/best-practices) both recommend concrete context and checks.
 
 ### One work-order template
