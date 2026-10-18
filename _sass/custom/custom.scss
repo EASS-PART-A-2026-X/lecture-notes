@@ -3021,3 +3021,10 @@ $ed-code-languages: (
   outline: 3px solid var(--ed-ink);
   outline-offset: 3px;
 }
+
+@media print {
+  // These complete source files span pages; let them use remaining page space.
+  .main-content .reasoning-code div.highlighter-rouge { break-inside: auto; }
+  .main-content .reasoning-code div.highlighter-rouge::before { break-after: avoid; }
+  .main-content .reasoning-answer { break-inside: avoid; }
+}

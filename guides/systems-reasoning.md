@@ -39,7 +39,7 @@ After your chosen clinic, you should be able to:
 
 **Predict first:** a recipe row is committed, but its HTTP response is lost. On retry the client sends a new random idempotency key. Does the new key prevent a duplicate?
 
-<details markdown="1">
+<details markdown="1" class="reasoning-answer">
 <summary>Check your prediction</summary>
 
 No. A new key says “new intent”. Keep the same key while retrying the same intent, and implement the contract atomically at the server. A header the server ignores changes nothing. The lab below makes these claims observable.
@@ -98,7 +98,7 @@ The producer commits three rows together, then the relay delivers a committed ev
 
 Save these two complete files in a new directory. Read one function, predict the matching test, then run it.
 
-<details markdown="1">
+<details markdown="1" class="reasoning-code">
 <summary>delivery.py — producer replay, atomic outbox and consumer deduplication</summary>
 
 ```python
@@ -223,7 +223,7 @@ def deliver_one(producer, consumer, *, lose_ack=False, fail_consumer=False):
 
 The event gets a UUID that remains stable on retry. The consumer's unique `event_id` identifies its already-applied local effect. Reading pending work by `rowid` is a convenience for this single relay; it establishes no multi-worker or per-entity ordering guarantee.
 
-<details markdown="1">
+<details markdown="1" class="reasoning-code">
 <summary>test_delivery.py — eight tests of the failure contract</summary>
 
 ```python
@@ -340,7 +340,7 @@ For an AI-assisted save, replay protection at this final storage boundary does *
 
 **Predict first:** remove the consumer's `if previous:` replay branch and change its insert to `INSERT OR REPLACE`. Which check detects the repeated effect?
 
-<details markdown="1">
+<details markdown="1" class="reasoning-answer">
 <summary>Check the counterexample carefully</summary>
 
 The lost-ack test expects `"duplicate"`, but the modified consumer reports `"applied"`, so it fails. The row count alone could still be one: replacing an existing row can hide a repeated side effect. A real consumer needs a check on the actual effect, not merely a final count. Restore the branch and insert before continuing.
@@ -443,7 +443,7 @@ Before revealing the result, compute three different summaries:
 2. Fraction of **tasks** with at least one passing trial.
 3. Fraction of **tasks** whose three trials all passed.
 
-<details markdown="1">
+<details markdown="1" class="reasoning-answer">
 <summary>Check the denominators</summary>
 
 There are six passing trials out of twelve: **50%**. Three tasks passed at least once: **75%**. Only A passed every time: **25%**. These are different questions, calculated from the same matrix. Four tasks with repeated runs are not twelve independent tasks. None of the three summaries excuses task D's failure.
