@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="t d">
+<title id="t">Which command deletes your data?</title>
+<desc id="d">Seven docker commands in order, with the container, the named volume backend-data, and whether the recipe Falafel is listed after each. 1. docker build makes an image; no container, no data. 2. docker run with -v backend-data:/app/data, then POST Falafel: container A runs and mounts the volume; the volume holds Falafel; Falafel is listed. 3. docker stop then docker start: the same container A runs again; Falafel is listed. 4. docker rm -f backend deletes container A and its writable layer; the volume still holds Falafel; nothing is running, so nothing is listed. 5. docker run with -v again: new container B mounts the same volume; Falafel is listed. 6. docker rm -f, then docker run without -v: new container C has its own empty /app/data and is seeded with 3 demo rows; the volume still holds Falafel but is not mounted; Falafel is not listed. 7. docker volume rm backend-data deletes the volume; Falafel is gone for good. A dashed outline means deleted.</desc>
+<rect width="640" height="480" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="30" text-anchor="middle" font-size="22" font-weight="700">Which command deletes your data?</text>
+<text x="320" y="53" text-anchor="middle" font-size="16" fill="#535c6b">-v means -v backend-data:/app/data · Falafel is the recipe you POST in step 2</text>
+<g font-size="16" font-weight="700">
+<text x="20" y="84">Command, in order</text>
+<text x="335" y="84" text-anchor="middle">Container</text>
+<text x="486" y="84" text-anchor="middle">Volume</text>
+<text x="592" y="84" text-anchor="middle">Listed?</text>
+</g>
+<line x1="20" y1="94" x2="620" y2="94" stroke="#ddd7ca" stroke-width="2"/>
+
+<!-- row separators -->
+<g stroke="#ddd7ca" stroke-width="1.5">
+<line x1="20" y1="146" x2="620" y2="146"/>
+<line x1="20" y1="198" x2="620" y2="198"/>
+<line x1="20" y1="250" x2="620" y2="250"/>
+<line x1="20" y1="302" x2="620" y2="302"/>
+<line x1="20" y1="354" x2="620" y2="354"/>
+<line x1="20" y1="406" x2="620" y2="406"/>
+<line x1="20" y1="458" x2="620" y2="458"/>
+</g>
+
+<!-- commands -->
+<g font-size="16" font-weight="700">
+<text x="20" y="116">1  docker build</text>
+<text x="20" y="168">2  docker run -v</text>
+<text x="20" y="220">3  docker stop, docker start</text>
+<text x="20" y="272">4  docker rm -f backend</text>
+<text x="20" y="324">5  docker run -v</text>
+<text x="20" y="376">6  docker rm -f; docker run</text>
+<text x="20" y="428">7  docker volume rm</text>
+</g>
+<g font-size="16" fill="#535c6b">
+<text x="38" y="137">an image; no data yet</text>
+<text x="38" y="189">then POST Falafel</text>
+<text x="38" y="241">the same container A</text>
+<text x="38" y="293">deletes A and its layer</text>
+<text x="38" y="345">a new container B</text>
+<text x="38" y="397">without -v: container C</text>
+<text x="38" y="449">backend-data</text>
+</g>
+
+<!-- container cells -->
+<g stroke-width="2">
+<rect x="262" y="152" width="146" height="40" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="262" y="204" width="146" height="40" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="262" y="256" width="146" height="40" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-dasharray="7 5"/>
+<rect x="262" y="308" width="146" height="40" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="262" y="360" width="146" height="40" rx="6" fill="#fbf6ec" stroke="#84540c"/>
+</g>
+<g font-size="16" text-anchor="middle">
+<text x="335" y="125" fill="#535c6b">none</text>
+<text x="335" y="177">A mounts volume</text>
+<text x="335" y="229">A mounts volume</text>
+<text x="335" y="281" fill="#9b2c2c" font-weight="700">A deleted</text>
+<text x="335" y="333">B mounts volume</text>
+<text x="335" y="385" fill="#84540c">C: own /app/data</text>
+<text x="335" y="437" fill="#535c6b">none</text>
+</g>
+
+<!-- volume cells -->
+<g stroke-width="2">
+<rect x="418" y="152" width="136" height="40" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="418" y="204" width="136" height="40" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="418" y="256" width="136" height="40" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="418" y="308" width="136" height="40" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="418" y="360" width="136" height="40" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<rect x="418" y="412" width="136" height="40" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-dasharray="7 5"/>
+</g>
+<g font-size="16" text-anchor="middle">
+<text x="486" y="125" fill="#535c6b">none</text>
+<text x="486" y="177" fill="#2a6a47">Falafel</text>
+<text x="486" y="229" fill="#2a6a47">Falafel</text>
+<text x="486" y="281" fill="#2a6a47">Falafel</text>
+<text x="486" y="333" fill="#2a6a47">Falafel</text>
+<text x="486" y="385" fill="#2a6a47">Falafel, unused</text>
+<text x="486" y="437" fill="#9b2c2c" font-weight="700">deleted</text>
+</g>
+
+<!-- listed -->
+<g font-size="16" font-weight="700" text-anchor="middle">
+<text x="592" y="125" fill="#535c6b">—</text>
+<text x="592" y="177" fill="#2a6a47">yes</text>
+<text x="592" y="229" fill="#2a6a47">yes</text>
+<text x="592" y="273" fill="#535c6b">no</text>
+<text x="592" y="291" fill="#535c6b" font-weight="400">server</text>
+<text x="592" y="333" fill="#2a6a47">yes</text>
+<text x="592" y="377" fill="#9b2c2c">no</text>
+<text x="592" y="395" fill="#535c6b" font-weight="400">seed only</text>
+<text x="592" y="437" fill="#9b2c2c">gone</text>
+</g>
+
+<!-- legend -->
+<rect x="20" y="463" width="30" height="12" rx="3" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="58" y="475" font-size="16" fill="#535c6b">dashed outline = deleted</text>
+</g>
+</svg>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 636" role="img" aria-labelledby="t d">
+<title id="t">A lost reply makes a blind retry unsafe</title>
+<desc id="d">Two sequence diagrams with three lanes: frontend, backend and database. Time runs downward. Panel A, blind retry: the frontend sends POST /recipes; the backend inserts and commits row 7; the 201 Created reply is lost on the way back; the frontend gets no reply in 10 seconds and times out; the same POST is sent again; the backend inserts and commits row 8, a duplicate. Panel B, same Idempotency-Key: the frontend sends POST with Idempotency-Key k1; the backend commits row 7 and the key k1 in one transaction; the reply is lost and the frontend times out; the frontend repeats the same POST with the same key; the backend looks up k1, finds row 7, and returns the stored 201 Created reply, so there is still one row. Solid arrows arrive; dashed arrows marked with a cross are lost.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#9b2c2c"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#2a6a47"/></marker>
+</defs>
+<rect width="640" height="636" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a" text-anchor="middle">
+<text x="320" y="28" font-size="20" font-weight="700">A lost reply makes a blind retry unsafe</text>
+<text x="320" y="51" font-size="16" fill="#535c6b">Time runs down. Solid arrow: arrives. Dashed arrow with ✕: lost.</text>
+<g stroke="#3b4453" stroke-width="2" fill="#f7f5ef">
+<rect x="22" y="64" width="140" height="34" rx="6"/>
+<rect x="260" y="64" width="140" height="34" rx="6"/>
+<rect x="478" y="64" width="140" height="34" rx="6"/>
+</g>
+<g font-size="18" font-weight="700">
+<text x="92" y="87">Frontend</text>
+<text x="330" y="87">Backend</text>
+<text x="548" y="87">Database</text>
+</g>
+<rect x="8" y="108" width="624" height="238" rx="6" fill="#fbf3f2" stroke="#ddd7ca" stroke-width="2"/>
+<rect x="8" y="356" width="624" height="270" rx="6" fill="#f1f7f3" stroke="#ddd7ca" stroke-width="2"/>
+<g stroke="#ddd7ca" stroke-width="4">
+<path d="M92 98 V108 M330 98 V108 M548 98 V108"/>
+<path d="M92 142 V346 M330 142 V346 M548 142 V346"/>
+<path d="M92 346 V356 M330 346 V356 M548 346 V356"/>
+<path d="M92 390 V626 M330 390 V626 M548 390 V626"/>
+</g>
+<text x="22" y="132" font-size="18" font-weight="700" fill="#9b2c2c" text-anchor="start">A · Blind retry: a duplicate row</text>
+<text x="22" y="380" font-size="18" font-weight="700" fill="#2a6a47" text-anchor="start">B · Same Idempotency-Key: the stored reply</text>
+<g font-size="16">
+<path d="M92 170 H326" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="211" y="163">POST /recipes</text>
+<path d="M330 202 H471" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="400" y="195">INSERT, COMMIT</text>
+<rect x="473" y="190" width="150" height="24" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="548" y="207" fill="#2a6a47" font-weight="700">row 7 saved</text>
+<path d="M330 234 H190" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="7 5" fill="none"/>
+<path d="M174 226 L190 242 M190 226 L174 242" stroke="#9b2c2c" stroke-width="3"/>
+<text x="262" y="227" fill="#9b2c2c">201 Created: lost</text>
+<rect x="17" y="254" width="150" height="24" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+<text x="92" y="271" fill="#84540c" font-weight="700">no reply in 10 s</text>
+<path d="M92 298 H326" stroke="#9b2c2c" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+<text x="211" y="291" fill="#9b2c2c">POST /recipes again</text>
+<path d="M330 330 H471" stroke="#9b2c2c" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+<text x="400" y="323" fill="#9b2c2c">INSERT, COMMIT</text>
+<rect x="473" y="318" width="150" height="24" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+<text x="548" y="335" fill="#9b2c2c" font-weight="700">row 8: duplicate</text>
+<path d="M92 418 H326" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="211" y="411">POST, Idempotency-Key: k1</text>
+<path d="M330 450 H471" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="400" y="443">INSERT, COMMIT</text>
+<rect x="473" y="438" width="150" height="24" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="2"/>
+<text x="548" y="455" fill="#2a6a47" font-weight="700">row 7 + key k1</text>
+<path d="M330 482 H190" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="7 5" fill="none"/>
+<path d="M174 474 L190 490 M190 474 L174 490" stroke="#9b2c2c" stroke-width="3"/>
+<text x="262" y="475" fill="#9b2c2c">201 Created: lost</text>
+<rect x="17" y="502" width="150" height="24" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+<text x="92" y="519" fill="#84540c" font-weight="700">no reply in 10 s</text>
+<path d="M92 546 H326" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="211" y="539">same POST, same k1</text>
+<path d="M330 578 H471" stroke="#1d4e89" stroke-width="2.5" fill="none" marker-end="url(#an)"/>
+<text x="400" y="571">SELECT key k1</text>
+<rect x="473" y="566" width="150" height="24" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="2"/>
+<text x="548" y="583" fill="#2a6a47" font-weight="700">found: row 7</text>
+<path d="M330 610 H96" stroke="#2a6a47" stroke-width="2.5" fill="none" marker-end="url(#ag)"/>
+<text x="211" y="603" fill="#2a6a47" font-weight="700">201 Created (stored)</text>
+</g>
+</g>
+</svg>

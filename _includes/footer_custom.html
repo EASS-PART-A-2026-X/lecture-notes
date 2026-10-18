@@ -1,3 +1,24 @@
+{%- comment -%}
+  Previous/next pager in sidebar order (nav_order from _config.yml defaults), so there is one ordering
+  source. Printed inside the theme's <footer>; CSS places it first, and print hides the footer.
+{%- endcomment -%}
+{%- unless page.path == "README.md" -%}
+{%- assign pager_pages = site.html_pages | where_exp: "item", "item.nav_order != nil" | sort: "nav_order" -%}
+{%- assign pager_index = -1 -%}
+{%- for item in pager_pages -%}{%- if item.url == page.url -%}{%- assign pager_index = forloop.index0 -%}{%- endif -%}{%- endfor -%}
+{%- if pager_index >= 0 -%}
+{%- assign pager_prev = pager_index | minus: 1 -%}
+{%- assign pager_next = pager_index | plus: 1 -%}
+<nav class="pager" aria-label="Previous and next page">
+{%- if pager_prev >= 0 -%}{%- assign item = pager_pages[pager_prev] %}
+  <a class="pager-prev" href="{{ item.url | relative_url }}" rel="prev"><span class="pager-label">Previous</span> <span class="pager-title">{{ item.title | escape }}</span></a>
+{%- endif -%}
+{%- if pager_next < pager_pages.size -%}{%- assign item = pager_pages[pager_next] %}
+  <a class="pager-next" href="{{ item.url | relative_url }}" rel="next"><span class="pager-label">Next</span> <span class="pager-title">{{ item.title | escape }}</span></a>
+{%- endif %}
+</nav>
+{%- endif -%}
+{%- endunless %}
 <p class="text-small mb-0">Site updated {{ site.time | date: "%-d %B %Y" }} · <a href="{{ '/EASS-Class-X-course.pdf' | relative_url }}">Download the course PDF</a></p>
 {% if page.path == 'guides/local-inference.md' %}
 <script src="{{ '/assets/js/inference-lab.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>

@@ -1,0 +1,22 @@
+// EASS colour scheme (`color_scheme: eass` in _config.yml): ink navy on white, warm paper for the
+// sidebar, one oxblood accent. Just the Docs imports color_schemes/light first, so these plain
+// assignments replace its defaults; every variable light.scss sets is listed here. custom.scss
+// repeats the colours as CSS custom properties for components. Light only, by design: the teaching
+// diagrams are drawn on white and the PDF prints from this palette.
+// Contrast on white: text 14.3:1, headings 16.6:1, links 8.4:1.
+
+$color-scheme: light;
+$body-background-color: #fff;
+$body-heading-color: #0f1e3a;
+$body-text-color: #232b38;
+$link-color: #1d4e89;
+$nav-child-link-color: #3b4453;
+$sidebar-color: #f7f5ef;
+$base-button-color: #fff;
+$btn-primary-color: #0f1e3a;
+$code-background-color: #f6f4ee;
+$feedback-color: #ebe7dc;
+$table-background-color: #fff;
+$search-background-color: #fff;
+$search-result-preview-color: #3b4453;
+$border-color: #ddd7ca;

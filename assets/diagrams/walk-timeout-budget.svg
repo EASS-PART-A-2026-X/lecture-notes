@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" role="img" aria-labelledby="t d">
+<title id="t">Nested timeout budget for paste-a-recipe</title>
+<desc id="d">A time axis from 0 to 110 seconds with four nested bars. The frontend waits up to 100 seconds for POST /recipes/from-text. Inside it, the backend makes at most three tries with a 30 second read timeout each and backoff waits of 0.5 and 1 second, a worst case of 91.5 seconds when the AI service is silent. Inside each try, the AI service stops its agent run after 25 seconds with asyncio.timeout and answers 504, before the backend's 30 second read timeout. Inside a run, UsageLimits allows at most five model steps; step durations vary. A vertical marker at 110 seconds shows curl --max-time 110 in the release rehearsal, which outwaits everything inside it. A second marker at 30 seconds shows the failure: an outer limit of 30 seconds gives up while the backend's second try is still running. Rule: every outer limit must be at least the worst case of everything inside it.</desc>
+<rect width="640" height="460" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="30" font-size="20" font-weight="700" text-anchor="middle">Each caller outwaits everything inside it</text>
+<text x="320" y="54" font-size="16" fill="#535c6b" text-anchor="middle">Recipe Box's paste-a-recipe budget (Lectures 7 and 9), in seconds</text>
+
+<!-- markers, drawn first so labels sit on top -->
+<path d="M180 92 V128 M180 154 V192 M180 218 V256 M180 282 V332" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M580 92 V356" stroke="#1d4e89" stroke-width="2.5" stroke-dasharray="6 4"/>
+<!-- row 1: frontend -->
+<text x="30" y="86" font-size="16" font-weight="700" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" paint-order="stroke">Frontend: from-text read timeout 100 s</text>
+<rect x="30" y="94" width="500" height="30" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="520" y="115" font-size="16" font-weight="700" fill="#1d4e89" text-anchor="end">100 s</text>
+
+<!-- row 2: backend tries -->
+<text x="30" y="150" font-size="16" font-weight="700" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" paint-order="stroke">Backend: 3 tries × 30 s read + 0.5 s + 1 s backoff</text>
+<g fill="#f7f5ef" stroke="#3b4453" stroke-width="2">
+<rect x="30" y="158" width="150" height="30" rx="6"/>
+<rect x="182.5" y="158" width="150" height="30" rx="6"/>
+<rect x="337.5" y="158" width="150" height="30" rx="6"/>
+</g>
+<g font-size="16" text-anchor="middle">
+<text x="105" y="179">try 1</text>
+<text x="257.5" y="179">try 2</text>
+<text x="412.5" y="179">try 3</text>
+</g>
+<text x="496" y="179" font-size="16" font-weight="700">91.5 s</text>
+
+<!-- row 3: ai-service -->
+<text x="30" y="214" font-size="16" font-weight="700" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" paint-order="stroke">AI service: asyncio.timeout(25 s) per run, then 504</text>
+<g fill="#eff6f6" stroke="#22616b" stroke-width="2">
+<rect x="30" y="222" width="125" height="30" rx="6"/>
+<rect x="182.5" y="222" width="125" height="30" rx="6"/>
+<rect x="337.5" y="222" width="125" height="30" rx="6"/>
+</g>
+<g font-size="16" text-anchor="middle" fill="#22616b">
+<text x="92.5" y="243">25 s</text>
+<text x="245" y="243">25 s</text>
+<text x="400" y="243">25 s</text>
+</g>
+
+<!-- row 4: agent steps -->
+<text x="30" y="278" font-size="16" font-weight="700" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" paint-order="stroke">Agent run: UsageLimits, at most 5 model steps</text>
+<g fill="#eff6f6" stroke="#22616b" stroke-width="2">
+<rect x="30" y="286" width="23" height="26" rx="4"/>
+<rect x="55" y="286" width="23" height="26" rx="4"/>
+<rect x="80" y="286" width="23" height="26" rx="4"/>
+<rect x="105" y="286" width="23" height="26" rx="4"/>
+<rect x="130" y="286" width="23" height="26" rx="4"/>
+</g>
+<g font-size="16" text-anchor="middle" fill="#22616b">
+<text x="41.5" y="305">1</text>
+<text x="66.5" y="305">2</text>
+<text x="91.5" y="305">3</text>
+<text x="116.5" y="305">4</text>
+<text x="141.5" y="305">5</text>
+</g>
+<text x="192" y="305" font-size="16" fill="#535c6b" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" paint-order="stroke">a count, not a clock: step durations vary</text>
+
+<!-- markers -->
+<text x="188" y="350" font-size="16" font-weight="700" fill="#9b2c2c">✕ an outer 30 s limit gives up during try 2</text>
+<text x="586" y="374" font-size="16" font-weight="700" fill="#1d4e89" text-anchor="end">curl --max-time 110 outwaits all of it</text>
+
+<!-- axis -->
+<path d="M30 392 H590" stroke="#3b4453" stroke-width="2"/>
+<g stroke="#3b4453" stroke-width="2">
+<path d="M30 386 V398"/><path d="M180 386 V398"/><path d="M330 386 V398"/><path d="M480 386 V398"/><path d="M530 386 V398"/><path d="M580 386 V398"/>
+</g>
+<g font-size="16" text-anchor="middle" fill="#535c6b">
+<text x="30" y="416">0</text><text x="180" y="416">30</text><text x="330" y="416">60</text><text x="480" y="416">90</text><text x="530" y="416">100</text><text x="580" y="416">110 s</text>
+</g>
+<text x="320" y="446" font-size="17" font-weight="700" text-anchor="middle">Rule: every outer limit ≥ the worst case of everything inside it</text>
+</g>
+</svg>

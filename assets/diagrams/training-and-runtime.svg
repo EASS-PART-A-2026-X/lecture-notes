@@ -1,16 +1,108 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="860" viewBox="0 0 640 860" role="img" aria-labelledby="data-title data-desc">
-<title id="data-title">Training changes weights; a request uses them</title>
-<desc id="data-desc">Curated training data passes through optimization to produce versioned weights. At runtime, a request and retrieved evidence enter the harness, inference reads those weights, and a candidate passes through backend validation and authorization before any commit. No arrow returns runtime context into training automatically.</desc>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
-<rect width="640" height="860" fill="white"/>
-<g font-family="Arial, Helvetica, sans-serif" fill="#17233c">
-<rect x="12" y="20" width="616" height="200" rx="8" fill="#f2f4ff" stroke="#4051b5"/>
-<text x="28" y="56" font-size="23" font-weight="bold">Training: deliberately update weights</text>
-<g fill="white" stroke="#4051b5" stroke-width="2"><rect x="28" y="92" width="168" height="100" rx="5"/><rect x="236" y="92" width="168" height="100" rx="5"/><rect x="444" y="92" width="168" height="100" rx="5"/></g>
-<g font-size="19" text-anchor="middle"><text x="112" y="129">Curated data</text><text x="112" y="157">and objectives</text><text x="320" y="129">Training /</text><text x="320" y="157">optimization</text><text x="528" y="129">Versioned</text><text x="528" y="157">model weights</text></g>
-<g stroke="#475569" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M196 142H232"/><path d="M404 142H440"/></g>
-<text x="28" y="257" font-size="23" font-weight="bold">Runtime: use the current weights</text>
-<g stroke-width="2"><rect x="120" y="280" width="400" height="76" rx="5" fill="#f8fafc" stroke="#64748b"/><rect x="120" y="398" width="400" height="76" rx="5" fill="#eef8f4" stroke="#167d65"/><rect x="120" y="516" width="400" height="76" rx="5" fill="#f2f4ff" stroke="#4051b5"/><rect x="120" y="634" width="400" height="76" rx="5" fill="#f8fafc" stroke="#64748b"/><rect x="120" y="752" width="400" height="76" rx="5" fill="#fff7e8" stroke="#a66b13"/></g>
-<g font-size="20" text-anchor="middle"><text x="320" y="311">Request + retrieved evidence</text><text x="320" y="338">Context can be wrong or hostile</text><text x="320" y="429">Harness builds bounded context</text><text x="320" y="456">Tools and limits remain enforced</text><text x="320" y="547">Inference: prefill + decode</text><text x="320" y="574">Read weights; generate candidates</text><text x="320" y="665">Candidate final result</text><text x="320" y="692">A proposal, not permission</text><text x="320" y="783">Backend validates and authorizes</text><text x="320" y="810">Only accepted operations commit</text></g>
-<g stroke="#475569" stroke-width="3" fill="none" marker-end="url(#arrow)"><path d="M320 356V392"/><path d="M320 474V510"/><path d="M320 592V628"/><path d="M320 710V746"/><path d="M528 192V232H600V554H526"/></g>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img" aria-labelledby="t d">
+  <title id="t">Training changes weights; a request only reads them</title>
+  <desc id="d">Three lanes. Training: curated data and objectives go into a training run, which writes a new version of the model weights; this is the only lane that changes weights. Runtime: a request plus retrieved evidence enters the agent loop, which builds the context and enforces tools and limits, prompts inference (prefill and decode), which reads the weights and never writes them, and returns a candidate result that is only a proposal. The backend checks it and commits only allowed operations, and may store feedback and traces. A dashed arrow leads from stored feedback back to the training data: it happens only via an explicit, consented training run, never automatically. Evaluation: development cases are run, failures are inspected, prompts, tools or code are changed, and the development cases are rerun in a loop. Held-out cases sit apart: they check the fixed candidate once and are never used to decide a fix.</desc>
+  <defs>
+    <marker id="ak" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#3b4453"/></marker>
+    <marker id="at" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#22616b"/></marker>
+    <marker id="ao" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#84540c"/></marker>
+    <marker id="ag" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#2a6a47"/></marker>
+  </defs>
+  <rect width="960" height="620" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="24" y="34" font-size="21" font-weight="700">Training changes weights; a request only reads them</text>
+    <path d="M640 28 H672" stroke="#84540c" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <text x="680" y="34" font-size="16">only by an explicit decision</text>
+
+    <!-- lane 1: training -->
+    <rect x="16" y="50" width="928" height="136" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="32" y="76" font-size="18" font-weight="700">1 · Training: the only lane that changes weights</text>
+    <rect x="40" y="92" width="210" height="78" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="145" y="124" font-size="19" font-weight="700" text-anchor="middle">Curated data</text>
+    <text x="145" y="150" font-size="18" text-anchor="middle">and objectives</text>
+    <rect x="320" y="92" width="210" height="78" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="425" y="124" font-size="19" font-weight="700" text-anchor="middle">Training run</text>
+    <text x="425" y="150" font-size="18" text-anchor="middle">optimization</text>
+    <rect x="600" y="92" width="210" height="78" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="705" y="124" font-size="19" font-weight="700" text-anchor="middle">Model weights</text>
+    <text x="705" y="150" font-size="18" text-anchor="middle">a new version</text>
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)">
+      <path d="M250 136 H316"/>
+      <path d="M530 136 H596"/>
+    </g>
+    <text x="285" y="126" font-size="16" text-anchor="middle">feeds</text>
+    <text x="565" y="126" font-size="16" text-anchor="middle">writes</text>
+
+    <!-- lane 2: runtime -->
+    <rect x="16" y="196" width="928" height="244" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="32" y="222" font-size="18" font-weight="700">2 · Runtime: a request reads the weights, never writes them</text>
+    <path d="M650 170 V234" fill="none" stroke="#22616b" stroke-width="2.5" marker-end="url(#at)"/>
+    <text x="658" y="214" font-size="16" font-weight="700" fill="#22616b">reads only</text>
+
+    <rect x="32" y="238" width="170" height="80" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="117" y="270" font-size="19" font-weight="700" text-anchor="middle">Request +</text>
+    <text x="117" y="296" font-size="18" text-anchor="middle">retrieved evidence</text>
+    <rect x="274" y="238" width="170" height="80" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="359" y="264" font-size="19" font-weight="700" text-anchor="middle">Agent loop</text>
+    <text x="359" y="288" font-size="18" text-anchor="middle">builds context,</text>
+    <text x="359" y="310" font-size="18" text-anchor="middle">tools and limits</text>
+    <rect x="516" y="238" width="170" height="80" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="601" y="270" font-size="19" font-weight="700" text-anchor="middle">Inference</text>
+    <text x="601" y="296" font-size="18" text-anchor="middle">prefill + decode</text>
+    <rect x="758" y="238" width="170" height="80" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="843" y="270" font-size="19" font-weight="700" text-anchor="middle">Candidate</text>
+    <text x="843" y="296" font-size="18" text-anchor="middle">a proposal only</text>
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)">
+      <path d="M202 290 H270"/>
+      <path d="M444 290 H512"/>
+      <path d="M686 290 H754"/>
+      <path d="M843 318 V348"/>
+      <path d="M758 388 H666"/>
+    </g>
+    <g font-size="16" text-anchor="middle">
+      <text x="238" y="281">enters</text>
+      <text x="480" y="281">prompts</text>
+      <text x="722" y="281">returns</text>
+      <text x="710" y="378">may store</text>
+    </g>
+    <text x="851" y="340" font-size="16">submits</text>
+
+    <rect x="758" y="352" width="170" height="72" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="843" y="381" font-size="19" font-weight="700" fill="#2a6a47" text-anchor="middle">Backend checks</text>
+    <text x="843" y="406" font-size="18" text-anchor="middle">commits if allowed</text>
+    <rect x="492" y="352" width="170" height="72" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="577" y="381" font-size="19" font-weight="700" text-anchor="middle">Stored feedback</text>
+    <text x="577" y="406" font-size="18" text-anchor="middle">and traces</text>
+
+    <path d="M492 388 H24 V131 H36" fill="none" stroke="#84540c" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#ao)"/>
+    <text x="258" y="378" font-size="18" fill="#84540c" text-anchor="middle">only via an explicit, consented training run</text>
+
+    <!-- lane 3: evaluation -->
+    <rect x="16" y="452" width="928" height="156" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="32" y="478" font-size="18" font-weight="700">3 · Evaluation: development cases versus held-out cases</text>
+    <rect x="32" y="492" width="170" height="70" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="117" y="520" font-size="19" font-weight="700" text-anchor="middle">Development</text>
+    <text x="117" y="545" font-size="19" font-weight="700" text-anchor="middle">cases</text>
+    <rect x="274" y="492" width="170" height="70" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="359" y="520" font-size="19" font-weight="700" text-anchor="middle">Inspect</text>
+    <text x="359" y="545" font-size="18" text-anchor="middle">the failures</text>
+    <rect x="516" y="492" width="170" height="70" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="601" y="520" font-size="19" font-weight="700" text-anchor="middle">Fix prompts,</text>
+    <text x="601" y="545" font-size="18" text-anchor="middle">tools or code</text>
+    <rect x="758" y="492" width="170" height="70" rx="6" fill="#ffffff" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="843" y="516" font-size="19" font-weight="700" text-anchor="middle">Held-out cases</text>
+    <text x="843" y="536" font-size="16" text-anchor="middle">check the fix once;</text>
+    <text x="843" y="555" font-size="16" fill="#9b2c2c" text-anchor="middle">never used to fix</text>
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)">
+      <path d="M202 527 H270"/>
+      <path d="M444 527 H512"/>
+      <path d="M686 527 H754"/>
+      <path d="M601 562 V588 H117 V566"/>
+    </g>
+    <g font-size="16" text-anchor="middle">
+      <text x="238" y="518">run</text>
+      <text x="480" y="518">change</text>
+      <text x="722" y="518">once</text>
+      <text x="359" y="581">rerun the development cases</text>
+    </g>
+  </g>
+</svg>

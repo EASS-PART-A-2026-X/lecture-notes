@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 600" role="img" aria-labelledby="t d">
+  <title id="t">Who can reach the model server?</title>
+  <desc id="d">Four ways Ollama can listen, one per row. (a) Docker Desktop: Ollama stays on 127.0.0.1, the loopback; ai-service reaches it through host.docker.internal; another device on the same Wi-Fi is refused. (b) Linux with Docker Engine: Ollama listens on 172.17.0.1, the Docker bridge; ai-service reaches it through host.docker.internal mapped to host-gateway; another device has no route to it. (c) Ollama as a Compose service with no ports: ai-service reaches it as http://ollama:11434; no port is published, so another device cannot connect. (d) 0.0.0.0, every interface: ai-service reaches it, and so can anyone on the Wi-Fi, with no login. Never use 0.0.0.0 on a shared network.</desc>
+  <defs>
+    <marker id="ag" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#2a6a47"/></marker>
+    <marker id="ax" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#9b2c2c"/></marker>
+  </defs>
+  <rect width="640" height="600" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="24" y="34" font-size="22" font-weight="700">Who can reach the model server?</text>
+    <text x="24" y="58" font-size="16" fill="#535c6b">Same Ollama, four ways to listen. Only one is unsafe.</text>
+    <g font-size="16" font-weight="700" fill="#535c6b" text-anchor="middle">
+      <text x="102" y="90">from ai-service</text>
+      <text x="320" y="90">Ollama listens on</text>
+      <text x="538" y="90">from the Wi-Fi</text>
+    </g>
+
+    <!-- row bands -->
+    <g stroke-width="2">
+      <rect x="16" y="100" width="608" height="112" rx="6" fill="#f7f5ef" stroke="#ddd7ca"/>
+      <rect x="16" y="222" width="608" height="112" rx="6" fill="#f7f5ef" stroke="#ddd7ca"/>
+      <rect x="16" y="344" width="608" height="112" rx="6" fill="#f7f5ef" stroke="#ddd7ca"/>
+      <rect x="16" y="466" width="608" height="112" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+    </g>
+    <g font-size="16" font-weight="700">
+      <text x="28" y="122">(a) Docker Desktop: keep the default</text>
+      <text x="28" y="244">(b) Linux Docker Engine: bind to the bridge</text>
+      <text x="28" y="366">(c) Ollama as a Compose service</text>
+      <text x="28" y="488" fill="#9b2c2c">(d) 0.0.0.0, every interface: never on shared Wi-Fi</text>
+    </g>
+
+    <!-- cards: ai-service -->
+    <g fill="#ffffff" stroke="#1d4e89" stroke-width="2">
+      <rect x="24" y="134" width="156" height="66" rx="6"/>
+      <rect x="24" y="256" width="156" height="66" rx="6"/>
+      <rect x="24" y="378" width="156" height="66" rx="6"/>
+      <rect x="24" y="500" width="156" height="66" rx="6"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="102" y="160" font-size="17" font-weight="700">ai-service</text>
+      <text x="102" y="184" font-size="16">host.docker.internal</text>
+      <text x="102" y="282" font-size="17" font-weight="700">ai-service</text>
+      <text x="102" y="306" font-size="16">host.docker.internal</text>
+      <text x="102" y="404" font-size="17" font-weight="700">ai-service</text>
+      <text x="102" y="428" font-size="16">http://ollama:11434</text>
+      <text x="102" y="526" font-size="17" font-weight="700">ai-service</text>
+      <text x="102" y="550" font-size="16">host.docker.internal</text>
+    </g>
+
+    <!-- cards: Ollama -->
+    <g fill="#eff6f6" stroke="#22616b" stroke-width="2">
+      <rect x="256" y="134" width="128" height="66" rx="6"/>
+      <rect x="256" y="256" width="128" height="66" rx="6"/>
+      <rect x="256" y="378" width="128" height="66" rx="6"/>
+      <rect x="256" y="500" width="128" height="66" rx="6" stroke="#9b2c2c"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="320" y="161" font-size="18" font-weight="700">127.0.0.1</text>
+      <text x="320" y="185" font-size="16">loopback</text>
+      <text x="320" y="283" font-size="18" font-weight="700">172.17.0.1</text>
+      <text x="320" y="307" font-size="16">Docker bridge</text>
+      <text x="320" y="405" font-size="18" font-weight="700">ollama</text>
+      <text x="320" y="429" font-size="16">no ports:</text>
+      <text x="320" y="527" font-size="18" font-weight="700" fill="#9b2c2c">0.0.0.0</text>
+      <text x="320" y="551" font-size="16">every interface</text>
+    </g>
+
+    <!-- cards: Wi-Fi device -->
+    <g fill="#ffffff" stroke="#3b4453" stroke-width="2">
+      <rect x="460" y="134" width="156" height="66" rx="6"/>
+      <rect x="460" y="256" width="156" height="66" rx="6"/>
+      <rect x="460" y="378" width="156" height="66" rx="6"/>
+      <rect x="460" y="500" width="156" height="66" rx="6" stroke="#9b2c2c"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="538" y="160" font-size="17" font-weight="700">another device</text>
+      <text x="538" y="184" font-size="16">cannot connect</text>
+      <text x="538" y="282" font-size="17" font-weight="700">another device</text>
+      <text x="538" y="306" font-size="16">cannot connect</text>
+      <text x="538" y="404" font-size="17" font-weight="700">another device</text>
+      <text x="538" y="428" font-size="16">cannot connect</text>
+      <text x="538" y="526" font-size="17" font-weight="700" fill="#9b2c2c">anyone nearby</text>
+      <text x="538" y="550" font-size="16" fill="#9b2c2c">uses it, no login</text>
+    </g>
+
+    <!-- ai-service reaches every option -->
+    <g fill="none" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#ag)">
+      <path d="M180 175 H252"/>
+      <path d="M180 297 H252"/>
+      <path d="M180 419 H252"/>
+      <path d="M180 541 H252"/>
+    </g>
+    <g font-size="16" fill="#2a6a47" text-anchor="middle">
+      <text x="218" y="163">reaches</text>
+      <text x="218" y="285">reaches</text>
+      <text x="218" y="407">reaches</text>
+      <text x="218" y="529">reaches</text>
+    </g>
+
+    <!-- the network: blocked in a-c, reaches in d -->
+    <g fill="none" stroke="#3b4453" stroke-width="2.5">
+      <path d="M460 175 H398 M396 164 V186"/>
+      <path d="M460 297 H398 M396 286 V308"/>
+      <path d="M460 419 H398 M396 408 V430"/>
+    </g>
+    <g font-size="16" text-anchor="middle">
+      <text x="428" y="163">refused</text>
+      <text x="428" y="285">no route</text>
+      <text x="428" y="407">no port</text>
+    </g>
+    <path d="M460 541 H388" fill="none" stroke="#9b2c2c" stroke-width="2.5" marker-end="url(#ax)"/>
+    <text x="424" y="529" font-size="16" font-weight="700" fill="#9b2c2c" text-anchor="middle">reaches</text>
+
+    <text x="320" y="594" font-size="16" fill="#535c6b" text-anchor="middle">A blocked line ends in a bar. Ollama's API has no login.</text>
+  </g>
+</svg>

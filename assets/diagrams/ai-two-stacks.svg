@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-labelledby="t d">
+  <title id="t">Two stacks, two models</title>
+  <desc id="d">Left, development time on your laptop: you give a work order to a coding harness such as Claude Code, Codex or OpenCode, which sends requests to model A through provider A on your assistant's account. Right, request time inside Recipe Box: a user's request reaches the frontend and the backend, the backend sends POST /extract to the ai-service agent loop, and the agent loop sends requests to model B, the model named by AI_MODEL, through provider B with the service's own settings. No arrow connects model A and model B. The only link between the two stacks is your reviewed commit: you commit the code the harness proposed, and that commit becomes the code that runs in Recipe Box.</desc>
+  <defs>
+    <marker id="ak" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#3b4453"/></marker>
+    <marker id="ag" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0 0 L11 6 L0 12 Z" fill="#2a6a47"/></marker>
+  </defs>
+  <rect width="640" height="560" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="24" y="34" font-size="22" font-weight="700">Two stacks, two models</text>
+    <text x="24" y="58" font-size="16" fill="#535c6b">Your editor's model and AI_MODEL never meet; only reviewed code crosses.</text>
+
+    <!-- panels -->
+    <rect x="16" y="76" width="288" height="342" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <rect x="336" y="76" width="288" height="342" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="160" y="104" font-size="19" font-weight="700" text-anchor="middle">Development time</text>
+    <text x="160" y="126" font-size="16" fill="#535c6b" text-anchor="middle">your laptop, while you code</text>
+    <text x="480" y="104" font-size="19" font-weight="700" text-anchor="middle">Request time</text>
+    <text x="480" y="126" font-size="16" fill="#535c6b" text-anchor="middle">Recipe Box, per user request</text>
+
+    <!-- left stack -->
+    <rect x="44" y="142" width="232" height="56" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="160" y="166" font-size="18" font-weight="700" text-anchor="middle">Model A</text>
+    <text x="160" y="188" font-size="16" text-anchor="middle">via provider A, your account</text>
+    <rect x="44" y="238" width="232" height="60" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="160" y="262" font-size="18" font-weight="700" text-anchor="middle">Coding harness</text>
+    <text x="160" y="285" font-size="16" text-anchor="middle">e.g. Claude Code, Codex</text>
+    <rect x="44" y="340" width="232" height="56" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="160" y="364" font-size="18" font-weight="700" text-anchor="middle">You</text>
+    <text x="160" y="386" font-size="16" text-anchor="middle">read the diff, run the tests</text>
+
+    <!-- right stack -->
+    <rect x="364" y="142" width="232" height="56" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="480" y="166" font-size="18" font-weight="700" text-anchor="middle">Model B</text>
+    <text x="480" y="188" font-size="16" text-anchor="middle">AI_MODEL, via provider B</text>
+    <rect x="364" y="238" width="232" height="60" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="480" y="262" font-size="18" font-weight="700" text-anchor="middle">ai-service agent loop</text>
+    <text x="480" y="285" font-size="16" text-anchor="middle">Pydantic AI, settings in .env</text>
+    <rect x="364" y="340" width="232" height="56" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+    <text x="480" y="364" font-size="18" font-weight="700" text-anchor="middle">Frontend → backend</text>
+    <text x="480" y="386" font-size="16" text-anchor="middle">a user pastes a recipe</text>
+
+    <!-- vertical arrows -->
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ak)">
+      <path d="M160 238 V202"/>
+      <path d="M160 340 V302"/>
+      <path d="M480 238 V202"/>
+      <path d="M480 340 V302"/>
+    </g>
+    <g font-size="16">
+      <text x="168" y="225">sends requests</text>
+      <text x="168" y="326">gives a work order</text>
+      <text x="488" y="225">sends requests</text>
+      <text x="488" y="326">POST /extract</text>
+    </g>
+
+    <!-- the only link -->
+    <rect x="200" y="466" width="240" height="60" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="320" y="492" font-size="18" font-weight="700" fill="#2a6a47" text-anchor="middle">Your reviewed commit</text>
+    <text x="320" y="514" font-size="16" text-anchor="middle">the only link</text>
+    <g fill="none" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#ag)">
+      <path d="M100 396 V496 H196"/>
+      <path d="M440 496 H556 V422"/>
+    </g>
+    <text x="92" y="452" font-size="16" fill="#2a6a47" text-anchor="end">you</text>
+    <text x="92" y="470" font-size="16" fill="#2a6a47" text-anchor="end">commit</text>
+    <text x="564" y="448" font-size="16" fill="#2a6a47">becomes</text>
+    <text x="564" y="466" font-size="16" fill="#2a6a47">the code</text>
+    <text x="564" y="484" font-size="16" fill="#2a6a47">that runs</text>
+    <text x="320" y="550" font-size="16" fill="#535c6b" text-anchor="middle">No arrow connects model A and model B.</text>
+  </g>
+</svg>

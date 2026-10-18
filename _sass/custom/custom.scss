@@ -1,99 +1,2483 @@
-// Collapsible answers (<details markdown="1">).
-.main-content details {
-  margin: 0 0 1rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
+// EASS · Class X course design: a typeset handbook. Serif reading text at a ~70-character measure,
+// a sans for interface and data, ink navy with one oxblood accent, hairline rules, and quiet
+// callouts whose labels are real text (GitHub, screen readers and the PDF keep them).
+// Theme settings: _sass/custom/setup.scss and _sass/color_schemes/eass.scss.
+// Markup comes from plain Markdown (see .github/CONTRIBUTING.md, "Authoring components") and from
+// _plugins/course_components.rb, which adds the class names styled here. Light only, by design.
+// stylelint-disable selector-max-specificity, selector-max-compound-selectors, selector-no-qualifying-type
 
-  > summary { font-weight: 600; }
-  &[open] > summary { margin-bottom: 0.5rem; }
+// ---------------------------------------------------------------------------------------------
+// 0. Tokens
+// ---------------------------------------------------------------------------------------------
+
+:root {
+  color-scheme: light;
+
+  // Type stacks: system fonts only; Liberation is the Linux/PDF fallback.
+  --ed-serif-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Charter,
+    "Bitstream Charter", Cambria, Georgia, "Liberation Serif", serif;
+  --ed-serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia,
+    "Liberation Serif", "Times New Roman", serif;
+  --ed-sans: #{$body-font-family};
+  --ed-mono: #{$mono-font-family};
+
+  // Type scale in whole pixels at a 16px root. 13px is the floor (labels only); running text >= 14px.
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-17: 1.0625rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-22: 1.375rem;
+  --fs-24: 1.5rem;
+  --fs-28: 1.75rem;
+  --fs-34: 2.125rem;
+  --fs-40: 2.5rem;
+  --fs-44: 2.75rem;
+  --fs-52: 3.25rem;
+
+  // Reading measure: 648px, about 66–74 characters per line of 18px Charter. Prose, lists, callouts
+  // and quizzes stop here; tables, code, figures and the structural components use the full column.
+  --ed-measure: 40.5rem;
+
+  // Ink and surfaces. Ratios are against white unless noted.
+  --ed-bg: #fff;
+  --ed-ink: #0f1e3a;         // headings, strong rules, primary button        16.6:1
+  --ed-text: #232b38;        // reading text                                  14.3:1
+  --ed-text-2: #384152;      // secondary reading text (hero promise)         10.3:1
+  --ed-term: #4a5363;        // glance and fact terms                          7.8:1
+  --ed-muted: #535c6b;       // captions, dates, labels, list numerals         6.8:1 (5.7 on paper-deep)
+  --ed-link: #1d4e89;        // links and the focus ring                       8.4:1
+  --ed-accent: #9b2c2c;      // the one accent: kickers, active page, deadlines 7.5:1
+  --ed-on-ink: #fff;         // text on ink and accent fills
+  --ed-rule: #ddd7ca;        // hairlines (decorative)
+  --ed-rule-strong: #b9b1a1; // rails and spines (decorative)
+  --ed-rule-ui: #8a8070;     // control borders that must reach 3:1            3.9:1
+  --ed-paper: #f7f5ef;       // sidebar, figure panels, contents box
+  --ed-paper-deep: #efebe1;  // hover, code tab, next-meeting row
+  --ed-tint: #fbfaf6;        // quiet hover
+  --ed-code-bg: #f6f4ee;
+  --ed-code-line: #e3ddcf;
+  --ed-code-text: #1f2633;
+  --ed-mark: #f6e7b8;
+  --ed-plate: #fff;          // diagrams always sit on white
+  --ed-shadow: rgba(15, 30, 58, 0.14);
+  --ed-focus: #1d4e89;       // 3px ring: 8.4:1 on white, 7.7:1 on paper
+
+  // Callout inks (label, rule, icon) and tints: deep, desaturated spot colours, one per kind.
+  // Every ink is >= 5.9:1 on its tint (checkpoint green is the lowest) and >= 6.4:1 on white;
+  // body text is >= 12.9:1 and links >= 7.6:1 on every tint.
+  --ed-navy: #1d4e89;   --ed-navy-tint: #f3f6fa;   // objectives
+  --ed-slate: #465161;  --ed-slate-tint: #f6f6f3;  // prerequisites
+  --ed-plum: #5f3b85;   --ed-plum-tint: #f7f3fa;   // predict
+  --ed-ochre: #7d4f0b;  --ed-ochre-tint: #fbf6ec;  // explain
+  --ed-green: #2a6a47;  --ed-green-tint: #f1f7f3;  // checkpoint
+  --ed-red: #9b2c2c;    --ed-red-tint: #fbf3f2;    // pitfall
+  --ed-umber: #5c574d;                             // optional (no fill)
+  --ed-teal: #22616b;   --ed-teal-tint: #eff6f6;   // AI and model content in figures
+
+  // Rouge syntax tokens on --ed-code-bg (every token >= 5.4:1).
+  --ed-syn-comment: #5d6370;
+  --ed-syn-keyword: #8f2a3c;
+  --ed-syn-string: #2a6a47;
+  --ed-syn-number: #84540c;
+  --ed-syn-name: #6a3d8f;
+  --ed-syn-function: #1d4e89;
+
+  // Inference lab stages (the colour key in guides/local-inference.md uses the same values).
+  --ed-stage-load: #475569;
+  --ed-stage-queue: #b7791f;
+  --ed-stage-prefill: #4051b5;
+  --ed-stage-decode: #167d65;
+
+  // Icons are CSS masks: they take the text colour and are never read aloud.
+  --ed-i-target: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Ccircle cx='8' cy='8' r='3.2'/%3E%3Ccircle cx='8' cy='8' r='.9' fill='black' stroke='none'/%3E%3C/svg%3E");
+  --ed-i-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpath d='M8 4.4C6.5 3.2 4.3 2.9 1.8 3.1v9.2c2.5-.2 4.7.1 6.2 1.3 1.5-1.2 3.7-1.5 6.2-1.3V3.1C11.7 2.9 9.5 3.2 8 4.4zM8 4.4v9.2'/%3E%3C/svg%3E");
+  --ed-i-question: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M6.1 6.2a1.95 1.95 0 1 1 2.7 1.8c-.5.2-.8.6-.8 1.1v.4'/%3E%3Ccircle cx='8' cy='11.4' r='.75' fill='black' stroke='none'/%3E%3C/svg%3E");
+  --ed-i-speech: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpath d='M2 3h12v7.5H8l-3.5 2.8v-2.8H2z'/%3E%3Cpath d='M5 6.75h6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ed-i-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M5.1 8.2l2 2 3.8-4.1'/%3E%3C/svg%3E");
+  --ed-i-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpath d='M8 1.9l6.4 11.4H1.6z'/%3E%3Cpath d='M8 6.2v3.3' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.3' r='.75' fill='black' stroke='none'/%3E%3C/svg%3E");
+  --ed-i-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.2' stroke-dasharray='2.2 1.7'/%3E%3Cpath d='M8 5.3v5.4M5.3 8h5.4'/%3E%3C/svg%3E");
+  --ed-i-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6.2'/%3E%3Cpath d='M8 7.2v4.2'/%3E%3Ccircle cx='8' cy='4.9' r='.8' fill='black' stroke='none'/%3E%3C/svg%3E");
+  --ed-i-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3.5L10.5 8 6 12.5'/%3E%3C/svg%3E");
+  --ed-i-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.5 8h20M15.5 2.5L21.5 8l-6 5.5'/%3E%3C/svg%3E");
+  --ed-i-doc: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 1.8h6l3 3v9.4h-9z'/%3E%3Cpath d='M9.5 1.8v3h3M8 7.5v4.6M6 10.2l2 2 2-2'/%3E%3C/svg%3E");
+  --ed-i-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M2.5 3.5h11M2.5 6.5h11M2.5 9.5h11M2.5 12.5h7'/%3E%3C/svg%3E");
 }
 
-// Keep section links and keyboard focus clear when navigating long lectures.
-.main-content {
-  h1, h2, h3, h4, h5, h6 { scroll-margin-top: 5rem; }
+// Kicker: a short uppercase label for component titles, phase markers and pager directions.
+@mixin ed-kicker($color: var(--ed-accent)) {
+  font-family: var(--ed-sans);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $color;
+}
 
-  a:focus-visible, button:focus-visible, summary:focus-visible,
-  [tabindex="0"]:focus-visible {
-    outline: 3px solid $link-color;
-    outline-offset: 3px;
-  }
+// Tag: a small filled or outlined marker (deadlines, "next").
+@mixin ed-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.0625rem 0.4rem;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  max-width: 100%; // a long tag wraps inside its box rather than overflowing a narrow column
+  border-radius: 2px;
+}
 
-  details > summary {
-    min-height: 2.75rem;
-    padding: 0.5rem 0;
-    cursor: pointer;
-  }
+@mixin ed-icon($icon, $size: 1rem) {
+  content: "";
+  flex: none;
+  display: inline-block;
+  width: $size;
+  height: $size;
+  background-color: currentColor;
+  -webkit-mask: $icon center / contain no-repeat;
+  mask: $icon center / contain no-repeat;
+}
 
-  .lecture-toc {
-    margin-top: 1.5rem;
+// Remove the theme's absolutely positioned list markers inside a component list.
+@mixin ed-reset-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 
-    ul { margin-bottom: 0; }
-    li { break-inside: avoid; }
-    a { display: inline-block; padding: 0.25rem 0; }
+  > li {
+    margin: 0;
 
-    @media (min-width: 50rem) {
-      ul { columns: 2; column-gap: 2rem; }
+    &::before {
+      content: none;
     }
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
+// ---------------------------------------------------------------------------------------------
+// 1. Base and type
+// ---------------------------------------------------------------------------------------------
+
+// The theme shrinks the root to 14px on phones (with !important); reading text needs 16px.
+html {
+  font-size: 100% !important;
 }
 
-// Print and the course PDF (.github/scripts/build_pdf.py): content only, nothing cut off.
-@media print {
-  // Named fonts (Liberation comes with `playwright install --with-deps`) keep the PDF small and the same everywhere.
-  html { font-size: 13px; }
-  body { font-family: "Helvetica Neue", Arial, "Liberation Sans", sans-serif; }
-  code, pre { font-family: Menlo, Consolas, "Liberation Mono", monospace !important; }
-  .side-bar, .main-header, .main-content > hr, .main-content > footer,
-  .anchor-heading, .lecture-toc { display: none !important; }
-  .main-content-wrap { padding: 0 !important; }
-  .main-content details { border-color: $grey-dk-000; }
-  .main-content details > summary { min-height: 0; padding: 0; }
-  div.highlight { overflow: visible !important; }
-  pre.highlight, pre.highlight code { font-size: 0.8rem; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .table-wrapper { overflow: visible !important; box-shadow: none !important; } // shadows print as images
-  td, th { overflow-wrap: anywhere; }
-  h1, h2, h3, h4, summary { break-after: avoid; }
-  tr, img { break-inside: avoid; }
+body {
+  color: var(--ed-text);
+  background-color: var(--ed-bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
 }
 
-// Repository-native diagrams retain labels and captions on the site and in print.
-.main-content .course-diagram {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
-  background: #fff;
+.main-content {
+  font-family: var(--ed-serif);
+  font-size: var(--fs-17);
+  line-height: 1.65;
+  color: var(--ed-text);
+  font-variant-numeric: lining-nums proportional-nums;
+  hanging-punctuation: first;
 
-  .diagram-scroll { overflow-x: auto; }
-  img { display: block; width: 100%; min-width: 30rem; max-width: 36rem; height: auto; margin: 0 auto; }
-  figcaption { margin-top: 0.75rem; line-height: 1.5; color: #334155; }
-}
+  @include mq(md) {
+    font-size: var(--fs-18);
+  }
 
-@media print {
-  .main-content .course-diagram {
-    break-inside: avoid;
-    padding: 0.5rem;
-    .diagram-scroll { overflow: visible; }
-    img { min-width: 0; max-width: 28rem; max-height: 40rem; }
-    figcaption { font-size: 0.9rem; }
+  // Components measure themselves against the column, not the viewport.
+  > main {
+    container: content / inline-size;
+    counter-reset: figure;
+  }
+
+  main :where(p, ul, ol, dl, blockquote, details, h3, h4, h5, h6, .learning-practice) {
+    max-width: var(--ed-measure);
+  }
+
+  p {
+    margin: 0 0 1.05em;
+  }
+
+  p,
+  li,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  strong {
+    font-weight: 700;
+    color: var(--ed-ink);
+  }
+
+  // Headings: display serif; each h2 has a hairline section rule with a short oxblood tab.
+  h1,
+  h2,
+  h3 {
+    font-family: var(--ed-serif-display);
+    color: var(--ed-ink);
+    font-variant-numeric: lining-nums;
+    text-wrap: balance;
+  }
+
+  h1 {
+    margin: 0.25rem 0 1.25rem;
+    font-size: var(--fs-34) !important;
+    font-weight: 600;
+    line-height: 1.12 !important;
+    letter-spacing: -0.012em;
+  }
+
+  h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.85rem;
+    padding-top: 1.1rem;
+    font-size: var(--fs-24) !important;
+    font-weight: 600;
+    line-height: 1.2 !important;
+    letter-spacing: -0.005em;
+    border-top: 1px solid var(--ed-rule);
+    background: linear-gradient(var(--ed-accent), var(--ed-accent)) left top / 2.5rem 2px no-repeat;
+
+    @include mq(sm) {
+      margin-top: 2.75rem;
+    }
+  }
+
+  h3 {
+    margin-top: 2.25rem;
+    margin-bottom: 0.5rem;
+    font-size: var(--fs-20) !important;
+    font-weight: 700;
+    line-height: 1.3 !important;
+  }
+
+  // The theme draws h4 as tiny uppercase; keep it a readable sans subheading.
+  h4 {
+    margin-top: 1.75rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-17) !important;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ed-ink);
+  }
+
+  h5,
+  h6 {
+    font-family: var(--ed-sans);
+    font-size: var(--fs-16) !important;
+    font-weight: 700;
+    color: var(--ed-ink);
+  }
+
+  h1 + p,
+  h2 + p,
+  h3 + p {
+    margin-top: 0;
+  }
+
+  // Lists: drawn bullets, and numerals in the reading face at reading size (6.8:1).
+  ul,
+  ol {
+    padding-left: 1.6em;
+    margin-bottom: 1.1em;
+  }
+
+  li {
+    margin: 0.35em 0;
+  }
+
+  ul > li::before {
+    content: "";
+    width: 0.32em;
+    height: 0.32em;
+    margin-top: 0.68em;
+    margin-left: -1.05em;
+    background: var(--ed-accent);
+    border-radius: 50%;
+  }
+
+  ol > li::before {
+    top: 0 !important;
+    left: -1.9em;
+    width: 1.5em;
+    font-family: var(--ed-serif);
+    font-size: 1em !important;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: inherit;
+    text-align: right;
+    color: var(--ed-muted);
+    content: counter(step-counter) ".";
+  }
+
+  ol ol > li::before {
+    content: counter(sub-counter, lower-alpha) ".";
+  }
+
+  .task-list-item::before {
+    content: none;
+  }
+
+  .task-list-item-checkbox {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.55em;
+    vertical-align: -0.12em;
+    accent-color: var(--ed-ink);
+  }
+
+  hr {
+    height: 0;
+    margin: 2.5rem 0;
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--ed-rule);
+  }
+
+  .anchor-heading svg {
+    color: var(--ed-muted);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    scroll-margin-top: 2rem;
   }
 }
 
-@media print {
-  .main-content .walkthrough-command, .main-content .walkthrough-quiz,
-  .main-content .studio-quiz { break-inside: avoid; }
+@container content (min-width: 40rem) {
+  .main-content {
+    h1 {
+      font-size: var(--fs-44) !important;
+    }
+
+    h2 {
+      font-size: var(--fs-28) !important;
+    }
+  }
+}
+
+// Screen-only and print-only text (authors wrap a phrase in <span class="screen-only">).
+.print-only {
+  display: none !important;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 2. Links and focus
+// ---------------------------------------------------------------------------------------------
+
+a {
+  color: var(--ed-link);
+}
+
+// Links are always underlined (not colour alone); the line sits clear of descenders.
+.main-content a:not([class]),
+.nav-colophon a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: #8fa3c0;
+  text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+  text-underline-offset: 0.18em;
+  padding-block: 0.1875rem; // a 24px hit area even beside 15px table text; no layout change
+
+  &:hover {
+    color: var(--ed-ink);
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+  }
+}
+
+// One visible, high-contrast focus style everywhere: a 3px ring, 2px clear of the element.
+:focus-visible {
+  outline: 3px solid var(--ed-focus);
+  outline-offset: 2px;
+}
+
+.main-content {
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid var(--ed-focus);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+}
+
+// Inside scrolling or clipping panes an outer ring would be cut off, so draw it inside.
+.site-nav :focus-visible,
+.site-title:focus-visible,
+.site-button:focus-visible,
+.search-input:focus-visible,
+.search-result:focus-visible,
+.search-result.active,
+.aux-nav .site-button:focus-visible {
+  outline: 3px solid var(--ed-focus);
+  outline-offset: -3px;
+}
+
+a.skip-to-main:focus,
+a.skip-to-main:active {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.75rem 1.1rem;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-16);
+  font-weight: 600;
+  color: var(--ed-on-ink);
+  background: var(--ed-ink);
+  border: 0;
+  border-radius: 2px;
+  outline: 3px solid var(--ed-focus);
+  outline-offset: 2px;
+  z-index: 1000;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 3. Sidebar, header, search
+// ---------------------------------------------------------------------------------------------
+
+.side-bar {
+  background-color: var(--ed-paper);
+  border-bottom: 1px solid var(--ed-rule);
+
+  @include mq(md) {
+    border-right: 1px solid var(--ed-rule);
+    border-bottom: 0;
+  }
+}
+
+.site-header {
+  @include mq(md) {
+    border-bottom: 1px solid var(--ed-rule);
+  }
+}
+
+// Wordmark: the course name in the display serif.
+.site-title {
+  font-family: var(--ed-serif-display);
+  font-size: var(--fs-22) !important;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ed-ink);
+
+  &:hover {
+    background-image: none;
+    background-color: var(--ed-paper-deep);
+  }
+}
+
+.site-button {
+  color: var(--ed-ink);
+
+  .icon {
+    color: var(--ed-ink);
+  }
+
+  &:hover {
+    background-image: none;
+    background-color: var(--ed-paper-deep);
+  }
+}
+
+.site-nav {
+  @include mq(md) {
+    padding-top: 0.25rem;
+    padding-bottom: 1rem;
+    // Scroll shadows: a soft edge appears only where links are scrolled out of view.
+    background:
+      linear-gradient(var(--ed-paper) 30%, transparent) top / 100% 1.5rem no-repeat local,
+      linear-gradient(transparent, var(--ed-paper) 70%) bottom / 100% 1.5rem no-repeat local,
+      linear-gradient(var(--ed-shadow), transparent) top / 100% 0.5rem no-repeat scroll,
+      linear-gradient(transparent, var(--ed-shadow)) bottom / 100% 0.5rem no-repeat scroll;
+    background-color: var(--ed-paper);
+  }
+}
+
+.nav-list .nav-list-item {
+  font-family: var(--ed-sans);
+  font-size: var(--fs-16) !important;
+
+  @include mq(md) {
+    font-size: var(--fs-15) !important;
+  }
+
+  .nav-list-link {
+    display: flex;
+    align-items: center;
+    color: var(--ed-text);
+    line-height: 1.3 !important;
+
+    @include mq(md) {
+      min-height: 1.875rem;
+      padding-top: 0.2rem;
+      padding-bottom: 0.2rem;
+    }
+
+    &:hover {
+      color: var(--ed-ink);
+      background-image: none;
+      background-color: var(--ed-paper-deep);
+    }
+
+    &.active,
+    &[aria-current="page"] {
+      color: var(--ed-ink);
+      font-weight: 650;
+      background-image: none;
+      background-color: var(--ed-bg);
+      box-shadow: inset 3px 0 0 var(--ed-accent);
+    }
+  }
+}
+
+// Group labels from the page URLs, in CSS only (the sidebar stays one flat list for the theme
+// and the PDF builder). course.js keeps the current page's href, so its label stays too.
+.site-nav > .nav-list > .nav-list-item:is(
+    :has(> .nav-list-link[href$="/guides/student-setup.html"]),
+    :has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"]),
+    :has(> .nav-list-link[href$="/guides/agent-driven-development.html"])
+  ) {
+  margin-top: 0.4rem;
+  border-top: 1px solid var(--ed-rule);
+
+  &::before {
+    display: block;
+    padding: 0.7rem 1rem 0.2rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-13);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ed-muted);
+
+    @include mq(md) {
+      padding: 0.65rem 1rem 0.2rem 2rem;
+    }
+  }
+}
+
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/student-setup.html"])::before {
+  content: "Start here";
+}
+
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"])::before {
+  content: "Lectures";
+}
+
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/agent-driven-development.html"])::before {
+  content: "Optional depth";
+}
+
+.site-footer {
+  font-family: var(--ed-sans);
+  color: var(--ed-muted);
+
+  @include mq(md) {
+    padding-top: 0.7rem;
+    padding-bottom: 0.8rem;
+    border-top: 1px solid var(--ed-rule);
+    background: var(--ed-paper);
+  }
+}
+
+// Sidebar colophon (nav_footer_custom.html): course facts and where to get help, on every page.
+.nav-colophon {
+  font-family: var(--ed-sans);
+  font-size: var(--fs-14) !important;
+  line-height: 1.45;
+  color: var(--ed-muted);
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 0.3rem;
+  }
+
+  strong {
+    color: var(--ed-ink);
+    font-weight: 650;
+  }
+
+  a {
+    color: var(--ed-link);
+  }
+}
+
+.side-bar + .main .main-header {
+  border-bottom: 1px solid var(--ed-rule);
+  background-color: var(--ed-paper);
+
+  @include mq(md) {
+    background-color: var(--ed-bg);
+  }
+}
+
+.search-input-wrap {
+  background-color: var(--ed-bg);
+  box-shadow: 0 0 0 1px var(--ed-rule);
+
+  @include mq(md) {
+    box-shadow: none;
+  }
+}
+
+.search-input {
+  font-family: var(--ed-sans);
+  font-size: var(--fs-16) !important;
+  color: var(--ed-text);
+  background-color: var(--ed-bg);
+
+  &::placeholder {
+    color: var(--ed-muted);
+    opacity: 1;
+  }
+}
+
+.search-label .search-icon {
+  color: var(--ed-muted);
+}
+
+// The theme repaints the input while search is open; keep it on the page surface.
+.search-active .search-input {
+  background-color: var(--ed-bg);
+}
+
+.search-input:focus + .search-label .search-icon {
+  color: var(--ed-link);
+}
+
+.search-results {
+  font-family: var(--ed-sans);
+  background-color: var(--ed-bg);
+  box-shadow: 0 0 0 1px var(--ed-rule), 0 12px 30px var(--ed-shadow);
+}
+
+.search-result {
+  color: var(--ed-text);
+
+  &:hover,
+  &.active {
+    background-color: var(--ed-paper);
+  }
+}
+
+.search-result-title,
+.search-result-doc,
+.search-result-section {
+  color: var(--ed-ink);
+}
+
+// The theme fades the parent page title to 50% (about 2:1); keep it readable.
+.search-result-doc.search-result-doc-parent {
+  opacity: 1;
+  color: var(--ed-muted);
+}
+
+.search-result-previews,
+.search-result-preview {
+  color: var(--ed-text);
+  border-left-color: var(--ed-rule);
+}
+
+.search-result-previews,
+.search-result-section,
+.search-result-doc-title {
+  font-size: var(--fs-14) !important;
+}
+
+.search-result-highlight {
+  color: var(--ed-ink);
+  font-weight: 700;
+}
+
+.search-no-result {
+  color: var(--ed-muted);
+}
+
+.search-overlay {
+  background-color: rgba(15, 30, 58, 0.35);
+}
+
+.aux-nav {
+  font-family: var(--ed-sans);
+
+  .aux-nav-list {
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .aux-nav-list-item {
+    height: auto;
+  }
+
+  .site-button {
+    min-height: 2.25rem;
+    padding: 0.4rem 0.75rem;
+    font-size: var(--fs-14) !important;
+    font-weight: 600;
+    color: var(--ed-ink);
+    border-radius: 2px;
+  }
+
+  // The PDF is the course's printed handbook: a quiet outlined button.
+  .aux-nav-list-item:first-child .site-button {
+    gap: 0.45rem;
+    border: 1px solid var(--ed-ink);
+
+    &::before {
+      @include ed-icon(var(--ed-i-doc), 0.95rem);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 4. Inline elements
+// ---------------------------------------------------------------------------------------------
+
+.main-content {
+  :not(pre, figure) > code {
+    padding: 0.08em 0.3em;
+    font-size: var(--fs-15);
+    color: var(--ed-code-text);
+    background: var(--ed-code-bg);
+    border: 1px solid var(--ed-code-line);
+    border-radius: 2px;
+    overflow-wrap: break-word;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  // Inline code snaps to the scale: 15px beside the 17–18px reading text, 14px beside data text,
+  // and relative inside headings.
+  :is(h1, h2, h3, h4, h5, h6) code {
+    font-size: 0.85em;
+  }
+
+  :is(.factory-milestones, .pager, .this-week, .page-nav, .stepper-controls) code {
+    font-size: var(--fs-14);
+  }
+
+  a:not([class]) code {
+    color: inherit;
+  }
+
+  kbd {
+    padding: 0.05em 0.4em 0.1em;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--ed-ink);
+    white-space: nowrap;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-ui);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+  }
+
+  // Plain quotations: a quiet rule, reading face, no italics (long instructions stay readable).
+  blockquote {
+    margin: 1.5rem 0;
+    padding: 0.1rem 0 0.1rem 1.25rem;
+    font-size: inherit;
+    color: var(--ed-text-2);
+    border-left: 2px solid var(--ed-rule-strong);
+
+    p {
+      margin-bottom: 0.6em;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  abbr[title] {
+    text-decoration: underline dotted;
+    text-underline-offset: 0.18em;
+  }
+
+  mark {
+    padding: 0 0.15em;
+    color: inherit;
+    background: var(--ed-mark);
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 5. Code blocks: a language tab, an always-visible copy button, 13–14px code at 1.6
+// ---------------------------------------------------------------------------------------------
+
+.main-content {
+  div.highlighter-rouge,
+  figure.highlight {
+    position: relative;
+    margin: 1.25rem 0 1.5rem;
+    background: var(--ed-code-bg);
+    border: 1px solid var(--ed-code-line);
+    border-radius: 3px;
+  }
+
+  li div.highlighter-rouge {
+    margin: 0.75rem 0;
+  }
+
+  div.highlighter-rouge div.highlight,
+  figure.highlight pre {
+    padding: 0.85rem 1.1rem 0.95rem;
+    margin: 0;
+    border: 0;
+    border-radius: 0 0 3px 3px;
+    background: transparent;
+  }
+
+  // The theme makes each code region focusable (it may scroll); draw its ring inside the frame.
+  div.highlighter-rouge div.highlight:focus-visible {
+    outline-offset: -3px;
+    border-radius: 0 0 3px 3px;
+  }
+
+  pre.highlight,
+  pre.highlight code,
+  figure.highlight pre code {
+    margin: 0;
+    padding: 0;
+    font-family: var(--ed-mono);
+    font-size: var(--fs-13);
+    line-height: 1.6;
+    font-variant-numeric: normal;
+    font-variant-ligatures: none;
+    color: var(--ed-code-text);
+    background: transparent;
+  }
+
+  @include mq(sm) {
+    pre.highlight,
+    pre.highlight code,
+    figure.highlight pre code {
+      font-size: var(--fs-14);
+    }
+  }
+
+  // Language tab from the fence (```python). Decorative: screen readers skip it (alt text "").
+  div.highlighter-rouge[class*="language-"]::before {
+    display: block;
+    padding: 0.35rem 3rem 0.3rem 1.1rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-13);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ed-muted);
+    background: var(--ed-paper-deep);
+    border-bottom: 1px solid var(--ed-code-line);
+    border-radius: 3px 3px 0 0;
+  }
+
+  // The copy button sits in the tab bar, always visible (touch screens have no hover).
+  div.highlighter-rouge > button,
+  figure.highlight > button {
+    top: 0;
+    right: 0;
+    width: 2.25rem;
+    height: 2rem;
+    padding: 0.35rem 0.6rem;
+    color: var(--ed-muted);
+    opacity: 1;
+    border-radius: 0 3px 0 0;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      fill: currentColor;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--ed-ink);
+      background: var(--ed-bg);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: -3px;
+    }
+  }
+
+  // A fence without a tab keeps the button clear of the first line of code.
+  div.highlighter-rouge:not([class*="language-"]) div.highlight {
+    padding-right: 2.75rem;
+  }
+
+  .callout div.highlighter-rouge,
+  .section-panel div.highlighter-rouge {
+    max-width: none;
+  }
+}
+
+$ed-code-languages: (
+  "bash": "Shell",
+  "sh": "Shell",
+  "shell": "Shell",
+  "zsh": "Shell",
+  "console": "Terminal",
+  "powershell": "PowerShell",
+  "python": "Python",
+  "py": "Python",
+  "toml": "TOML",
+  "json": "JSON",
+  "http": "HTTP",
+  "yaml": "YAML",
+  "yml": "YAML",
+  "dockerfile": "Dockerfile",
+  "docker": "Dockerfile",
+  "markdown": "Markdown",
+  "md": "Markdown",
+  "text": "Text",
+  "plaintext": "Text",
+  "ini": "INI",
+  "diff": "Diff",
+  "sql": "SQL",
+  "javascript": "JavaScript",
+  "js": "JavaScript",
+  "typescript": "TypeScript",
+  "ts": "TypeScript",
+  "html": "HTML",
+  "css": "CSS",
+  "xml": "XML",
+  "env": "Env",
+  "jinja": "Jinja",
+);
+
+@each $lang, $label in $ed-code-languages {
+  .main-content div.language-#{$lang}.highlighter-rouge::before {
+    content: "#{$label}";
+    content: "#{$label}" / "";
+  }
+}
+
+// Syntax palette tuned for the warm code background.
+.highlight {
+  .c, .ch, .cm, .cp, .cpf, .c1, .cs { color: var(--ed-syn-comment); font-style: italic; }
+  .k, .kd, .kn, .kp, .kr, .kt, .kv, .ow { color: var(--ed-syn-keyword); }
+  .kc { color: var(--ed-syn-function); }
+  .s, .sa, .sb, .sc, .dl, .sd, .s2, .se, .sh, .si, .sx, .sr, .s1, .ss { color: var(--ed-syn-string); }
+  .m, .mb, .mf, .mh, .mi, .il, .mo, .l, .ld { color: var(--ed-syn-number); }
+  .na, .nb, .bp, .nv, .vc, .vg, .vi, .vm { color: var(--ed-syn-name); }
+  .nc, .nf, .fm, .nd, .ne, .no, .py, .nl { color: var(--ed-syn-function); }
+  .nt { color: var(--ed-syn-keyword); }
+  .nn, .n, .nx, .p, .pm, .w, .o, .ni { color: var(--ed-code-text); }
+  .gh, .gu { color: var(--ed-syn-function); font-weight: 700; }
+  .gp { color: var(--ed-syn-comment); user-select: none; }
+  .go { color: var(--ed-code-text); }
+  .gd { color: var(--ed-red); }
+  .gi { color: var(--ed-green); }
+  .err { color: var(--ed-red); background: transparent; }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 6. Tables: book tables — strong top rule, hairline rows, no boxes
+// ---------------------------------------------------------------------------------------------
+
+.main-content .table-wrapper {
+  margin: 1.5rem 0 2rem;
+  border-top: 2px solid var(--ed-ink);
+  border-bottom: 1px solid var(--ed-ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.main-content {
+  table {
+    border-collapse: collapse;
+    font-family: var(--ed-sans);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  // A 5rem floor keeps short columns readable; wider tables scroll inside their wrapper.
+  th,
+  td {
+    min-width: 5rem;
+    padding: 0.65rem 1rem 0.65rem 0;
+    font-size: var(--fs-15) !important;
+    line-height: 1.5;
+    vertical-align: top;
+    color: var(--ed-text);
+    border-left: 0;
+    border-bottom: 1px solid var(--ed-rule);
+    background: transparent;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0.25rem;
+  }
+
+  thead th {
+    padding-top: 0.7rem;
+    padding-bottom: 0.55rem;
+    font-size: var(--fs-14) !important;
+    font-weight: 700;
+    text-align: left;
+    color: var(--ed-ink);
+    border-bottom: 1px solid var(--ed-ink);
+  }
+
+  tbody tr:last-of-type td {
+    border-bottom: 0;
+  }
+
+  // Code in cells may wrap at its spaces (`git diff --staged --stat`), so three-column checkpoint
+  // cards fit the desktop column, but never inside a token (`/recipes?offset=0`): overflow-wrap
+  // break-word does not lower the column's minimum width, so a table too wide for its token
+  // scrolls inside its wrapper instead of splitting it.
+  td code,
+  th code {
+    font-size: var(--fs-14);
+    white-space: normal;
+    word-break: normal;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 7. Disclosures: answers as ruled exam entries; "On this page" as a contents box
+// ---------------------------------------------------------------------------------------------
+
+.main-content details {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--ed-rule);
+  border-bottom: 1px solid var(--ed-rule);
+  border-radius: 0;
+
+  + details {
+    margin-top: -1.25rem;
+    border-top: 0;
+  }
+
+  > summary {
+    position: relative;
+    display: block;
+    min-height: 2.75rem;
+    padding: 0.7rem 0.25rem 0.7rem 1.7rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-16);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--ed-ink);
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      @include ed-icon(var(--ed-i-chevron), 1rem);
+      position: absolute;
+      top: calc(0.7rem + 0.25em);
+      left: 0.1rem;
+      color: var(--ed-accent);
+    }
+
+    &:hover {
+      color: var(--ed-link);
+    }
+
+    code {
+      font-size: var(--fs-14);
+    }
+  }
+
+  &[open] {
+    padding-bottom: 0.5rem;
+    border-bottom-color: var(--ed-rule-strong);
+
+    > summary {
+      margin-bottom: 0.1rem;
+
+      &::before {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  > :not(summary) {
+    margin-left: 1.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .main-content details > summary::before {
+    transition: transform 160ms ease;
+  }
+}
+
+.main-content details.lecture-toc {
+  max-width: none;
+  margin: 1.5rem 0 2rem;
+  padding: 0 1.25rem;
+  background: var(--ed-paper);
+  border: 1px solid var(--ed-rule);
+  border-radius: 2px;
+
+  > summary {
+    @include ed-kicker(var(--ed-ink));
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 0;
+
+    &::before {
+      position: static;
+    }
+  }
+
+  > ul {
+    max-width: none;
+    margin: 0 0 0.75rem;
+    padding: 0 0 0.25rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    list-style: none;
+    border-top: 1px solid var(--ed-rule);
+    counter-reset: toc;
+
+    > li {
+      position: relative;
+      margin: 0;
+      padding-left: 2.1rem;
+      counter-increment: toc;
+      break-inside: avoid;
+
+      &::before {
+        content: counter(toc, decimal-leading-zero);
+        position: absolute;
+        top: 0.4rem;
+        left: 0;
+        width: auto;
+        height: auto;
+        margin: 0;
+        font-family: var(--ed-sans);
+        font-size: var(--fs-13);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--ed-muted);
+        background: none;
+        border-radius: 0;
+      }
+    }
+
+    a {
+      display: inline-block;
+      padding: 0.3rem 0;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    @include mq(md) {
+      columns: 2;
+      column-gap: 2.5rem;
+      padding-top: 0.5rem;
+    }
+  }
+
+  > :not(summary) {
+    margin-left: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 8. Course components (class names from _plugins/course_components.rb or author HTML)
+// ---------------------------------------------------------------------------------------------
+
+// 8.1 Callouts: <p class="callout callout--KIND"> or <blockquote class="callout callout--KIND">,
+//     whose first <strong class="callout-label"> is the label (real text, printed and announced).
+
+.main-content .callout {
+  --c: var(--ed-navy);
+  --c-bg: var(--ed-navy-tint);
+  --c-icon: var(--ed-i-target);
+
+  max-width: var(--ed-measure);
+  margin: 1.5rem 0;
+  padding: 0.85rem 1.25rem 0.95rem;
+  font-family: var(--ed-serif);
+  font-size: var(--fs-16);
+  font-style: normal;
+  line-height: 1.6;
+  color: var(--ed-text);
+  background: var(--c-bg);
+  border: 0;
+  border-left: 3px solid var(--c);
+  border-radius: 0 2px 2px 0;
+
+  @include mq(md) {
+    font-size: var(--fs-17);
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  p {
+    margin-bottom: 0.6em;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 0.6em;
+  }
+
+  ul > li::before {
+    background: var(--c);
+  }
+
+  // A callout that holds code or a table spans the column; its prose keeps the measure.
+  &:has(div.highlighter-rouge, .table-wrapper) {
+    max-width: none;
+  }
+
+  div.highlighter-rouge {
+    background: var(--ed-bg);
+  }
+
+  .table-wrapper {
+    margin: 0.75rem 0;
+  }
+
+  .task-list-item-checkbox {
+    accent-color: var(--c);
+  }
+}
+
+// The label: its own line, in the callout's ink, with its icon.
+.main-content .callout-label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0 0 0.3rem;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-15);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--c, var(--ed-ink));
+
+  &::before {
+    @include ed-icon(var(--c-icon, var(--ed-i-info)), 1.125rem);
+    margin-top: 0.05rem;
+  }
+}
+
+.main-content .callout--objectives { --c: var(--ed-navy);  --c-bg: var(--ed-navy-tint);  --c-icon: var(--ed-i-target); }
+.main-content .callout--prereq     { --c: var(--ed-slate); --c-bg: var(--ed-slate-tint); --c-icon: var(--ed-i-book); }
+.main-content .callout--predict    { --c: var(--ed-plum);  --c-bg: var(--ed-plum-tint);  --c-icon: var(--ed-i-question); }
+.main-content .callout--explain    { --c: var(--ed-ochre); --c-bg: var(--ed-ochre-tint); --c-icon: var(--ed-i-speech); }
+.main-content .callout--checkpoint { --c: var(--ed-green); --c-bg: var(--ed-green-tint); --c-icon: var(--ed-i-check); }
+.main-content .callout--pitfall    { --c: var(--ed-red);   --c-bg: var(--ed-red-tint);   --c-icon: var(--ed-i-warning); }
+.main-content .callout--note       { --c: var(--ed-ink);   --c-bg: var(--ed-paper);      --c-icon: var(--ed-i-info); }
+
+// Prerequisites: a boxed note (things you bring), not a tinted aside.
+.main-content .callout--prereq {
+  border: 1px solid var(--ed-rule);
+  border-left: 3px solid var(--c);
+}
+
+// Optional: the one callout with no fill and a dashed outline — "if you have time".
+.main-content .callout--optional {
+  --c: var(--ed-umber);
+  --c-icon: var(--ed-i-plus);
+
+  background: transparent;
+  border: 1px dashed var(--ed-rule-strong);
+  border-left: 3px dashed var(--c);
+}
+
+// A reveal straight after a callout ("Check your prediction") hangs from it.
+.main-content .callout + details {
+  max-width: var(--ed-measure);
+  margin-top: -1.5rem;
+  border-top: 0;
+  border-left: 3px solid var(--ed-rule-strong);
+  padding-left: 0.95rem;
+  background: var(--ed-bg);
+}
+
+.main-content .callout--predict + details { border-left-color: var(--ed-plum); }
+.main-content .callout--explain + details { border-left-color: var(--ed-ochre); }
+.main-content .callout--checkpoint + details { border-left-color: var(--ed-green); }
+
+// Learning-practice blocks (L9, local inference) open with a run-in instruction to predict.
+.main-content .learning-practice {
+  margin: 1.75rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--ed-plum-tint);
+  border-left: 3px solid var(--ed-plum);
+
+  // The bold run-in label takes the predict voice; the rest of the paragraph stays reading text.
+  > p:first-child > strong:first-child {
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    color: var(--ed-plum);
+
+    &::before {
+      @include ed-icon(var(--ed-i-question), 1.125rem);
+      margin-right: 0.45rem;
+      vertical-align: -0.2em;
+    }
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  details,
+  div.highlighter-rouge {
+    max-width: none;
+  }
+
+  div.highlighter-rouge {
+    background: var(--ed-bg);
+  }
+}
+
+// 8.2 At a glance: <blockquote class="glance"> whose first paragraph is "At a glance", then a
+//     list of "**Term:** value" rows. A ruled fact box, sans, full column.
+
+.main-content blockquote.glance {
+  max-width: none;
+  margin: 1.25rem 0 1.75rem;
+  padding: 0;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-15);
+  font-style: normal;
+  line-height: 1.55;
+  color: var(--ed-text);
+  border: 0;
+  border-top: 2px solid var(--ed-ink);
+  border-bottom: 1px solid var(--ed-ink);
+
+  > p.glance-title {
+    max-width: none;
+    margin: 0;
+    padding: 0.7rem 0 0.55rem;
+    @include ed-kicker(var(--ed-accent));
+
+    strong {
+      color: inherit;
+    }
+  }
+
+  > ul {
+    @include ed-reset-list;
+    max-width: none;
+
+    > li {
+      position: relative;
+      padding: 0.55rem 0 0.6rem;
+      border-top: 1px solid var(--ed-rule);
+
+      // The term: sentence case, semibold, quieter than the value. Narrow columns run it in
+      // ("When: Monday …") to keep the card short; wide ones give it a column (below).
+      > strong:first-child {
+        margin-right: 0.2rem;
+        font-size: var(--fs-14);
+        font-weight: 650;
+        color: var(--ed-term);
+      }
+
+      > :not(strong):last-child,
+      p {
+        margin-bottom: 0;
+      }
+
+      ul,
+      ol {
+        max-width: none;
+        margin: 0.3rem 0 0;
+        padding-left: 1.1rem;
+      }
+
+      li {
+        margin: 0.2rem 0;
+      }
+
+      ul > li::before {
+        margin-top: 0.62em;
+        background: var(--ed-ink);
+      }
+    }
+  }
+
+  > p:not(.glance-title) {
+    margin: 0.6rem 0;
+  }
+
+  code {
+    font-size: var(--fs-14);
+  }
+}
+
+@container content (min-width: 34rem) {
+  .main-content blockquote.glance > ul > li {
+    padding-left: 10.5rem;
+
+    > strong:first-child {
+      position: absolute;
+      top: 0.57rem;
+      left: 0;
+      width: 9.5rem;
+      margin: 0;
+    }
+  }
+}
+
+// 8.3 Lecture pages: phase markers above each h2, and panels around six sections.
+
+.main-content main.lecture-page > h2::before {
+  display: block;
+  margin-bottom: 0.4rem;
+  @include ed-kicker(var(--ed-muted));
+  font-size: var(--fs-13) !important;
+  line-height: 1.35 !important;
+}
+
+.main-content main.lecture-page > h2:is(#mission, #before-you-start, #learning-checkpoint)::before {
+  content: "Prepare";
+  content: "Prepare" / "";
+}
+
+.main-content main.lecture-page > h2:is(#concepts, #live-demo)::before {
+  content: "Learn";
+  content: "Learn" / "";
+}
+
+.main-content main.lecture-page > h2:is(#hands-on-lab, #break-it-on-purpose, #open-source-track, #working-with-ai-assistants, #evaluation-clinic-audit-the-score)::before {
+  content: "Practice";
+  content: "Practice" / "";
+}
+
+.main-content main.lecture-page > h2:is(#completion-check, #quick-quiz)::before {
+  content: "Check";
+  content: "Check" / "";
+}
+
+.main-content main.lecture-page > h2:is(#stretch-goals, #common-pitfalls, #instructor-notes, #read-more)::before {
+  content: "Extend";
+  content: "Extend" / "";
+}
+
+// A section panel is a margin rule and an indent, no fill, so callouts inside stay legible.
+.main-content .section-panel {
+  --panel: var(--ed-rule-strong);
+
+  margin: 0 0 1rem;
+  padding: 0.15rem 0 0.15rem 1rem;
+  border-left: 2px solid var(--panel);
+
+  @include mq(sm) {
+    padding-left: 1.4rem;
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+// The rule is the kind's ink, softened so nested callouts keep the stronger voice.
+.main-content .section-panel--prereq     { --panel: #{mix(#465161, #fff, 55%)}; }
+.main-content .section-panel--objectives { --panel: #{mix(#1d4e89, #fff, 55%)}; }
+.main-content .section-panel--checkpoint { --panel: #{mix(#2a6a47, #fff, 55%)}; }
+.main-content .section-panel--pitfall    { --panel: #{mix(#9b2c2c, #fff, 55%)}; }
+
+.main-content .section-panel--optional {
+  --panel: #{mix(#5c574d, #fff, 55%)};
+
+  border-left-style: dashed;
+}
+
+.main-content .section-panel--instructor {
+  --panel: var(--ed-rule-strong);
+
+  border-left-style: dotted;
+  border-left-width: 3px;
+}
+
+// 8.4 Page navigation: the hand-written "← Course home · …" line (p.page-nav) becomes a slim
+//     ruled row under the title; its bottom copy gives way to the generated pager.
+
+.main-content p.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.35rem;
+  max-width: none;
+  margin: -0.25rem 0 1.5rem;
+  padding: 0.5rem 0;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-15);
+  line-height: 1.5;
+  color: var(--ed-muted);
+  border-top: 1px solid var(--ed-rule);
+  border-bottom: 1px solid var(--ed-rule);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    font-weight: 600;
+  }
+}
+
+.main-content p.page-nav--bottom,
+.main-content main > hr:has(+ p.page-nav--bottom) {
+  display: none;
+}
+
+// 8.5 Pager: <nav class="pager"> from _includes/footer_custom.html, first in the page footer.
+
+.main-content > footer {
+  display: flex;
+  flex-direction: column;
+
+  > .pager {
+    order: -1;
+  }
+}
+
+.main-content > footer .pager,
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0 2rem;
+  font-family: var(--ed-sans);
+
+  a {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-height: 2.75rem;
+    padding: 0.8rem 1rem 0.85rem;
+    color: var(--ed-ink);
+    text-decoration: none;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule);
+    border-radius: 2px;
+
+    &:hover {
+      color: var(--ed-link);
+      background: var(--ed-tint);
+      border-color: var(--ed-ink);
+    }
+  }
+
+  .pager-label {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    @include ed-kicker(var(--ed-muted));
+  }
+
+  .pager-title {
+    font-family: var(--ed-serif-display);
+    font-size: var(--fs-18);
+    font-weight: 600;
+    line-height: 1.3;
+    font-variant-numeric: lining-nums;
+  }
+
+  .pager-prev .pager-label::before {
+    @include ed-icon(var(--ed-i-arrow), 1rem);
+    height: 0.7rem;
+    transform: scaleX(-1);
+  }
+
+  .pager-next {
+    grid-column: 2;
+    align-items: flex-end;
+    text-align: right;
+    border-color: var(--ed-ink);
+
+    .pager-label::after {
+      @include ed-icon(var(--ed-i-arrow), 1rem);
+      height: 0.7rem;
+    }
+  }
+}
+
+@media (max-width: 22.5rem) {
+  .pager {
+    grid-template-columns: minmax(0, 1fr);
+
+    .pager-next {
+      grid-column: 1;
+    }
+  }
+}
+
+// 8.6 Figures: numbered plates. The diagram sits on a white plate inside a paper panel under an
+//     ink rule; the caption sits under a hairline after a "Figure n" label.
+
+.main-content .course-diagram {
+  max-width: none;
+  margin: 2.25rem 0 2.5rem;
+  padding: 0;
+  background: var(--ed-paper);
+  border: 0;
+  border-top: 1px solid var(--ed-ink);
+  border-radius: 0;
+  counter-increment: figure;
+
+  .diagram-scroll {
+    overflow-x: auto;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-radius: 0;
+
+    &:focus-visible {
+      outline-offset: -3px;
+    }
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    min-width: 30rem;
+    max-width: 38rem;
+    height: auto;
+    margin: 0 auto;
+    background: var(--ed-plate);
+    border: 1px solid var(--ed-rule);
+    box-shadow: 0 1px 2px var(--ed-shadow), 0 10px 28px -14px var(--ed-shadow);
+  }
+
+  figcaption {
+    max-width: none;
+    margin: 0 1.5rem;
+    padding: 0.8rem 0 1.05rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    line-height: 1.55;
+    color: var(--ed-muted);
+    border-top: 1px solid var(--ed-rule);
+
+    // Plate number (decorative; screen readers read the caption itself).
+    &::before {
+      content: "Figure " counter(figure);
+      content: "Figure " counter(figure) / "";
+      display: block;
+      margin-bottom: 0.2rem;
+      @include ed-kicker(var(--ed-ink));
+    }
+
+    strong {
+      color: var(--ed-ink);
+    }
+
+    a {
+      font-weight: 600;
+    }
+
+    code {
+      font-size: var(--fs-14);
+    }
+  }
+}
+
+// Landscape figures (960 wide): the plate uses the whole column.
+.main-content .course-diagram--wide img {
+  min-width: 40rem;
+  max-width: 100%;
+}
+
+// A <picture> with a phone source (media="(max-width: 31.25rem)") already fits a phone, so its
+// image may shrink to the column instead of keeping the 30rem minimum and scrolling sideways.
+@media (max-width: 31.25rem) {
+  .main-content .course-diagram picture img {
+    min-width: 0;
+  }
+}
+
+.main-content :is(h2, h3) + .course-diagram {
+  margin-top: 1.25rem;
+}
+
+// "Scroll sideways" hints only matter while the plate is narrower than the diagram.
+@container content (min-width: 34rem) {
+  .main-content .course-diagram:not(.course-diagram--wide) figcaption .screen-only {
+    display: none;
+  }
+}
+
+@container content (min-width: 44rem) {
+  .main-content .course-diagram--wide figcaption .screen-only {
+    display: none;
+  }
+}
+
+// The text version hangs from its figure as a tab of the same panel.
+.main-content .course-diagram + details {
+  max-width: none;
+  margin-top: -2.5rem;
+  margin-bottom: 2.5rem;
+  padding: 0 1.5rem;
+  background: var(--ed-paper);
+  border-top: 1px solid var(--ed-rule);
+  border-bottom: 1px solid var(--ed-rule);
+
+  > summary {
+    padding-left: 1.6rem;
+    font-size: var(--fs-15);
+    color: var(--ed-link);
+
+    &::before {
+      color: var(--ed-link);
+    }
+  }
+
+  &[open] {
+    background: var(--ed-bg);
+    border-bottom-color: var(--ed-rule-strong);
+  }
+
+  > :not(summary) {
+    max-width: var(--ed-measure);
+    margin-left: 1.6rem;
+  }
+
+  // The theme gives a table wrapper width: 100%; with the indent above it would stick out past the
+  // panel (10 px past the screen edge on phones). Let it take the remaining width instead.
+  > .table-wrapper {
+    width: auto;
+  }
+}
+
+// Phones: the panel runs to the screen edges, so the diagram keeps every pixel.
+@container content (max-width: 36rem) {
+  .main-content .course-diagram {
+    margin-inline: -1rem;
+
+    .diagram-scroll {
+      padding: 0.75rem;
+    }
+
+    figcaption {
+      margin-inline: 1rem;
+    }
+  }
+
+  .main-content .course-diagram + details {
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+}
+
+// Scroll cues: diagrams, tables and code scroll inside their own region. While part of a region is
+// out of view, course.js sets .fade-start / .fade-end and the clipped edge fades ("more this way").
+// Never while focused, so the focus ring is not masked.
+.main-content :is(.diagram-scroll, .table-wrapper, div.highlighter-rouge > div.highlight) {
+  &.fade-end:not(:focus-within) {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+    mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+  }
+
+  &.fade-start:not(:focus-within) {
+    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+    mask-image: linear-gradient(to left, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+  }
+
+  &.fade-start.fade-end:not(:focus-within) {
+    -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 15%), #000 2.5rem, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+    mask-image: linear-gradient(to right, rgb(0 0 0 / 15%), #000 2.5rem, #000 calc(100% - 2.5rem), rgb(0 0 0 / 15%));
+  }
+}
+
+// Narrow columns: callouts, panels and code give their text a little more room.
+@container content (max-width: 30rem) {
+  .main-content {
+    .callout,
+    .learning-practice {
+      padding-inline: 1rem;
+    }
+
+    div.highlighter-rouge div.highlight {
+      padding-inline: 1rem;
+    }
+
+    div.highlighter-rouge[class*="language-"]::before {
+      padding-left: 1rem;
+    }
+  }
+}
+
+// 8.7 Stepper: <div class="stepper"> around one ordered list. Without JavaScript, on GitHub and in
+//     print it is a numbered sequence on a spine; course.js shows one step at a time.
+
+.main-content .stepper {
+  max-width: var(--ed-measure);
+  margin: 1.5rem 0 1.75rem;
+
+  > ol {
+    @include ed-reset-list;
+    counter-reset: stepper;
+
+    > li {
+      position: relative;
+      max-width: none;
+      padding: 0.1rem 0 1.1rem 3rem;
+      counter-increment: stepper;
+
+      &::before {
+        content: counter(stepper);
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        font-family: var(--ed-serif-display);
+        font-size: var(--fs-16) !important;
+        font-weight: 600;
+        line-height: 1;
+        color: var(--ed-ink);
+        background: var(--ed-bg);
+        border: 1px solid var(--ed-ink);
+        border-radius: 50%;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 2.3rem;
+        bottom: 0.25rem;
+        left: 1rem;
+        border-left: 1px solid var(--ed-rule-strong);
+      }
+
+      &:last-child {
+        padding-bottom: 0.1rem;
+
+        &::after {
+          content: none;
+        }
+      }
+
+      > :last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Enhanced: one step in a card, with Previous / status / Next / Show all.
+  &.is-enhanced {
+    padding: 1.1rem 1.25rem 0.9rem;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule);
+    border-top: 2px solid var(--ed-ink);
+    border-radius: 0 0 2px 2px;
+
+    > ol > li {
+      &::before {
+        content: attr(data-step);
+        color: var(--ed-on-ink);
+        background: var(--ed-ink);
+      }
+
+      &::after {
+        content: none;
+      }
+    }
+
+    &:not(.is-all) > ol > li {
+      min-height: 4.5rem;
+      padding-bottom: 0.25rem;
+
+      &:not(.is-current) {
+        display: none;
+      }
+    }
+
+    &.is-all > ol > li {
+      padding-bottom: 1rem;
+
+      &::before {
+        color: var(--ed-ink);
+        background: var(--ed-bg);
+      }
+
+      &::after {
+        content: "";
+      }
+
+      &:last-child {
+        padding-bottom: 0.1rem;
+
+        &::after {
+          content: none;
+        }
+      }
+    }
+  }
+}
+
+.main-content .stepper-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  font-family: var(--ed-sans);
+  border-top: 1px solid var(--ed-rule);
+
+  // The position ("Step 2 of 5: …") gets its own row, so long step names never squeeze the buttons.
+  .stepper-status {
+    flex: 1 0 100%;
+    order: -1;
+    max-width: none;
+    margin: 0;
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--ed-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stepper-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.9rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ed-ink);
+    cursor: pointer;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-ink);
+    border-radius: 2px;
+
+    &:hover {
+      background: var(--ed-paper);
+    }
+
+    &[aria-disabled="true"] {
+      color: var(--ed-muted);
+      cursor: default;
+      background: var(--ed-bg);
+      border-color: var(--ed-rule-ui);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .stepper-next:not([aria-disabled="true"]) {
+    color: var(--ed-on-ink);
+    background: var(--ed-ink);
+
+    &:hover {
+      background: var(--ed-link);
+      border-color: var(--ed-link);
+    }
+  }
+
+  .stepper-prev::before,
+  .stepper-next::after {
+    @include ed-icon(var(--ed-i-arrow), 1rem);
+    height: 0.7rem;
+  }
+
+  .stepper-prev::before {
+    transform: scaleX(-1);
+  }
+
+  .stepper-all {
+    border-color: transparent;
+    color: var(--ed-link);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+
+    &:hover {
+      background: var(--ed-tint);
+    }
+  }
+}
+
+@container content (min-width: 30rem) {
+  .main-content .stepper-controls .stepper-all {
+    margin-left: auto;
+  }
+}
+
+// 8.8 Home page: hero, next meeting, first steps, calendar.
+
+.main-content .home-hero {
+  margin: 0 0 1.75rem;
+  padding: 1.1rem 0 0;
+  border-top: 3px solid var(--ed-ink);
+  // A printed double rule: a hairline 2px under the heavy one (a gradient, so it prints cleanly).
+  background: linear-gradient(to bottom, transparent 2px, var(--ed-ink) 2px, var(--ed-ink) 3px, transparent 3px)
+    top / 100% 3px no-repeat;
+
+  h1 {
+    max-width: none;
+    margin: 0.6rem 0 1.25rem;
+    font-size: var(--fs-40) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.02em;
+  }
+
+  // The facts: a two-column ledger of term and value, hairline rows.
+  > ul.home-facts {
+    @include ed-reset-list;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+    margin: 0 0 1.5rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    line-height: 1.5;
+    border-top: 1px solid var(--ed-ink);
+    border-bottom: 1px solid var(--ed-rule);
+
+    > li {
+      padding: 0.55rem 0;
+      border-top: 1px solid var(--ed-rule);
+
+      &:first-child {
+        border-top: 0;
+      }
+
+      > strong:first-child {
+        display: block;
+        font-size: var(--fs-14);
+        font-weight: 650;
+        color: var(--ed-term);
+      }
+    }
+  }
+
+  // The promise: the first paragraph after the facts, in the display serif.
+  > ul.home-facts + p {
+    max-width: 36em;
+    font-family: var(--ed-serif-display);
+    font-size: var(--fs-20);
+    line-height: 1.45;
+    color: var(--ed-text-2);
+  }
+
+  > p {
+    max-width: var(--ed-measure);
+  }
+
+  // "On this page:" links as buttons; the first ("Start here") is the filled primary action.
+  // The " · " separators stay in the source (GitHub, screen readers) but take no space here:
+  // font-size 0 hides them, and spacing comes from margins, not gap (they are flex items too).
+  > p.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: none;
+    margin: 1.5rem -0.5rem 0 0;
+    font-size: 0;
+
+    > strong:first-child {
+      flex: 0 0 100%;
+      margin-bottom: 0.65rem;
+      @include ed-kicker(var(--ed-ink));
+    }
+
+    > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0.5rem 0.5rem 0;
+      min-height: 2.75rem;
+      padding: 0.5rem 0.95rem;
+      font-family: var(--ed-sans);
+      font-size: var(--fs-15);
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--ed-ink);
+      text-decoration: none;
+      background: var(--ed-bg);
+      border: 1px solid var(--ed-ink);
+      border-radius: 2px;
+
+      &:hover {
+        background: var(--ed-paper);
+      }
+    }
+
+    > strong:first-child + a {
+      color: var(--ed-on-ink);
+      background: var(--ed-ink);
+
+      &::after {
+        @include ed-icon(var(--ed-i-arrow), 1.15rem);
+        height: 0.8rem;
+      }
+
+      &:hover {
+        background: var(--ed-link);
+        border-color: var(--ed-link);
+      }
+    }
+  }
+}
+
+@container content (min-width: 40rem) {
+  .main-content .home-hero {
+    h1 {
+      font-size: var(--fs-52) !important;
+    }
+
+    > ul.home-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2rem;
+
+      > li:nth-child(2) {
+        border-top: 0;
+      }
+    }
+
+    > ul.home-facts + p {
+      font-size: var(--fs-22);
+    }
+  }
+}
+
+// Phones: two buttons per row, the primary across the full width; facts run in, term first.
+@container content (max-width: 30rem) {
+  .main-content .home-hero > p.home-actions {
+    > a {
+      flex: 1 1 calc(50% - 0.5rem);
+      justify-content: center;
+      text-align: center;
+    }
+
+    > strong:first-child + a {
+      flex-basis: 100%;
+    }
+  }
+
+  .main-content .home-hero > ul.home-facts > li {
+    padding: 0.4rem 0;
+
+    > strong:first-child {
+      display: inline;
+    }
+  }
+}
+
+// "Next meeting", inserted by course.js after the hero from the calendar table.
+.main-content .this-week {
+  display: grid;
+  gap: 0.15rem;
+  max-width: none;
+  margin: 0 0 2rem;
+  padding: 0.9rem 1.25rem 1rem;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-15);
+  line-height: 1.5;
+  background: var(--ed-paper);
+  border-left: 3px solid var(--ed-accent);
+
+  p {
+    max-width: none;
+    margin: 0;
+  }
+
+  .this-week-label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    @include ed-kicker(var(--ed-accent));
+
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      background: var(--ed-accent);
+      border-radius: 50%;
+    }
+  }
+
+  .this-week-when {
+    color: var(--ed-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .this-week-focus {
+    font-family: var(--ed-serif-display);
+    font-size: var(--fs-20);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ed-ink);
+  }
+
+  .this-week-term {
+    font-weight: 650;
+    color: var(--ed-term);
+  }
+
+  .this-week-calendar {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    margin-top: 0.2rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  strong {
+    @include ed-tag;
+    color: var(--ed-accent);
+    background: var(--ed-red-tint);
+    border: 1px solid currentColor;
+  }
+}
+
+// First steps: numbered steps on a hairline spine; step 1 is filled.
+.main-content ol.start-path {
+  @include ed-reset-list;
+  max-width: var(--ed-measure);
+  margin: 1.25rem 0 2rem;
+  counter-reset: path;
+
+  > li {
+    position: relative;
+    padding: 0.2rem 0 1.25rem 3.35rem;
+    counter-increment: path;
+
+    &::before {
+      content: counter(path);
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: grid;
+      place-items: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      margin: 0;
+      font-family: var(--ed-serif-display);
+      font-size: var(--fs-18) !important;
+      font-weight: 600;
+      font-variant-numeric: lining-nums;
+      line-height: 1;
+      text-align: center;
+      color: var(--ed-ink);
+      background: var(--ed-bg);
+      border: 1px solid var(--ed-ink);
+      border-radius: 50%;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2.55rem;
+      bottom: 0.3rem;
+      left: 1.125rem;
+      border-left: 1px solid var(--ed-rule-strong);
+    }
+
+    &:first-child::before {
+      color: var(--ed-on-ink);
+      background: var(--ed-ink);
+    }
+
+    &:last-child {
+      padding-bottom: 0.25rem;
+
+      &::after {
+        content: none;
+      }
+    }
+
+    > strong:first-child {
+      font-family: var(--ed-serif-display);
+      font-size: 1.05em;
+    }
+  }
+}
+
+// The calendar: milestone words (bold in the README) become oxblood tags; the next meeting row
+// is highlighted by course.js.
+.main-content table.schedule {
+  th,
+  td {
+    min-width: 0;
+  }
+
+  td:first-child,
+  th:first-child {
+    width: 2.25rem;
+    padding-right: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  td:nth-child(2) {
+    white-space: nowrap;
+    color: var(--ed-muted);
+  }
+
+  td strong {
+    @include ed-tag;
+    white-space: normal;
+    color: var(--ed-accent);
+    background: var(--ed-red-tint);
+    border: 1px solid currentColor;
+  }
+
+  tr.is-next td {
+    background: var(--ed-paper-deep);
+  }
+
+  tr.is-next td:first-child {
+    box-shadow: inset 3px 0 0 var(--ed-accent);
+    padding-left: 0.5rem;
+  }
+}
+
+// Phones: each meeting becomes a card; the column name comes from the cell's data-label.
+@container content (max-width: 36rem) {
+  .main-content .table-wrapper:has(> table.schedule) {
+    overflow: visible;
+  }
+
+  .main-content table.schedule {
+    display: block;
+
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    tbody,
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: 2.25rem minmax(0, 1fr);
+      column-gap: 0.5rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--ed-rule);
+    }
+
+    tbody tr:last-of-type {
+      border-bottom: 0;
+    }
+
+    td {
+      padding: 0.1rem 0;
+      border: 0;
+    }
+
+    td:first-child {
+      grid-row: 1 / span 3;
+      width: auto;
+      padding-left: 0;
+      font-family: var(--ed-serif-display);
+      font-size: var(--fs-20) !important;
+      font-weight: 600;
+      color: var(--ed-ink);
+    }
+
+    td:nth-child(2) {
+      white-space: normal;
+    }
+
+    td:nth-child(n + 3)::before {
+      content: attr(data-label) ": ";
+      font-weight: 650;
+      color: var(--ed-term);
+    }
+
+    td:nth-child(3)::before {
+      content: none;
+    }
+
+    td:nth-child(3) {
+      font-weight: 600;
+    }
+
+    tr.is-next {
+      background: var(--ed-paper-deep);
+      box-shadow: inset 3px 0 0 var(--ed-accent);
+
+      td {
+        background: none;
+      }
+
+      td:first-child {
+        box-shadow: none;
+        padding-left: 0.75rem;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 9. Existing course blocks, restyled with the same tokens (selectors unchanged)
+// ---------------------------------------------------------------------------------------------
+
+.main-content .walkthrough-command,
+.main-content .factory-command {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.main-content .walkthrough-quiz,
+.main-content .factory-delivery-map {
+  margin-top: 2rem;
 }
 
 // Delivery is a sequence of observed states, not a single green status.
 .main-content .factory-milestones {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
+  max-width: none;
   padding: 0;
   margin: 1.5rem 0;
   list-style: none;
@@ -101,61 +2485,512 @@
 
   > li {
     margin: 0;
-    padding: 0.75rem 0 0;
-    border-top: 3px solid #4051b5;
+    padding: 0.85rem 0 0;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    border-top: 2px solid var(--ed-ink);
     counter-increment: factory-step;
   }
+
   > li::before {
     position: static;
     display: block;
+    width: auto;
     content: "0" counter(factory-step);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.45rem;
     padding: 0;
-    color: #4051b5;
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-family: var(--ed-serif-display);
+    font-size: var(--fs-22) !important;
+    font-weight: 600;
     line-height: 1.2;
+    text-align: left;
+    color: var(--ed-accent);
   }
-  strong, span { display: block; }
-  span { margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.5; }
-  @media (max-width: 48rem) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 28rem) { grid-template-columns: 1fr; }
+
+  strong,
+  span {
+    display: block;
+  }
+
+  span {
+    margin-top: 0.4rem;
+    font-size: var(--fs-14);
+    line-height: 1.5;
+    color: var(--ed-muted);
+  }
+
+  @media (max-width: 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 28rem) {
+    grid-template-columns: 1fr;
+  }
 }
+
+// The simulator uses the course's type and colours; labels carry meaning.
+.main-content .inference-lab {
+  margin: 1.75rem 0;
+  padding: 1.25rem;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-16);
+  background: var(--ed-bg);
+  border: 1px solid var(--ed-rule);
+  border-left: 3px solid var(--ed-ink);
+
+  h3 {
+    margin-top: 0;
+  }
+
+  p {
+    max-width: none;
+  }
+
+  .lab-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: var(--fs-15);
+    font-weight: 600;
+    color: var(--ed-ink);
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    font: inherit;
+    font-weight: 400;
+    color: var(--ed-text);
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-ui);
+    border-radius: 2px;
+  }
+
+  input[aria-invalid="true"] {
+    border: 2px solid var(--ed-red);
+  }
+
+  input:focus-visible {
+    outline: 3px solid var(--ed-focus);
+    outline-offset: 2px;
+  }
+
+  .lab-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  button {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.85rem;
+    font: inherit;
+    font-size: var(--fs-15);
+    font-weight: 600;
+    color: var(--ed-ink);
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-ink);
+    border-radius: 2px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ed-paper);
+    }
+  }
+
+  .lab-chart {
+    display: flex;
+    height: 1.5rem;
+    margin: 1rem 0;
+    overflow: hidden;
+  }
+
+  [data-stage="load"] { background: var(--ed-stage-load); }
+  [data-stage="queue"] { background: var(--ed-stage-queue); }
+  [data-stage="prefill"] { background: var(--ed-stage-prefill); }
+  [data-stage="decode"] { background: var(--ed-stage-decode); }
+
+  .lab-stage-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lab-stage-key li::before {
+    position: static;
+    content: "";
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin: 0 0.3rem 0 0;
+    padding: 0;
+    border-radius: 0;
+    background: var(--stage-color);
+  }
+
+  [data-error] {
+    color: var(--ed-red);
+  }
+
+  @media (max-width: 36rem) {
+    .lab-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 10. Page footer
+// ---------------------------------------------------------------------------------------------
+
+.main-content > hr {
+  margin-top: 3.5rem;
+  background: none;
+  border-top: 1px solid var(--ed-rule);
+}
+
+.main-content > footer {
+  font-family: var(--ed-sans);
+  font-size: var(--fs-14);
+  color: var(--ed-muted);
+
+  a {
+    color: var(--ed-link);
+  }
+
+  .text-small,
+  .fs-2 {
+    font-size: var(--fs-14) !important;
+  }
+}
+
+#back-to-top {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  font-weight: 600;
+}
+
+// ---------------------------------------------------------------------------------------------
+// 11. Motion: only transitions that help, and none for readers who ask for less.
+// ---------------------------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// 12. Print and the course PDF (.github/scripts/build_pdf.py prints each page on A4 with
+//     backgrounds and every <details> opened; Liberation fonts on Linux). Content only.
+// ---------------------------------------------------------------------------------------------
+
 @media print {
+  // The theme's root size is !important, so this one must be too: 10.5pt body text.
+  html {
+    font-size: 10.5pt !important;
+  }
+
+  body {
+    font-family: "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+    background: #fff;
+  }
+
+  :root {
+    --ed-serif: Charter, "Iowan Old Style", Georgia, "Liberation Serif", "Times New Roman", serif;
+    --ed-serif-display: "Iowan Old Style", Charter, Georgia, "Liberation Serif", "Times New Roman", serif;
+    --ed-sans: "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+    --ed-mono: Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  code,
+  pre {
+    font-family: Menlo, Consolas, "Liberation Mono", monospace !important;
+  }
+
+  .side-bar,
+  .main-header,
+  .main-content > hr,
+  .main-content > footer,
+  .anchor-heading,
+  .lecture-toc,
+  .page-nav,
+  .pager,
+  .screen-only,
+  .this-week,
+  .stepper-controls,
+  .skip-to-main,
+  .course-diagram + details,
+  div.highlighter-rouge > button,
+  figure.highlight > button {
+    display: none !important;
+  }
+
+  .print-only {
+    display: inline !important;
+  }
+
+  .main,
+  .main-content-wrap {
+    max-width: none;
+    padding: 0 !important;
+  }
+
+  .main-content {
+    font-size: 1rem;
+    line-height: 1.5;
+
+    main :where(p, ul, ol, dl, blockquote, details, h3, h4, h5, h6, .callout, .learning-practice, .stepper) {
+      max-width: none;
+    }
+
+    h1 {
+      font-size: 2rem !important;
+    }
+
+    h2 {
+      margin-top: 1.75rem;
+      font-size: 1.5rem !important;
+    }
+
+    h3 {
+      margin-top: 1.25rem;
+      font-size: 1.2rem !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    summary,
+    .callout-label,
+    blockquote.callout > p:first-child,
+    p.glance-title {
+      break-after: avoid;
+    }
+
+    p,
+    li {
+      orphans: 3;
+      widows: 3;
+    }
+
+    a:not([class]) {
+      text-decoration-color: currentColor;
+    }
+
+    .callout,
+    .learning-practice {
+      max-width: none;
+      font-size: 0.95rem;
+      border-left-width: 3pt;
+    }
+  }
+
+  // Every step prints, whatever the screen was showing.
+  .main-content .stepper.is-enhanced {
+    padding: 0;
+    border: 0;
+
+    > ol > li,
+    > ol > li:not(.is-current) {
+      display: block !important;
+      min-height: 0;
+      padding-bottom: 0.75rem;
+
+      &::before {
+        color: var(--ed-ink);
+        background: #fff;
+      }
+    }
+  }
+
+  // Answers are opened by the PDF script and by course.js; show them without the disclosure chrome.
+  .main-content details {
+    > summary {
+      min-height: 0;
+      padding: 0.35rem 0;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    > :not(summary) {
+      margin-left: 0;
+    }
+  }
+
+  .main-content .callout + details {
+    margin-top: -1rem;
+  }
+
+  details::details-content {
+    content-visibility: visible;
+    display: block;
+  }
+
+  div.highlight {
+    overflow: visible !important;
+  }
+
+  .fade-start,
+  .fade-end {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  .main-content pre.highlight,
+  .main-content pre.highlight code {
+    font-size: 8.75pt !important;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .main-content :not(pre) > code {
+    font-size: 0.9em;
+  }
+
+  .main-content div.highlighter-rouge div.highlight {
+    padding: 0.5rem 0.75rem;
+    background: none;
+  }
+
+  .main-content div.highlighter-rouge[class*="language-"]::before {
+    padding-top: 0.15rem;
+    padding-bottom: 0.1rem;
+  }
+
+  .main-content .table-wrapper {
+    overflow: visible !important;
+  }
+
+  .main-content th,
+  .main-content td {
+    font-size: 0.9rem !important;
+    overflow-wrap: anywhere;
+  }
+
+  .main-content td code {
+    white-space: normal;
+  }
+
+  // A code block's language tab never sits alone at a page foot (long blocks still split).
+  // One-paragraph callouts stay whole; a blockquote callout (a list, a table) may continue on
+  // the next page, which saves the half-empty pages a whole-block rule leaves, but its label
+  // and first paragraph stay together.
+  tr,
+  img,
+  div.highlighter-rouge,
+  p.callout,
+  blockquote.callout > p:first-child,
+  blockquote.glance,
+  .home-facts,
+  .start-path > li,
+  .stepper > ol > li,
+  .learning-practice,
+  .walkthrough-command,
+  .walkthrough-quiz,
+  .studio-quiz,
+  .factory-check,
+  .factory-command,
+  .factory-delivery-map {
+    break-inside: avoid;
+  }
+
+  .main-content main.lecture-page > h2::before {
+    font-size: 0.75rem !important;
+  }
+
+  .main-content .home-hero {
+    h1 {
+      font-size: 2.6rem !important;
+    }
+
+    > ul.home-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 1.5rem;
+
+      > li:nth-child(2) {
+        border-top: 0;
+      }
+    }
+
+    > ul.home-facts + p {
+      font-size: 1.15rem;
+    }
+
+    > p.home-actions {
+      display: none;
+    }
+  }
+
+  .main-content .course-diagram {
+    margin: 1.25rem 0;
+    break-inside: avoid;
+
+    .diagram-scroll {
+      overflow: visible;
+      padding: 0.6rem;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+
+    img {
+      min-width: 0;
+      max-width: 100%;
+      max-height: 60vh;
+      width: auto;
+      box-shadow: none;
+    }
+
+    figcaption {
+      margin: 0 0.6rem;
+      padding: 0.5rem 0 0.6rem;
+      font-size: 0.85rem;
+    }
+  }
+
+  .main-content .course-diagram:not(.course-diagram--wide) img {
+    max-width: 28rem;
+  }
+
   .main-content .factory-milestones {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     break-inside: avoid;
-    > li { break-inside: avoid; }
-  }
-  .main-content .factory-check, .main-content .factory-command,
-  .main-content .factory-delivery-map { break-inside: avoid; }
-}
 
-// The simulator uses the course's existing type and colors; labels carry meaning.
-.main-content .inference-lab {
-  border: 1px solid #cbd5e1;
-  border-left: 4px solid #4051b5;
-  padding: 1.25rem;
-  margin: 1.5rem 0;
-  .lab-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-  label { display: block; font-weight: 600; }
-  input { display: block; width: 100%; min-width: 0; min-height: 2.75rem; margin-top: 0.25rem; padding: 0.5rem; border: 1px solid #64748b; border-radius: 3px; font: inherit; }
-  input[aria-invalid="true"] { border: 2px solid #9c2525; }
-  input:focus-visible { outline: 3px solid $link-color; outline-offset: 3px; }
-  .lab-presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
-  button { min-height: 2.75rem; padding: 0.5rem 0.75rem; border: 1px solid #4051b5; border-radius: 3px; background: #f5f6ff; color: #24316d; font: inherit; cursor: pointer; }
-  .lab-chart { display: flex; height: 1.5rem; margin: 1rem 0; overflow: hidden; }
-  [data-stage="load"] { background: #475569; }
-  [data-stage="queue"] { background: #b7791f; }
-  [data-stage="prefill"] { background: #4051b5; }
-  [data-stage="decode"] { background: #167d65; }
-  .lab-stage-key { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0; list-style: none; }
-  .lab-stage-key li::before { position: static; content: ""; display: inline-block; width: 0.75rem; height: 0.75rem; margin: 0 0.3rem 0 0; padding: 0; background: var(--stage-color); }
-  [data-error] { color: #8b1f1f; }
-  @media (max-width: 36rem) { .lab-fields { grid-template-columns: 1fr; } }
-}
-@media print {
-  .main-content .inference-lab { break-inside: avoid; padding: 0.75rem; }
-  .main-content .inference-lab form { display: none !important; }
-  .main-content .learning-practice { break-inside: avoid; }
+    > li {
+      break-inside: avoid;
+    }
+  }
+
+  .main-content .inference-lab {
+    break-inside: avoid;
+    padding: 0.75rem;
+  }
+
+  .main-content .inference-lab form {
+    display: none !important;
+  }
 }

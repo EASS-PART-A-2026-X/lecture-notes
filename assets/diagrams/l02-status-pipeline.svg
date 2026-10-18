@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 700" role="img" aria-labelledby="t d">
+<title id="t">Where does this status code come from?</title>
+<desc id="d">FastAPI handles a request in five stages and answers at the first one that fails. 1. Match the path and method: no route with this path gives 404 with detail "Not Found"; the path with another method gives 405 "Method Not Allowed". 2. Parse the JSON body, only for routes that take a body: invalid JSON gives 422 json_invalid with loc body and a character position. 3. Resolve inputs: the dependency get_store runs, path and query parameters are converted and checked against their limits, and the body is validated against the Pydantic model; all errors are reported together in one 422 whose loc starts with path, query or body, and the handler never runs. 4. Run your handler: get_or_404 raises HTTPException 404 "Recipe not found"; any uncaught exception becomes 500 Internal Server Error with the traceback only in the server log. 5. Build the response: the return value is serialized through the return type RecipePublic, which filters fields but does not re-validate a model object; the status is 200, 201 or 204 as declared on the route.</desc>
+<defs>
+<marker id="an" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#1d4e89"/></marker>
+<marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#9b2c2c"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#2a6a47"/></marker>
+</defs>
+<rect width="640" height="700" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Where does this status code come from?</text>
+<text x="320" y="57" text-anchor="middle" font-size="16" fill="#535c6b">FastAPI answers at the first stage that fails</text>
+<g stroke-width="2">
+<rect x="20" y="76" width="262" height="66" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="170" width="262" height="58" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="256" width="262" height="102" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="386" width="262" height="112" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="20" y="526" width="262" height="84" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="380" y="76" width="244" height="66" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="380" y="170" width="244" height="58" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="380" y="256" width="244" height="102" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="380" y="386" width="244" height="52" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="380" y="446" width="244" height="52" rx="6" fill="#fbf3f2" stroke="#9b2c2c"/>
+<rect x="380" y="526" width="244" height="84" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+</g>
+<g font-size="18" font-weight="700">
+<text x="34" y="104">1. Match path and method</text>
+<text x="34" y="195">2. Parse the JSON body</text>
+<text x="34" y="281">3. Resolve the inputs</text>
+<text x="34" y="412">4. Run your handler</text>
+<text x="34" y="552">5. Build the response</text>
+</g>
+<g font-size="16" fill="#535c6b">
+<text x="34" y="128">the routes you declared</text>
+<text x="34" y="217">only routes that take a body</text>
+<text x="34" y="305">Depends(get_store) runs</text>
+<text x="34" y="327">path, query: types and limits</text>
+<text x="34" y="349">body: your Pydantic model</text>
+<text x="34" y="437">get_or_404, then your code</text>
+<text x="34" y="459">a bug in here becomes a 500</text>
+<text x="34" y="577">return value → RecipePublic</text>
+<text x="34" y="600">fields filtered, not re-validated</text>
+</g>
+<g font-size="17" font-weight="700">
+<text x="394" y="104">404 "Not Found"</text>
+<text x="394" y="195">422 json_invalid</text>
+<text x="394" y="283">422, every error at once</text>
+<text x="394" y="408">404 "Recipe not found"</text>
+<text x="394" y="468">500 Internal Server Error</text>
+<text x="394" y="556" fill="#2a6a47">200 · 201 · 204</text>
+</g>
+<g font-size="16" fill="#535c6b">
+<text x="394" y="128">or 405 "Method Not Allowed"</text>
+<text x="394" y="217">loc ["body", 31]</text>
+<text x="394" y="307">loc[0]: path, query or body</text>
+<text x="394" y="330">your handler never ran</text>
+<text x="394" y="429">the HTTPException you raised</text>
+<text x="394" y="489">traceback only in server log</text>
+<text x="394" y="580">status_code on the route</text>
+<text x="394" y="601">body: what you returned</text>
+</g>
+<g stroke-width="2.5" fill="none">
+<path d="M282 109 H372" stroke="#9b2c2c" marker-end="url(#ar)"/>
+<path d="M282 199 H372" stroke="#9b2c2c" marker-end="url(#ar)"/>
+<path d="M282 307 H372" stroke="#9b2c2c" marker-end="url(#ar)"/>
+<path d="M282 412 H372" stroke="#9b2c2c" marker-end="url(#ar)"/>
+<path d="M282 472 H372" stroke="#9b2c2c" marker-end="url(#ar)"/>
+<path d="M282 568 H372" stroke="#2a6a47" marker-end="url(#ag)"/>
+<path d="M151 142 V164" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M151 228 V250" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M151 358 V380" stroke="#1d4e89" marker-end="url(#an)"/>
+<path d="M151 498 V520" stroke="#1d4e89" marker-end="url(#an)"/>
+</g>
+<g font-size="16" font-weight="700" text-anchor="middle">
+<text x="331" y="100" fill="#9b2c2c">no match</text>
+<text x="331" y="190" fill="#9b2c2c">bad JSON</text>
+<text x="331" y="298" fill="#9b2c2c">invalid</text>
+<text x="331" y="403" fill="#9b2c2c">raises</text>
+<text x="331" y="463" fill="#9b2c2c">crashes</text>
+<text x="331" y="559" fill="#2a6a47">sends</text>
+</g>
+<g font-size="16" font-weight="700" fill="#1d4e89">
+<text x="162" y="159">matched</text>
+<text x="162" y="245">parsed</text>
+<text x="162" y="375">all valid</text>
+<text x="162" y="515">returned</text>
+</g>
+<rect x="20" y="630" width="604" height="56" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<text x="34" y="653" font-size="16">Stages 1–3 run before your handler: after a 422, it never ran.</text>
+<text x="34" y="676" font-size="16">404 "Not Found" (stage 1) is not 404 "Recipe not found" (stage 4).</text>
+</g>
+</svg>

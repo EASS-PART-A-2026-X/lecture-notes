@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-labelledby="t d">
+<title id="t">One click, two runs: why a write ends with st.rerun()</title>
+<desc id="d">A sequence diagram with three lifelines: streamlit_app.py, st.session_state and the backend. Run 1 is started by the click on Add recipe: the script sends GET /recipes and gets 3 rows, draws those 3 rows, sends POST /recipes and gets 201 Created, stores the message Added Stew. in session state, and calls st.rerun(), which stops run 1 and starts run 2. In run 2 the script pops the message from session state and shows it with st.success, then sends GET /recipes again and gets 4 rows, which it draws. A bottom panel explains that without st.rerun() run 1 ends showing the old 3 rows and no message, so a user who clicks Add again stores a duplicate. Solid arrows are calls; dashed arrows are their replies.</desc>
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3b4453"/></marker>
+<marker id="ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2a6a47"/></marker>
+</defs>
+<rect width="640" height="640" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<text x="24" y="34" font-size="22" font-weight="700">One click, two runs</text>
+<text x="24" y="60" font-size="16" fill="#535c6b">Solid arrow: a call. Dashed arrow: its reply.</text>
+
+<rect x="8" y="124" width="624" height="236" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+<rect x="8" y="384" width="624" height="160" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+
+<g stroke="#ddd7ca" stroke-width="2"><path d="M114 112 V544"/><path d="M320 112 V544"/><path d="M526 112 V544"/></g>
+
+<g text-anchor="middle">
+<rect x="24" y="76" width="180" height="36" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="114" y="100" font-size="16" font-weight="700">streamlit_app.py</text>
+<rect x="234" y="76" width="172" height="36" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="320" y="100" font-size="16" font-weight="700">st.session_state</text>
+<rect x="436" y="76" width="180" height="36" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="526" y="100" font-size="16" font-weight="700">backend :8000</text>
+</g>
+
+<text x="20" y="148" font-size="17" font-weight="700">Run 1 · started by the click on "Add recipe"</text>
+
+<g font-size="16" text-anchor="middle" stroke="#f7f5ef" stroke-width="6" paint-order="stroke" stroke-linejoin="round">
+<text x="320" y="174">sends GET /recipes</text>
+<text x="320" y="204">replies with 3 rows</text>
+<text x="320" y="270">sends POST /recipes</text>
+<text x="320" y="300">replies 201 Created</text>
+<text x="217" y="334">stores "Added Stew."</text>
+</g>
+<path d="M114 180 H524" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<path d="M526 210 H116" fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+<rect x="44" y="220" width="140" height="30" rx="6" fill="#ffffff" stroke="#3b4453" stroke-width="2"/>
+<text x="114" y="241" font-size="16" text-anchor="middle">draws 3 rows</text>
+<path d="M114 276 H524" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<path d="M526 306 H116" fill="none" stroke="#2a6a47" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ahg)"/>
+<path d="M114 340 H318" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+
+<path d="M8 372 H632" stroke="#1d4e89" stroke-width="2.5"/>
+<rect x="44" y="358" width="420" height="28" rx="6" fill="#1d4e89"/>
+<text x="56" y="378" font-size="16" font-weight="700" fill="#ffffff">st.rerun() stops run 1 and starts run 2</text>
+
+<text x="20" y="408" font-size="17" font-weight="700">Run 2 · started by st.rerun()</text>
+
+<g font-size="16" text-anchor="middle" stroke="#f7f5ef" stroke-width="6" paint-order="stroke" stroke-linejoin="round">
+<text x="217" y="432">pops "notice"</text>
+<text x="217" y="462">returns the message</text>
+<text x="320" y="498">sends GET /recipes</text>
+<text x="320" y="528">replies with 4 rows</text>
+</g>
+<path d="M114 438 H318" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<path d="M320 468 H116" fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ah)"/>
+<path d="M114 504 H524" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#ah)"/>
+<path d="M526 534 H116" fill="none" stroke="#2a6a47" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#ahg)"/>
+<g font-size="16"><text x="20" y="458" fill="#2a6a47" font-weight="700">st.success</text></g>
+
+<rect x="8" y="556" width="624" height="76" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+<text x="20" y="580" font-size="17" font-weight="700" fill="#9b2c2c">Without st.rerun()</text>
+<text x="20" y="602" font-size="16">run 1 ends showing the old 3 rows and no message, so a user</text>
+<text x="20" y="622" font-size="16">who clicks "Add recipe" again stores the recipe twice.</text>
+</g>
+</svg>

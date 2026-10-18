@@ -1,19 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 900" role="img" aria-labelledby="title desc">
 <title id="title">Recipe Box service and data boundaries</title>
-<desc id="desc">A browser connects to the frontend on loopback port 8501. Inside the Compose network, the frontend calls backend port 8000 and the backend calls AI service port 8001. Only the backend accesses the database volume. Only the AI service owns model access; TestModel is in-process, while local and hosted models use an inference endpoint. The AI port is not host-published.</desc>
-<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#334155" stroke-width="1.5"/></marker></defs>
-<rect width="640" height="900" fill="#fff"/>
-<g font-family="Arial, Helvetica, sans-serif" fill="#172554">
-<rect x="150" y="18" width="340" height="76" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
-<text x="320" y="50" text-anchor="middle" font-size="25" font-weight="700">Browser</text><text x="320" y="78" text-anchor="middle" font-size="20">On the student's machine</text>
-<rect x="60" y="150" width="540" height="480" rx="10" fill="#f8fafc" stroke="#475569" stroke-width="2" stroke-dasharray="8 6"/>
-<text x="84" y="180" font-size="21" font-weight="700">Compose network</text>
-<g stroke="#334155" stroke-width="2.5" fill="none" marker-end="url(#arrow)"><path d="M320 94 V210"/><path d="M320 290 V360"/><path d="M320 440 V510"/><path d="M100 400 H24 V744 H180 V790"/><path d="M320 590 V690 H465 V790"/></g>
-<g font-size="19" text-anchor="middle"><rect x="180" y="109" width="280" height="30" fill="#fff"/><text x="320" y="131">127.0.0.1:8501</text><rect x="185" y="309" width="270" height="28" fill="#f8fafc"/><text x="320" y="332">http://backend:8000</text><rect x="175" y="459" width="290" height="28" fill="#f8fafc"/><text x="320" y="482">http://ai-service:8001</text></g>
-<rect x="100" y="210" width="440" height="80" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/><text x="320" y="244" text-anchor="middle" font-size="25" font-weight="700">Frontend</text><text x="320" y="273" text-anchor="middle" font-size="20">Streamlit sends server-side HTTP</text>
-<rect x="100" y="360" width="440" height="80" rx="6" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/><text x="320" y="394" text-anchor="middle" font-size="25" font-weight="700">Backend</text><text x="320" y="423" text-anchor="middle" font-size="20">Validates and owns product state</text>
-<rect x="100" y="510" width="440" height="80" rx="6" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/><text x="320" y="544" text-anchor="middle" font-size="25" font-weight="700">AI service</text><text x="320" y="573" text-anchor="middle" font-size="20">Bounded extraction; no database write</text>
-<text x="100" y="616" font-size="20">AI port not published</text>
-<rect x="70" y="790" width="220" height="82" rx="8" fill="#ecfdf5" stroke="#047857" stroke-width="2"/><text x="180" y="824" text-anchor="middle" font-size="23" font-weight="700">Database volume</text><text x="180" y="853" text-anchor="middle" font-size="18">Backend access only</text>
-<rect x="350" y="790" width="230" height="82" rx="8" fill="#fff7ed" stroke="#9a3412" stroke-width="2"/><text x="465" y="824" text-anchor="middle" font-size="23" font-weight="700">Model execution</text><text x="465" y="853" text-anchor="middle" font-size="17">In-process / local / hosted</text>
-</g></svg>
+<desc id="desc">On the host, the browser opens the frontend on loopback port 8501. Inside the Compose network, the frontend calls http://backend:8000 and the backend calls http://ai-service:8001, using service names. Only the backend reads and writes the database volume at /app/data. Only the AI service runs the model: TestModel inside its own process, or a local or hosted model server. The AI port is not published to the host. Outside the network, a dashed operator path shows your terminal checking the backend with curl or /docs on its loopback port 127.0.0.1:8000. Solid arrows are the product's request path; the dashed arrow is an operator check.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#3b4453" stroke-width="2"/></marker></defs>
+<rect width="640" height="900" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+<!-- host row -->
+<rect x="60" y="24" width="270" height="76" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="195" y="56" text-anchor="middle" font-size="22" font-weight="700">Browser</text>
+<text x="195" y="84" text-anchor="middle" font-size="18">on your laptop</text>
+<rect x="370" y="24" width="260" height="76" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="500" y="56" text-anchor="middle" font-size="22" font-weight="700">Your terminal</text>
+<text x="500" y="84" text-anchor="middle" font-size="18">curl, /docs</text>
+<!-- network -->
+<rect x="30" y="150" width="470" height="490" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+<text x="488" y="180" text-anchor="end" font-size="19" font-weight="700">Compose network</text>
+<rect x="60" y="210" width="410" height="80" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="265" y="244" text-anchor="middle" font-size="22" font-weight="700">Frontend</text>
+<text x="265" y="273" text-anchor="middle" font-size="18">Streamlit calls the API server-side</text>
+<rect x="60" y="360" width="410" height="80" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="265" y="394" text-anchor="middle" font-size="22" font-weight="700">Backend</text>
+<text x="265" y="423" text-anchor="middle" font-size="18">Validates and owns product data</text>
+<rect x="60" y="510" width="410" height="80" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+<text x="265" y="544" text-anchor="middle" font-size="22" font-weight="700">AI service</text>
+<text x="265" y="573" text-anchor="middle" font-size="18">Bounded extraction; no database</text>
+<text x="60" y="620" font-size="16" fill="#535c6b">AI port not published to the host</text>
+<!-- product path arrows -->
+<g stroke="#3b4453" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+<path d="M195 100 V206"/><path d="M265 290 V356"/><path d="M265 440 V506"/>
+<path d="M60 420 H44 V740 H150 V786"/><path d="M450 590 V786"/>
+</g>
+<g font-size="17" text-anchor="end"><text x="185" y="132">opens 127.0.0.1:8501</text><text x="255" y="330">calls http://backend:8000</text><text x="255" y="480">calls http://ai-service:8001</text></g>
+<text x="166" y="770" font-size="16">reads, writes /app/data</text>
+<text x="460" y="700" font-size="16">runs the model</text>
+<!-- operator path -->
+<path d="M626 100 V400 H476" fill="none" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<g font-size="16" text-anchor="middle"><text x="562" y="250">checks via</text><text x="562" y="272">127.0.0.1:8000</text></g>
+<!-- legend -->
+<g font-size="16">
+<path d="M190 680 H236" stroke="#3b4453" stroke-width="2.5"/><text x="246" y="686">product request</text>
+<path d="M190 712 H236" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="9 6"/><text x="246" y="718">operator check</text>
+</g>
+<!-- storage and model -->
+<rect x="60" y="790" width="250" height="84" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="185" y="824" text-anchor="middle" font-size="21" font-weight="700">Database volume</text>
+<text x="185" y="853" text-anchor="middle" font-size="17">backend-data; backend only</text>
+<rect x="350" y="790" width="260" height="84" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+<text x="480" y="824" text-anchor="middle" font-size="21" font-weight="700">Model execution</text>
+<text x="480" y="853" text-anchor="middle" font-size="17">in-process, local or hosted</text>
+</g>
+</svg>

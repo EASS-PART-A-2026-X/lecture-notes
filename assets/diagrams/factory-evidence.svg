@@ -1,43 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 570" role="img" aria-labelledby="title desc">
-  <title id="title">Evidence belongs to the source revision that was checked</title>
-  <desc id="desc">Checks run on candidate A produce evidence about A. A source edit creates candidate B. Evidence about A does not establish that B passes. Run the affected checks on B and retain evidence about B before promotion. A and B are illustrative revision labels. A reliable record identifies the checked source, procedure, environment, and results.</desc>
-  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#475569" stroke-width="1.5"/></marker></defs>
-  <rect width="640" height="570" fill="#fff"/>
-  <g font-family="Arial, Helvetica, sans-serif" fill="#172554">
-    <text x="24" y="32" font-size="21" font-weight="700">A passing result has a scope</text>
-    <text x="24" y="58" font-size="16" fill="#475569">A and B below are illustrative source revisions</text>
-    <g fill="none" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)">
-      <path d="M204 138 H248"/><path d="M416 138 H460"/>
-      <path d="M114 184 V250"/><path d="M114 344 V410"/>
-      <path d="M204 456 H248"/><path d="M416 456 H460"/>
-    </g>
-    <g fill="#f5f6ff" stroke="#4051b5" stroke-width="2">
-      <rect x="24" y="92" width="180" height="92" rx="6"/>
-      <rect x="252" y="92" width="164" height="92" rx="6"/>
-      <rect x="464" y="92" width="152" height="92" rx="6"/>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 660" role="img" aria-labelledby="t d">
+  <title id="t">Evidence belongs to the source revision that was checked</title>
+  <desc id="d">Candidate A, committed source in a clean checkout, is run through check A, which observes a pass, and the record is evidence A, which describes A only. Editing the source creates candidate B. B has not been verified: A's result is still about A, not B. Commit B and take a clean checkout, then run check B. If it passes, record evidence B, which describes B only. If it fails, record the failure and use the remaining repair budget; never copy A's passing status. A and B are illustrative revision labels. Before review, a reliable record identifies the checked source, the procedure, the environment and the results.</desc>
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#2a6a47"/></marker>
+    <marker id="o" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#84540c"/></marker>
+  </defs>
+  <rect width="640" height="660" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">A passing result has a scope</text>
+    <text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">A and B are illustrative source revisions, not real commit ids</text>
+
+    <!-- Row A -->
+    <rect x="16" y="80" width="190" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <rect x="256" y="80" width="150" height="96" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <rect x="462" y="80" width="162" height="96" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
     <g text-anchor="middle">
-      <text x="114" y="128" font-size="21" font-weight="700">Candidate A</text><text x="114" y="156" font-size="17">Committed source</text>
-      <text x="334" y="128" font-size="21" font-weight="700">Check A</text><text x="334" y="156" font-size="17">Observed pass</text>
-      <text x="540" y="128" font-size="21" font-weight="700">Evidence A</text><text x="540" y="156" font-size="17">Describes A</text>
+      <text x="111" y="109" font-size="19" font-weight="700">Candidate A</text>
+      <text x="111" y="134" font-size="16">committed source,</text>
+      <text x="111" y="156" font-size="16">clean checkout</text>
+      <text x="331" y="120" font-size="19" font-weight="700">Check A</text>
+      <text x="331" y="146" font-size="16">observed pass</text>
+      <text x="543" y="120" font-size="19" font-weight="700">Evidence A</text>
+      <text x="543" y="146" font-size="16">describes A only</text>
     </g>
-    <text x="132" y="221" font-size="17" fill="#805010" font-weight="700">Edit source</text>
-    <rect x="24" y="254" width="180" height="90" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
-    <text x="114" y="289" font-size="21" text-anchor="middle" font-weight="700">Candidate B</text><text x="114" y="317" font-size="17" text-anchor="middle">Changed behavior</text>
-    <rect x="252" y="254" width="364" height="90" rx="6" fill="#fffbeb" stroke="#a66b13" stroke-width="2"/>
-    <text x="274" y="288" font-size="20" fill="#805010" font-weight="700">B has not been verified.</text>
-    <text x="274" y="315" font-size="17" fill="#805010">A's result is still about A, not B.</text>
-    <text x="132" y="381" font-size="17" fill="#16614f" font-weight="700">Rerun affected checks on B</text>
-    <g fill="#effaf6" stroke="#167d65" stroke-width="2">
-      <rect x="24" y="414" width="180" height="88" rx="6"/>
-      <rect x="252" y="414" width="164" height="88" rx="6"/>
-      <rect x="464" y="414" width="152" height="88" rx="6"/>
-    </g>
+
+    <!-- Row B, unverified -->
+    <rect x="16" y="232" width="190" height="88" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="111" y="261" text-anchor="middle" font-size="19" font-weight="700">Candidate B</text>
+    <text x="111" y="285" text-anchor="middle" font-size="16">edited, not yet</text>
+    <text x="111" y="306" text-anchor="middle" font-size="16">committed or checked</text>
+    <rect x="256" y="232" width="368" height="88" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="276" y="268" font-size="19" font-weight="700" fill="#84540c">B has not been verified.</text>
+    <text x="276" y="296" font-size="17">A's result is still about A, not B.</text>
+
+    <!-- Row B, checked -->
+    <rect x="16" y="380" width="190" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <rect x="256" y="380" width="150" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <rect x="462" y="380" width="162" height="96" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
     <g text-anchor="middle">
-      <text x="114" y="448" font-size="21" font-weight="700">Candidate B</text><text x="114" y="475" font-size="17">Clean checkout</text>
-      <text x="334" y="448" font-size="21" font-weight="700">Check B</text><text x="334" y="475" font-size="17">Observe the result</text>
-      <text x="540" y="448" font-size="21" font-weight="700">Evidence B</text><text x="540" y="475" font-size="17">Describes B</text>
+      <text x="111" y="409" font-size="19" font-weight="700">Candidate B</text>
+      <text x="111" y="434" font-size="16">committed source,</text>
+      <text x="111" y="456" font-size="16">clean checkout</text>
+      <text x="331" y="420" font-size="19" font-weight="700">Check B</text>
+      <text x="331" y="446" font-size="16">observe the result</text>
+      <text x="543" y="420" font-size="19" font-weight="700">Evidence B</text>
+      <text x="543" y="446" font-size="16">describes B only</text>
     </g>
-    <text x="320" y="539" text-anchor="middle" font-size="17" fill="#475569">Record source + procedure + environment + results before review.</text>
+
+    <!-- Fail branch -->
+    <rect x="256" y="532" width="368" height="64" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="272" y="558" font-size="17" font-weight="700" fill="#84540c">Record the failure; use what is left</text>
+    <text x="272" y="582" font-size="16">of the repair budget. Never copy A's pass.</text>
+
+    <g fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#a)">
+      <path d="M206 128 H252"/>
+      <path d="M406 128 H458"/>
+      <path d="M206 428 H252"/>
+      <path d="M406 428 H458"/>
+    </g>
+    <g font-size="16" text-anchor="middle">
+      <text x="229" y="119">run</text>
+      <text x="432" y="119">record</text>
+      <text x="229" y="419">run</text>
+      <text x="432" y="419" font-weight="700" fill="#2a6a47">pass</text>
+    </g>
+    <path d="M111 176 V228" fill="none" stroke="#84540c" stroke-width="2.5" marker-end="url(#o)"/>
+    <text x="124" y="208" font-size="16" font-weight="700" fill="#84540c">edit the source</text>
+    <path d="M111 320 V376" fill="none" stroke="#2a6a47" stroke-width="2.5" marker-end="url(#g)"/>
+    <text x="124" y="354" font-size="16" font-weight="700" fill="#2a6a47">commit, then check out cleanly and rerun</text>
+    <path d="M331 476 V528" fill="none" stroke="#84540c" stroke-width="2.5" marker-end="url(#o)"/>
+    <text x="343" y="508" font-size="16" font-weight="700" fill="#84540c">fail</text>
+
+    <text x="320" y="634" text-anchor="middle" font-size="17" fill="#535c6b">Record source + procedure + environment + results before review.</text>
   </g>
 </svg>

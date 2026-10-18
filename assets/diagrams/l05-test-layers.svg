@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="t d">
+<title id="t">What is real in each test?</title>
+<desc id="d">A grid with three test layers as rows and six parts of the product as columns, in the order a click travels: browser, Streamlit page, api.py, network, backend, SQLite. Boundary test, tests/test_boundary.py: it reads the source of the Streamlit page and runs none of the six parts. AppTest with respx, tests/test_app.py: no browser; the Streamlit page and api.py run for real, in-process; respx fakes the network and the backend with canned replies; SQLite is not run. Playwright end-to-end test, e2e/test_e2e.py: all six parts are real. Only the end-to-end row reaches the real backend and database.</desc>
+<rect width="640" height="420" fill="#ffffff"/>
+<g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a" text-anchor="middle">
+<text x="24" y="34" font-size="22" font-weight="700" text-anchor="start">What is real in each test?</text>
+
+<g font-size="16" text-anchor="start">
+<rect x="24" y="47" width="20" height="18" rx="4" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="52" y="61">real: that code runs</text>
+<rect x="222" y="47" width="20" height="18" rx="4" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+<text x="250" y="61">fake: respx answers</text>
+<rect x="420" y="47" width="20" height="18" rx="4" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="448" y="61">not run</text>
+</g>
+
+<g font-size="16" font-weight="700">
+<text x="71" y="114">browser</text>
+<text x="170" y="104">Streamlit</text>
+<text x="170" y="122">page</text>
+<text x="269" y="114">api.py</text>
+<text x="368" y="114">network</text>
+<text x="467" y="114">backend</text>
+<text x="566" y="114">SQLite</text>
+</g>
+<path d="M24 132 H614" stroke="#ddd7ca" stroke-width="2"/>
+
+<text x="24" y="156" font-size="17" text-anchor="start"><tspan font-weight="700">Boundary test</tspan><tspan fill="#535c6b" font-size="16"> · tests/test_boundary.py</tspan></text>
+<g font-size="16">
+<rect x="24" y="166" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="71" y="195" fill="#535c6b">not run</text>
+<rect x="123" y="166" width="95" height="48" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+<text x="170" y="186" font-weight="700" fill="#1d4e89">reads</text>
+<text x="170" y="205" fill="#1d4e89">its source</text>
+<rect x="222" y="166" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="269" y="195" fill="#535c6b">not run</text>
+<rect x="321" y="166" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="368" y="195" fill="#535c6b">not run</text>
+<rect x="420" y="166" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="467" y="195" fill="#535c6b">not run</text>
+<rect x="519" y="166" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="566" y="195" fill="#535c6b">not run</text>
+</g>
+
+<text x="24" y="246" font-size="17" text-anchor="start"><tspan font-weight="700">AppTest + respx</tspan><tspan fill="#535c6b" font-size="16"> · tests/test_app.py</tspan></text>
+<g font-size="16">
+<rect x="24" y="256" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="71" y="285" fill="#535c6b">not run</text>
+<rect x="123" y="256" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="170" y="276" font-weight="700" fill="#2a6a47">real</text>
+<text x="170" y="295" fill="#2a6a47">in-process</text>
+<rect x="222" y="256" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="269" y="285" font-weight="700" fill="#2a6a47">real</text>
+<rect x="321" y="256" width="194" height="48" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+<text x="418" y="276" font-weight="700" fill="#84540c">fake</text>
+<text x="418" y="295" fill="#84540c">canned reply (respx)</text>
+<rect x="519" y="256" width="95" height="48" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="566" y="285" fill="#535c6b">not run</text>
+</g>
+
+<text x="24" y="336" font-size="17" text-anchor="start"><tspan font-weight="700">Playwright e2e</tspan><tspan fill="#535c6b" font-size="16"> · e2e/test_e2e.py</tspan></text>
+<g font-size="16" font-weight="700" fill="#2a6a47">
+<rect x="24" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="71" y="375">real</text>
+<rect x="123" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="170" y="375">real</text>
+<rect x="222" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="269" y="375">real</text>
+<rect x="321" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="368" y="375">real</text>
+<rect x="420" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="467" y="375">real</text>
+<rect x="519" y="346" width="95" height="48" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+<text x="566" y="375">real</text>
+</g>
+</g>
+</svg>

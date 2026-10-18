@@ -1,4 +1,4 @@
-# Engineering studio: from a request to a safe change
+# Industry engineering studio: from a request to a safe change
 
 <!-- {% raw %} -->
 
@@ -11,6 +11,7 @@ These are formative studios for the existing product and clinics. Pick the activ
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 
+- [Learning checkpoint](#learning-checkpoint)
 - [What professional readiness looks like](#what-professional-readiness-looks-like)
 - [One change request across the semester](#one-change-request-across-the-semester)
 - [Read an unfamiliar repository](#read-an-unfamiliar-repository)
@@ -21,6 +22,25 @@ These are formative studios for the existing product and clinics. Pick the activ
 - [Check your understanding](#check-your-understanding)
 - [Show the work in an individual explanation](#show-the-work-in-an-individual-explanation)
 - [Evidence and further reading](#evidence-and-further-reading)
+
+</details>
+
+## Learning checkpoint
+
+**Before you start:** Lecture 3 works (`uv run pytest` prints `12 passed`), and uv can run Python 3.14 (`uv run --no-project --python 3.14 python --version` prints `Python 3.14.…`). Every activity on this page is optional; pick the one that fills your current gap.
+
+After an activity, you should be able to:
+
+- Trace one request through unfamiliar code and say which calls cross a process boundary.
+- Show, with a failing test, why an ownership or version check must be part of the database mutation itself.
+- Rehearse a schema change with a backup and a restore, and name the writes a restore loses.
+
+**Predict first:** two editors both open Hummus at version 1 and both press Save, one second apart. If the backend has no version check, what does each editor see, and what is stored?
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+Both see a success message. The database keeps whichever save committed last, and the other editor's change is silently gone: a **lost update**. Nobody is told. The [lab](#lab-private-records-and-concurrent-edits) makes the second save fail with a conflict instead, and proves it with a real two-thread race.
 
 </details>
 
@@ -61,7 +81,61 @@ A 20-minute exercise for upstream work or a partner's product:
 - Run one relevant check and reproduce one reported symptom with synthetic input. Record expected versus observed behavior; separate facts from an assistant's guesses.
 - Locate the smallest responsible component, propose a change and a regression check, and ask the repository's maintainer-facing questions in your own words.
 
-Ask an assistant to propose a reading order or explain a function, then verify each claim against the actual code and command output. Do not send secrets or private data to a tool. Use a worktree when isolating edits helps; it does not isolate execution permissions.
+Ask an assistant to propose a reading order or explain a function, then verify each claim against the actual code and command output. Do not send secrets or private data to a tool. Use a `git worktree` (a second working folder attached to the same repository, checked out on another branch) when isolating edits helps; it does not isolate execution permissions.
+
+### A worked trace on Recipe Box
+
+Practise on code you already know before you try an upstream project. From Lecture 7 on, your backend has `POST /recipes/from-text`.
+
+**Predict first:** sketch the request in five boxes, from the backend route to the stored row. Which arrows are ordinary function calls inside one process, and which cross the network?
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Request trace diagram, scroll horizontally">
+    <img src="../assets/diagrams/studio-request-trace.svg" alt="POST /recipes/from-text traced through five boxes in two processes, with the one network round trip marked." width="640" height="380">
+  </div>
+  <figcaption><strong>Only one round trip crosses the network.</strong> Everything else is an ordinary call inside a process. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/studio-request-trace.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Backend, `app/main.py`:** the route `create_recipe_from_text` receives the text. It **calls**, inside the same process:
+2. **Backend, `app/ai_client.py`:** `AIClient.extract_recipe`, which sends **HTTP `POST /extract`** over the network (the only network hop).
+3. **ai-service:** the `extract()` endpoint, listening on port 8001, **awaits**
+4. **ai-service, `app/agent.py`:** `extract_agent.run(...)`. The endpoint answers `200` with JSON. The ai-service never calls the backend.
+5. **Backend:** `AIClient` validates the JSON, translates it into a `RecipeCreate` and **returns** it to the route, which calls `save(...)`: `COMMIT`, then `201`.
+
+</details>
+
+Why it matters: a failure inside a process is an exception with a traceback in one log. A failure on the network hop can be a refused connection, a timeout or a bad reply, and each one must become a deliberate status code (Lecture 7 maps them to `503` and `502`).
+
+</details>
+
+**Commands that find the path in any repository** (replace `OWNER/REPO`, the search text and the path):
+
+```bash
+git clone --depth 1 https://github.com/OWNER/REPO && cd REPO   # fast copy, latest commit only
+git grep -n "from-text"                       # every line that mentions the route or error text
+git log --oneline -5 -- backend/app/main.py   # recent changes to one file, and why
+gh issue list --repo OWNER/REPO --label "good first issue" --limit 10
+```
+
+A `--depth 1` clone has only the latest commit, so `git log` shows one entry; run `git fetch --unshallow` when you need the history. For an upstream PR you will clone your fork anyway (Lecture 3), which has the full history.
+
+**Notes template** (copy it into your notes for every repository you read):
+
+```text
+Entry point:        the file and function where the request or command starts
+Configuration:      the settings and environment variables it reads, with defaults
+Data owner:         the only component that writes the stored data
+Path traced:        box 1 → box 2 → … (mark in-process calls and network calls)
+Check run:          the exact test or command you ran, and its result
+Expected/observed:  what should happen, and what did happen
+Open questions:     what you still do not know, phrased for a maintainer
+```
 
 ## Specify and review a small change
 
@@ -78,11 +152,11 @@ Evidence: observed failing case, final commit, test command and result.
 
 Before writing code, a partner proposes a counterexample. After writing it, review correctness, design, complexity, meaningful tests, naming and relevant documentation. Label feedback as required, optional or a question, and explain its consequence: “Removing the owner predicate lets Bob alter Alice's record; keep the predicate and show a denied-write test.” A reviewer is not required to rewrite the author's implementation.
 
-**Refactoring** changes structure while preserving behavior. First establish characterization tests around existing behavior; then refactor in a separate small step from the behavior fix. Coverage measures execution, not the strength of assertions. A test that fails when the owner predicate is removed supplies stronger evidence for this risk than a larger coverage percentage alone.
+**Refactoring** changes structure while preserving behavior. First establish characterization tests (tests that record what the code does today, right or wrong, so a refactor cannot change it unnoticed) around existing behavior; then refactor in a separate small step from the behavior fix. Coverage measures execution, not the strength of assertions. A test that fails when the owner predicate is removed supplies stronger evidence for this risk than a larger coverage percentage alone.
 
 ## Lab: private records and concurrent edits
 
-**Optional, 35–45 minutes after Lecture 3, or a clinic station.** This is a standalone storage-boundary exercise, not a replacement for the course's SQLModel API. It uses Python 3.12+ and the standard-library SQLite module, with no server or model. Run it locally during edits; the course verification image also runs the printed files offline in Linux. Use Compose when testing the actual separate services, not for these two in-process files.
+**Optional, 35–45 minutes after Lecture 3, or a clinic station.** This is a standalone storage-boundary exercise, not a replacement for the course's SQLModel API. It uses Python 3.12 or newer (the commands below use 3.14 through uv) and the standard-library SQLite module, with no server or model. Run it locally during edits; the course verification image also runs the printed files offline in Linux. Use Compose when testing the actual separate services, not for these two in-process files.
 
 Authentication establishes identity; authorization checks that identity against an action and resource. The `subject` argument below is assumed to come from a **trusted, already verified identity layer**. Passing `"alice"` in a test is fixture setup. In a real HTTP adapter, a body, query parameter, arbitrary header or model-generated tool argument must not establish the caller's identity. This lab implements no login, credential verification or network access control.
 
@@ -272,21 +346,76 @@ class StoreChecks(unittest.TestCase):
         self.assertEqual(final_version, 2)
 ```
 
-Run `python3 -m unittest -v test_store` in that folder. Expected: **10 tests pass**. The two workers use separate real connections to the same temporary file; the test does not assume which editor wins. No paid calls, host database, shared user data or sleep-based race timing is involved.
+Run this in that folder:
 
-**Prove the checks matter:** in this scratch copy, remove `AND owner = ?` and its matching parameter from the read query. The denied-read test must fail. Restore it. Then remove `AND version = ?` and its matching parameter from the update query; the stale-save and race checks must fail. Restore it. This is an example of mutation testing: deliberately break a property to see whether the relevant check detects it.
+```bash
+uv run --no-project --python 3.14 python -m unittest -v test_store
+```
+
+Expected: ten `... ok` lines, then `Ran 10 tests` and `OK`. The two workers use separate real connections to the same temporary file; the test does not assume which editor wins. No paid calls, host database, shared user data or sleep-based race timing is involved.
+
+> **Watch out:** if every test errors with `TypeError: 'autocommit' is an invalid keyword argument for this function`, you ran an older Python: the `autocommit` argument exists from Python 3.12 (macOS ships 3.9 as `python3`, and Ubuntu 22.04 ships 3.10). Check `python3 --version` and use the `uv run` command above, which downloads 3.14 if needed.
+
+**Prove the checks matter.** Mutation testing means deliberately breaking one property to see whether a check notices. Make each change below in this scratch copy, run the tests, then restore the line before the next one.
+
+**Predict first:** which tests fail when you (a) remove `AND owner = ?` and its parameter from the query in `read()`; (b) remove `AND version = ?` and its parameter from the `UPDATE`; (c) remove `AND owner = ?` and `subject` from the `UPDATE`, keeping the version check?
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+- (a) Only `test_non_owner_cannot_read`: Bob can now read Alice's recipe.
+- (b) `test_stale_save_preserves_current_data` and `test_two_writers_have_exactly_one_winner`: a stale save now overwrites the newer title.
+- (c) Only `test_non_owner_cannot_write`, with `AssertionError: NotFound not raised` (verified): Bob's rename now succeeds and changes Alice's title. Checking ownership in `read()` is not enough; the write must check it too.
+
+If a mutation leaves every test green, the property it removed was not protected, and you have found a missing test.
+
+</details>
+
+> **Optional:** read, then write. A natural "improvement" is to read the row before updating it. In a scratch copy, add these lines as the first statement inside `with database(path) as connection:` in `rename()`, then run the tests. Predict the result before you run them.
+
+```text
+        connection.execute(  # added: read the row first
+            "SELECT version FROM recipes WHERE id = ?", (recipe_id,)
+        ).fetchone()
+```
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+`test_two_writers_have_exactly_one_winner` now **errors** with `sqlite3.OperationalError: database is locked` (10 runs out of 10 in our check), instead of one save and one conflict. Each connection starts a deferred transaction, so both editors begin as readers. The first one upgrades to a writer and updates the row. The second one cannot upgrade: SQLite's documentation says the write "will fail with SQLITE_BUSY" when another connection has already modified the database ([SQLite transactions](https://www.sqlite.org/lang_transaction.html), checked 17 October 2026).
+
+Fixes: keep the conditional `UPDATE` as the first statement, as `store.py` does, or start the transaction with `BEGIN IMMEDIATE`, which takes the write lock up front so the second writer waits (up to `timeout=5`). In an HTTP adapter, a lock error is a temporary failure: answer `503` (try again later), never `409`, because nothing about the user's version was wrong.
+
+</details>
 
 ### Connect the lab to an HTTP product
 
-Map `NotFound` to the same `404` for missing and inaccessible records under this policy. Map `Conflict` to a documented `409` with actionable UI text. Preserve the user's unsaved draft; fetch the current record and let them compare before submitting against its new version. If instead designing with HTTP `ETag`/`If-Match`, define and test that precondition contract (typically `412` when it fails); do not mix the two protocols accidentally.
+Map `NotFound` to the same `404` for missing and inaccessible records under this policy. Map `Conflict` to a documented `409` with actionable UI text. Preserve the user's unsaved draft; fetch the current record and let them compare before submitting against its new version. If instead designing with HTTP `ETag`/`If-Match` (an `ETag` is a version label the server sends with a resource; the client echoes it in an `If-Match` header, and the server refuses the write when it no longer matches), define and test that precondition contract (typically `412` when it fails); do not mix the two protocols accidentally.
 
 Keep the verified subject in trusted request/dependency context. The AI service may suggest an edit; the backend still authorizes and commits it. Do not let the model choose which authenticated user it represents. A shared service token identifies a service caller; it does not by itself establish the end user's right to a particular record.
 
 These checks establish the storage contract in the tested SQLite runtime. They do not test login/session expiry, HTTP identity propagation, a browser conflict screen, PostgreSQL concurrency, a distributed transaction or every access policy. Add adapter and product-flow tests when integrating. Version checks prevent this overwrite pattern; they do not deduplicate a retried create or tell a caller whether a response lost after commit actually succeeded.
 
+### Find it in your product (optional)
+
+Open your Lecture 3 `update_recipe` route. It reads the row with `get_or_404`, changes it in Python with `sqlmodel_update`, then `save()` commits.
+
+> **Investigate:**
+>
+> 1. Two people edit the same recipe's title in your Lecture 4 frontend. Where is the lost-update window?
+> 2. Would adding a `version` field to stop it change the EX1 API contract?
+
+<details markdown="1">
+<summary>Show model answers</summary>
+
+1. The window runs from the `GET` that filled each person's form to their `PATCH`. The `PATCH` body says nothing about which version the person saw, so the server cannot tell that someone else saved in between, and the later `PATCH` silently wins. Inside the server, two `PATCH` requests that change *different* fields both survive: SQLAlchemy's `UPDATE` sets only the changed columns (`UPDATE recipe SET minutes=? WHERE recipe.id = ?` in Lecture 3's trace).
+2. Yes. Clients would have to send the version they read, and the server would answer `409` (or `412` with `If-Match`) on a mismatch; `RecipeUpdate` with `extra="forbid"` would also reject bodies from old clients. That is a contract change, so keep it optional, do it after EX1, and document it in your README if you do.
+
+</details>
+
 ## Evolve data without losing it
 
-For an optional schema change such as adding a recipe description, rehearse this sequence on **disposable synthetic data**:
+For an optional schema change such as adding a recipe description, rehearse this sequence on **disposable synthetic data**. The middle rows are the *expand, backfill, contract* pattern: first add the new shape beside the old one, then fill it in for existing rows, and only at the end remove the old shape.
 
 | Stage | Question to answer before proceeding |
 |---|---|
@@ -301,16 +430,86 @@ For an optional schema change such as adding a recipe description, rehearse this
 
 Never copy a live database file and assume a consistent backup while writes continue; use the database's supported backup method or a documented safe stop/snapshot procedure. SQLite provides a backup API. Keep the instructor's required persistence/restart checks, and add a restore rehearsal when your product needs it.
 
+### Rehearse it in ten minutes
+
+Use the lab's scratch folder (it needs `store.py`). Save this next to it as `rehearse.py`:
+
+```python
+# rehearse.py: preserve, expand, check, restore (scratch folder only)
+import sqlite3
+from pathlib import Path
+
+from store import prepare, read, rename
+
+for name in ("studio.db", "backup.db"):
+    Path(name).unlink(missing_ok=True)  # start fresh on every run
+prepare("studio.db")
+rename("studio.db", "alice", 1, 1, "Hummus v2")
+
+# 1. Preserve: SQLite's online backup API, never a plain file copy.
+live = sqlite3.connect("studio.db", autocommit=True)
+backup = sqlite3.connect("backup.db", autocommit=True)
+live.backup(backup)
+print("backed up:", backup.execute("SELECT id, title, version FROM recipes").fetchall())
+
+# 2. Expand: add a column that old rows can satisfy.
+live.execute("ALTER TABLE recipes ADD COLUMN description TEXT NOT NULL DEFAULT ''")
+print("columns:", [row[1] for row in live.execute("PRAGMA table_info(recipes)")])
+
+# 3. Does the old code still work against the new schema?
+print("read:", read("studio.db", "alice", 1))
+print("rename:", rename("studio.db", "alice", 1, 2, "Hummus v3"))
+try:
+    prepare("studio.db")
+except sqlite3.OperationalError as error:
+    print("prepare:", error)
+
+# 4. Restore the backup over the live file, then look at what came back.
+backup.backup(live)
+print("restored:", live.execute("SELECT * FROM recipes").fetchall())
+live.close()
+backup.close()
+```
+
+**Predict first:** run `uv run --no-project --python 3.14 python rehearse.py`. Which old function breaks after the expand step, and which title does the restore bring back?
+
+<details markdown="1">
+<summary>Show the expected output</summary>
+
+```text
+backed up: [(1, 'Hummus v2', 2), (2, 'Soup', 1)]
+columns: ['id', 'owner', 'title', 'version', 'description']
+read: ('Hummus v2', 2)
+rename: 3
+prepare: table recipes has 5 columns but 4 values were supplied
+restored: [(1, 'alice', 'Hummus v2', 2), (2, 'bob', 'Soup', 1)]
+```
+
+- `read()` and `rename()` still work, because they name their columns. `prepare()` breaks: its `INSERT … VALUES (?, ?, ?, ?)` names no columns, so old code that inserts by position is **not** compatible with the expanded table. Finding that before production is the point of the rehearsal.
+- The restore brings back `Hummus v2` at version 2 and the old four columns. `Hummus v3`, written after the backup, is **lost**: that is the "Recover" row's question, answered with evidence.
+
+</details>
+
+**The same backup in your product** (Lecture 8 Compose stack running, from the folder with `compose.yaml`):
+
+```bash
+docker compose exec backend python -c "import sqlite3; sqlite3.connect('/app/data/app.db').backup(sqlite3.connect('/app/data/backup.db'))"
+docker compose cp backend:/app/data/backup.db ./backup.db
+uv run --no-project --python 3.14 python -m sqlite3 backup.db "SELECT id, title FROM recipe ORDER BY id;"
+```
+
+The last command lists your recipes from the copy. Keep `backup.db` out of Git (your `.gitignore` already lists `*.db`), and delete `/app/data/backup.db` from the volume when you are done if you do not need it there.
+
 ## Measure and operate the user journey
 
 A product is experienced as a journey, not a collection of healthy containers. Define an observation window, eligible events and a denominator before reporting a number. For example: “On 20 synthetic attempts through the fake-model user flow, 19 reached the expected persisted state.” Include the failed attempt; report this as a small local observation, not production availability or real-model accuracy.
 
-- **Performance:** fix the dataset, environment and concurrent-user count. Measure end-to-end latency plus service stages; distinguish cold start from warm requests. Inspect slow database queries and indexes with representative data before adding a cache. A tiny sample's p95 is unstable; preserve raw timings and sample size.
+- **Performance:** fix the dataset, environment and concurrent-user count. Measure end-to-end latency plus service stages; distinguish cold start from warm requests. Inspect slow database queries and indexes with representative data before adding a cache. A tiny sample's p95 (the 95th percentile: 95% of the measured requests were at least this fast) is unstable; preserve raw timings and sample size.
 - **User experience:** complete the core action with keyboard only, visible focus and useful labels. Show loading and error states. Check whether the user can recover without losing a draft, including the conflict scenario above.
 - **Operations:** state what `/health` actually establishes. Choose useful status/duration/error/usage signals and a request identifier; exclude credentials and private text. Logs support a hypothesis; a controlled reproduction tests it.
 - **Recovery:** follow the release runbook from a clean clone, stop the AI service, observe the documented response/UI, restore it and check retained data. Choose a release owner and a rollback/roll-forward plan before an urgent change.
 
-Work in small batches and measure outcomes. Number of generated lines, prompt length, agent count, test count and PR count alone are not evidence of product quality. The required three accepted upstream PRs demonstrate contribution practice; explain each change's actual value and your own verification.
+Work in small batches and measure outcomes. Number of generated lines, prompt length, agent count, test count and PR count alone are not evidence of product quality. The required three merged upstream PRs (see README › [What counts as merged](../README.md#what-counts-as-merged)) demonstrate contribution practice; explain each change's actual value and your own verification.
 
 ## Check your understanding
 
@@ -335,6 +534,13 @@ That can overwrite a change the user has not reviewed. Keep the draft, show the 
 
 </details>
 
+<details markdown="1" class="studio-quiz">
+<summary>A save fails with sqlite3.OperationalError: database is locked. Should the HTTP adapter answer 409 Conflict?</summary>
+
+No. `409` tells the user their version is stale and they must reload and compare, which is false here: nobody changed the record they read. A lock error is a temporary failure of the storage layer, so answer `503` (try again later) and keep the draft. Better still, design the transaction so it does not happen: keep the conditional `UPDATE` first, or use `BEGIN IMMEDIATE`.
+
+</details>
+
 ## Show the work in an individual explanation
 
 A five-minute rehearsal with a partner:
@@ -354,7 +560,7 @@ Reviewed **17 October 2026**. These are primary sources for the practices used h
 - [DORA, March 2026](https://dora.dev/insights/balancing-ai-tensions/) discusses verification, small batches, production readiness and maintaining expertise. Its observational findings do not guarantee individual productivity.
 - Google's [review criteria](https://google.github.io/eng-practices/review/reviewer/looking-for.html) and [review comments](https://google.github.io/eng-practices/review/reviewer/comments.html) inform the review exercise; [OWASP API1:2023](https://api-security.owasp.org/editions/2023/en/0xa1-broken-object-level-authorization/) motivates tested record authorization.
 - [Python 3.14 SQLite](https://docs.python.org/3.14/library/sqlite3.html), [SQLite transactions](https://www.sqlite.org/lang_transaction.html) and [UPDATE](https://www.sqlite.org/lang_update.html) document the lab's database behavior. [Alembic limitations](https://alembic.sqlalchemy.org/en/latest/autogenerate.html) and [MDN conditional requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Conditional_requests) support the optional migration and HTTP designs.
-- The [MIT/Stanford references and conference-to-experiment routine](learning-map.md#teaching-references) connect specifications, evaluation and engineering judgment.
+- Course sites that go deeper on databases, distributed systems and software design (MIT, Stanford and others, with their status and licenses) are collected in [Further study](further-study.md). The conference-to-experiment routine stays in the [learning map](learning-map.md#teaching-references).
 
 ---
 
