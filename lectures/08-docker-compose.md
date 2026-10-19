@@ -279,7 +279,7 @@ Each `.dockerignore` lists `.venv`, `__pycache__`, `.pytest_cache`, `.ruff_cache
 
 **2. The compose file**, at the repository root:
 
-<figure class="file-example" markdown="1">
+<figure class="file-example file-example--long" markdown="1">
 <figcaption><span class="file-example-action">Create at repository root</span> <span class="file-example-path">compose.yaml</span></figcaption>
 
 ```yaml

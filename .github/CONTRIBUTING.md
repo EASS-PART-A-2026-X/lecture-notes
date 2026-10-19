@@ -296,7 +296,7 @@ The `integrated-stack` CI job must pass before Pages deploys. These checks cover
 
 ### File examples and repository maps
 
-When a fence is file content, make its destination explicit with a `figure.file-example` (`markdown="1"`). Its real `figcaption` contains a `.file-example-action` span (Create file / Append to file) and a `.file-example-path` span. Keep only actual file contents inside the fenced block; the copy button must copy those contents without the caption. See Lecture 1's `.gitignore` example and Lecture 8's `.env.example`. Use ordinary shell fences for commands to execute.
+When a fence is file content, make its destination explicit with a `figure.file-example` (`markdown="1"`). Its real `figcaption` contains a `.file-example-action` span (Create file / Append to file) and a `.file-example-path` span. Use the `file-example--long` modifier only for a manifest or file longer than a printed page; short file panels stay together in the PDF. Keep only actual file contents inside the fenced block; the copy button must copy those contents without the caption. See Lecture 1's `.gitignore` example and Lecture 8's `.env.example`. Use ordinary shell fences for commands to execute.
 
 `figure.repo-map` supports a text-based two-column comparison that stacks on phones and remains visible in print without JavaScript. Use headings and explanatory words as well as color. Keep the local/committed distinction accurate: ignore patterns affect untracked paths; they do not remove tracked files or erase history.
 

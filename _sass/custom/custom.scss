@@ -3118,7 +3118,11 @@ $ed-code-languages: (
 
 @media print {
   .main-content .file-example {
+    break-inside: avoid;
     > figcaption { min-height: 0; padding: .3rem .65rem; font-size: 9pt; break-after: avoid; }
+  }
+  .main-content .file-example--long {
+    break-inside: auto;
     div.highlighter-rouge { break-inside: auto; }
   }
   .main-content .repo-map {
