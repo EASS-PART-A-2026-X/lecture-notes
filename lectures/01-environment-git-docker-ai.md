@@ -155,6 +155,27 @@ Four boxes from left to right: working tree, staging area, local commits, GitHub
 
 </details>
 
+<div class="sim" id="sim-git" role="group" aria-labelledby="sim-git-title" markdown="1">
+
+<p class="sim-title" id="sim-git-title"><strong>Simulator: where does my change live?</strong> Run Git commands on one file and watch which of the four places holds your latest edit, and which command shows it.</p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example** (one file, starting clean):
+
+1. **Edit `README.md`.** Only the working tree changed: `git diff` shows edit 1, and `git diff --staged` prints nothing.
+2. **`git add README.md`.** Edit 1 is staged: `git diff` prints nothing, and `git diff --staged` shows edit 1.
+3. **Edit again.** `git diff` shows edit 2; `git diff --staged` still shows only edit 1.
+4. **`git commit`.** Edit 1 is recorded on your laptop. `git status` says the branch is ahead of `origin` by 1 commit, and edit 2 is still not staged.
+5. **`git push`.** GitHub now has edit 1. Edit 2 exists only in your working tree.
+6. **`git restore README.md`.** Edit 2 is gone for good: Git never stored it. `git restore --staged README.md` would only have unstaged a staged edit.
+
+<p class="screen-only sim-note">The interactive version of this simulator needs JavaScript; the worked example above is the same model.</p>
+
+</div>
+
+</div>
+
 ### Docker: images and containers
 
 - An **image** is a frozen filesystem plus a default command, such as "Debian + Python 3.14". Think of it as a class.

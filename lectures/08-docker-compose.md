@@ -228,6 +228,26 @@ The backend's `/health` deliberately **does not** call the AI service: an AI out
 
 </details>
 
+<div class="sim" id="sim-compose" role="group" aria-labelledby="sim-compose-title" markdown="1">
+
+<p class="sim-title" id="sim-compose-title"><strong>Simulator: which containers start?</strong> Choose whether each health check passes and which condition the backend waits for; see which containers start, what <code>up --wait</code> reports, and whether CRUD works.</p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example** (the course's `compose.yaml`; "never passes" means the check is broken while the process runs, as in break-it drill 2):
+
+1. **Every check passes (course default).** ai-service, then backend, then frontend become healthy; `up --wait` succeeds; CRUD and paste work.
+2. **The ai-service check never passes, with `service_healthy`.** backend and frontend stay `Created`; `up --wait` fails with `dependency failed to start: container recipe-box-ai-service-1 is unhealthy`; CRUD is unavailable.
+3. **The same broken check, with `service_started` and `required: false`.** backend and frontend start and become healthy; `up --wait` still reports `container recipe-box-ai-service-1 is unhealthy`; CRUD works, and so does paste, because only the check is broken.
+4. **The backend check never passes.** The backend runs, so `curl localhost:8000/recipes` answers, but the frontend is never started; `up --wait` fails with `dependency failed to start: container recipe-box-backend-1 is unhealthy`.
+5. **The ai-service is healthy, then its process crashes.** Startup succeeds; nothing restarts the ai-service; CRUD keeps working and a paste returns `503`.
+
+<p class="screen-only sim-note">The interactive version of this simulator needs JavaScript; the worked example above is the same model.</p>
+
+</div>
+
+</div>
+
 ### Secrets
 
 - Real keys live in `.env`, which is git-ignored and in every `.dockerignore`, so it reaches neither Git nor an image. Commit `.env.example` with names and placeholders only. No key ever goes in `compose.yaml` or a Dockerfile.

@@ -278,6 +278,28 @@ Both happen inside `commit()`: it first flushes (the `INSERT` runs and the datab
 
 </details>
 
+<div class="sim" id="sim-session" role="group" aria-labelledby="sim-session-title" markdown="1">
+
+<p class="sim-title" id="sim-session-title"><strong>Simulator: follow one session</strong> Press add, flush, commit, rollback and restart on one recipe and watch the Python object, the open transaction, what another connection sees, and what survives a restart.</p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example** (one session on a `trace.db` file that starts empty):
+
+| You run | Python object `recipe` | Open transaction | Another connection sees | After a restart |
+|---|---|---|---|---|
+| `session.add(recipe)` | pending; `id` is `None` | none | 0 rows | 0 rows |
+| `session.flush()` | `id` is 1 | `BEGIN` and one uncommitted `INSERT` | 0 rows | 0 rows |
+| `session.rollback()` | out of the session; `id` still says 1, but no row 1 exists | none (`ROLLBACK`) | 0 rows | 0 rows |
+| `session.add()` a new recipe, then `session.commit()` | committed; `id` is 1 | none (`BEGIN`, `INSERT`, `COMMIT`) | 1 row | 1 row |
+| `session.add()` and `session.flush()` another, then restart | gone with the process | rolled back | 1 row | 1 row |
+
+<p class="screen-only sim-note">The interactive version of this simulator needs JavaScript; the worked example above is the same model.</p>
+
+</div>
+
+</div>
+
 ### Table model versus API schemas
 
 | Class | Role | Validates input? |

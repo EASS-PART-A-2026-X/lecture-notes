@@ -253,6 +253,26 @@ Time runs from 0 to 100 s. The frontend's read timeout for "Paste a recipe" is 1
 
 </details>
 
+<div class="sim" id="sim-retry" role="group" aria-labelledby="sim-retry-title" markdown="1">
+
+<p class="sim-title" id="sim-retry-title"><strong>Simulator: retry and timeout budget</strong> Set the read timeout, attempts, backoff and the caller's deadline, choose a failure and an operation, and see the timeline, the total time, and whether a retry is safe.</p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example** (course defaults: 30 s read timeout, 3 attempts, backoff 0.5 s then 1 s, the frontend's 100 s deadline):
+
+1. **Connection refused.** Three instant `ConnectError` failures and 1.5 s of backoff: the caller hears after 1.5 s. Safe to retry: nothing was sent, and nothing is billed.
+2. **Slow model.** Three `504` answers at 25 s: 25 + 0.5 + 25 + 1 + 25 = 76.5 s. Each attempt is paid model work.
+3. **Silent server.** Three 30 s read timeouts: 3 × 30 + 1.5 = 91.5 s, inside 100 s. For `POST /extract` a retry is safe but paid, and attempts may overlap.
+4. **Raise the read timeout to 40 s.** 3 × 40 + 1.5 = 121.5 s: the frontend gives up at 100 s while the third attempt is still running, and billing.
+5. **Retry `POST /recipes/from-text` after a read timeout.** Not safe: the recipe may already be saved, so a retry can store a duplicate. Without an idempotency key, tell the user the change may have been saved.
+
+<p class="screen-only sim-note">The interactive version of this simulator needs JavaScript; the worked example above is the same model.</p>
+
+</div>
+
+</div>
+
 ### Malformed output and cost limits
 
 After `retries=2`, Pydantic AI raises `UnexpectedModelBehavior` ([Lecture 6](06-pydantic-ai-agents.md)). Until today it was an unhandled 500 in the ai-service (Lecture 6), which the backend mapped to 503 "unavailable" (Lecture 7), although the service was up. Today it becomes 502 Bad Gateway, passed on without a retry.
