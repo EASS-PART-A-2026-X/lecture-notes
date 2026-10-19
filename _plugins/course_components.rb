@@ -89,6 +89,7 @@ module CourseComponents
     end
     body = home_page(path, body) if path == "README.md"
     body = tables(body)
+    body = summaries(body)
 
     head + main_open + body + main_close + tail
   end
@@ -311,6 +312,14 @@ module CourseComponents
       end
       open_tag + tokens + close_tag
     end
+  end
+
+  # (g) Disclosure summaries (quiz questions, "Check your answer"): the same short code tokens
+  # stay whole, so a phone never shows `--rm` as "--" and "rm" on two lines.
+  SUMMARY = %r{<summary\b[^>]*>.*?</summary>}m
+
+  def summaries(html)
+    html.gsub(SUMMARY) { |summary| keep_tokens(summary) }
   end
 
   def fail_shape(path, message)

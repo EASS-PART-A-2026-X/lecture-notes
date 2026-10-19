@@ -171,7 +171,7 @@ Write ordinary Markdown tables with a header row. Below a 36 rem column (phones,
 
 - **The first column names the row.** It becomes the card's title, in bold, without its column name. When every first cell is a number (`Step | …` with 1, 2, 3), the title reads "Step 1".
 - **Keep column headers short.** Every other cell shows its header as a small label above its value, once per card: `Pass when`, not `Pass when (what you should see after running it)`.
-- **Code in cells:** a short token (at most 16 characters) that holds a hyphen, slash, colon or similar never splits on screen (`git --version` wraps at its space, not after `--`); longer code wraps where it must.
+- **Code in cells:** a short token (at most 16 characters) that holds a hyphen, slash, colon or similar never splits on screen (`git --version` wraps at its space, not after `--`); longer code wraps where it must. The same holds in a disclosure's `<summary>`, such as a quiz question.
 
 ```markdown
 | Check | Pass when | Repair |
@@ -241,7 +241,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Section panel | `div.section-panel.section-panel--{prereq,objectives,checkpoint,optional,pitfall,instructor}` | plugin (lectures 1–10) |
 | Page navigation | `p.page-nav` (top), `p.page-nav.page-nav--bottom` (hidden on the site) | plugin |
 | Pager | `nav.pager` with `a.pager-prev`, `a.pager-next` | `_includes/footer_custom.html` |
-| Table | `td[data-label]` on every body cell; `table.stack` (three or more columns: cards below a 36 rem column, screen only), `table.stack--numbered` (first cells are numbers); `span.nobr` around short code tokens in cells | plugin (every page) |
+| Table | `td[data-label]` on every body cell; `table.stack` (three or more columns: cards below a 36 rem column, screen only), `table.stack--numbered` (first cells are numbers); `span.nobr` around short code tokens in cells and in `<summary>` | plugin (every page) |
 | Home | `div.home-hero`, `ul.home-facts`, `p.home-actions`, `ol.start-path`, `table.schedule` (also `stack`; keeps its own calendar cards), `table.deadlines` (also `stack`), `tr.is-next`; `aside.this-week` (inside `div.home-hero`, right after the `h1`; the plugin writes it empty with `data-pending`, `course.js` replaces it with the filled board or removes it) with `this-week-label`, `-when`, `-focus`, `-deliverable`, `-actions` (`a.this-week-open` is the primary link) and `-deadline` | plugin (README) and `course.js` |
 | Figure | `figure.course-diagram` (`--wide` for 960-wide images), `div.diagram-scroll`; the text version is the `details` right after the figure | author HTML |
 | Stepper | `div.stepper` around one `ol`; `course.js` adds `is-enhanced`, `is-current`, `is-all` and the `stepper-controls` | author HTML and `course.js` |

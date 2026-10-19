@@ -1064,9 +1064,10 @@ $ed-code-languages: (
 //     more columns the class "stack": below a 36rem column each row becomes a card. The first
 //     cell names the card; every other cell shows its column name on a line above its value, so
 //     no column hides off-screen. The home calendar (table.schedule) keeps its own cards (8.8).
-//     Short code tokens (span.nobr, also from the plugin) never split at a hyphen or slash.
+//     Short code tokens (span.nobr, also from the plugin, in cells and disclosure summaries) never
+//     split at a hyphen or slash.
 @media screen {
-  .main-content td code .nobr {
+  .main-content :is(td, summary) code .nobr {
     white-space: nowrap;
   }
 
