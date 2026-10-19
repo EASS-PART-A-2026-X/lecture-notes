@@ -17,7 +17,7 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
-node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_course_js.cjs
+node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs
 uv run --locked .github/scripts/check_examples.py
 uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py
 python3 .github/scripts/check_compose.py
@@ -35,7 +35,7 @@ python3 .github/scripts/check_site.py _site https://eass-part-a-2026-x.github.io
 OUT="$HOME/tmp/eass-build"   # any directory outside the repository
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter --disable-disk-cache -d "$OUT/_site"
 uv run .github/scripts/build_pdf.py "$OUT/_site" https://eass-part-a-2026-x.github.io/lecture-notes
-SITE_DIR="$OUT/_site" node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_course_js.cjs
+SITE_DIR="$OUT/_site" node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs
 SITE_DIR="$OUT/_site" python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 python3 .github/scripts/check_site.py "$OUT/_site" https://eass-part-a-2026-x.github.io/lecture-notes
 ```
@@ -53,6 +53,8 @@ A second hook, `_plugins/course_components.rb`, turns the Markdown conventions b
 For content edits, check the previous/next lecture links and the collapsible section list. Keep section links in sync when renaming a heading, and keep each page's "On this page" list equal to its `##` headings. For UI edits, check desktop (1440 px), a phone (390 px) and the narrowest supported width (320 px), keyboard focus (the first Tab must reach "Skip to main content"), the mobile menu and Escape, search, table and code scrolling, a quiz disclosure, a stepper with and without JavaScript, and the PDF. Keep tables, code and diagrams scrollable inside their own regions without creating horizontal overflow on the whole page. Lecture section links, quiz disclosures and course text must remain usable without JavaScript. `assets/js/course.js` only enhances: it labels overflowing tables, code and diagrams for keyboard users, marks the current page in the sidebar, closes the mobile menu with Escape, announces search results, restores the skip link as the first Tab stop, turns `.stepper` lists into step-throughs, and highlights the next meeting on the home page.
 
 Open a focused PR with the problem, resulting behavior and checks run. Pull requests build the site and PDF and check internal links. Only `main` publishes to GitHub Pages. Coordinate with other agents by fetching the latest `main` before starting and before finalizing your branch; never overwrite their work.
+
+Lectures 1, 2, 3, 8 and 9 each have one simulator: a `div.sim` next to the matching figure or section (Git areas, status-code stages, the session explorer, Compose startup, the retry budget). Its Markdown is a title and a static worked example (`div.sim-fallback`); `_includes/footer_custom.html` loads that page's `assets/js/sim-*.js`, which adds the controls above the worked example and hides it on screen. Without JavaScript, on GitHub and in the PDF the worked example is the content. Each script keeps its model in pure functions tested by `.github/scripts/test_sim_*.cjs` (which also check the rendered fallback and the asset), uses real buttons or radio buttons at least 44 px tall, announces results in `role="status"`, and states every result in words. The Lecture 2 bodies were captured from the Lecture 2 API, and the Compose model follows the printed `compose.yaml`: re-check both when those examples change.
 
 The inference teaching calculator has nine Node tests for its equations, stage comparisons, edge cases, input rejection and rendered static fallback. It is a fixed-rate synthetic model, not a real-model benchmark. Verify its controls, invalid-input state and static/print fallback when editing it.
 
@@ -207,6 +209,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Screen or print only | `span.screen-only`, `span.print-only` | author HTML |
 | Sidebar groups | CSS labels Start here, Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
 | Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab` | author HTML (unchanged; restyled with the tokens) |
+| Simulator | `div.sim` (with `id="sim-NAME"`), `p.sim-title`, `div.sim-fallback`; the script adds `is-live` and `div.sim-app` | author HTML and `assets/js/sim-*.js` |
 
 ### Diagrams
 

@@ -23,3 +23,15 @@
 {% if page.path == 'guides/local-inference.md' %}
 <script src="{{ '/assets/js/inference-lab.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
 {% endif %}
+{%- comment -%} Lecture simulators (div.sim): each page loads only its own script. {%- endcomment -%}
+{%- assign simulator = nil -%}
+{%- case page.path -%}
+  {%- when 'lectures/01-environment-git-docker-ai.md' -%}{%- assign simulator = 'sim-git' -%}
+  {%- when 'lectures/02-http-fastapi-pydantic.md' -%}{%- assign simulator = 'sim-status' -%}
+  {%- when 'lectures/03-persistence-and-first-pr.md' -%}{%- assign simulator = 'sim-session' -%}
+  {%- when 'lectures/08-docker-compose.md' -%}{%- assign simulator = 'sim-compose' -%}
+  {%- when 'lectures/09-failures-evals-costs.md' -%}{%- assign simulator = 'sim-retry' -%}
+{%- endcase -%}
+{%- if simulator %}
+<script src="{{ '/assets/js/' | append: simulator | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
+{%- endif %}
