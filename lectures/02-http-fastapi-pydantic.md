@@ -251,6 +251,27 @@ Two reading rules: after a `422`, your handler never ran; and `404 "Not Found"` 
 
 </details>
 
+<div class="sim" id="sim-status" role="group" aria-labelledby="sim-status-title" markdown="1">
+
+<p class="sim-title" id="sim-status-title"><strong>Simulator: which stage answers?</strong> Pick one of six requests, predict its status code, then step through the five stages until one of them writes the response.</p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example** (bodies exactly as the Lecture 2 API returns them):
+
+1. **Valid POST** `{"title": "Shakshuka", "minutes": 25}` on a fresh server passes all five stages: `201 Created` with `{"title":"Shakshuka","minutes":25,"servings":2,"ingredients":"","tags":"","id":1}`.
+2. **Missing field** `{"title": "Soup"}` stops at stage 3: `422` with `{"detail":[{"type":"missing","loc":["body","minutes"],"msg":"Field required","input":{"title":"Soup"}}]}`.
+3. **Wrong type** `{"title": "Soup", "minutes": "soon"}` stops at stage 3: `422` with type `int_parsing` at `["body","minutes"]`.
+4. **Unknown id** `GET /recipes/999` stops at stage 4, in your handler: `404` with `{"detail":"Recipe not found"}`.
+5. **Unknown path** `GET /recipe/1` stops at stage 1, before any of your code: `404` with `{"detail":"Not Found"}`.
+6. **DELETE twice** `DELETE /recipes/1`: the first call answers `204` with an empty body; the second stops at stage 4 with `404` and `{"detail":"Recipe not found"}`.
+
+<p class="screen-only sim-note">The interactive version of this simulator needs JavaScript; the worked example above is the same model.</p>
+
+</div>
+
+</div>
+
 ### OpenAPI describes this API; OpenAI is a different name
 
 **OpenAPI** is the machine-readable description FastAPI publishes at `/openapi.json`; `/docs` renders an interactive view. It describes operations, inputs and responses. **OpenAI** is a company whose model API we may call later. You can build today's complete API without any model provider or model account.
