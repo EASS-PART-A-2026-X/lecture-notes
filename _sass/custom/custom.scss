@@ -549,6 +549,7 @@ a.skip-to-main:active {
 // and the PDF builder). course.js keeps the current page's href, so its label stays too.
 .site-nav > .nav-list > .nav-list-item:is(
     :has(> .nav-list-link[href$="/guides/student-setup.html"]),
+    :has(> .nav-list-link[href$="/guides/submission-evidence.html"]),
     :has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"]),
     :has(> .nav-list-link[href$="/guides/agent-driven-development.html"])
   ) {
@@ -574,6 +575,11 @@ a.skip-to-main:active {
 
 .site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/student-setup.html"])::before {
   content: "Start here";
+}
+
+// Start here holds only the two required guides (README reading map); the rest are references.
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/submission-evidence.html"])::before {
+  content: "Reference";
 }
 
 .site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"])::before {

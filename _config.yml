@@ -18,7 +18,7 @@ readme_index:
 
 # Sidebar: short titles in course order. Paths match the file-name prefix, so slugs can change.
 # The same order drives the previous/next pager (_includes/footer_custom.html) and the PDF.
-# Sidebar group labels (Start here, Lectures, Optional depth) are CSS in _sass/custom/custom.scss.
+# Sidebar group labels (Start here, Reference, Lectures, Optional depth) are CSS in _sass/custom/custom.scss.
 defaults:
   - { scope: { path: "" }, values: { layout: default } }
   - { scope: { path: README.md }, values: { title: "Home", nav_order: 1 } }

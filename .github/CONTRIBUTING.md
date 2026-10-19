@@ -207,7 +207,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Figure | `figure.course-diagram` (`--wide` for 960-wide images), `div.diagram-scroll`; the text version is the `details` right after the figure | author HTML |
 | Stepper | `div.stepper` around one `ol`; `course.js` adds `is-enhanced`, `is-current`, `is-all` and the `stepper-controls` | author HTML and `course.js` |
 | Screen or print only | `span.screen-only`, `span.print-only` | author HTML |
-| Sidebar groups | CSS labels Start here, Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
+| Sidebar groups | CSS labels Start here (the two required guides), Reference (Submission evidence, Engineering foundations, Models and AI literacy), Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
 | Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab` | author HTML (unchanged; restyled with the tokens) |
 
 ### Diagrams
