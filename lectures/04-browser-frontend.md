@@ -177,6 +177,9 @@ Every interaction (a click, a submitted form) reruns your script from top to bot
 
 Try it after the scaffold commands in [Live demo](#live-demo) step 1. Save this in `frontend/`, run it from `frontend/` with `uv run streamlit run rerun_demo.py`, and delete the file afterwards:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">frontend/rerun_demo.py</span></figcaption>
+
 ```python
 # frontend/rerun_demo.py (a throwaway file)
 import streamlit as st
@@ -190,6 +193,8 @@ if st.button("Click me"):
 
 st.write(f"Local variable: {clicks} · session_state: {st.session_state['clicks']}")
 ```
+
+</figure>
 
 **Predict:** you click the button three times. What does the last line show?
 
@@ -311,6 +316,9 @@ React with Vite, or another web framework, is equally acceptable for your produc
 - the backend URL must be reachable from the user's machine (for example `http://localhost:8000`), and Vite exposes it to your code as an `import.meta.env.VITE_*` variable at build time;
 - the browser enforces **CORS**: the backend must name the frontend's exact **origin** (scheme + host + port, such as `http://localhost:5173`).
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
+
 ```python
 # backend/app/main.py: only if browser JavaScript calls the API
 from fastapi.middleware.cors import CORSMiddleware
@@ -323,6 +331,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 ```
+
+</figure>
 
 Streamlit's calls are server-side Python, so the Streamlit version needs no CORS settings. Whatever the framework, a CLI alone is not a frontend.
 
@@ -376,6 +386,9 @@ mkdir .streamlit
 
 **2. Streamlit settings.** *Make the smallest change.*
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/.streamlit/config.toml</span></figcaption>
+
 ```toml
 # frontend/.streamlit/config.toml
 [browser]
@@ -385,6 +398,8 @@ gatherUsageStats = false  # Streamlit collects usage stats unless you opt out
 headless = true
 address = "localhost"  # only this machine; Lecture 8's container overrides it
 ```
+
+</figure>
 
 Without `address`, `streamlit run` listens on every network interface and prints a "Network URL": anyone on the same Wi-Fi could list, edit and delete your records, although the backend itself only listens on `127.0.0.1`. With `address = "localhost"`, Streamlit listens on `127.0.0.1` only and prints just `URL: http://localhost:8501`. Lecture 8's container starts Streamlit with `--server.address 0.0.0.0`, and a command-line flag takes precedence over `config.toml` ([Streamlit configuration options](https://docs.streamlit.io/develop/concepts/configuration/options)), so Compose still works.
 
@@ -400,6 +415,9 @@ Inside a container, `127.0.0.1` is the container's own loopback: Docker's publis
 </details>
 
 **3. The API client.** *State the contract:* the paths, field names and timeouts the frontend relies on.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/api.py</span></figcaption>
 
 ```python
 # frontend/api.py
@@ -436,6 +454,8 @@ def delete_recipe(recipe_id: int) -> None:
     r.raise_for_status()
 ```
 
+</figure>
+
 **Predict:** before any UI exists, run `uv run python -c "import api; print(len(api.list_recipes()))"` from `frontend/` with the backend running. What prints? What happens if you stop the backend and run it again?
 
 <details markdown="1">
@@ -446,6 +466,9 @@ def delete_recipe(recipe_id: int) -> None:
 </details>
 
 **4. The page, part 1: the helpers.** *Make the smallest change.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (part 1)
@@ -485,7 +508,12 @@ def show_error(exc: httpx.HTTPStatusError) -> None:
         st.error(f"The backend returned {exc.response.status_code}.")
 ```
 
+</figure>
+
 **5. Part 2: one form helper for both add and edit.** The dictionary keys are the API's field names; the widget keys are built from `key`; `recipe` prefills the inputs when editing; integer bounds and defaults make `number_input` return `int`, not `float`.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (part 2)
@@ -514,7 +542,12 @@ def recipe_fields(key: str, recipe: dict | None = None) -> dict:
     }
 ```
 
+</figure>
+
 **6. Part 3: the page itself.** *Make the smallest change.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (part 3)
@@ -559,6 +592,8 @@ with add, st.form("add", clear_on_submit=True):
         else:
             notify(f"Added {plain(created['title'])}.")
 ```
+
+</figure>
 
 **7. Run both services**, each in its own terminal. *Observe the real result.*
 

@@ -288,6 +288,9 @@ extend-select = ["I", "FAST"]
 
 **2. The contract.** *State the contract.*
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/models.py</span></figcaption>
+
 ```python
 # backend/app/models.py
 from pydantic import BaseModel, ConfigDict, Field
@@ -327,7 +330,12 @@ class RecipePublic(RecipeBase):
     id: int
 ```
 
+</figure>
+
 **3. The routes.** *Make the smallest change.* The store is a dict behind a dependency, and the routes never touch it any other way.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
 
 ```python
 # backend/app/main.py
@@ -406,6 +414,8 @@ def delete_recipe(recipe_id: int, store: StoreDep) -> None:
     get_or_404(store, recipe_id)
     del store.rows[recipe_id]
 ```
+
+</figure>
 
 In PATCH, `exclude_unset=True` keeps only the fields the client sent. `model_copy(update=...)` does **not** validate; that is safe only because `RecipeUpdate` already did. This toy store is also unsafe under concurrent requests: FastAPI runs plain `def` routes in a thread pool, so two POSTs can race on `last_id += 1` and receive the same id. Next week's database assigns ids inside a transaction.
 
@@ -486,6 +496,9 @@ Step 3: `changes` is `{}`, because `exclude_none=True` drops the `None`. Step 4:
 
 **5. The tests.** *State the contract.* `TestClient` calls the app in-process, with no server. The fixture gives every test a fresh store:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/conftest.py</span></figcaption>
+
 ```python
 # backend/tests/conftest.py
 from collections.abc import Iterator
@@ -504,7 +517,12 @@ def client() -> Iterator[TestClient]:
     app.dependency_overrides.clear()
 ```
 
+</figure>
+
 Three of the ten tests in `backend/tests/test_recipes.py`. The comment at the top is the testing strategy: the partitions each input splits into, so you can see which test protects which rule. (Writing partitions down first is inspired by MIT 6.102's [reading on testing](https://web.mit.edu/6.102/www/sp26/classes/02-testing/); EASS is not affiliated with MIT.)
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_recipes.py</span></figcaption>
 
 ```python
 # backend/tests/test_recipes.py (excerpt)
@@ -544,10 +562,15 @@ def test_missing_recipe_is_404(client):
         assert r.json() == {"detail": "Recipe not found"}
 ```
 
+</figure>
+
 The other seven cover health, read-after-create, pagination (`limit=101` is a 422), seven invalid bodies, PATCH (partial, `null`, invalid), delete-then-404, and isolation. Paste them below the excerpt to get the full file:
 
 <details markdown="1">
 <summary>Show the other seven tests</summary>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_recipes.py</span></figcaption>
 
 ```python
 # backend/tests/test_recipes.py (continued)
@@ -607,6 +630,8 @@ def test_delete_then_404(client):
 def test_each_test_starts_empty(client):
     assert client.get("/recipes").json() == []
 ```
+
+</figure>
 
 </details>
 
@@ -669,6 +694,9 @@ Break it, run `uv run pytest` from `backend/`, read the failure, then restore th
 
 None: all ten tests **still pass**, yet `PATCH {"title": null}` now returns `"title": null`. `model_copy` skipped validation, and FastAPI trusts a model object you return (your trace above, step 3). The existing PATCH test checks only the status code. Add this regression test, watch it fail with `AssertionError: assert None == 'Soup'`, then restore `exclude_none=True`:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/test_patch_null.py</span></figcaption>
+
 ```python
 # backend/tests/test_patch_null.py
 def test_patch_null_keeps_the_old_value(client):
@@ -676,6 +704,8 @@ def test_patch_null_keeps_the_old_value(client):
     client.patch(f"/recipes/{rid}", json={"title": None})
     assert client.get(f"/recipes/{rid}").json()["title"] == "Soup"
 ```
+
+</figure>
 
 The lesson: assert the body, not just the status code. Keep the file until Lecture 3, where the database turns this bug into a 500 that `test_patch_changes_only_sent_fields` catches.
 

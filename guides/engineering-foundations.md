@@ -445,6 +445,9 @@ Python type hints alone do not enforce input types at runtime. Pydantic/FastAPI 
 
 `async` does not make blocking work disappear. An `async def` route runs on FastAPI's **event loop**: one thread that switches between waiting requests whenever the current one reaches an `await`. A call that blocks without `await` (`time.sleep`, a synchronous HTTP client, a slow file read) stops that switching, so every other request waits too. Use the framework's supported async client or execution model. Do not add `async` keywords to code you cannot explain.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">demo_async.py</span></figcaption>
+
 ```python
 # demo_async.py (a scratch demo, not part of Recipe Box)
 import asyncio
@@ -472,6 +475,8 @@ def threaded() -> dict[str, str]:
     time.sleep(2)  # plain def: FastAPI runs it in a worker thread
     return {"route": "threaded"}
 ```
+
+</figure>
 
 **Predict:** Two browser tabs request `/blocking` at the same moment. When does the second one finish? Answer the same for `/cooperative` and `/threaded`.
 

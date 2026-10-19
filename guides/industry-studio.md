@@ -175,6 +175,9 @@ Read the race as a sequence; either editor may win:
 
 Create `store.py` in an empty scratch folder:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">store.py</span></figcaption>
+
 ```python
 # store.py
 import sqlite3
@@ -252,11 +255,16 @@ def rename(path, subject, recipe_id, version, title):
         raise Conflict("Recipe changed; reload and compare")
 ```
 
+</figure>
+
 `prepare` initializes synthetic fixtures without overwriting an existing row; it is not a schema migration tool. Each call opens and closes its own connection. Transactions commit before a successful call returns. Parameters bind values as data rather than constructing SQL from strings. The domain policy is deliberately simple ownership; a real shared/team product needs its own policy for sharing, roles and revoked access.
 
 ### Ten checks, including a real race
 
 Create `test_store.py` alongside `store.py`:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">test_store.py</span></figcaption>
 
 ```python
 # test_store.py
@@ -346,6 +354,8 @@ class StoreChecks(unittest.TestCase):
         self.assertEqual(final_version, 2)
 ```
 
+</figure>
+
 Run this in that folder:
 
 ```bash
@@ -434,6 +444,9 @@ Never copy a live database file and assume a consistent backup while writes cont
 
 Use the lab's scratch folder (it needs `store.py`). Save this next to it as `rehearse.py`:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">rehearse.py</span></figcaption>
+
 ```python
 # rehearse.py: preserve, expand, check, restore (scratch folder only)
 import sqlite3
@@ -470,6 +483,8 @@ print("restored:", live.execute("SELECT * FROM recipes").fetchall())
 live.close()
 backup.close()
 ```
+
+</figure>
 
 **Predict first:** run `uv run --no-project --python 3.14 python rehearse.py`. Which old function breaks after the expand step, and which title does the restore bring back?
 

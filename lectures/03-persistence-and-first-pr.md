@@ -239,6 +239,9 @@ Step through the trace of one `Falafel` insert, logged with `create_engine(url, 
 
 Save this as `trace.py` in `backend/` (after demo step 1), run `uv run python trace.py`, then delete `trace.py` and `trace.db`.
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">trace.py</span></figcaption>
+
 ```python
 # trace.py (optional, not part of the app)
 from sqlmodel import Session, SQLModel, create_engine
@@ -259,6 +262,8 @@ print(">>> after refresh:", recipe.id, recipe.title)
 session.close()
 engine.dispose()
 ```
+
+</figure>
 
 The `>>>` lines print `None`, then `1`, then `1 Falafel`, with the SQL from the stepper in between. The "second connection" counts come from a separate check with `sqlite3.connect("trace.db")`: 0 rows after the flush, 0 after a close without commit, 1 after a commit.
 
@@ -329,6 +334,9 @@ The instructor converts Recipe Box to SQLite, rerunning the unchanged tests afte
 
 **1. Models.** *Make the smallest change.* `Field` now comes from `sqlmodel`: Pydantic's own `Field` does not know `index=True` and emits a deprecation warning, which your `filterwarnings = ["error"]` turns into a failure. `RecipeUpdate` keeps its Lecture 2 fields but extends `SQLModel`; `RecipePublic` still adds `id`.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/models.py</span></figcaption>
+
 ```python
 # backend/app/models.py
 from pydantic import ConfigDict
@@ -365,7 +373,12 @@ class RecipePublic(RecipeBase):
     id: int
 ```
 
+</figure>
+
 **2. Engine and session dependency.** *Make the smallest change.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/db.py</span></figcaption>
 
 ```python
 # backend/app/db.py
@@ -403,7 +416,12 @@ def get_session() -> Iterator[Session]:
 SessionDep = Annotated[Session, Depends(get_session)]
 ```
 
+</figure>
+
 **3. Lifespan, helpers and routes.** *Make the smallest change.* `main.py` always says `db.engine`, never `from app.db import engine`: the restart test below swaps `db.engine`, and a name imported once would keep pointing at the real file.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
 
 ```python
 # backend/app/main.py
@@ -482,9 +500,14 @@ def delete_recipe(recipe_id: int, session: db.SessionDep) -> None:
     session.commit()
 ```
 
+</figure>
+
 All routes preserve Lecture 2's contract. `save()` does `add`, `commit` and `refresh`; `get_or_404()` uses `session.get(Recipe, recipe_id)`; the list runs `select(Recipe).order_by(Recipe.id).offset(offset).limit(limit)`; `DELETE` calls `session.delete()`, then `commit()`. `PATCH` calls `recipe.sqlmodel_update(body.model_dump(exclude_unset=True, exclude_none=True))`, so only the fields the client sent change.
 
 **4. Seed.** *State the contract.* An empty table gets three demo rows; a non-empty table gets nothing; every row passes the same limits as a request body.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/seed.py</span></figcaption>
 
 ```python
 # backend/app/seed.py
@@ -527,7 +550,12 @@ def seed_if_empty(session: Session) -> int:
     return len(SEED)
 ```
 
+</figure>
+
 **5. Tests.** *Observe the real result.* You may delete Lecture 2's drill file `tests/test_patch_null.py`: `title` is now `NOT NULL` in SQLite, so if `exclude_none=True` ever goes missing, `test_patch_changes_only_sent_fields` fails with `IntegrityError: NOT NULL constraint failed: recipe.title` (TestClient re-raises the server's exception instead of returning a 500). If your own domain has nullable fields, keep a null test that asserts the body. The only existing test file you edit:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/conftest.py</span></figcaption>
 
 ```python
 # backend/tests/conftest.py
@@ -560,7 +588,12 @@ def client(session: Session) -> Iterator[TestClient]:
     app.dependency_overrides.clear()
 ```
 
+</figure>
+
 A new test starts the app twice on one file, and the seed test also checks every seed row against the POST rules:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/test_restart.py</span></figcaption>
 
 ```python
 # backend/tests/test_restart.py
@@ -592,6 +625,8 @@ def test_seed_is_idempotent(session):
     assert seed_if_empty(session) == len(SEED)
     assert seed_if_empty(session) == 0
 ```
+
+</figure>
 
 Run `uv run pytest`: `12 passed` (ten Lecture 2 tests plus these two).
 

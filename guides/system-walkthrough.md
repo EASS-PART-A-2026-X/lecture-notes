@@ -181,6 +181,9 @@ If the reply disappears after the commit, the caller may not know whether creati
 
 This is the **route excerpt from Lecture 7**, after its documented imports and client dependency are in place. It is not a standalone replacement file:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
+
 ```python
 # backend/app/main.py
 @app.post(
@@ -203,6 +206,8 @@ def create_recipe_from_text(
         ) from exc
     return save(session, Recipe.model_validate(new_recipe))
 ```
+
+</figure>
 
 Read the function body in order: the client calls and validates the foreign service; failures return before `save`; the backend converts the accepted candidate into its own record; `save` commits and refreshes. Request validation happens before the route body. The complete [Lecture 3 models and routes](../lectures/03-persistence-and-first-pr.md#live-demo) show the database helpers and all CRUD operations, with 12 executed contract, restart and seed tests.
 

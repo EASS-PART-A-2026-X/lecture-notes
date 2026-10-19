@@ -297,6 +297,9 @@ The AI service from Lecture 6 stays as it is. All changes are in the backend and
 
 **1. The request model.** *State the contract.* Append to `backend/app/models.py` (`ConfigDict`, `Field` and `SQLModel` are already imported there):
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">backend/app/models.py</span></figcaption>
+
 ```python
 # backend/app/models.py (append)
 class FromTextRequest(SQLModel):
@@ -307,6 +310,8 @@ class FromTextRequest(SQLModel):
     text: str = Field(min_length=1, max_length=5000)
 ```
 
+</figure>
+
 `str_strip_whitespace=True` trims the text before the length check, as in Lecture 3's `RecipeCreate`, so a body of spaces is a `422` and never costs a model call.
 
 **2. The client.** *Make the smallest change.* The backend now makes outbound HTTP calls, so declare what you import. From `backend/`:
@@ -316,6 +321,9 @@ uv add httpx
 ```
 
 `httpx` may already be installed as a dependency of another package; relying on that breaks the day that package changes. Then create the client: one class, two exceptions, a timeout per phase, and a transport that tests can replace.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/app/ai_client.py</span></figcaption>
 
 ```python
 # backend/app/ai_client.py
@@ -404,9 +412,14 @@ def get_ai_client() -> Iterator[AIClient]:
 AIClientDep = Annotated[AIClient, Depends(get_ai_client)]
 ```
 
+</figure>
+
 Point out the **adapter** at the end: the AI service speaks lists, the backend stores newline- and comma-separated strings, and the result is validated again as a `RecipeCreate`. `get_ai_client` is a dependency, like `get_session` in Lecture 3, so tests can swap it.
 
 **3. The route.** *Make the smallest change.* Add it to `backend/app/main.py`, importing `FromTextRequest` from `app.models` and `AIClientDep`, `AIServiceBadOutput` and `AIServiceUnavailable` from `app.ai_client`:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
 
 ```python
 # backend/app/main.py (add the route)
@@ -431,9 +444,14 @@ def create_recipe_from_text(
     return save(session, Recipe.model_validate(new_recipe))
 ```
 
+</figure>
+
 The slow AI call happens before any database write. Never hold a write transaction open across a network call: a slow model would hold the database lock and stall unrelated requests.
 
 **4. Tests without a network.** *Break it and watch the check fail.* `httpx.MockTransport` passes each request to your function, so the "AI service" is a lambda. `fake_ai` is a *factory fixture*: it returns a function, so each test chooses how the fake AI service behaves. `calls` lives in the fixture and the inner `recording` function appends to it, so the test can count requests, and an empty list proves the AI service was never called.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/test_from_text.py</span></figcaption>
 
 ```python
 # backend/tests/test_from_text.py
@@ -517,10 +535,15 @@ def test_timeouts_are_explicit():
     ai.close()
 ```
 
+</figure>
+
 <details markdown="1">
 <summary>Show the other backend tests (paste them below the excerpt)</summary>
 
 These complete the file: success (the stored row and the exact JSON sent), a read timeout, and invalid input that never reaches the AI service. `GOOD` and `import json` at the top of the excerpt are used here.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_from_text.py</span></figcaption>
 
 ```python
 # backend/tests/test_from_text.py (continued)
@@ -558,6 +581,8 @@ def test_invalid_text_makes_no_ai_call(client, fake_ai, text):
     assert post_text(client, text).status_code == 422
     assert calls == []  # rejected at the edge: no model call, no cost
 ```
+
+</figure>
 
 With the excerpt, `test_from_text.py` holds 9 tests.
 
@@ -610,6 +635,9 @@ Now run `uv run pytest` in `backend/`. With the whole file (the excerpt plus the
 
 **5. The frontend flow.** *Make the smallest change.* In the Lecture 5 `frontend/api.py`, replace `_friendly` with the complete function below, then add `AI_TIMEOUT` and `create_from_text`. Keep the existing imports, types, exception classes, `_request`, `_json` and CRUD functions; this is a file edit, not a standalone replacement module.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Update file</span> <span class="file-example-path">frontend/api.py</span></figcaption>
+
 ```python
 # frontend/api.py (replace _friendly; add AI_TIMEOUT and create_from_text)
 # from-text waits for the AI: allow more than the backend's own 30 s read
@@ -640,7 +668,12 @@ def create_from_text(text: str) -> Recipe:
     )
 ```
 
+</figure>
+
 In `frontend/streamlit_app.py`, replace the tabs line with the following, then append the form below:
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Update file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (replace the tabs line)
@@ -651,8 +684,13 @@ browse, add, paste = st.tabs(
 )
 ```
 
+</figure>
+
 The stable key and `on_change="rerun"` track the selected tab in session state. A failed submission stays on “Paste a recipe”, where the error and the user's text remain visible, instead of returning to the first tab and hiding the message. Switching tabs now reruns the script; the forms still batch input until submission. A successful save announces its result above the tabs; choose “Recipes” to inspect the fresh list. This uses the [Streamlit 1.66 tab-state API](https://docs.streamlit.io/develop/api-reference/layout/st.tabs), checked 18 October 2026.
 
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (append)
@@ -668,12 +706,17 @@ with paste, st.form("paste"):
             notify(f"Added {plain(created['title'])} from your text.")
 ```
 
+</figure>
+
 The title came from a model, so it goes through Lecture 4's `plain()` like any user text.
 
 <details markdown="1">
 <summary>Show the two frontend tests for the new tab</summary>
 
 They use Lecture 5's `backend` fixture and `start_app` helper. Add them to `frontend/tests/test_app.py`:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">frontend/tests/test_app.py</span></figcaption>
 
 ```python
 # frontend/tests/test_app.py (add)
@@ -719,6 +762,8 @@ def test_paste_shows_ai_errors(backend, status):
     assert at.session_state["recipe-tabs"] == "Paste a recipe"
     assert at.text_area(key="paste-text").value == PASTE
 ```
+
+</figure>
 
 They add three tests to your frontend suite (one success, two parametrized error cases).
 
@@ -825,6 +870,9 @@ In class, about 20 minutes, formative and ungraded. Inspired by the design-revie
 
 Here is a design the course does **not** use. It works, and it is shorter:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
+
 ```python
 # backend/app/main.py (a shallow design, for discussion only)
 @app.post("/recipes/from-text", response_model=RecipePublic, status_code=201)
@@ -847,6 +895,8 @@ def create_recipe_from_text(body: FromTextRequest, session: db.SessionDep) -> Re
     )
     return save(session, recipe)
 ```
+
+</figure>
 
 1. **List the facts.** In pairs, list every fact the route must know in this design (URL, timeouts, error classes, status rules, field names, the adapter). Then list what the route must know in the course design, where it calls `ai.extract_recipe(body.text)`.
 2. **Predict the change.** Lecture 9 adds bounded retries. How many files change in each design if Recipe Box gains a second AI route, such as "suggest tags"?
@@ -884,6 +934,9 @@ The loop: make it fail, read the exact error, explain it, fix it, keep a test th
 
 **Drill 1: the silent service.** Save this outside your repo and run it with `python3 silent_service.py`:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">silent_service.py</span></figcaption>
+
 ```python
 # silent_service.py (a scratch file, outside your repo)
 import socket
@@ -893,6 +946,8 @@ server = socket.create_server(("127.0.0.1", 8009))
 conn, _ = server.accept()  # keep the connection open (and never answer)
 time.sleep(600)
 ```
+
+</figure>
 
 From `backend/`, restart the backend with `AI_SERVICE_URL=http://localhost:8009 uv run fastapi dev`, keep the frontend running, and paste a recipe.
 

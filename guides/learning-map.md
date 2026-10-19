@@ -130,6 +130,9 @@ After these checkpoints, choose at most one optional experiment from [Model APIs
 
 ## Visual checkpoints
 
+Start with the [SDLC feedback loop and 2023–2026 workflow comparison](../lectures/01-environment-git-docker-ai.md#sdlc-from-a-request-to-running-software). For each later lab, identify its input, its evidence and the next decision it supports. Agent assistance can change how you produce an artifact; it does not establish that the artifact is correct.
+
+
 Use a diagram to make a prediction, then follow the code and run the relevant check. The picture explains a model of the system; it is not execution evidence. Cover the caption, trace one ordinary case and one failure, and name what the diagram leaves out.
 
 <details markdown="1">

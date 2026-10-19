@@ -207,6 +207,9 @@ Authentication establishes identity; authorization checks whether that identity 
 <details markdown="1">
 <summary>Optional: a shared service token (only if lab step 5 says something besides your backend can reach the AI service)</summary>
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">ai-service/app/security.py</span></figcaption>
+
 ```python
 # ai-service/app/security.py (optional shared secret between services)
 import os
@@ -227,6 +230,8 @@ def require_internal_token(
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 ```
 
+</figure>
+
 Attach it to the route in `ai-service/app/main.py`. Two lines change; `Depends` is already imported from Lecture 6:
 
 ```diff
@@ -240,6 +245,9 @@ Attach it to the route in `ai-service/app/main.py`. Two lines change; `Depends` 
 ```
 
 The backend sends the header by passing `headers={"X-Internal-Token": token} if token else {}` to its `httpx.Client`. Unset, the check is off, so a clean checkout still needs zero secrets. `compare_digest` avoids content-dependent short-circuit comparison; it does not eliminate every possible timing side channel or replace transport security.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/tests/test_security.py</span></figcaption>
 
 ```python
 # ai-service/tests/test_security.py
@@ -265,6 +273,8 @@ def test_token_not_required_when_unset(client, monkeypatch):
     with extract_agent.override(model=TestModel()):
         assert client.post("/extract", json=BODY).status_code == 200
 ```
+
+</figure>
 
 Your ai-service count grows by 2 (verified on the Lecture 6 code plus these two files: `8 passed`).
 
@@ -343,6 +353,9 @@ The course's [factory lab](../guides/software-factory-lab.md) draws the same rul
 ## Live demo
 
 **1. The workflow.** *State the contract.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">.github/workflows/ci.yml</span></figcaption>
 
 ```yaml
 # .github/workflows/ci.yml
@@ -431,6 +444,8 @@ jobs:
           exit "$status"
 ```
 
+</figure>
+
 The `audit` loop records a failure and keeps going, so one run reports all three services.
 
 **2. Lint the workflow** before pushing it. *Observe the real result.* From the repository root:
@@ -453,11 +468,16 @@ actionlint checks syntax and expressions and prints **nothing** when all is well
 
 **3. Harden the containers.** *Make the smallest change.* Add two lines to each service in `compose.yaml`:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">compose.yaml</span></figcaption>
+
 ```yaml
 # compose.yaml: under each of ai-service, backend and frontend
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
 ```
+
+</figure>
 
 After `docker compose up --build --wait`, compare a hardened container with the same image started without the flags. **Predict** all three values for each container before you run it: `CapEff` (capabilities in use now), `CapBnd` (the ceiling) and `NoNewPrivs`.
 
@@ -714,6 +734,9 @@ actionlint still passes: the YAML is valid. zizmor exits non-zero, once per chec
 
 (a) **SQL.** Save this in a scratch folder (never in your product) and **predict** how many rows each `DELETE` removes before you run `python3 sql_injection.py`:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">sql_injection.py</span></figcaption>
+
 ```python
 # sql_injection.py (scratch file: never in your product)
 import sqlite3
@@ -731,6 +754,8 @@ db.executemany("INSERT INTO recipe (title) VALUES (?)", [("Soup",), ("Hummus",)]
 bound = db.execute("DELETE FROM recipe WHERE title = ?", (title,))
 print("bound parameter deleted", bound.rowcount, "rows")
 ```
+
+</figure>
 
 <details markdown="1">
 <summary>Show the expected output</summary>

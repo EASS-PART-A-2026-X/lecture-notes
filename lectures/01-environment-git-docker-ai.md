@@ -92,6 +92,59 @@ Look at the terminal where the server runs. Run `pwd` there and compare it with 
 
 ## Concepts
 
+### SDLC: from a request to running software
+
+The **software development life cycle (SDLC)** is the work of discovering a need, defining acceptable behavior, designing a solution, implementing it, verifying it, releasing it and learning from its operation. Coding is one activity in that cycle. A saved file, a green test run, a merged pull request and a healthy production release are different milestones.
+
+**Example:** a user wants to find vegetarian recipes. Before writing code, clarify whether “vegetarian” is an explicit tag or an inference from ingredients, what an empty result looks like, and whether existing recipes need a migration. For an explicit tag filter, ordinary SQL and API validation are enough; an LLM adds no necessary capability.
+
+<figure class="diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Software development lifecycle, scroll horizontally">
+    <img src="../assets/diagrams/sdlc-feedback.svg" alt="A request becomes acceptance criteria, a design and a candidate change. Tests and review precede release. Operation feeds observations back into the next request; failed checks return the candidate to implementation." width="640" height="520">
+  </div>
+  <figcaption><strong>Software development is a feedback loop.</strong> Each stage produces evidence for the next decision. The sequence is a teaching map: teams often overlap design, implementation and testing. <a href="../assets/diagrams/sdlc-feedback.svg">Open the full-size lifecycle</a>.</figcaption>
+</figure>
+
+### Around 2023 and now: what changes with coding agents?
+
+This comparison describes two workflows, not a claim that every company changed at the same time. Around **2023**, teams already used version control, automated tests, CI/CD, cloud infrastructure and coding assistants. In **2026**, capable coding agents can also inspect repositories, edit multiple files and execute tools in a configured environment. Adoption and reliability vary; a team can mix manual work, autocomplete, chat and agents within one change.
+
+| Stage | A common workflow around 2023 | An agent-assisted workflow today | Evidence you still owe |
+|---|---|---|---|
+| Discover and specify | Talk to users; write an issue and acceptance criteria | Ask an assistant to summarize feedback and draft cases; confirm the actual need with stakeholders | A concrete problem, boundaries and observable acceptance criteria |
+| Design | Read the code, sketch interfaces, discuss tradeoffs | Have an agent trace callers and propose alternatives; inspect its references | An interface, data ownership and a reason for the design |
+| Implement | Write code with docs, search, autocomplete and peer help | Delegate a bounded change with allowed files, tools and a stopping condition | A small diff you can explain; no unrelated edits or exposed secrets |
+| Verify and review | Run tests and CI; review a pull request | Let an agent run checks and propose repairs; inspect the tests and independently check important behavior | Relevant tests, failure cases and results for the exact candidate revision |
+| Release | Merge, build an artifact, deploy and check health | Automate the same gates; give deployment credentials only to the authorized release process | The deployed revision, configuration, migration plan and rollback or recovery procedure |
+| Operate and learn | Read logs, respond to incidents, prioritize fixes | Use AI to summarize traces or suggest hypotheses; verify them against telemetry | User-visible outcomes, latency, errors and a verified fix |
+
+The change is in **how work is performed and coordinated**, not the disappearance of requirements, architecture or accountability. An agent's confident summary is a claim to check. More generated code can also mean more review and maintenance. Faster typing does not establish faster delivery or better quality.
+
+The [GitHub developer survey from 2023](https://github.blog/news-insights/research/survey-reveals-ais-impact-on-the-developer-experience/) already discussed AI tools alongside review, build and test delays; it describes a particular survey population, not all developers. Anthropic's [long-running agent harness example](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) illustrates incremental work, explicit progress records and verification across sessions. It is one engineering approach, not proof that every agent can deliver independently.
+
+### Walk one change through the cycle
+
+For `GET /recipes?tag=vegetarian`, write the work order before asking an agent to edit:
+
+```text
+Problem: people cannot narrow the recipe list by a saved tag.
+Accept: matching recipes only; unknown tag returns []; omitted tag preserves the old list.
+Boundary: backend owns filtering and stored data; frontend sends a query parameter.
+Scope: API, database query, tests, and a small frontend control; no new service or model.
+Verify: matching/nonmatching/empty cases, existing unfiltered behavior, browser check.
+Stop: return a reviewable diff and commands/results; do not deploy from the coding session.
+```
+
+1. **Specify:** turn those sentences into examples before implementation. Decide how whitespace and letter case behave rather than letting the generated code decide silently.
+2. **Design and build:** trace browser → backend → SQLite. Update the OpenAPI contract when the query parameter changes. Keep persistence in the backend.
+3. **Verify:** seed two recipes with different tags. Check both filtered and unfiltered requests. A test that only asserts HTTP 200 cannot establish correct filtering.
+4. **Deliver:** review the diff, run CI for that revision and merge through the team's process. Check the deployed service; merge alone does not prove publication.
+5. **Learn:** if users get empty lists because tag spelling varies, investigate the data and requirements. Improve normalization or the UI based on evidence.
+
+**Check yourself:** an agent changes the filter and reports “all tests pass”, but the tests never create a nonmatching recipe. Which acceptance criterion remains unproven? Add a fixture that could expose the mistake, then explain why it distinguishes correct filtering from returning everything.
+
+**Where we practice it:** Lectures 2–3 implement the API and persistence; 4–5 add the browser and tests; 6–9 introduce the separate AI service, boundaries and evaluations; 10 covers CI, security and release. The [agent-driven engineering guide](../guides/agent-driven-development.md) develops delegation and review, and the [software factory lab](../guides/software-factory-lab.md) follows a work order through retained delivery evidence. These remain the same product and course requirements.
+
 ### Your toolchain
 
 | Tool | What it does for you | Check |

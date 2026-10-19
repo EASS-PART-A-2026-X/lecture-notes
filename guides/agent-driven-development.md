@@ -177,6 +177,9 @@ Then run the loop:
 
 The acceptance test for the worked task, `backend/tests/test_tag_filter.py`, uses the `client` fixture from Lecture 3's `conftest.py`:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">backend/tests/test_tag_filter.py</span></figcaption>
+
 ```python
 # backend/tests/test_tag_filter.py
 def add(client, title: str, tags: str) -> None:
@@ -198,6 +201,8 @@ def test_unknown_tag_returns_empty_list(client):
     assert r.status_code == 200
     assert r.json() == []
 ```
+
+</figure>
 
 **Predict:** before any change to `main.py`, will `uv run pytest tests/test_tag_filter.py` (from `backend/`) pass or fail? If it fails, what will the first failing line compare?
 
@@ -368,6 +373,9 @@ Keep known business stages in code, as a **workflow**. Let a model choose action
 
 Save it as `ai-service/tests/test_injection.py`. It reuses Lecture 6's `FunctionModel` pattern and needs no model key:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">ai-service/tests/test_injection.py</span></figcaption>
+
 ```python
 # ai-service/tests/test_injection.py (optional drill)
 import json
@@ -408,6 +416,8 @@ def test_injected_text_cannot_add_a_tool():
     assert returned == ["allowed_tags", "final_result"]  # final_result = the output
     assert result.output.title == "Hummus"
 ```
+
+</figure>
 
 Run it from `ai-service/`: `uv run pytest tests/test_injection.py`.
 

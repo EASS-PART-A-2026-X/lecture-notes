@@ -131,6 +131,9 @@ This lab runs a small **known script**, with no host mounts or secrets. It demon
 
 Make a scratch folder outside your product (`mkdir sandbox-lab && cd sandbox-lab`) and save this as `sandbox_probe.py`. Each block checks one control and prints one `PASS` or `FAIL` line; the script exits with status 1 if anything failed.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">sandbox_probe.py</span></figcaption>
+
 ```python
 # sandbox_probe.py: report what this container lets a process do
 import errno
@@ -214,6 +217,8 @@ with socket.socket() as connection:
 
 raise SystemExit(1 if failures else 0)
 ```
+
+</figure>
 
 Use the course image; pulling it needs network **before** the restricted process starts. From `sandbox-lab/`:
 

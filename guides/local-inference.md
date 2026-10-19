@@ -300,6 +300,9 @@ Expect tens of seconds per extraction on a laptop without a usable GPU. A cold f
 
 **Step 1: structured output straight from Ollama** (optional, 10 minutes). In `ai-service/`, save this script and run `uv run python try_format.py qwen2.5:7b`. It sends Lecture 6's `RecipeExtraction` JSON schema as Ollama's `format`, which constrains the reply to that schema, then validates the reply with Pydantic:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">ai-service/try_format.py</span></figcaption>
+
 ```python
 # ai-service/try_format.py (optional: structured output straight from Ollama)
 import json
@@ -332,6 +335,8 @@ with urllib.request.urlopen(request, timeout=300) as response:
 print(RecipeExtraction.model_validate_json(reply["message"]["content"]))
 print("prompt tokens:", reply["prompt_eval_count"], "output:", reply["eval_count"])
 ```
+
+</figure>
 
 **Predict:** the reply is guaranteed to fit the schema. Does that guarantee the right `minutes`, the right `servings` and allowed tags?
 
@@ -398,6 +403,9 @@ On the host itself, use `http://172.17.0.1:11434` for `curl` from now on. If a h
 
 **(c) Ollama as a Compose service.** Run the model server as infrastructure next to your three application services. It is **not** your third service ([README](../README.md#three-service-product-requirements)), and it publishes no port:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">compose.override.yaml</span></figcaption>
+
 ```yaml
 # compose.override.yaml (optional: Ollama as infrastructure, not your third service)
 services:
@@ -410,6 +418,8 @@ services:
 volumes:
   ollama-models:
 ```
+
+</figure>
 
 Then set `AI_MODEL=ollama:qwen2.5:7b` and `OLLAMA_BASE_URL=http://ollama:11434/v1` in `.env`, run `docker compose up -d`, and pull the model once inside the container: `docker compose exec ollama ollama pull qwen2.5:7b`. Check `docker compose exec ollama ollama ps` after a request: its PROCESSOR column shows whether the container uses a GPU or only the CPU.
 

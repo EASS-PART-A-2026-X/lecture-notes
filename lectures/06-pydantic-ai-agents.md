@@ -336,6 +336,9 @@ The `openai` extra also covers Ollama.
 
 > **Version note:** every message quoted on this page was captured with `pydantic-ai-slim` 2.57.0 on 17 October 2026. Pydantic AI releases often; a newer 2.x may word a message differently, but the behavior should not change. `uv pip show pydantic-ai-slim` shows what you have.
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">ai-service/pyproject.toml</span></figcaption>
+
 ```toml
 # ai-service/pyproject.toml (append)
 [tool.pytest.ini_options]
@@ -347,7 +350,12 @@ filterwarnings = ["error"]
 entrypoint = "app.main:app"
 ```
 
+</figure>
+
 **2. The contract** (in `ai-service/`). *State the contract.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/app/schemas.py</span></figcaption>
 
 ```python
 # ai-service/app/schemas.py
@@ -372,9 +380,14 @@ class RecipeExtraction(BaseModel):
     tags: list[str] = Field(default_factory=list, description="Allowed tags only")
 ```
 
+</figure>
+
 `str_strip_whitespace=True` trims the text before the length check, as in Lecture 2, so a body of spaces is a `422` and never reaches the model.
 
 **3. The agent.** *Make the smallest change.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/app/agent.py</span></figcaption>
 
 ```python
 # ai-service/app/agent.py
@@ -437,7 +450,12 @@ def check_tags(ctx: RunContext[Deps], output: RecipeExtraction) -> RecipeExtract
     return output
 ```
 
+</figure>
+
 **4. The service.** *Make the smallest change.*
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/app/main.py</span></figcaption>
 
 ```python
 # ai-service/app/main.py
@@ -469,6 +487,8 @@ async def extract(body: ExtractRequest, deps: DepsDep) -> RecipeExtraction:
     result = await extract_agent.run(body.text, deps=deps)
     return result.output
 ```
+
+</figure>
 
 **5. Run it** with `uv run fastapi dev --port 8001` (from `ai-service/`, with `AI_MODEL` unset). *Observe the real result.*
 
@@ -504,6 +524,9 @@ curl -s http://localhost:8001/extract \
 
 **6. Test it without a model** (files in `ai-service/tests/`). *Observe the real result.*
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/tests/conftest.py</span></figcaption>
+
 ```python
 # ai-service/tests/conftest.py
 import pytest
@@ -520,6 +543,11 @@ models.ALLOW_MODEL_REQUESTS = False
 def client() -> TestClient:
     return TestClient(app)
 ```
+
+</figure>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/tests/test_extract.py</span></figcaption>
 
 ```python
 # ai-service/tests/test_extract.py
@@ -577,6 +605,8 @@ def test_unknown_tag_makes_the_model_retry(client):
     assert r.json()["tags"] == ["vegan"]
 ```
 
+</figure>
+
 `len(messages)` inside `respond` is the history the model receives on that request: 1, then 3, then 5 in the retry test.
 
 The full Recipe Box suite also tests `/health`, the default `TestModel` output, and `hours_to_minutes(1.5) == 90` directly.
@@ -592,6 +622,9 @@ Request 1: `TestModel` asks for **every** registered tool in one response (`allo
 
 <details markdown="1">
 <summary>Show the other three tests</summary>
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">ai-service/tests/test_extract.py</span></figcaption>
 
 ```python
 # ai-service/tests/test_extract.py (add; change the app.agent import to
@@ -612,6 +645,8 @@ def test_default_testmodel_output_is_schema_valid():
 def test_tools_are_plain_functions():
     assert hours_to_minutes(1.5) == 90
 ```
+
+</figure>
 
 </details>
 
@@ -658,6 +693,9 @@ Build the agent for **your own domain**: a syllabus paragraph becomes study task
 <summary>A second worked example: a study planner (read it when your domain is unclear)</summary>
 
 The same five parts in a different domain. Notice what moved into `deps`: the student's courses *and* today's date, so a test can pin the date.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Worked example</span> <span class="file-example-path">planner/agent.py</span></figcaption>
 
 ```python
 # planner/agent.py (a second worked skeleton; not part of Recipe Box)
@@ -708,6 +746,8 @@ def due_in_future(
         raise ModelRetry(f"These due dates are in the past: {late}. Re-read the text.")
     return tasks
 ```
+
+</figure>
 
 **Predict:** you run this agent under a plain `TestModel()` with `PlannerDeps(today=date(2026, 11, 23))`. What happens?
 

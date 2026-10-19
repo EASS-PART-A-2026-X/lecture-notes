@@ -101,6 +101,9 @@ Save these two complete files in a new directory. Read one function, predict the
 <details markdown="1" class="reasoning-code">
 <summary>delivery.py — producer replay, atomic outbox and consumer deduplication</summary>
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">delivery.py</span></figcaption>
+
 ```python
 # delivery.py
 """Local failure model: two SQLite files, no broker, network or external effect."""
@@ -217,6 +220,8 @@ def deliver_one(producer, consumer, *, lose_ack=False, fail_consumer=False):
     return "applied" if changed else "duplicate"
 ```
 
+</figure>
+
 </details>
 
 `isolation_level=None` with explicit `LEGACY_TRANSACTION_CONTROL` lets the lab issue `BEGIN IMMEDIATE` itself; the connection context manager then commits or rolls back that open transaction. `closing()` closes the connection afterwards. `BEGIN IMMEDIATE` serializes competing SQLite writers before the replay lookup. This is a deliberately small locking strategy, not a throughput recommendation; see the [Python 3.14 transaction documentation](https://docs.python.org/3.14/library/sqlite3.html#transaction-control-via-the-isolation-level-attribute).
@@ -225,6 +230,9 @@ The event gets a UUID that remains stable on retry. The consumer's unique `event
 
 <details markdown="1" class="reasoning-code">
 <summary>test_delivery.py — eight tests of the failure contract</summary>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">test_delivery.py</span></figcaption>
 
 ```python
 # test_delivery.py
@@ -323,6 +331,8 @@ class DeliveryTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
+
+</figure>
 
 </details>
 

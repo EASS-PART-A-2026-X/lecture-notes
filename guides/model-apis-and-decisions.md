@@ -89,6 +89,9 @@ In a separate scratch project, install `openai` and `pydantic`. Set `OPENAI_API_
 
 Put the shared output type in `schemas.py` (importing this file makes no request):
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">schemas.py</span></figcaption>
+
 ```python
 # schemas.py
 from typing import Literal
@@ -103,7 +106,12 @@ class RecipeDraft(BaseModel):
     status: Literal["draft"]
 ```
 
+</figure>
+
 Then create the client script beside it:
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">openai_example.py</span></figcaption>
 
 ```python
 # openai_example.py — optional paid/network request
@@ -126,11 +134,16 @@ with OpenAI(timeout=15.0, max_retries=0) as client:
     print(response.output_parsed.model_dump_json())
 ```
 
+</figure>
+
 The request has a token ceiling and no automatic retries. The SDK timeout controls network phases; the service must also enforce its total request deadline. Do not automatically repeat writes after an unknown outcome. Use Lecture 7's timeout budget and Lecture 9's error mapping in the actual application.
 
 ### Claude: Messages is a different contract
 
 In another scratch project, install `anthropic`. Set `ANTHROPIC_API_KEY` privately and `ANTHROPIC_MODEL` to an available model. This example deliberately asks for **plain text**, not a validated recipe. Claude's [Messages reference](https://platform.claude.com/docs/en/api/messages/create) defines a list of content blocks and a stopping reason; do not assume the first block is always text or that truncated output is complete.
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">claude_example.py</span></figcaption>
 
 ```python
 # claude_example.py — optional paid/network request
@@ -153,11 +166,16 @@ with Anthropic(timeout=15.0, max_retries=0) as client:
     print(text)
 ```
 
+</figure>
+
 For application data, use supported structured output and validation, or the Pydantic AI adapter below. A successful HTTP response does not by itself mean you received a usable answer. Rate limits, expired keys and refusals need separate handling.
 
 ### Pydantic AI: one application type, different adapters
 
 Keep the model behind `ai-service`; the backend still consumes your own `POST /extract` contract. In an isolated experiment, install `pydantic-ai-slim[openai,anthropic]`. These dependencies include both provider clients. The [OpenAI adapter](https://pydantic.dev/docs/ai/models/openai/) supports distinct Responses and Chat model classes; the [Anthropic adapter](https://pydantic.dev/docs/ai/models/anthropic/) handles Claude's contract.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">adapter_example.py</span></figcaption>
 
 ```python
 # adapter_example.py — optional provider configuration; not a complete service
@@ -185,6 +203,8 @@ result = agent.run_sync(
 print(result.output.model_dump_json())
 ```
 
+</figure>
+
 The shared `schemas.py` keeps importing a type separate from executing a request. Usage limits bound a run; a total-token check can detect overspend after a response, so also set provider output ceilings and an overall deadline. The framework does not make all models equally good at your task.
 
 ### vLLM: compatible transport, independently tested behavior
@@ -198,6 +218,9 @@ vllm serve "$LOCAL_MODEL" --host 127.0.0.1 --port 8000
 ```
 
 A local scratch client can use the OpenAI SDK's Chat Completions interface:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">vllm_example.py</span></figcaption>
 
 ```python
 # vllm_example.py — optional local model server, no hosted OpenAI call
@@ -222,6 +245,8 @@ with OpenAI(
     print(choice.message.content)
 ```
 
+</figure>
+
 The dummy key does not secure that server; keep the demonstration on loopback. A production/shared endpoint needs authentication and network controls. Within Compose, `127.0.0.1` names the current container: use the model service's DNS name on a private network, or the platform-specific host route explained in [Local inference](local-inference.md#use-a-local-model-in-your-ai-service). This does not add a required fourth service. A working text request is not evidence that tools, structured outputs or reasoning controls are compatible.
 
 ## Jev and the OpenClaw case study
@@ -229,6 +254,9 @@ The dummy key does not secure that server; keep the demonstration on loopback. A
 Pydantic AI's [decision-model guide](https://pydantic.dev/docs/ai/models/decision/) maps typed questions to constrained decisions, with an escalation route when a decision model cannot fill an output. This is useful for label selection; arbitrary recipe titles and ingredient text require a different capability.
 
 The [TypeSafe/Jev adapter guide](https://pydantic.dev/docs/ai/models/typesafe/) documents `typesafe:jev-latest`, versioned IDs and limits. It warns about arithmetic, dates and adversarial input. Use code for exact calculations. Pin the evaluated version and re-evaluate thresholds when it changes. Optional configuration sketch for a compatible Pydantic AI release and TypeSafe account:
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Optional example</span> <span class="file-example-path">jev_example.py</span></figcaption>
 
 ```python
 # jev_example.py — optional hosted decision request
@@ -250,6 +278,8 @@ result = router.run_sync(
 print(result.output)
 ```
 
+</figure>
+
 This example requires `pydantic-ai-slim[typesafe]` in a compatible version and a private `TYPESAFE_API_KEY`. It produces a label, **not a calibrated confidence score**, and does not implement the lab's scoring interface automatically. Calibration means that, on similar held-out cases receiving probability 0.8, roughly 80% should be correct; an LLM writing “80% confident” is not that evidence.
 
 Peter Steinberger's [14 October 2025 workflow post](https://steipete.me/posts/just-talk-to-it) discusses steering versus queuing messages and choosing an effective model/harness. It is a dated practitioner account, not a decision-model benchmark. For the current implementation case study, OpenClaw's [local ONNX decision plugin](https://docs.openclaw.ai/plugins/onnx) documents local CPU classification and explicit model downloads. **As checked on 19 October 2026**, that adapter needs a matching source checkout with its V2 decision-provider API; the documented stable `2026.10.4` host exposes V1. Do not present this development integration as a one-command stable install. We could not verify the exact recent social post about automatic routing, so we do not attribute a specific claim or quote to Peter.
@@ -259,6 +289,9 @@ Peter Steinberger's [14 October 2025 workflow post](https://steipete.me/posts/ju
 ## Offline lab: confidence is a routing input, not permission
 
 Create `routing.py` in an empty directory. This **synthetic policy exercise** consumes a supplied score; it does not run or emulate Jev, prove model accuracy, or claim that any provider exports this exact field. Scores and thresholds below are invented teaching inputs.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">routing.py</span></figcaption>
 
 ```python
 # routing.py
@@ -301,9 +334,14 @@ def route(
     return "llm" if llm_allowed else "review"
 ```
 
+</figure>
+
 `extract` selects the extraction pipeline; it does not save or publish anything. `llm_allowed` means an application policy permits one bounded escalation within its budget and data rules. It is **not** permission to write. A missing decision (`None`), including a classifier outage, defaults to review unless escalation is explicitly enabled. In the actual service, obtain manual/sensitive/permission flags from trusted application state; do not trust user-supplied JSON to set its own authorization.
 
 Create this test file beside it. Run `python3 -m unittest -v` with Python 3.14 (the course version). No packages, keys or model downloads are needed.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">test_routing.py</span></figcaption>
 
 ```python
 # test_routing.py
@@ -347,6 +385,8 @@ class RoutingTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 ```
+
+</figure>
 
 **Expected:** seven passing tests. They establish policy behavior, not classifier quality. To integrate: keep routing inside `ai-service`, preserve `/extract`'s contract, map failures deliberately, and test that CRUD still works during an AI outage. Do not silently change the required project into a multi-model deployment.
 

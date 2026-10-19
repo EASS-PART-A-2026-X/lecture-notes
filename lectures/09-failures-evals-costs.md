@@ -282,6 +282,9 @@ Three backend attempts with five counted steps each allow up to **15 counted age
 
 **Optional counter exercise, no model call:** save this complete file in `ai-service/tests/test_usage_limits.py`, then run `uv run pytest tests/test_usage_limits.py`. These two checks exercise the public usage-counter API, not provider billing or cancellation. Course CI extracts and runs the same file.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/tests/test_usage_limits.py</span></figcaption>
+
 ```python
 # ai-service/tests/test_usage_limits.py
 import pytest
@@ -305,6 +308,8 @@ def test_a_reported_response_can_cross_the_token_threshold():
     with pytest.raises(UsageLimitExceeded):
         limits.check_tokens(usage)
 ```
+
+</figure>
 
 </div>
 
@@ -363,6 +368,9 @@ Once. Lecture 7's client has no retries, so one blip, such as a restart that tak
 
 **2. Bounded retries, one layer.** *Make the smallest change.* From `backend/`, run `uv add tenacity`, then edit the client:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/app/ai_client.py</span></figcaption>
+
 ```python
 # backend/app/ai_client.py (excerpt)
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
@@ -408,9 +416,14 @@ class AIClient:
         # contract validation continues as in Lecture 7
 ```
 
+</figure>
+
 Keep `__init__`, `close` and the contract validation from Lecture 7, and change the module docstring's "(no retries yet)" to "(bounded retries at one layer)", so the file no longer contradicts itself.
 
 **3. Test it without waiting.** *Break it and watch the check fail.* Lecture 7's `fake_ai` fixture counts calls; make the backoff instant and pin down everything tried only once (from `backend/`):
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_from_text.py</span></figcaption>
 
 ```python
 # backend/tests/test_from_text.py (excerpt)
@@ -440,6 +453,8 @@ def test_not_retried(client, fake_ai, ai_status, expected):
     assert len(calls) == 1  # one try: retries live in one layer only
 ```
 
+</figure>
+
 **Predict:** you run `uv run pytest` now, before touching Lecture 7's tests. Which old test fails, and with which assertion?
 
 <details markdown="1">
@@ -460,6 +475,9 @@ Then update the rest of the file:
 
 The two success tests reuse `GOOD`, the valid ai-service answer at the top of Lecture 7's printed file. If your file lacks it, add it below the imports:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_from_text.py</span></figcaption>
+
 ```python
 # backend/tests/test_from_text.py (top of the file, from Lecture 7)
 GOOD = {
@@ -470,6 +488,11 @@ GOOD = {
     "tags": ["vegan"],
 }
 ```
+
+</figure>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">backend/tests/test_from_text.py</span></figcaption>
 
 ```python
 # backend/tests/test_from_text.py (the four retry tests)
@@ -515,6 +538,8 @@ def test_timeout_is_retried_then_succeeds(client, fake_ai):
     assert len(calls) == 2
 ```
 
+</figure>
+
 </details>
 
 *Restore, verify, commit.* From `backend/`, `uv run pytest` prints `26 passed` for Recipe Box (10 CRUD, 2 restart, 13 from-text, 1 contract), or `25 passed` if you skipped Lecture 7's contract test.
@@ -543,6 +568,9 @@ def test_timeout_is_retried_then_succeeds(client, fake_ai):
 **4. Predict, then measure.** With 0.5 s and then 1 s of backoff, how long do three refused attempts take? Write your guess down; drill 3 measures it on the real stack, and its reveal has the answer.
 
 **5. Map every agent failure.** *State the contract.* In `ai-service/app/agent.py`, import `UsageLimits` from `pydantic_ai` and add `LIMITS = UsageLimits(request_limit=5, tool_calls_limit=5, total_tokens_limit=20_000)`, then (from `ai-service/`):
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Update file</span> <span class="file-example-path">ai-service/app/main.py</span></figcaption>
 
 ```python
 # ai-service/app/main.py (excerpt: replace the imports and extract();
@@ -602,6 +630,8 @@ async def extract(body: ExtractRequest, deps: DepsDep) -> RecipeExtraction:
     return result.output
 ```
 
+</figure>
+
 `ModelHTTPError` is a subclass of `ModelAPIError`, so its branch must come first. The log lines record the status code and the model name, never the user's text.
 
 **Predict:** a fake model that calls a tool forever, never answering. Which status does `POST /extract` return, and why must it not be 503?
@@ -615,6 +645,9 @@ async def extract(body: ExtractRequest, deps: DepsDep) -> RecipeExtraction:
 
 `FunctionModel` drives each failure; this one loops on a tool:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">ai-service/tests/test_extract.py</span></figcaption>
+
 ```python
 # ai-service/tests/test_extract.py (excerpt)
 def test_usage_limit_is_429(client):
@@ -627,10 +660,15 @@ def test_usage_limit_is_429(client):
     assert r.json() == {"detail": "AI budget exceeded"}
 ```
 
+</figure>
+
 Others feed junk and plain text (502 each), sleep past a patched `MODEL_TIMEOUT_SECONDS` (504), and raise a provider rate limit (500):
 
 <details markdown="1">
 <summary>Show the 502, 504 and provider-failure tests</summary>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">ai-service/tests/test_extract.py</span></figcaption>
 
 ```python
 # ai-service/tests/test_extract.py (add; the imports go at the top)
@@ -677,6 +715,8 @@ def test_provider_failure_is_500_not_retried(client):
     assert r.json() == {"detail": "AI provider failed"}
 ```
 
+</figure>
+
 </details>
 
 If you kept Lecture 6's drill test `test_a_model_that_never_learns_gives_up`, it now fails with `Failed: DID NOT RAISE UnexpectedModelBehavior`: the endpoint answers 502 instead of raising. Drop `pytest.raises(...)` from its `with`, save the response as `r` and `assert r.status_code == 502`, or delete it, because the junk-output test covers the same path. The counts on this page assume you deleted it.
@@ -684,6 +724,9 @@ If you kept Lecture 6's drill test `test_a_model_that_never_learns_gives_up`, it
 *Restore, verify, commit.* From `ai-service/`, `uv run pytest` prints `11 passed`: Lecture 6's six plus these five.
 
 **6. Evaluate.** *Observe the real result.* Run `uv add --dev pydantic-evals` in `ai-service/`. Cases are messy inputs plus what a good extraction looks like. Recipe Box's dataset has 9 cases; here are the first three:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">ai-service/evals/cases.yaml</span></figcaption>
 
 ```yaml
 # ai-service/evals/cases.yaml (the first 3 of 9 cases)
@@ -727,6 +770,8 @@ cases:
       ingredients: [tomatoes, onion, stock]
 ```
 
+</figure>
+
 Two YAML details matter here. `>-` **folds** the lines into one line, joined by spaces; `|-` **keeps** the line breaks. Both strip the final newline. The `slice` metadata lets you count passes per slice in your results table; the [clinic](#evaluation-clinic-audit-the-score) explains why.
 
 The expected outputs leave out `tags`. Which tags fit a recipe is a judgment call, and the agent's `check_tags` validator already rejects unknown tags in code ([Lecture 6](06-pydantic-ai-agents.md)). Add a tag evaluator only after you have written down a tagging rule.
@@ -735,6 +780,9 @@ The expected outputs leave out `tags`. Which tags fit a recipe is a judgment cal
 <summary>Show the other six cases</summary>
 
 Append these to `cases:`; `test_dataset_has_enough_cases` fails until the file has at least 8 cases.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">ai-service/evals/cases.yaml</span></figcaption>
 
 ```yaml
 # ai-service/evals/cases.yaml (append: the other 6 cases)
@@ -804,6 +852,8 @@ Append these to `cases:`; `test_dataset_has_enough_cases` fails until the file h
       ingredients: [lemons, sugar, water]
 ```
 
+</figure>
+
 </details>
 
 **Predict:** if `chatty_shakshuka` used `|-` instead of `>-`, what title would the regex baseline below produce, and would `TitleMatches` pass?
@@ -817,6 +867,9 @@ The text has no colon, so the baseline takes everything before the first line br
 
 The evaluators are small and explainable; each returns a bool (an assertion) or a float (a score):
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">ai-service/evals/run_evals.py</span></figcaption>
+
 ```python
 # ai-service/evals/run_evals.py (excerpt)
 @dataclass
@@ -827,10 +880,15 @@ class MinutesClose(Evaluator):
         return abs(ctx.output.minutes - ctx.expected_output.minutes) <= self.tolerance
 ```
 
+</figure>
+
 The task runs the real agent and records `result.usage` per case with `increment_eval_metric`; it adds `cost_usd` when pricing data exists.
 
 <details markdown="1">
 <summary>Show the full evals/run_evals.py and tests/test_evals.py</summary>
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/evals/run_evals.py</span></figcaption>
 
 ```python
 # ai-service/evals/run_evals.py
@@ -977,6 +1035,11 @@ if __name__ == "__main__":
     report.print(width=100, include_durations=MODEL != "test")
 ```
 
+</figure>
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">ai-service/tests/test_evals.py</span></figcaption>
+
 ```python
 # ai-service/tests/test_evals.py
 """The eval harness itself must keep working (CI runs it with the offline baseline)."""
@@ -994,6 +1057,8 @@ def test_baseline_run_scores_every_case():
     assert len(report.cases) == len(load_dataset().cases)
     assert report.averages() is not None
 ```
+
+</figure>
 
 </details>
 
@@ -1146,6 +1211,9 @@ Decide the gate **before** seeing the candidate. In this exercise, no observed i
 
 Save this complete file as `eval_clinic.py` in a scratch folder. Run `python3 eval_clinic.py` (Python 3.10 or newer). It uses only the standard library; Docker and Compose are unnecessary for this in-process arithmetic/grader check. Course CI runs this exact file.
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">eval_clinic.py</span></figcaption>
+
 ```python
 # eval_clinic.py
 import unittest
@@ -1223,6 +1291,8 @@ if __name__ == "__main__":
     print("Synthetic baseline: 6/8; candidate: 7/8; candidate gate: BLOCK")
     unittest.main()
 ```
+
+</figure>
 
 Expected: the printed synthetic comparison and **6 tests pass**. The tests detect mistakes in the rubric and gate; they do not run an agent or measure real-model quality. The tolerance, title normalization, and minute range are explicit choices for this miniature rubric. Adapt them to your contract rather than treating them as universal rules. The gate assumes both runs already contain the same curated case IDs and slice assignments; validate that alignment in a real runner and keep raw per-case evidence.
 

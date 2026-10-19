@@ -306,6 +306,9 @@ The second command downloads Playwright's Chromium. On Ubuntu or WSL2, use `uv r
 
 **Version note:** checked 17 October 2026 against PyPI: Streamlit 1.66.0, httpx 0.28.1, pytest 9.1.1, pytest-playwright 0.10.0, Playwright 1.64.0 and respx 0.23.1. Every test on this page was run with exactly these versions.
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Add to file</span> <span class="file-example-path">frontend/pyproject.toml</span></figcaption>
+
 ```toml
 # frontend/pyproject.toml (append)
 [tool.pytest.ini_options]
@@ -314,7 +317,12 @@ testpaths = ["tests"]  # e2e/ needs a running app: run it explicitly
 filterwarnings = ["error"]
 ```
 
+</figure>
+
 **3. Rebuild the boundary.** *State the contract:* which failures exist and what the user reads for each. This is the whole file:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/api.py</span></figcaption>
 
 ```python
 # frontend/api.py
@@ -415,6 +423,8 @@ def delete_recipe(recipe_id: int) -> None:
     _request("DELETE", f"/recipes/{recipe_id}")
 ```
 
+</figure>
+
 The order of the two `except` clauses matters: every exception in `NOT_SENT` is also an `httpx.TransportError`, so the narrower clause must come first.
 
 > **Investigate:** answer from the code before running anything.
@@ -454,6 +464,9 @@ The order of the two `except` clauses matters: every exception in `NOT_SENT` is 
 
 **4. Add the states to the UI.** *Make the smallest change.* Delete `import httpx` and `show_error()`, catch `api.BackendError` instead of `httpx.HTTPStatusError` (showing `st.error(str(exc))`), then change:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Update file</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
+
 ```python
 # frontend/streamlit_app.py (the parts that change)
 def recipe_fields(key: str, recipe: api.Recipe | None = None) -> dict:
@@ -478,10 +491,15 @@ with browse:
         ...  # unchanged
 ```
 
+</figure>
+
 <details markdown="1">
 <summary>Show the whole <code>streamlit_app.py</code> after this step</summary>
 
 This is the file the tests below were run against (Streamlit 1.66.0), including Lecture 4's `plain()`, `required=True` and frontend check.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/streamlit_app.py</span></figcaption>
 
 ```python
 # frontend/streamlit_app.py (after Lecture 5)
@@ -591,9 +609,14 @@ with add, st.form("add", clear_on_submit=True):
             notify(f"Added {plain(created['title'])}.")
 ```
 
+</figure>
+
 </details>
 
 **5. Test the states with AppTest.** *Break it and watch the check fail.* Write the tests first, then watch them fail against the Lecture 4 code. `git stash push api.py streamlit_app.py` (run in `frontend/`) puts your uncommitted changes to those two files aside and restores the committed Lecture 4 versions; `git stash pop` brings your changes back. This only works if Lecture 4's frontend was committed (its lab step 9). Not committed? Copy the two files aside instead (`cp api.py api.py.new`, and so on), then restore them.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/tests/test_app.py</span></figcaption>
 
 ```python
 # frontend/tests/test_app.py
@@ -676,6 +699,8 @@ def test_add_sends_exact_json(backend):
     assert at.success[0].value == "Added Stew."
 ```
 
+</figure>
+
 The last test is the worked example for lab step 4. Read it in three parts. **Arrange:** `post` is a respx *route* that answers `POST /recipes` with a `201` and remembers every request it answered. **Act:** type a title, click the submit button, rerun the script. **Assert:** `post.calls.last.request.content` holds the bytes the form really sent; `json.loads` turns them into a dict that must equal the API contract exactly (the number inputs kept their defaults, 30 and 2), and the success message must name the recipe.
 
 **Predict:** with steps 3 and 4 stashed (the Lecture 4 code), how many of these five tests fail, and which?
@@ -688,6 +713,9 @@ The last test is the worked example for lab step 4. Read it in three parts. **Ar
 </details>
 
 **6. Enforce the boundary with a test** (extension; the `grep` in the completion check is the simple version).
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/tests/test_boundary.py</span></figcaption>
 
 ```python
 # frontend/tests/test_boundary.py
@@ -713,6 +741,8 @@ def test_ui_reaches_the_backend_only_through_api_py():
     assert imported_modules(UI) <= {"api", "streamlit", "string"}
 ```
 
+</figure>
+
 <details markdown="1">
 <summary>Read the boundary test line by line</summary>
 
@@ -728,6 +758,9 @@ def test_ui_reaches_the_backend_only_through_api_py():
 </details>
 
 **7. One real-browser flow.** *Observe the real result.* Run the backend in one terminal and the frontend (`uv run streamlit run streamlit_app.py`) in another, then:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">frontend/e2e/test_e2e.py</span></figcaption>
 
 ```python
 # frontend/e2e/test_e2e.py
@@ -766,6 +799,8 @@ def test_add_then_delete_a_recipe(page: Page):
     expect(page.get_by_text(f"Deleted {title}.")).to_be_visible()
     expect(recipes.get_by_text(label)).to_have_count(0)
 ```
+
+</figure>
 
 Run it from `frontend/` with `uv run pytest e2e --base-url http://localhost:8501` (add `--browser-channel chrome` to use your installed Chrome). Expected: `1 passed`. Each expander is an element with the ARIA role `group`; `filter(has_text=label)` keeps the one whose text contains your recipe's label.
 

@@ -78,6 +78,9 @@ MCP can be useful; it is not a prerequisite for an agent. A CLI can also be badl
 
 Create a scratch folder outside your product. Save the complete file as `catalog.py`:
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">catalog.py</span></figcaption>
+
 ```python
 # catalog.py
 import argparse
@@ -125,6 +128,8 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
+</figure>
+
 Run `uv run --no-project --python 3.14 python catalog.py --help`, then the `show lentils --json` command through that same Python route. Predict the exit code and output stream before trying `show missing --json`, `show ../../.env --json`, and `show injected --json`. A nonzero exit here is an expected observation, not a reason to remove validation.
 
 **Scope matters:** this command's implementation has a small surface. It does not sandbox the agent that calls it. An agent with a separate shell tool may still read files or execute other commands; keep the [execution boundary](agent-sandboxes.md#design-a-bounded-agent-run) enforced. Returning hostile text also does not prove that a model will ignore it later.
@@ -132,6 +137,9 @@ Run `uv run --no-project --python 3.14 python catalog.py --help`, then the `show
 ## Check the command through its public interface
 
 Save the next **two blocks in order** beside it as one `test_catalog.py` file. The tests start the actual command with an argument list and a timeout. `shell=True` is unnecessary: data stays in an argument rather than becoming a shell program.
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">File example</span> <span class="file-example-path">test_catalog.py</span></figcaption>
 
 ```python
 # test_catalog.py
@@ -178,7 +186,12 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), "lentils: Lentil soup (35 minutes)")
 ```
 
+</figure>
+
 Append the remaining methods **with their indentation unchanged**, followed by the test entry point:
+
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">test_catalog.py</span></figcaption>
 
 ```python
 # test_catalog.py (continued; keep method indentation)
@@ -222,6 +235,8 @@ Append the remaining methods **with their indentation unchanged**, followed by t
 if __name__ == "__main__":
     unittest.main()
 ```
+
+</figure>
 
 Run `uv run --no-project --python 3.14 python -m unittest -v test_catalog.py`: expect **8 tests passing**, with the invalid-identifier variations reported as subtests. These are CLI contract checks, not a live-agent benchmark, complete hostile-code sandbox test, or proof of application authorization.
 

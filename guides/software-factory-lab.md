@@ -23,6 +23,8 @@
 
 </details>
 
+Before this lab, revisit [the SDLC comparison and tag-filter work order](../lectures/01-environment-git-docker-ai.md#around-2023-and-now-what-changes-with-coding-agents). A factory automates parts of that lifecycle; its retained evidence must still justify the delivery milestone it reports.
+
 ## What you will learn
 
 A software factory turns a request into a candidate, checks that candidate, and moves it through an authorized delivery process. The model can help write code; the surrounding system must decide which checks run, retain the results, and enforce the allowed effects.

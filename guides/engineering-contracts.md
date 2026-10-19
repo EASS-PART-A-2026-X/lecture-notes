@@ -162,6 +162,9 @@ For any manifest, ask **who reads it, which schema or version it uses, what is p
 
 Here is the backend service from [Lecture 8's `compose.yaml`](../lectures/08-docker-compose.md), shortened (the healthcheck timings are left out):
 
+<figure class="file-example file-example--long" markdown="1">
+<figcaption><span class="file-example-action">Partial file</span> <span class="file-example-path">compose.yaml</span></figcaption>
+
 ```yaml
 # compose.yaml (excerpt: the backend service from Lecture 8)
   backend:
@@ -185,6 +188,8 @@ Here is the backend service from [Lecture 8's `compose.yaml`](../lectures/08-doc
           import urllib.request;
           urllib.request.urlopen("http://localhost:8000/health", timeout=2)
 ```
+
+</figure>
 
 Read it line by line with the five questions:
 
