@@ -1065,6 +1065,102 @@ $ed-code-languages: (
   }
 }
 
+// 6.1 Tables on phones and in narrow columns (screen only; print keeps every table a table).
+//     The plugin gives each body cell its column name (data-label) and every table with three or
+//     more columns the class "stack": below a 36rem column each row becomes a card. The first
+//     cell names the card; every other cell shows its column name on a line above its value, so
+//     no column hides off-screen. The home calendar (table.schedule) keeps its own cards (8.8).
+@media screen {
+  @container content (max-width: 36rem) {
+    .main-content .table-wrapper:has(> table.stack) {
+      overflow: visible;
+    }
+
+    .main-content table.stack:not(.schedule) {
+      display: block;
+      min-width: 0;
+
+      // The header row stays for screen readers; each card repeats its names visibly.
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      tbody,
+      tr,
+      td {
+        display: block;
+      }
+
+      tr {
+        padding: 0.8rem 0 0.85rem;
+        border-bottom: 1px solid var(--ed-rule);
+      }
+
+      tbody tr:last-of-type {
+        border-bottom: 0;
+      }
+
+      td {
+        min-width: 0;
+        padding: 0.4rem 0 0;
+        text-align: start !important; // kramdown writes column alignment as an inline style
+        overflow-wrap: anywhere;
+        border: 0;
+      }
+
+      td:first-child {
+        padding-top: 0;
+        font-size: var(--fs-16) !important;
+        font-weight: 650;
+        line-height: 1.4;
+        color: var(--ed-ink);
+      }
+
+      td:not(:first-child)::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 0.05rem;
+        font-size: var(--fs-14);
+        font-weight: 650;
+        line-height: 1.4;
+        color: var(--ed-term);
+      }
+
+      // "Step | …" tables whose first cells are numbers: the card title reads "Step 1".
+      &.stack--numbered td:first-child::before {
+        content: attr(data-label) " ";
+      }
+
+      td[data-label=""]::before {
+        content: none;
+      }
+
+      td:empty {
+        display: none;
+      }
+    }
+
+    // A two-column table stays a table: a long word ("Model/runtime/configuration") may break
+    // rather than push the second column off-screen.
+    .main-content table:not(.stack) :is(th, td) {
+      overflow-wrap: anywhere;
+    }
+
+    .main-content td code {
+      overflow-wrap: anywhere;
+      // Cloned padding at a line end can overhang the cell by a few pixels, which course.js would
+      // read as a sideways scroll; sliced padding cannot.
+      -webkit-box-decoration-break: slice;
+      box-decoration-break: slice;
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------------------------
 // 7. Disclosures: answers as ruled exam entries; "On this page" as a contents box
 // ---------------------------------------------------------------------------------------------

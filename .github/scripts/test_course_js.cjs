@@ -247,7 +247,7 @@ test('the stepper copes with degenerate input', () => {
 const home = join(process.env.SITE_DIR || '_site', 'index.html');
 test('the rendered home-page calendar parses, one date per row', {skip: !existsSync(home) && 'no built site'}, () => {
   const html = readFileSync(home, 'utf8');
-  const table = html.match(/<table class="schedule">([\s\S]*?)<\/table>/);
+  const table = html.match(/<table class="schedule\b[^"]*">([\s\S]*?)<\/table>/);
   assert.ok(table, 'index.html needs table.schedule (from _plugins/course_components.rb)');
   const dates = [...table[1].matchAll(/<td data-label="Date">([\s\S]*?)<\/td>/g)].map(match => match[1].replace(/<[^>]+>/g, ''));
   assert.equal(dates.length, 13);
@@ -256,7 +256,7 @@ test('the rendered home-page calendar parses, one date per row', {skip: !existsS
 
 test('the rendered deadlines table parses, and on 19 October names EX1', {skip: !existsSync(home) && 'no built site'}, () => {
   const html = readFileSync(home, 'utf8');
-  const table = html.match(/<table class="deadlines">([\s\S]*?)<\/table>/);
+  const table = html.match(/<table class="deadlines\b[^"]*">([\s\S]*?)<\/table>/);
   assert.ok(table, 'index.html needs table.deadlines (from _plugins/course_components.rb)');
   const text = cell => cell.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   const headers = [...table[1].matchAll(/<th\b[^>]*>([\s\S]*?)<\/th>/g)].map(match => text(match[1]).toLowerCase());

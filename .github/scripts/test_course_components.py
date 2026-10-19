@@ -1,5 +1,5 @@
-"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager) and
-for the time plan that opens every lecture lab.
+"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager,
+table labels and phone cards) and for the time plan that opens every lecture lab.
 
 Run after the Jekyll build, from the repository root:
     python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -8,6 +8,7 @@ Every lecture 1-10 must open with one "At a glance" card; COURSE_GLANCE=optional
 "at most one" while a lecture is being rewritten.
 """
 
+import html as htmllib
 import os
 import re
 import unittest
@@ -88,6 +89,16 @@ class LabelParagraphs(HTMLParser):
 def main_of(html):
     match = re.search(r"<main\b[^>]*>(.*)</main>", html, re.S)
     return match.group(1) if match else ""
+
+
+def plain(fragment):
+    """Text of an HTML fragment as the plugin computes it: tags stripped, entities decoded, spaces
+    collapsed."""
+    return re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", "", fragment))).strip()
+
+
+def plugin_constant(name):
+    return int(re.search(rf"{name} = (\d+)", PLUGIN.read_text(encoding="utf-8")).group(1))
 
 
 @unittest.skipUnless(SITE.is_dir(), f"no built site at {SITE}")
@@ -192,7 +203,7 @@ class CourseComponentsTest(unittest.TestCase):
     def test_home_page_hooks(self):
         html = self.pages["index.html"]
         for hook in ('<div class="home-hero">', '<ul class="home-facts">', '<p class="home-actions">',
-                     '<ol class="start-path">', '<table class="schedule">', '<table class="deadlines">'):
+                     '<ol class="start-path">', '<table class="schedule stack">', '<table class="deadlines stack">'):
             with self.subTest(hook=hook):
                 self.assertEqual(html.count(hook), 1)
         hero = re.search(r'<div class="home-hero">(.*?)<p class="home-actions">', html, re.S)
@@ -206,11 +217,41 @@ class CourseComponentsTest(unittest.TestCase):
         for table, columns in (("schedule", ["#", "Date", "Focus", "Deliverable"]),
                                ("deadlines", ["Assignment", "Deadline"])):
             with self.subTest(table=table):
-                body = re.search(rf'<table class="{table}">(.*?)</table>', html, re.S)
+                body = re.search(rf'<table class="{table}\b[^"]*">(.*?)</table>', html, re.S)
                 self.assertIsNotNone(body)
                 headers = [re.sub(r"<[^>]+>", "", cell).strip()
                            for cell in re.findall(r"<th\b[^>]*>(.*?)</th>", body.group(1), re.S)]
                 self.assertEqual(headers[:len(columns)], columns)
+
+    def test_tables_name_every_cell_and_stack_from_three_columns(self):
+        """Every body cell carries its column name (data-label, the header text); a table with
+        three or more columns has the class "stack", which phones show as labelled cards; and
+        "stack--numbered" marks exactly the stacked tables whose first cells are all numbers."""
+        minimum = plugin_constant("STACK_MIN_COLUMNS")
+        self.assertEqual(minimum, 3)
+        for name, html in self.pages.items():
+            tables = re.findall(r"<table\b([^>]*)>(.*?)</table>", main_of(html), re.S)
+            for index, (attrs, inner) in enumerate(tables):
+                with self.subTest(page=name, table=index):
+                    match = re.search(r'class="([^"]*)"', attrs)
+                    classes = match.group(1).split() if match else []
+                    head = re.search(r"<thead>(.*?)</thead>", inner, re.S)
+                    self.assertIsNotNone(head, "every table needs a header row (it names the card fields)")
+                    headers = [plain(h) for h in re.findall(r"<th\b[^>]*>(.*?)</th>", head.group(1), re.S)]
+                    self.assertEqual("stack" in classes, len(headers) >= minimum, headers)
+                    firsts = []
+                    for row in re.findall(r"<tr>(.*?)</tr>", inner.partition("<tbody>")[2], re.S):
+                        cells = re.findall(r"<td\b([^>]*)>(.*?)</td>", row, re.S)
+                        for column, (cell_attrs, content) in enumerate(cells):
+                            label = re.search(r'data-label="([^"]*)"', cell_attrs)
+                            self.assertIsNotNone(label, f"cell without data-label: {content[:60]}")
+                            expected = headers[column] if column < len(headers) else ""
+                            self.assertEqual(htmllib.unescape(label.group(1)), expected)
+                        if cells:
+                            firsts.append(plain(cells[0][1]))
+                    numbered = (len(headers) >= minimum and headers[0] not in ("", "#") and bool(firsts)
+                                and all(re.fullmatch(r"\d{1,3}", text) for text in firsts))
+                    self.assertEqual("stack--numbered" in classes, numbered, firsts[:3])
 
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():
