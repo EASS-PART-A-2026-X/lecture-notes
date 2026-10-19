@@ -250,7 +250,7 @@ The **software development life cycle (SDLC)** is the work of discovering a need
 
 <figure class="course-diagram">
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Software development lifecycle, scroll horizontally">
-    <img src="../assets/diagrams/sdlc-feedback.svg" alt="Six stages in a loop from need to operation; failed checks return to implementation, and operation feeds the next need." width="640" height="520">
+    <img src="../assets/diagrams/sdlc-feedback.svg" alt="Six stages in a loop from need to operation; failed checks return to implementation, and operation feeds the next need." width="640" height="604">
   </div>
   <figcaption><strong>Software development is a feedback loop.</strong> Each stage produces evidence for the next decision. The sequence is a teaching map: teams often overlap design, implementation and testing. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/sdlc-feedback.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
@@ -267,7 +267,7 @@ Six stages, each labelled with the evidence it produces. Arrows connect them in 
 3. **Implement a candidate:** small diff and identified revision.
 4. **Verify and review:** tests and independent inspection. A dashed arrow labelled "failed check → repair" goes back from this stage to stage 3.
 5. **Release deliberately:** artifact, health and recovery.
-6. **Operate and learn:** outcomes, traces and next need. An arrow from this stage returns to stage 1 and closes the loop.
+6. **Operate and learn:** outcomes, traces and next need. An arrow labelled "feeds the next need" returns from this stage to stage 1 and closes the loop.
 
 Below the stages: AI assistance can support every stage; permissions, acceptance criteria and release gates still apply. Repeat in small increments; stages can overlap.
 
