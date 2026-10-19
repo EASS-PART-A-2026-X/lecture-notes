@@ -66,12 +66,12 @@
       discarded: ["Left the session. recipe.id is None; nothing was ever sent.", "idle"],
       "rolled-back": [`Not in the session. recipe.id still says ${s.obj.id}, but no row ${s.obj.id} exists.`, "bad"]
     }[s.obj.state];
-    const rows = n => `${n} ${n === 1 ? "row" : "rows"}`;
+    const survive = n => n === 1 ? "1 row survives" : `${n} rows survive`;
     return {
       object: obj,
       transaction: s.txOpen ? [`Open: BEGIN, then ${s.uncommitted} uncommitted INSERT.`, "wait"] : ["None open.", "idle"],
       other: [`SELECT count(*) FROM recipe returns ${s.committed}.`, s.committed ? "ok" : "idle"],
-      restart: [`${rows(s.committed)} survive. Uncommitted work and Python objects do not.`, s.committed ? "ok" : "idle"]
+      restart: [`${survive(s.committed)}. Uncommitted work and Python objects do not.`, s.committed ? "ok" : "idle"]
     };
   }
 
