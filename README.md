@@ -28,25 +28,25 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 Seventeen guides support the lectures. Student setup and the learning map are required; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
 
-| Guide | Status | When |
+| Guide | Status | When to use it |
 |---|---|---|
 | [Student setup](guides/student-setup.md) | *Required* | Part A before Lecture 1; Part B at the end of Lecture 1 |
 | [Learning map](guides/learning-map.md) | *Required* | In week 1, then its row for each class |
-| [Submission evidence](guides/submission-evidence.md) | *Submission reference* | Before EX1, EX2 and EX3; existing criteria, worked annotations and a setup pilot checklist |
-| [Engineering foundations](guides/engineering-foundations.md) | *Bridge when stuck* | Its readiness check before Lecture 1; a section whenever a lecture's prerequisite check fails |
-| [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose an assistant or model, and before Lecture 6 |
-| [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | Alongside your first assistant tasks (Lecture 1) and your agent (Lecture 6) |
-| [Agent sandboxes](guides/agent-sandboxes.md) | *Optional depth* | Its [Week 1 minimum](guides/agent-sandboxes.md#week-1-minimum) before your first agent session; the rest with Lectures 6, 8 and 10 |
-| [Local inference](guides/local-inference.md) | *Optional depth* | How models run and what a transformer computes; with Lectures 6 and 9. Hardware-intensive experiments stay optional |
-| [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | OpenAI versus OpenAPI, Claude, Pydantic AI, Jev, vLLM and a tested offline routing policy; vocabulary in Lecture 2, design and evaluation in Lectures 6–9 |
-| [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | Visual overview of model choice, quantization, caching, speculation, batching, parallelism and serving; Lectures 6–10 |
-| [Engineering contracts](guides/engineering-contracts.md) | *Optional depth* | Manifests, skills, factories and evaluations next to your Docker/Compose workflow; Lectures 8–10 |
-| [CLI-first agents](guides/cli-first-agents.md) | *Optional depth* | A working command, eight interface checks, focused skills and when MCP earns its complexity; after Lectures 6–10 |
-| [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | One request through containers, contracts, commits and recovery; with Lectures 3 and 7–10 |
-| [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Repository reading, review, private records, concurrency and recovery; alongside the weekly work |
-| [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | A work order through a failed build, repair, review and delivery; after Lecture 10 or in the clinics |
-| [Systems reasoning clinics](guides/systems-reasoning.md) | *Optional depth* | Idempotency/outbox lab, reliability budgets and repeated agent trials; after Lectures 7–9 |
-| [Further study](guides/further-study.md) | *Optional depth* | Course sites and research behind this course's design; any time, never assessed |
+| [Submission evidence](guides/submission-evidence.md) | *Submission reference* | Before you hand in EX1, EX2 and EX3, to check that your repository shows what the assignment asks for |
+| [Engineering foundations](guides/engineering-foundations.md) | *Bridge when stuck* | Its readiness check before Lecture 1; later, one section whenever a lecture's prerequisite check fails |
+| [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose a coding assistant or a model, and before Lecture 6 |
+| [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | With your first tasks for a coding assistant (Lecture 1), and again when you build your own agent (Lecture 6) |
+| [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | Parts A and B after Lecture 2 or 3, Part C after Lecture 7, again with Lecture 10: follow one small change from a written request through a failed build, a fix, review and delivery |
+| [Local inference](guides/local-inference.md) | *Optional depth* | Before Lecture 6, to see how a model turns your text into an answer and how your AI service can use a model on your own computer; again in Lecture 9 for its measurements. Experiments that need strong hardware stay optional |
+| [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | With Lecture 2 for the vocabulary; with Lectures 6–9 to decide whether plain code, a small classifier or a language model should handle a request, and to test that choice offline |
+| [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | With Lectures 6–10, when you want pictures of what makes a model answer faster or cheaper, and what each speed-up costs |
+| [Agent sandboxes](guides/agent-sandboxes.md) | *Optional depth* | Its [Week 1 minimum](guides/agent-sandboxes.md#week-1-minimum) (five rules) before your first session with a coding assistant; the rest with Lectures 6, 8 and 10 |
+| [Manifests, skills and evals](guides/engineering-contracts.md) | *Optional depth* | With Lectures 8–10: for each configuration file you already use, who reads it and what actually stops a rule from being broken |
+| [CLI-first agents](guides/cli-first-agents.md) | *Optional depth* | After Lectures 6–10: give an assistant one small command with predictable input and output before adding heavier tool connections |
+| [Visual system walkthrough](guides/system-walkthrough.md) | *Optional depth* | With Lectures 3 and 7–10: follow one request through your services and database, then predict where it can fail |
+| [Industry engineering studio](guides/industry-studio.md) | *Optional depth* | Alongside the weekly work, to practise joining an existing repository and shipping a small, verified change |
+| [Systems reasoning clinics](guides/systems-reasoning.md) | *Optional depth* | After Lectures 7–9, for three questions: can a timeout create the same thing twice, why do users see failures when every service looks healthy, and is one successful agent run enough to release? |
+| [Further study](guides/further-study.md) | *Optional depth* | Any time, never assessed: other course sites and the research behind this course's teaching methods |
 
 *Optional depth* activities need no paid accounts and never replace the required lecture checkpoints.
 
