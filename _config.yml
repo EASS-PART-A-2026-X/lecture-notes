@@ -52,7 +52,7 @@ defaults:
   - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 29 } }
 
 # Just the Docs
-color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper, one oxblood accent
+color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper; oxblood only for deadlines and failures
 search:
   heading_level: 3
   previews: 2

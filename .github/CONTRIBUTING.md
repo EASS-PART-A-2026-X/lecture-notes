@@ -190,15 +190,18 @@ Write ordinary Markdown tables with a header row. Below a 36 rem column (phones,
 
 The look of the site lives in three files: `_sass/color_schemes/eass.scss` (the theme's colour variables), `_sass/custom/setup.scss` (font stacks, sidebar rhythm, the 54 rem column) and `_sass/custom/custom.scss` (CSS custom properties on `:root`, every component, and print). Components use the custom properties; do not hard-code a colour or a font size in a component. The site is light only, by design: the teaching diagrams are drawn on white and the PDF prints from this palette.
 
+Colour is state, not decoration, and matches the diagram palette below: navy is the path (links, where you are, the primary action, focus), green is checked or done, oxblood is a deadline, a pitfall or a failure; each callout kind keeps its own ink (below). Headings, bullets, rules and other labels stay ink, grey or paper: give a new component a colour only when it carries one of these meanings, and say it in words too.
+
 | Token | Value | Use | On white |
 |---|---|---|---|
 | `--ed-ink` | `#0f1e3a` | headings, strong rules, primary button | 16.6:1 |
 | `--ed-text` | `#232b38` | reading text | 14.3:1 |
 | `--ed-text-2` | `#384152` | secondary reading text (the home-page promise) | 10.3:1 |
-| `--ed-muted` | `#535c6b` | captions, dates, labels, list numerals | 6.8:1 |
-| `--ed-link`, `--ed-focus` | `#1d4e89` | links (always underlined) and the 3 px focus ring, 2 px clear of the element | 8.4:1 |
-| `--ed-accent` | `#9b2c2c` | the one accent: the At a glance title, the active page, deadlines, pitfalls | 7.5:1 |
-| `--ed-current` | `var(--ed-link)` (`#1d4e89`) | where you are in the semester: the home board's rule and label, the next meeting's calendar row | 8.4:1 (7.7:1 on paper) |
+| `--ed-term` | `#4a5363` | labels (`ed-label`: phase markers, sidebar groups, pager directions, card and code-tab labels), glance and fact terms | 7.8:1 (7.1:1 on paper) |
+| `--ed-muted` | `#535c6b` | captions, dates, list bullets and numerals | 6.8:1 |
+| `--ed-link`, `--ed-focus` | `#1d4e89` | links (always underlined), disclosure chevrons, and the 3 px focus ring, 2 px clear of the element | 8.4:1 |
+| `--ed-accent` | `#9b2c2c` | deadline tags, pitfalls and failures only (never decoration) | 7.5:1 (6.9:1 on its tint) |
+| `--ed-current` | `var(--ed-link)` (`#1d4e89`) | where you are: the active sidebar item, the home board's rule and label, the next meeting's calendar row | 8.4:1 (7.7:1 on paper) |
 | `--ed-rule`, `--ed-rule-strong` | `#ddd7ca`, `#b9b1a1` | hairlines, spines and rails (decorative) | — |
 | `--ed-rule-ui` | `#8a8070` | borders of form controls (WCAG 1.4.11) | 3.9:1 |
 | `--ed-paper`, `--ed-paper-deep` | `#f7f5ef`, `#efebe1` | sidebar, figure panels, contents box; hover, code tab, next-meeting row | — |

@@ -41,17 +41,19 @@
   // and quizzes stop here; tables, code, figures and the structural components use the full column.
   --ed-measure: 40.5rem;
 
-  // Ink and surfaces. Ratios are against white unless noted.
+  // Ink and surfaces. Ratios are against white unless noted. Colour is state, not decoration:
+  // navy is the path (links, where you are, the primary action, focus), green is checked or done,
+  // oxblood is a deadline, a pitfall or a failure. Everything else is ink, grey or paper.
   --ed-bg: #fff;
   --ed-ink: #0f1e3a;         // headings, strong rules, primary button        16.6:1
   --ed-text: #232b38;        // reading text                                  14.3:1
   --ed-text-2: #384152;      // secondary reading text (hero promise)         10.3:1
-  --ed-term: #4a5363;        // glance and fact terms                          7.8:1
-  --ed-muted: #535c6b;       // captions, dates, labels, list numerals         6.8:1 (5.7 on paper-deep)
-  --ed-link: #1d4e89;        // links and the focus ring                       8.4:1
-  --ed-accent: #9b2c2c;      // the one accent: glance title, active page, deadlines 7.5:1
-  --ed-current: var(--ed-link); // where you are in the semester: the home board and next meeting
-  --ed-on-ink: #fff;         // text on ink and accent fills
+  --ed-term: #4a5363;        // labels (ed-label), glance and fact terms       7.8:1 (7.1 on paper)
+  --ed-muted: #535c6b;       // captions, dates, list bullets and numerals      6.8:1 (5.7 on paper-deep)
+  --ed-link: #1d4e89;        // links, disclosure chevrons, the focus ring      8.4:1
+  --ed-accent: #9b2c2c;      // deadlines, pitfalls and failure only            7.5:1 (6.9 on its tint)
+  --ed-current: var(--ed-link); // where you are: active sidebar item, home board, next meeting
+  --ed-on-ink: #fff;         // text on ink fills (primary button, current step)
   --ed-rule: #ddd7ca;        // hairlines (decorative)
   --ed-rule-strong: #b9b1a1; // rails and spines (decorative)
   --ed-rule-ui: #8a8070;     // control borders that must reach 3:1            3.9:1
@@ -218,7 +220,7 @@ body {
   }
 
   // Headings: the system sans, bold and slightly tightened, so they read the same on Windows,
-  // macOS and Linux; each h2 has a hairline section rule with a short oxblood tab.
+  // macOS and Linux; each h2 opens a section under a hairline rule.
   h1,
   h2,
   h3 {
@@ -245,7 +247,6 @@ body {
     line-height: 1.2 !important;
     letter-spacing: -0.01em;
     border-top: 1px solid var(--ed-rule);
-    background: linear-gradient(var(--ed-accent), var(--ed-accent)) left top / 2.5rem 2px no-repeat;
 
     @include mq(sm) {
       margin-top: 2.75rem;
@@ -287,7 +288,7 @@ body {
     margin-top: 0;
   }
 
-  // Lists: drawn bullets, and numerals in the reading face at reading size (6.8:1).
+  // Lists: quiet drawn bullets, and numerals in the reading face at reading size (both 6.8:1).
   ul,
   ol {
     padding-left: 1.6em;
@@ -304,7 +305,7 @@ body {
     height: 0.32em;
     margin-top: 0.68em;
     margin-left: -1.05em;
-    background: var(--ed-accent);
+    background: var(--ed-muted);
     border-radius: 50%;
   }
 
@@ -545,7 +546,7 @@ a.skip-to-main:active {
       font-weight: 650;
       background-image: none;
       background-color: var(--ed-bg);
-      box-shadow: inset 3px 0 0 var(--ed-accent);
+      box-shadow: inset 3px 0 0 var(--ed-current);
     }
   }
 }
@@ -1194,7 +1195,7 @@ $ed-code-languages: (
       position: absolute;
       top: calc(0.7rem + 0.25em);
       left: 0.1rem;
-      color: var(--ed-accent);
+      color: var(--ed-link);
     }
 
     &:hover {
@@ -1465,7 +1466,7 @@ $ed-code-languages: (
 
   // The card's title, as written ("At a glance"): a sentence-case label one step above the terms.
   > p.glance-title {
-    @include ed-label(var(--ed-accent));
+    @include ed-label(var(--ed-ink));
     max-width: none;
     margin: 0;
     padding: 0.65rem 0 0.5rem;
@@ -2076,10 +2077,6 @@ $ed-code-languages: (
     border: 1px solid var(--ed-ink);
     border-radius: 2px;
 
-    &:hover {
-      background: var(--ed-paper);
-    }
-
     &[aria-disabled="true"] {
       color: var(--ed-muted);
       cursor: default;
@@ -2095,11 +2092,6 @@ $ed-code-languages: (
   .stepper-next:not([aria-disabled="true"]) {
     color: var(--ed-on-ink);
     background: var(--ed-ink);
-
-    &:hover {
-      background: var(--ed-link);
-      border-color: var(--ed-link);
-    }
   }
 
   .stepper-prev::before,
@@ -2117,10 +2109,6 @@ $ed-code-languages: (
     color: var(--ed-link);
     text-decoration: underline;
     text-underline-offset: 0.18em;
-
-    &:hover {
-      background: var(--ed-tint);
-    }
   }
 }
 
@@ -2130,19 +2118,48 @@ $ed-code-languages: (
   }
 }
 
+// Hover only where a pointer can hover (a tap would leave it stuck on a phone); never on a
+// disabled button.
+@media (hover: hover) {
+  .main-content .stepper-controls {
+    .stepper-button:not([aria-disabled="true"]):hover {
+      background: var(--ed-paper);
+    }
+
+    .stepper-next:not([aria-disabled="true"]):hover {
+      background: var(--ed-link);
+      border-color: var(--ed-link);
+    }
+
+    .stepper-all:not([aria-disabled="true"]):hover {
+      background: var(--ed-tint);
+    }
+  }
+}
+
+// Press feedback: the button gives a little under the finger, so a tap visibly registered even
+// when the step text barely changes. Motion only answers the reader's own press.
+@media (prefers-reduced-motion: no-preference) {
+  .main-content .stepper-controls .stepper-button {
+    transition: transform 140ms ease-out;
+
+    &:not([aria-disabled="true"]):active {
+      transform: scale(0.98);
+    }
+  }
+}
+
 // 8.8 Home page: hero, next meeting, first steps, calendar.
 
+// The title opens the page like every other page's title (no rule above it); the board under it
+// is the one strong element.
 .main-content .home-hero {
   margin: 0 0 1.75rem;
-  padding: 1.1rem 0 0;
-  border-top: 3px solid var(--ed-ink);
-  // A printed double rule: a hairline 2px under the heavy one (a gradient, so it prints cleanly).
-  background: linear-gradient(to bottom, transparent 2px, var(--ed-ink) 2px, var(--ed-ink) 3px, transparent 3px)
-    top / 100% 3px no-repeat;
+  padding: 0;
 
   h1 {
     max-width: none;
-    margin: 0.6rem 0 1.25rem;
+    margin: 0.25rem 0 1.25rem;
     font-size: var(--fs-40) !important;
     line-height: 1.08 !important;
     letter-spacing: -0.025em;
@@ -2614,7 +2631,7 @@ $ed-code-languages: (
     font-weight: 700;
     line-height: 1.2;
     text-align: left;
-    color: var(--ed-accent);
+    color: var(--ed-ink);
   }
 
   strong,
