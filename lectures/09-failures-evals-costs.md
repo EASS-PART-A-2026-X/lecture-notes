@@ -1668,11 +1668,6 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
-- [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome): user-journey budgets, fan-out arithmetic and repeated agent trials; optional depth.
-
-
 **Before the lab (≤15 min):** [Tenacity documentation](https://tenacity.readthedocs.io/en/latest/). Guiding questions: which argument decides *whether* to retry, and which decides *how long* to wait? What does tenacity raise when it gives up without `reraise=True`?
 
 **Go deeper (optional):**
@@ -1681,6 +1676,8 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 - [Pydantic AI usage limits](https://pydantic.dev/docs/ai/core-concepts/agent/#usage-limits) and [Pydantic Evals](https://pydantic.dev/docs/ai/evals/evals/).
 - [HTTP 429 Too Many Requests (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429).
 - Lost replies and duplicate work, inspired by MIT 6.5840's [notes on RPC failure](https://pdos.csail.mit.edu/6.824/notes/l-rpc.txt) (Spring 2026). Guiding question: in `from-text`, which component can confirm that a recipe was saved, and where would a duplicate appear if the frontend retried?
+- **Whole-journey reliability:** [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome) cover user-journey budgets, fan-out arithmetic and repeated agent trials.
+- **Model serving:** [Visual inference engineering](../guides/inference-engineering.md) covers model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - **Serving measurements:** [Local inference](../guides/local-inference.md#measure-and-diagnose) separates load, queue, prefill, and decode time; its synthetic example supports analysis without a model download. Compare task quality as well as tokens per second.
 - **Engineering practice:** [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
 - **Visual review:** [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.

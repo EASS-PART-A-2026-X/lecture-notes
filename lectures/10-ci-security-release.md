@@ -962,11 +962,6 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
-- [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): optional release-decision exercise using reliability and critical-failure evidence.
-
-
 **Before the lab (≤15 min):** [Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions). Guiding questions: (1) What is the difference between a job and a step? (2) Which events can start a workflow, and which one does Recipe Box leave out on purpose?
 
 **Go deeper (optional):**
@@ -979,6 +974,8 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 - [Agent sandboxes: review and release](../guides/agent-sandboxes.md#review-and-release): disposable candidate execution, trusted verification, and release credentials. Container resource limits and agent budgets do not replace authorization.
 - [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md): configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
 - [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md): service ownership, validation, the commit boundary, and failure evidence.
+- [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): a release-decision exercise using reliability and critical-failure evidence.
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - [Rehearse schema evolution, recovery and the complete change cycle](../guides/industry-studio.md#evolve-data-without-losing-it) in the industry studio. This optional activity deepens the current checkpoint without changing the assignment.
 
 ---

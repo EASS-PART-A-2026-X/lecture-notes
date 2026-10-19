@@ -1121,8 +1121,6 @@ Emphasize: the model proposes, your code validates; tests never need a key; the 
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
 **Before the lab (≤15 min):** [Unit testing with TestModel and FunctionModel](https://pydantic.dev/docs/ai/guides/testing/). Read it with two questions: (1) which of your tests would still pass if the model were replaced by a much worse one, and why is that the point? (2) where does the guide put the `ALLOW_MODEL_REQUESTS` safety net, and why there?
 
 **Go deeper (optional):**
@@ -1131,6 +1129,7 @@ Emphasize: the model proposes, your code validates; tests never need a key; the 
 - [Agents](https://pydantic.dev/docs/ai/core-concepts/agent/), [output](https://pydantic.dev/docs/ai/core-concepts/output/), [tools](https://pydantic.dev/docs/ai/tools-toolsets/tools/) and [dependencies](https://pydantic.dev/docs/ai/core-concepts/dependencies/)
 - [Models and providers](https://pydantic.dev/docs/ai/models/overview/) and [Ollama](https://pydantic.dev/docs/ai/models/ollama/)
 - [V1 to V2 migration map](https://pydantic.dev/docs/ai/overview/migration/)
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 
 ---
 

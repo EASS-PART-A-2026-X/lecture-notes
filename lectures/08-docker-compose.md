@@ -760,8 +760,6 @@ Emphasize: the service name is the address, `down -v` deletes data, a clean chec
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
 **Before the lab (≤15 min):** [Docker: control startup order](https://docs.docker.com/compose/how-tos/startup-order/). Read it with two questions: (1) what exactly does `condition: service_healthy` wait for, and what does it do after that? (2) which healthcheck settings decide how long `up --wait` waits before it gives up?
 
 **Go deeper (optional):**
@@ -771,6 +769,7 @@ Emphasize: the service name is the address, `down -v` deletes data, a clean chec
 - [uv: using uv in Docker](https://docs.astral.sh/uv/guides/integration/docker/)
 - [Docker: Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) and [secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/)
 - **Execution boundaries:** [Agent sandboxes](../guides/agent-sandboxes.md) distinguishes Compose, restricted containers, OS sandboxes, gVisor and microVMs; [Local inference](../guides/local-inference.md#connect-an-agent-without-changing-its-authority) treats a model server as an optional dependency of the existing AI service.
+- **Model serving:** [Visual inference engineering](../guides/inference-engineering.md) covers model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - **Engineering practice:** [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md) connects this lecture's files to configuration consumers, reusable procedures and evidence.
 - **Visual review:** [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary and failure evidence.
 

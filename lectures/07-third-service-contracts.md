@@ -1174,9 +1174,6 @@ Emphasize that the backend validates the AI service's *response*. Students get s
 
 ## Read more
 
-- [One intent, repeated requests](../guides/systems-reasoning.md#one-intent-repeated-requests): optional replay and outbox clinic with an original SQLite failure lab.
-
-
 **Before the lab (≤15 min):** [HTTPX: timeouts](https://www.python-httpx.org/advanced/timeouts/). Read it with two questions: (1) which of the four limits would fire if the AI service accepted the connection and never answered? (2) what does `timeout=None` mean, and why is it never right for a call to another service?
 
 **Go deeper (optional):**
@@ -1184,6 +1181,7 @@ Emphasize that the backend validates the AI service's *response*. Students get s
 - [HTTPX: transports, including MockTransport](https://www.python-httpx.org/advanced/transports/)
 - [FastAPI: handling errors](https://fastapi.tiangolo.com/tutorial/handling-errors/) and [testing dependencies with overrides](https://fastapi.tiangolo.com/advanced/testing-dependencies/)
 - [MDN: 502 Bad Gateway](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/502) and [503 Service Unavailable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503)
+- [One intent, repeated requests](../guides/systems-reasoning.md#one-intent-repeated-requests): a replay and outbox clinic with an original SQLite failure lab.
 - [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md): this checkpoint as one picture, with service ownership, validation, the commit boundary and failure evidence.
 - [Further study](../guides/further-study.md): course sites on lost replies and end-to-end checks.
 
