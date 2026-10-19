@@ -1400,8 +1400,9 @@ $ed-code-languages: (
   border-left: 3px dashed var(--c);
 }
 
-// A reveal straight after a callout ("Check your prediction") hangs from it.
-.main-content .callout + details {
+// A reveal straight after a callout ("Check your prediction") hangs from it. The "On this page"
+// box is not a reveal: after an objectives or prerequisite callout it keeps its own box.
+.main-content .callout + details:not(.lecture-toc) {
   max-width: var(--ed-measure);
   margin-top: -1.5rem;
   border-top: 0;
@@ -1410,9 +1411,9 @@ $ed-code-languages: (
   background: var(--ed-bg);
 }
 
-.main-content .callout--predict + details { border-left-color: var(--ed-plum); }
-.main-content .callout--explain + details { border-left-color: var(--ed-ochre); }
-.main-content .callout--checkpoint + details { border-left-color: var(--ed-green); }
+.main-content .callout--predict + details:not(.lecture-toc) { border-left-color: var(--ed-plum); }
+.main-content .callout--explain + details:not(.lecture-toc) { border-left-color: var(--ed-ochre); }
+.main-content .callout--checkpoint + details:not(.lecture-toc) { border-left-color: var(--ed-green); }
 
 // Learning-practice blocks (L9, local inference) open with a run-in instruction to predict.
 .main-content .learning-practice {
@@ -2967,7 +2968,7 @@ $ed-code-languages: (
     }
   }
 
-  .main-content .callout + details {
+  .main-content .callout + details:not(.lecture-toc) {
     margin-top: -1rem;
   }
 
