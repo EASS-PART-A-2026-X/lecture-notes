@@ -108,12 +108,12 @@ After these checkpoints, choose at most one optional experiment from [Model APIs
 
 Use the assistant and model you can access; the outcomes stay the same. The [setup guide](student-setup.md) lists routes, including a manual one, and the [model guide](models-and-ai-literacy.md) explains how to compare them.
 
-**Check yourself:** which one of these is required: (a) Streamlit, (b) three merged upstream PRs, (c) PostgreSQL, (d) a paid model API?
+**Check yourself:** which one of these is required: (a) Streamlit for the frontend, (b) PostgreSQL as the database, (c) a paid model API, (d) three merged upstream PRs?
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**(b).** Streamlit and PostgreSQL are allowed choices (React or another web framework and SQLite are fine too), and no paid account is ever required. The three merged PRs are mandatory, and only *merged* PRs count.
+**(d).** Streamlit and PostgreSQL are allowed choices (React or another web framework and SQLite are fine too), and no paid account is ever required. The three merged PRs are mandatory, and only *merged* PRs count.
 
 </details>
 

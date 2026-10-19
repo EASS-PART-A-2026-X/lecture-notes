@@ -807,37 +807,37 @@ Expected: `N passed` (N is at least 8), `All checks passed!`, `404`, and `422`. 
 ## Quick quiz
 
 <details markdown="1">
-<summary>Q1. A client retries POST /recipes after a timeout, and both requests arrive. What happens? (a) One recipe, as POST is idempotent (b) Two recipes, as POST is not idempotent (c) A 409 error</summary>
+<summary>Q1. A client retries POST /recipes after a timeout, and both requests arrive. What happens? (a) One recipe, since POST is idempotent (b) Two recipes with two different ids (c) A 409 Conflict for the retry</summary>
 
-**(b).** Each POST creates a new resource with a new id, like `f(x) = x + 1`. Retrying a POST needs care, which Lecture 9 returns to.
-
-</details>
-
-<details markdown="1">
-<summary>Q2. A client sends "minutes": "40" (a string) to POST /recipes. What does this API return? (a) 422 int_parsing (b) 500 (c) 201 with minutes 40</summary>
-
-**(c).** Pydantic's default *lax* mode converts a numeric string to an int. `"forty"` cannot convert, so it gets 422 `int_parsing`. Strict mode rejects any string.
+**(b).** Each POST creates a new resource with a new id, like `f(x) = x + 1`: POST is not idempotent. Nothing in this API looks for duplicates, so no 409 comes back either. Retrying a POST needs care, which Lecture 9 returns to.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. GET /recipe/1 (no "s") returns {"detail": "Not Found"}. What does that tell you? (a) Recipe 1 was deleted (b) No route matched the path (c) The store is empty</summary>
+<summary>Q2. A client sends "minutes": "40" (a string) to POST /recipes. What does this API return? (a) 422, because "40" is a string (b) 500, because the handler gets text (c) 201, with minutes stored as 40</summary>
 
-**(b).** Your handler would have said `"Recipe not found"`. The generic `"Not Found"` means no route matched, so check the path.
-
-</details>
-
-<details markdown="1">
-<summary>Q4. Why does the client fixture override get_store? (a) It makes tests faster (b) Ruff requires it (c) Each test starts empty, whatever the order</summary>
-
-**(c).** Shared state makes tests depend on each other's leftovers (drill 3). Next week the same override swaps in a test database.
+**(c).** Pydantic's default *lax* mode converts a numeric string to an int. `"forty"` cannot convert, so it gets 422 `int_parsing`. Strict mode rejects any string. Either way, validation runs before your handler (stage 3), so the handler never receives text.
 
 </details>
 
 <details markdown="1">
-<summary>Q5. (Lecture 1) At the repo root, <code>uv run pytest</code> says "Failed to spawn: pytest". Why? (a) A syntax error (b) No uv project at the root (c) FastAPI isn't global</summary>
+<summary>Q3. GET /recipe/1 (no "s") returns {"detail": "Not Found"}. What does that tell you? (a) No route matched the request path (b) The handler found no recipe 1 (c) The store has no recipes yet</summary>
 
-**(b).** `uv run` uses the nearest `pyproject.toml`; the root has none, so `backend/.venv` is never used. With a global pytest you get `No module named 'fastapi'` instead, for the same reason. Run `cd backend` first.
+**(a).** Your handler would have said `"Recipe not found"`, whether recipe 1 was deleted or the store is empty. The generic `"Not Found"` means no route matched, so check the path.
+
+</details>
+
+<details markdown="1">
+<summary>Q4. Why does the client fixture override get_store? (a) Tests can run without a live server (b) Each test gets its own empty store (c) The suite runs faster with fewer rows</summary>
+
+**(b).** Shared state makes tests depend on each other's leftovers (drill 3), so results change with test order. `TestClient` is what removes the server, with or without the override. Next week the same override swaps in a test database.
+
+</details>
+
+<details markdown="1">
+<summary>Q5. (Lecture 1) At the repo root, <code>uv run pytest</code> says "Failed to spawn: pytest". Why? (a) No uv project at the root (b) A syntax error in a test (c) FastAPI is missing from global Python</summary>
+
+**(a).** `uv run` uses the nearest `pyproject.toml`; the root has none, so `backend/.venv` is never used. "Failed to spawn" means uv found no `pytest` program to start, so no test file was read and a syntax error cannot be the cause. With a global pytest you get `No module named 'fastapi'` instead, for the same reason. Run `cd backend` first.
 
 </details>
 

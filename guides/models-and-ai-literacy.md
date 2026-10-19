@@ -371,14 +371,14 @@ No. Capacity, relevant evidence, correct retrieval, and effective use of that ev
 
 Q4. You add an updated recipe to the retrieval store your agent searches. What changed?
 
-- (a) The model's weights, because the model has now seen the recipe.
-- (b) The evidence a request can find; the weights are unchanged.
+- (a) The model weights, which now contain it.
+- (b) The evidence that a request can find.
 - (c) Nothing, until the next fine-tuning run.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). Retrieval supplies context at request time; it is not training. The next request that retrieves the recipe can use it immediately. Weights change only through a separate training run, as in the [data lifecycle](#a-visual-data-lifecycle).
+**Answer:** (b). Retrieval supplies context at request time; it is not training, so the weights are unchanged. The next request that retrieves the recipe can use it immediately, without waiting for any training run. Weights change only through a separate training run, as in the [data lifecycle](#a-visual-data-lifecycle).
 
 </details>
 
@@ -393,14 +393,14 @@ Input: 1,500 + 1,550 + 1,750 = 4,800 tokens × $1/M = **$0.0048**. Output: 20 + 
 
 Q6. Held-out case 5 fails. You change the instructions until it passes, then report "5 of 5 cases pass". Is case 5 still a held-out case?
 
-- (a) Yes: it was labelled held-out when you wrote it.
-- (b) No: you used its result to decide a change, so it is now a development case.
-- (c) Yes, as long as you did not edit its expected answer.
+- (a) Yes, it was labelled held-out first.
+- (b) Only if its expected answer is unchanged.
+- (c) No, it has become a development case.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). A held-out case measures a *fixed* candidate. Once its result shaped the fix, a pass no longer says how the system does on unseen input. Report the change honestly, move the case to the development set, and write a new held-out case (Lecture 9's [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) shows the same leak).
+**Answer:** (c). A held-out case measures a *fixed* candidate. You used its result to decide a change, so a pass no longer says how the system does on unseen input, whatever its label and even with its expected answer untouched. Report the change honestly, move the case to the development set, and write a new held-out case (Lecture 9's [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) shows the same leak).
 
 </details>
 

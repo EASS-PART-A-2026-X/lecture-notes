@@ -969,14 +969,14 @@ Both replace what you don't control at its boundary: HTTP in Lecture 5, the mode
 
 Q6. Your product's tags are a fixed list that changes once a semester. Which design fits best?
 
-- (a) Keep `allowed_tags` as a tool plus `check_tags`, because tools are always more flexible.
-- (b) Use `tags: list[Literal[...]]` in `RecipeExtraction` and drop the tool and validator.
-- (c) Put the list in the instructions only.
+- (a) Use `list[Literal[...]]` for the `tags` field
+- (b) Keep the `allowed_tags` tool and `check_tags` validator
+- (c) Name the allowed tags only in `instructions`
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). The schema enforces the rule and tells the model the allowed values (an `enum` in the JSON schema), with no extra round trip: a well-behaved run needs 1 model request instead of 2, and one mistake costs 2 instead of 3. The cost is that a tag change is a contract change for Lecture 7's backend copy. (a) is right when the set changes at run time, for example per user. (c) is not enforcement: instructions are one defense, not a boundary.
+**Answer:** (a). Declare `tags: list[Literal[...]]` in `RecipeExtraction` and drop the tool and the validator. The schema enforces the rule and tells the model the allowed values (an `enum` in the JSON schema), with no extra round trip: a well-behaved run needs 1 model request instead of 2, and one mistake costs 2 instead of 3. The cost is that a tag change is a contract change for Lecture 7's backend copy. (b) is right when the set changes at run time, for example per user. (c) is not enforcement: instructions are one defense, not a boundary.
 
 </details>
 

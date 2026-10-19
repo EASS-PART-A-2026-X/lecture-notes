@@ -868,13 +868,13 @@ The recipes are safe in the backend's SQLite file. `st.session_state` is lost: i
 Q6. Your recipe titles are validated by Pydantic (1 to 200 characters). Which statement is true?
 
 - (a) Validation guarantees the title is safe to show anywhere.
-- (b) A valid title can still be interpreted as Markdown when it is displayed, so the display must escape it.
-- (c) Escaping is only needed for titles produced by an AI model.
+- (b) A valid title can still be interpreted as Markdown.
+- (c) Only titles produced by an AI model need escaping.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). Validation decides which text is *accepted*; the display decides how it is *interpreted*. `[win a prize](https://example.com)` is a valid 1–200 character title and still renders as a link unless `plain()` escapes it. (c) is wrong because any user can type Markdown; model output (Lecture 7) is one more source.
+**Answer:** (b). Validation decides which text is *accepted*; the display decides how it is *interpreted*, so the display must escape it. `[win a prize](https://example.com)` is a valid 1–200 character title and still renders as a link unless `plain()` escapes it. (a) mixes up those two jobs. (c) is wrong because any user can type Markdown; model output (Lecture 7) is one more source.
 
 </details>
 
