@@ -13,7 +13,8 @@
 <rect x="32" y="176" width="576" height="66" rx="6" fill="#eff6f6" stroke="#22616b"/>
 <text x="50" y="204" font-size="19" font-weight="700">Narrow decision model</text>
 <text x="50" y="228" font-size="17">A label or bounded judgment; evaluate on your inputs.</text>
-<path d="M175 244 V306 M465 244 V306" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M175 244 V306" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M465 244 V306" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
 <text x="90" y="278" font-size="16">supported decision</text>
 <text x="385" y="278" font-size="16">uncertain / unavailable</text>
 <rect x="32" y="316" width="272" height="104" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
@@ -24,7 +25,8 @@
 <text x="354" y="346" font-size="19" font-weight="700">Defer or escalate once</text>
 <text x="354" y="374" font-size="17">LLM only within approved</text>
 <text x="354" y="399" font-size="17">data, time and cost limits.</text>
-<path d="M168 422 V454 H320 V480 M472 422 V454 H320" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<path d="M168 422 V454 H472 V422" stroke="#3b4453" stroke-width="2" fill="none"/>
+<path d="M320 454 V480" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
 <rect x="32" y="492" width="576" height="64" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
 <text x="50" y="519" font-size="19" font-weight="700">Validate result; authorize before any write</text>
 <text x="50" y="543" font-size="17">Schema validity and confidence do not establish truth.</text>
