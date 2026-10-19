@@ -304,7 +304,14 @@ The `RecipeExtraction` type belongs to your application. Pydantic AI's configure
 
 **Trace it:** browser → backend → `POST /extract` → Pydantic AI → one adapter → model endpoint → candidate → application validation → backend. Only the backend persists an accepted recipe. An OpenAPI document describes the application boundary; it does not make providers interchangeable. Keys belong in `ai-service`, never the browser.
 
-**Predict:** switching from `test` to a real provider leaves the JSON schema unchanged. Can extraction accuracy, tool behavior or response time still change? **Yes**: the contract constrains shape, not semantic quality or latency. Keep today's offline tests, then use Lecture 9's separate task evaluations before trusting a new model.
+**Predict:** switching from `test` to a real provider leaves the JSON schema unchanged. Can extraction accuracy, tool behavior or response time still change?
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+**Yes**: the contract constrains shape, not semantic quality or latency. Keep today's offline tests, then use Lecture 9's separate task evaluations before trusting a new model.
+
+</details>
 
 Optional examples: [OpenAI typed extraction](../guides/model-apis-and-decisions.md#openai-typed-extraction-through-responses), [Claude Messages](../guides/model-apis-and-decisions.md#claude-messages-is-a-different-contract) and [Pydantic AI adapters](../guides/model-apis-and-decisions.md#pydantic-ai-one-application-type-different-adapters). They are scratch experiments; today's service remains the reference implementation.
 
@@ -754,7 +761,14 @@ def due_in_future(
 
 **Predict:** you run this agent under a plain `TestModel()` with `PlannerDeps(today=date(2026, 11, 23))`. What happens?
 
-The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)`. `TestModel` fills a `date` field with `2024-01-01`, which is in the past, so the validator rejects it, and the placeholder never changes (this agent keeps the default of one retry). Use `TestModel(custom_output_args=[{"course": "EASS", "title": "EX2", "due": "2026-11-30"}])` for the happy path, and a `FunctionModel` for the retry. Also notice that nothing *enforces* "use only those codes" yet: adding that check to the validator is the same move as `check_tags`.
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)`. `TestModel` fills a `date` field with `2024-01-01`, which is in the past, so the validator rejects it, and the placeholder never changes (this agent keeps the default of one retry). Use `TestModel(custom_output_args=[{"course": "EASS", "title": "EX2", "due": "2026-11-30"}])` for the happy path, and a `FunctionModel` for the retry.
+
+</details>
+
+Notice also that nothing *enforces* "use only those codes" yet: adding that check to the validator is the same move as `check_tags`.
 
 </details>
 
