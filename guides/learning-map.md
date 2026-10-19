@@ -39,7 +39,7 @@
 
 ## The class-by-class path
 
-| Class | Main engineering question | Evidence you should be able to explain | Preparation / setup | Due / open-source checkpoint (README is the authority) |
+| Class | Main engineering question | Evidence you should be able to explain | Preparation / setup | Due / open-source checkpoint |
 |---|---|---|---|---|
 | [1 — Workbench](../lectures/01-environment-git-docker-ai.md) | Which files, interpreter, process, and Git history am I using? | `/health` response, a reviewed practice PR, narrow product sketch | [Setup Part A](student-setup.md#part-a-before-the-first-meeting); [readiness check](engineering-foundations.md#readiness-check) | 2–3 open-source candidates |
 | [2 — API](../lectures/02-http-fastapi-pydantic.md) | What may clients send, and what do they receive? | CRUD contract, meaningful 422/404 cases, isolated API tests | Bridge: [HTTP, JSON, and contracts](engineering-foundations.md#http-json-and-contracts) | — |
@@ -55,7 +55,7 @@
 | [12 — Rehearsal](../lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Can someone else repeat the demonstration? | Fresh-clone rehearsal, failure recovery, checked contribution evidence | A fresh clone that starts from your README | evidence table reviewed |
 | [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Working user journey, individual answers, verified merged PRs | Your rehearsed demo and evidence table | **EX3 and open-source evidence due** (Mon 11 Jan 2027, 23:59) |
 
-Open a row's bridge section only when that lecture's prerequisite check fails. What to do before, during and after each class is in [Your minimum weekly route](#your-minimum-weekly-route).
+For every due date and open-source checkpoint, the README's [calendar](../README.md#calendar-and-13-meeting-schedule) and [deadlines](../README.md#assignments-and-deadlines) are the authority. Open a row's bridge section only when that lecture's prerequisite check fails. What to do before, during and after each class is in [Your minimum weekly route](#your-minimum-weekly-route).
 
 <figure class="course-diagram course-diagram--wide">
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Semester tracks diagram, scroll horizontally">
