@@ -92,59 +92,6 @@ Look at the terminal where the server runs. Run `pwd` there and compare it with 
 
 ## Concepts
 
-### SDLC: from a request to running software
-
-The **software development life cycle (SDLC)** is the work of discovering a need, defining acceptable behavior, designing a solution, implementing it, verifying it, releasing it and learning from its operation. Coding is one activity in that cycle. A saved file, a green test run, a merged pull request and a healthy production release are different milestones.
-
-**Example:** a user wants to find vegetarian recipes. Before writing code, clarify whether “vegetarian” is an explicit tag or an inference from ingredients, what an empty result looks like, and whether existing recipes need a migration. For an explicit tag filter, ordinary SQL and API validation are enough; an LLM adds no necessary capability.
-
-<figure class="diagram">
-  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Software development lifecycle, scroll horizontally">
-    <img src="../assets/diagrams/sdlc-feedback.svg" alt="A request becomes acceptance criteria, a design and a candidate change. Tests and review precede release. Operation feeds observations back into the next request; failed checks return the candidate to implementation." width="640" height="520">
-  </div>
-  <figcaption><strong>Software development is a feedback loop.</strong> Each stage produces evidence for the next decision. The sequence is a teaching map: teams often overlap design, implementation and testing. <a href="../assets/diagrams/sdlc-feedback.svg">Open the full-size lifecycle</a>.</figcaption>
-</figure>
-
-### Around 2023 and now: what changes with coding agents?
-
-This comparison describes two workflows, not a claim that every company changed at the same time. Around **2023**, teams already used version control, automated tests, CI/CD, cloud infrastructure and coding assistants. In **2026**, capable coding agents can also inspect repositories, edit multiple files and execute tools in a configured environment. Adoption and reliability vary; a team can mix manual work, autocomplete, chat and agents within one change.
-
-| Stage | A common workflow around 2023 | An agent-assisted workflow today | Evidence you still owe |
-|---|---|---|---|
-| Discover and specify | Talk to users; write an issue and acceptance criteria | Ask an assistant to summarize feedback and draft cases; confirm the actual need with stakeholders | A concrete problem, boundaries and observable acceptance criteria |
-| Design | Read the code, sketch interfaces, discuss tradeoffs | Have an agent trace callers and propose alternatives; inspect its references | An interface, data ownership and a reason for the design |
-| Implement | Write code with docs, search, autocomplete and peer help | Delegate a bounded change with allowed files, tools and a stopping condition | A small diff you can explain; no unrelated edits or exposed secrets |
-| Verify and review | Run tests and CI; review a pull request | Let an agent run checks and propose repairs; inspect the tests and independently check important behavior | Relevant tests, failure cases and results for the exact candidate revision |
-| Release | Merge, build an artifact, deploy and check health | Automate the same gates; give deployment credentials only to the authorized release process | The deployed revision, configuration, migration plan and rollback or recovery procedure |
-| Operate and learn | Read logs, respond to incidents, prioritize fixes | Use AI to summarize traces or suggest hypotheses; verify them against telemetry | User-visible outcomes, latency, errors and a verified fix |
-
-The change is in **how work is performed and coordinated**, not the disappearance of requirements, architecture or accountability. An agent's confident summary is a claim to check. More generated code can also mean more review and maintenance. Faster typing does not establish faster delivery or better quality.
-
-The [GitHub developer survey from 2023](https://github.blog/news-insights/research/survey-reveals-ais-impact-on-the-developer-experience/) already discussed AI tools alongside review, build and test delays; it describes a particular survey population, not all developers. Anthropic's [long-running agent harness example](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) illustrates incremental work, explicit progress records and verification across sessions. It is one engineering approach, not proof that every agent can deliver independently.
-
-### Walk one change through the cycle
-
-For `GET /recipes?tag=vegetarian`, write the work order before asking an agent to edit:
-
-```text
-Problem: people cannot narrow the recipe list by a saved tag.
-Accept: matching recipes only; unknown tag returns []; omitted tag preserves the old list.
-Boundary: backend owns filtering and stored data; frontend sends a query parameter.
-Scope: API, database query, tests, and a small frontend control; no new service or model.
-Verify: matching/nonmatching/empty cases, existing unfiltered behavior, browser check.
-Stop: return a reviewable diff and commands/results; do not deploy from the coding session.
-```
-
-1. **Specify:** turn those sentences into examples before implementation. Decide how whitespace and letter case behave rather than letting the generated code decide silently.
-2. **Design and build:** trace browser → backend → SQLite. Update the OpenAPI contract when the query parameter changes. Keep persistence in the backend.
-3. **Verify:** seed two recipes with different tags. Check both filtered and unfiltered requests. A test that only asserts HTTP 200 cannot establish correct filtering.
-4. **Deliver:** review the diff, run CI for that revision and merge through the team's process. Check the deployed service; merge alone does not prove publication.
-5. **Learn:** if users get empty lists because tag spelling varies, investigate the data and requirements. Improve normalization or the UI based on evidence.
-
-**Check yourself:** an agent changes the filter and reports “all tests pass”, but the tests never create a nonmatching recipe. Which acceptance criterion remains unproven? Add a fixture that could expose the mistake, then explain why it distinguishes correct filtering from returning everything.
-
-**Where we practice it:** Lectures 2–3 implement the API and persistence; 4–5 add the browser and tests; 6–9 introduce the separate AI service, boundaries and evaluations; 10 covers CI, security and release. The [agent-driven engineering guide](../guides/agent-driven-development.md) develops delegation and review, and the [software factory lab](../guides/software-factory-lab.md) follows a work order through retained delivery evidence. These remain the same product and course requirements.
-
 ### Your toolchain
 
 | Tool | What it does for you | Check |
@@ -254,8 +201,6 @@ AI tools are allowed from week 1 ([rules](../README.md#working-method-ai-use-ass
 3. **Verify.** Run it, read `git diff --staged`, and check unfamiliar calls in the official docs. From Lecture 2 on, also break the code and confirm that a test goes red.
 4. **Note.** Keep a short AI-use note in your product README, under `## AI use`: tools used, help received, checks you ran. Lab step 7 writes the first one.
 
-Optional: FastAPI, Streamlit and Pydantic AI ship agent "skills" inside their packages. A skill is a folder of instructions an agent can load. Read its `SKILL.md` before enabling it: it is text from a dependency, not permission. In a service folder, `uvx library-skills scan` lists them (in today's `backend/` only FastAPI's appears), and `uvx library-skills --claude` links them for your agent ([library-skills.io](https://library-skills.io/)).
-
 ### Product scoping: one narrow domain, three services
 
 You grow one product all semester ([requirements](../README.md#three-service-product-requirements)). Narrow beats ambitious: "save and adapt recipes" is buildable; "a food platform" is not. The demo product is **Recipe Box**, and you pick your own domain. A good sketch answers:
@@ -292,6 +237,86 @@ Before asking, write one sentence saying what you think is wrong, and why: see t
 ### Open source: choose before you code
 
 You need three PRs **merged** into qualifying projects ([rules](../README.md#open-source-contribution-rule-and-evidence); three per student). Reviews take weeks, and some projects restrict outside or AI-assisted PRs: as of October 2026, Streamlit's CONTRIBUTING says it has paused pull requests from outside its maintainer team. So you check projects before writing code for them.
+
+### SDLC: from a request to running software
+
+The sections above set up tonight's workbench. This one is the map for the rest of the semester: read it once now, and come back to it as Lectures 2–10 fill in each stage.
+
+The **software development life cycle (SDLC)** is the work of discovering a need, defining acceptable behavior, designing a solution, implementing it, verifying it, releasing it and learning from its operation. Coding is one activity in that cycle. A saved file, a green test run, a merged pull request and a healthy production release are different milestones.
+
+**Example:** a user wants to find vegetarian recipes. Before writing code, clarify whether “vegetarian” is an explicit tag or an inference from ingredients, what an empty result looks like, and whether existing recipes need a migration. For an explicit tag filter, ordinary SQL and API validation are enough; an LLM adds no necessary capability.
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Software development lifecycle, scroll horizontally">
+    <img src="../assets/diagrams/sdlc-feedback.svg" alt="Six stages in a loop from need to operation; failed checks return to implementation, and operation feeds the next need." width="640" height="520">
+  </div>
+  <figcaption><strong>Software development is a feedback loop.</strong> Each stage produces evidence for the next decision. The sequence is a teaching map: teams often overlap design, implementation and testing. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/sdlc-feedback.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+**A change earns its way to delivery.** People own the decisions. Tools help produce the evidence.
+
+Six stages, each labelled with the evidence it produces. Arrows connect them in this order:
+
+1. **Need → acceptance:** issue and observable examples.
+2. **Design the boundary:** API, data owner and tradeoffs.
+3. **Implement a candidate:** small diff and identified revision.
+4. **Verify and review:** tests and independent inspection. A dashed arrow labelled "failed check → repair" goes back from this stage to stage 3.
+5. **Release deliberately:** artifact, health and recovery.
+6. **Operate and learn:** outcomes, traces and next need. An arrow from this stage returns to stage 1 and closes the loop.
+
+Below the stages: AI assistance can support every stage; permissions, acceptance criteria and release gates still apply. Repeat in small increments; stages can overlap.
+
+</details>
+
+### Around 2023 and now: what changes with coding agents?
+
+This comparison describes two workflows, not a claim that every company changed at the same time. Around **2023**, teams already used version control, automated tests, CI/CD, cloud infrastructure and coding assistants. In **2026**, capable coding agents can also inspect repositories, edit multiple files and execute tools in a configured environment. Adoption and reliability vary; a team can mix manual work, autocomplete, chat and agents within one change.
+
+| Stage | A common workflow around 2023 | An agent-assisted workflow today | Evidence you still owe |
+|---|---|---|---|
+| Discover and specify | Talk to users; write an issue and acceptance criteria | Ask an assistant to summarize feedback and draft cases; confirm the actual need with stakeholders | A concrete problem, boundaries and observable acceptance criteria |
+| Design | Read the code, sketch interfaces, discuss tradeoffs | Have an agent trace callers and propose alternatives; inspect its references | An interface, data ownership and a reason for the design |
+| Implement | Write code with docs, search, autocomplete and peer help | Delegate a bounded change with allowed files, tools and a stopping condition | A small diff you can explain; no unrelated edits or exposed secrets |
+| Verify and review | Run tests and CI; review a pull request | Let an agent run checks and propose repairs; inspect the tests and independently check important behavior | Relevant tests, failure cases and results for the exact candidate revision |
+| Release | Merge, build an artifact, deploy and check health | Automate the same gates; give deployment credentials only to the authorized release process | The deployed revision, configuration, migration plan and rollback or recovery procedure |
+| Operate and learn | Read logs, respond to incidents, prioritize fixes | Use AI to summarize traces or suggest hypotheses; verify them against telemetry | User-visible outcomes, latency, errors and a verified fix |
+
+The change is in **how work is performed and coordinated**, not the disappearance of requirements, architecture or accountability. An agent's confident summary is a claim to check. More generated code can also mean more review and maintenance. Faster typing does not establish faster delivery or better quality.
+
+The [GitHub developer survey from 2023](https://github.blog/news-insights/research/survey-reveals-ais-impact-on-the-developer-experience/) already discussed AI tools alongside review, build and test delays; it describes a particular survey population, not all developers. Anthropic's [long-running agent harness example](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) illustrates incremental work, explicit progress records and verification across sessions. It is one engineering approach, not proof that every agent can deliver independently.
+
+### Walk one change through the cycle
+
+For `GET /recipes?tag=vegetarian`, write the work order before asking an agent to edit:
+
+```text
+Problem: people cannot narrow the recipe list by a saved tag.
+Accept: matching recipes only; unknown tag returns []; omitted tag preserves the old list.
+Boundary: backend owns filtering and stored data; frontend sends a query parameter.
+Scope: API, database query, tests, and a small frontend control; no new service or model.
+Verify: matching/nonmatching/empty cases, existing unfiltered behavior, browser check.
+Stop: return a reviewable diff and commands/results; do not deploy from the coding session.
+```
+
+1. **Specify:** turn those sentences into examples before implementation. Decide how whitespace and letter case behave rather than letting the generated code decide silently.
+2. **Design and build:** trace browser → backend → SQLite. Update the OpenAPI contract when the query parameter changes. Keep persistence in the backend.
+3. **Verify:** seed two recipes with different tags. Check both filtered and unfiltered requests. A test that only asserts HTTP 200 cannot establish correct filtering.
+4. **Deliver:** review the diff, run CI for that revision and merge through the team's process. Check the deployed service; merge alone does not prove publication.
+5. **Learn:** if users get empty lists because tag spelling varies, investigate the data and requirements. Improve normalization or the UI based on evidence.
+
+**Check yourself:** an agent changes the filter and reports “all tests pass”, but the tests never create a nonmatching recipe. Which acceptance criterion remains unproven? Add a fixture that could expose the mistake, then explain why it distinguishes correct filtering from returning everything.
+
+<details markdown="1">
+<summary>Check your answer</summary>
+
+**Matching recipes only.** If every recipe in the test data has the `vegetarian` tag, the correct response to `GET /recipes?tag=vegetarian` and the whole list are the same, so the tests cannot tell a correct filter from one that ignores the tag. Add a fixture (the data a test creates before it runs) with one recipe tagged `vegetarian` and one without that tag, and assert that the filtered response contains the first and not the second. A filter that returns everything now fails; a correct filter passes. This is step 3's "seed two recipes with different tags".
+
+</details>
+
+**Where we practice it:** Lectures 2–3 implement the API and persistence; 4–5 add the browser and tests; 6–9 introduce the separate AI service, boundaries and evaluations; 10 covers CI, security and release. The [agent-driven engineering guide](../guides/agent-driven-development.md) develops delegation and review, and the [software factory lab](../guides/software-factory-lab.md) follows a work order through retained delivery evidence. These remain the same product and course requirements.
 
 ## Live demo
 
@@ -531,7 +556,7 @@ docker run -d --rm --name hello -p 127.0.0.1:8080:8000 python:3.14-slim python -
 docker stop hello
 ```
 
-Line 2 prints a `3.14.x` version even without Python 3.14 on your laptop. While `hello` runs, <http://localhost:8080> shows a directory listing served from inside the container, and `docker ps` lists it with `127.0.0.1:8080->8000/tcp`. Select the `python:3.14-slim` line: `python:3-slim` now means Python 3.15. Tags can receive updates; Lecture 10 explains exact image digests.
+Line 2 prints a `3.14.x` version even without Python 3.14 on your laptop. While `hello` runs, <http://localhost:8080> shows a directory listing served from inside the container, and `docker ps` lists it with `127.0.0.1:8080->8000/tcp`. Pin `python:3.14-slim`, not `python:3-slim`, which now means Python 3.15. Tags can receive updates; Lecture 10 explains exact image digests.
 
 **5. Check an open-source candidate** (any folder). *Observe the real result.* FastAPI is used only to show the commands; it is not a recommendation.
 
@@ -549,7 +574,7 @@ On 17 October 2026 the first reported 103,177 stars, MIT, `isFork: false`, and a
 Do every step for **your own** domain. Steps 1–7 are **core today**. Drill 4 in [Break it on purpose](#break-it-on-purpose) is **finish before Lecture 2**. [Stretch goals](#stretch-goals) are the **extension**.
 
 1. **Install** (skip what [Student setup, Part A](../guides/student-setup.md#part-a-before-the-first-meeting) already did).
-   - **Windows:** in an admin PowerShell run `wsl --install`, reboot, and create your Ubuntu user. In Docker Desktop, enable WSL integration for Ubuntu (Settings → Resources). Keep code under `~` in Ubuntu, never `/mnt/c`. Open projects with `code .` from Ubuntu (VS Code's WSL extension).
+   - **Windows:** in an admin PowerShell run `wsl --install -d Ubuntu`, reboot, and create your Ubuntu user. In Docker Desktop, enable WSL integration for Ubuntu (Settings → Resources). Keep code under `~` in Ubuntu, never `/mnt/c`. Open projects with `code .` from Ubuntu (VS Code's WSL extension).
    - **macOS:** Docker Desktop, an editor, and `brew install uv gh` (or the official installers).
    - **Linux:** Docker Engine and the Compose plugin, from [Docker's docs](https://docs.docker.com/engine/install/).
    - **Everyone** (skip the first line if you used Homebrew; on Ubuntu, install gh with the [apt steps](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)). These are the same lines as setup's [Connect Git and GitHub](../guides/student-setup.md#connect-git-and-github) block; use the email address you chose there:
@@ -558,7 +583,7 @@ Do every step for **your own** domain. Steps 1–7 are **core today**. Drill 4 i
      curl -LsSf https://astral.sh/uv/install.sh | sh
      uv python install 3.14
      git config --global user.name "Your Name"
-     git config --global user.email "you@example.com"
+     git config --global user.email "ID+USERNAME@users.noreply.github.com"
      git config --global init.defaultBranch main
      gh auth login
      gh auth setup-git
@@ -781,37 +806,37 @@ Expected: `Python 3.14.x`; three or more commits; two merged PRs (the sketch and
 ## Quick quiz
 
 <details markdown="1">
-<summary>Q1. You stop a container started with <code>--rm</code>. What happens to the <code>python:3.14-slim</code> image? (a) It is deleted too (b) It stays for the next run (c) It is reset to defaults</summary>
+<summary>Q1. You stop a container started with <code>--rm</code>. What happens to the <code>python:3.14-slim</code> image? (a) It is deleted with the container (b) It saves the container's changes (c) It stays for the next run</summary>
 
-**(b).** `--rm` deletes the *container*. The image is the template; it stays in `docker images` and can start many more containers.
-
-</details>
-
-<details markdown="1">
-<summary>Q2. In -p 8080:8000, which port does your browser use? (a) 8000, the container port (b) Whichever is free (c) 8080, the host port</summary>
-
-**(c).** The format is `HOST:CONTAINER`. The browser talks to the host on 8080, and Docker forwards that to 8000 inside the container, where nothing listens on 8080.
+**(c).** `--rm` deletes the *container*. The image is the template; it stays in `docker images` and can start many more containers. Nothing the container changed is written back into the image.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. Which file must you commit so graders get exactly the versions you tested? (a) uv.lock (b) .venv/ (c) README.md</summary>
+<summary>Q2. In -p 8080:8000, which port does your browser use? (a) 8080, the host port (b) 8000, the container port (c) Whichever port is free</summary>
 
-**(a).** `pyproject.toml` states ranges such as `fastapi[standard]>=0.143.3`; `uv.lock` records the exact resolved versions. `.venv/` is machine-specific build output, so it is git-ignored.
-
-</details>
-
-<details markdown="1">
-<summary>Q4. A project has exactly 10,000 stars and a friendly CONTRIBUTING. Does a merged PR there count? (a) Yes (b) No (c) Only with approval</summary>
-
-**(b).** The rule is *more than* 10,000 stars, so exactly 10,000 is not enough ([qualifying rules](../README.md#qualifying-repositories)).
+**(a).** The format is `HOST:CONTAINER`. The browser talks to the host on 8080, and Docker forwards that to 8000 inside the container, where nothing listens on 8080.
 
 </details>
 
 <details markdown="1">
-<summary>Q5. An assistant's change works when you run it, but you haven't read the diff. What is missing? (a) Nothing, it works (b) Reading <code>git diff --staged</code> (c) A second AI opinion</summary>
+<summary>Q3. Which file must you commit so graders get exactly the versions you tested? (a) <code>README.md</code> (b) <code>uv.lock</code> (c) <code>.venv/</code></summary>
 
-**(b).** Running it proves one path works, not that the change stayed in scope. You must be able to explain every line you submit.
+**(b).** `pyproject.toml` states ranges such as `fastapi[standard]>=0.143.3`; `uv.lock` records the exact resolved versions. `.venv/` is machine-specific build output, so it is git-ignored. `README.md` explains the project but pins no versions.
+
+</details>
+
+<details markdown="1">
+<summary>Q4. A project has exactly 10,000 stars and a friendly CONTRIBUTING. Does a merged PR there count? (a) Yes, it meets the threshold (b) Only if the instructor approves (c) No, it needs more stars</summary>
+
+**(c).** The rule is *more than* 10,000 stars, so exactly 10,000 is not enough ([qualifying rules](../README.md#qualifying-repositories)).
+
+</details>
+
+<details markdown="1">
+<summary>Q5. An assistant's change works when you run it. What must you still do before you commit it? (a) Read every line of the staged diff (b) Nothing else, because the change already works (c) Ask a second assistant to approve it</summary>
+
+**(a).** Running it proves one path works, not that the change stayed in scope. Read `git diff --staged` first: you must be able to explain every line you submit.
 
 </details>
 
@@ -842,6 +867,7 @@ Optional, after the core lab steps work:
 - Explore a container: `docker run --rm -it python:3.14-slim bash`, then `whoami` and `cat /etc/os-release`. You are `root` inside, and slim images have no `curl`.
 - See the bind address in action: run `docker run -d --rm --name lo -p 127.0.0.1:8081:8000 python:3.14-slim python -m http.server 8000 --bind 127.0.0.1`, then `curl localhost:8081`. Explain the failure with the port-mapping figure, then `docker stop lo`.
 - Try the next Python without touching your project: `uv run --no-project --python 3.15 python --version`.
+- Find the agent skills your libraries ship, after you have read [Agent sandboxes: Week 1 minimum](../guides/agent-sandboxes.md#week-1-minimum). FastAPI, Streamlit and Pydantic AI ship agent "skills" inside their packages. A skill is a folder of instructions an agent can load. In a service folder, `uvx library-skills scan` lists them (in today's `backend/` only FastAPI's appears). Read each `SKILL.md` before enabling it: it is text from a dependency, not permission. Then `uvx library-skills --claude` links them for your agent ([library-skills.io](https://library-skills.io/)).
 
 ## Common pitfalls
 
