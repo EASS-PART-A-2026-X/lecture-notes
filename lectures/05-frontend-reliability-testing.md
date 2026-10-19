@@ -815,9 +815,14 @@ Four: one in each recipe's edit form plus the add form. That is why the test sco
 
 ## Hands-on lab
 
-Apply each step to **your own domain**; Recipe Box is the pattern, not the answer. Run every command from `frontend/` unless a step says otherwise.
+Apply each step to **your own domain**; Recipe Box is the pattern, not the answer. Plan your time:
 
-**Core today:** steps 1–3, the backend-down and 422 tests in step 4, and steps 6–8. **Before EX2 (due Mon 30 Nov 2026, 23:59):** the rest of step 4, and step 9. **During the lab, if time allows:** step 10. **Extension:** step 5, drills 2 and 3, the optional items, and the [Stretch goals](#stretch-goals).
+- **Core today:** steps 1–3, the backend-down and 422 tests in step 4, and steps 6–8
+- **Before EX2 (due Mon 30 Nov 2026, 23:59):** the rest of step 4, and step 9
+- **During the lab, if time allows:** step 10
+- **Extension (optional):** step 5, drills 2 and 3, the optional items, and the [Stretch goals](#stretch-goals)
+
+Run every command from `frontend/` unless a step says otherwise.
 
 1. Add the dev tools and the pytest config from the demo. Install a browser, or plan to use `--browser-channel chrome`.
 2. Move every HTTP call into `frontend/api.py`. Add a `TypedDict` for your main resource, the three exception classes, the two-clause `_request` (not sent / sent), `_json`, and a `_friendly()` that speaks your domain ("That booking no longer exists"). **Checkpoint:** `grep -nE "httpx|sqlmodel|sqlite|st\.connection" streamlit_app.py` prints nothing.
@@ -868,7 +873,7 @@ Apply each step to **your own domain**; Recipe Box is the pattern, not the answe
 
    </details>
 
-5. *Extension:* add the boundary test.
+5. *Extension (optional):* add the boundary test.
 6. Write one Playwright flow for your product's most important job: create something, reload, check it is still there, then delete it through the UI. Give it a unique name per run. If you wrote an operational principle in Lecture 1 ("after X does A, then B"), test exactly that sentence.
 7. Unplug by hand: stop the backend, reload, read the message; restart it, reload, and check that the page recovers.
 8. Commit: `git add frontend`, then `git commit -m "Frontend: error states, AppTest suite, e2e flow"`.

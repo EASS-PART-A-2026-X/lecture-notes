@@ -680,7 +680,10 @@ def test_tools_are_plain_functions():
 
 ## Hands-on lab
 
-Build the agent for **your own domain**: a syllabus paragraph becomes study tasks, an invoice email becomes line items, a product blurb becomes catalogue fields.
+Build the agent for **your own domain**: a syllabus paragraph becomes study tasks, an invoice email becomes line items, a product blurb becomes catalogue fields. Plan your time:
+
+- **Core today:** steps 1–8, with the design checklist below done before step 2
+- **Extension (optional):** a real-model run (after step 8), and the dependency-override test and the trace dissection in [Stretch goals](#stretch-goals)
 
 **Design checklist** (5 minutes, on paper, before step 2):
 
@@ -755,7 +758,7 @@ The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)
 
 </details>
 
-**Core today**
+**Core today:**
 
 1. Scaffold `ai-service/` next to `backend/` and `frontend/`, as in the demo.
 2. Write `schemas.py`: a request model (`extra="forbid"`, `str_strip_whitespace=True`, length limits) and an output model from your design checklist.
@@ -773,7 +776,7 @@ The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)
 
 > **EX3 progress:** this service is the Pydantic AI part of EX3. Lecture 7 connects your backend to it over HTTP, Lecture 8 runs it in Compose, and Lecture 9 adds limits and evaluation cases. EX2 (due 30 Nov) does not depend on it.
 
-**Extension (optional)**
+**Extension (optional):**
 
 - **A real-model run.** The free route is a local model through Ollama; [Use a local model in your AI service](../guides/local-inference.md#use-a-local-model-in-your-ai-service) gives a dated default tag, expected latency and the exact settings. Put the settings in a git-ignored `.env` at the repository root (`git check-ignore -v .env` proves it is ignored), then run `uv run --env-file ../.env fastapi dev --port 8001` in `ai-service/`:
 

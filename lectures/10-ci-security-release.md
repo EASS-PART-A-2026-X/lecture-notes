@@ -626,7 +626,12 @@ FAILED (exit 22). Last log lines from each service:
 
 ## Hands-on lab
 
-**Core today:** steps 1, 4 and 7. **Finish before Meeting 11:** steps 2, 3 and 6. **May finish in Meeting 11:** step 5.
+Apply each step to **your own** product. Plan your time:
+
+- **Core today:** steps 1, 4 and 7
+- **Before Meeting 11:** steps 2, 3 and 6
+- **May finish in Meeting 11:** step 5
+- **Extension (optional):** the [Stretch goals](#stretch-goals), after EX3's minimum works
 
 1. **CI.** Copy the workflow to `.github/workflows/ci.yml`; adapt the matrix to your service folders and the smoke step to your endpoints. Open a pull request in your own repository. **Checkpoint:** the three `test` checks and `compose` are green; `audit` is advisory and may show findings.
 2. **Lint it** from the repository root with actionlint and zizmor until both are clean.

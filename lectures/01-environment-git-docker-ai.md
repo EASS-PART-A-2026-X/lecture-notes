@@ -571,7 +571,11 @@ On 17 October 2026 the first reported 103,177 stars, MIT, `isFork: false`, and a
 
 ## Hands-on lab
 
-Do every step for **your own** domain. Steps 1–7 are **core today**. Drill 4 in [Break it on purpose](#break-it-on-purpose) is **finish before Lecture 2**. [Stretch goals](#stretch-goals) are the **extension**.
+Do every step for **your own** domain. Plan your time:
+
+- **Core today:** steps 1–7
+- **Before Lecture 2:** drill 4, "Undo without panic", in [Break it on purpose](#break-it-on-purpose)
+- **Extension (optional):** the [Stretch goals](#stretch-goals)
 
 1. **Install** (skip what [Student setup, Part A](../guides/student-setup.md#part-a-before-the-first-meeting) already did).
    - **Windows:** in an admin PowerShell run `wsl --install -d Ubuntu`, reboot, and create your Ubuntu user. In Docker Desktop, enable WSL integration for Ubuntu (Settings → Resources). Keep code under `~` in Ubuntu, never `/mnt/c`. Open projects with `code .` from Ubuntu (VS Code's WSL extension).

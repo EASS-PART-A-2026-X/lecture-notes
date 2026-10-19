@@ -799,11 +799,17 @@ At once, not after 30 seconds: "AI service is unavailable, try again in a minute
 
 ## Hands-on lab
 
-Apply this to **your** domain: your names, the same shape. Run each command from the directory the step names.
+Apply this to **your** domain: your names, the same shape. Plan your time:
+
+- **Core today:** steps 1–5
+- **Before Lecture 8:** steps 6–9
+- **Extension (optional):** the [design studio](#design-studio-deep-or-shallow-client) below, then the [Stretch goals](#stretch-goals)
 
 > **EX3 progress:** a third service that your backend calls over HTTP, with tests for its failures, is a required part of EX3 (due Mon 11 Jan 2027, 23:59). Today's lab is not part of EX2.
 
-**Core today**
+Run each command from the directory the step names.
+
+**Core today:**
 
 1. **Write the contract** in your README as a three-row table. **Checkpoint:** a classmate could call your AI service from it alone.
 2. **Add the request model** in `backend/app/models.py`, with length limits, `extra="forbid"` and `str_strip_whitespace=True`.
@@ -811,7 +817,7 @@ Apply this to **your** domain: your names, the same shape. Run each command from
 4. **Add the route**, mapping the exceptions to 503 and 502 with fixed `detail` text.
 5. **Write MockTransport tests.** From `backend/`, in `tests/test_from_text.py`: success (the row is stored), refused → 503, read timeout → 503, a 4xx or a broken body → 502, empty and whitespace-only input → 422 with zero calls. **Checkpoint:** `uv run pytest` passes with Wi-Fi off, and deleting the route's `except AIServiceUnavailable` makes at least one test fail.
 
-**Finish before next meeting**
+**Before Lecture 8:**
 
 6. **Add the schema check.** Generate a snapshot of the AI service's published contract with no server running. From the repository root:
 
@@ -861,8 +867,6 @@ Apply this to **your** domain: your names, the same shape. Run each command from
 7. **Wire the frontend:** the `api.py` function with a longer timeout, a form with a spinner, plain-word 503/502 messages, and the two AppTest tests. **Checkpoint:** `uv run pytest` in `frontend/` passes.
 8. **Run all three**, finish the flow, then stop the AI service and retry.
 9. **README:** data-flow diagram, start commands, error table, and how to regenerate `ai_openapi.json`.
-
-**Extension:** the design studio below, then the [stretch goals](#stretch-goals).
 
 ### Design studio: deep or shallow client
 

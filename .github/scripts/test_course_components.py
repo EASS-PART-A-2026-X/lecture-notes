@@ -1,4 +1,5 @@
-"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager).
+"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager) and
+for the time plan that opens every lecture lab.
 
 Run after the Jekyll build, from the repository root:
     python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -130,6 +131,22 @@ class CourseComponentsTest(unittest.TestCase):
                     self.assertIn('<p class="glance-title"><strong>At a glance</strong></p>', html)
         if not GLANCE_REQUIRED:
             self.skipTest("COURSE_GLANCE=optional: the At a glance card is not required")
+
+    def test_lecture_labs_open_with_the_time_plan(self):
+        """Every lab starts with one sentence ending "Plan your time:" and a list that runs from
+        "Core today:" to "Extension (optional):"; any item between names a later time."""
+        for name, html in self.lectures.items():
+            with self.subTest(page=name):
+                lab = html.partition('<h2 id="hands-on-lab"')[2].partition("</h2>")[2]
+                match = re.match(r"\s*<p>((?:(?!</p>).)*)</p>\s*<ul>((?:(?!</ul>).)*)</ul>", lab, re.S)
+                self.assertIsNotNone(match, "the lab opens with a sentence and the time-plan list")
+                self.assertTrue(match.group(1).endswith("Plan your time:"), match.group(1)[-200:])
+                labels = re.findall(r"<li><strong>([^<]+)</strong>", match.group(2))
+                self.assertGreaterEqual(len(labels), 2, labels)
+                self.assertEqual(labels[0], "Core today:")
+                self.assertEqual(labels[-1], "Extension (optional):")
+                for label in labels[1:-1]:
+                    self.assertRegex(label, r"^(Before |During |May finish )")
 
     def test_top_level_labels_become_callouts(self):
         labels = plugin_labels()

@@ -1329,15 +1329,13 @@ The one-paragraph result note can say: **hypothesis → fixed setup/cases → ba
 
 ## Hands-on lab
 
-Apply each step to **your** domain. Every command runs from the directory the step names.
+Apply each step to **your** domain. Plan your time:
 
-> **Note:** if you are short on time, do only the **Core today** row: steps 1–3, step 6 with five cases, and drill 3. The rest waits until before Lecture 10.
+- **Core today:** steps 1–3, step 6 (at least five cases) and step 7 (drill 3 at least)
+- **Before Lecture 10:** step 4, the rest of your step 6 cases, and the optional step 5
+- **Extension (optional):** the tenacity investigation after step 7, then the [Stretch goals](#stretch-goals)
 
-| Part | Steps |
-|---|---|
-| **Core today** | 1, 2, 3, 6 (at least five cases), 7 (drill 3 at least) |
-| **Finish before Lecture 10** | 4, the rest of your cases, and the optional step 5 |
-| **Extension** | the tenacity investigation below the list |
+Every command runs from the directory the step names.
 
 1. **Failure table** in your README: one row per failure class, with the status code, the exact UI sentence, and which one layer (if any) retries.
 2. **Bounded retries** with tests (`backend/`): 503 then success, timeout then success, give up after exactly 3 attempts, and one parametrized test proving 429, 502, 500 and other 4xx are tried once. *Checkpoint:* `uv run pytest` is green in under a second; if it takes seconds, the `no_backoff` fixture is missing.
@@ -1388,7 +1386,7 @@ Apply each step to **your** domain. Every command runs from the directory the st
 6. **Your eval dataset** (`ai-service/evals/`): 8–10 messy cases, at least one a prompt injection, with expected outputs **you** write; three or more deterministic evaluators, including one that penalizes invented items; a baseline. Commit a dated README results table and `tests/test_evals.py`. *Checkpoint:* `uv run pytest` prints `13 passed`.
 7. **Drill your stack** with the drills below; drill 3 is the minimum.
 
-**Extension**
+**Extension (optional):**
 
 > **Investigate:** the `no_backoff` fixture patches `AIClient._post_extract.retry.sleep`, an attribute the tenacity documentation does not describe for tests. Open `tenacity/__init__.py` in your backend environment (`uv run python -c "import tenacity; print(tenacity.__file__)"` prints its path) and find `wraps()` and `copy()`.
 >

@@ -662,7 +662,11 @@ Expected: `10 passed`, `All checks passed!`, and all files already formatted. Th
 
 ## Hands-on lab
 
-Build the same API for **your** record type, from your repo's `backend/`. Steps 1–4 are **core today**; step 5 is **finish before Lecture 3**; [Stretch goals](#stretch-goals) are the **extension**.
+Build the same API for **your** record type, from your repo's `backend/`. Plan your time:
+
+- **Core today:** steps 1–4
+- **Before Lecture 3:** step 5
+- **Extension (optional):** the [Stretch goals](#stretch-goals)
 
 1. **Models.** Translate your data sketch into `app/models.py` with the four-model split. Give every field a type and a limit, and decide which fields have defaults. **Checkpoint:** `/docs` shows your Create, Update and Public schemas.
 2. **Routes.** Add the five contract routes, renamed for your resource (for example `/tasks/{task_id}`), using the store dependency and `get_or_404`. **Checkpoint:** POST returns 201 with an `id`; a missing id returns 404 with your `detail`.

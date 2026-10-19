@@ -484,11 +484,17 @@ No Compose command deletes `.env`; it is a file in your repository, and Git igno
 
 ## Hands-on lab
 
-Containerize **your** product. Use your own service names, and keep the shape. Run every `docker compose` command from the repository root, where `compose.yaml` lives.
+Containerize **your** product. Use your own service names, and keep the shape. Plan your time:
+
+- **Core today:** steps 1–6
+- **Before Lecture 9:** steps 7–10
+- **Extension (optional):** drill 4, "healthy but unreachable", in [Break it on purpose](#break-it-on-purpose), then the [Stretch goals](#stretch-goals)
 
 > **EX3 progress:** EX3 (due Mon 11 Jan 2027, 23:59) requires Docker Compose as the way to run all three services. A clean clone that starts with `docker compose up --build --wait` and no `.env` is the evidence.
 
-**Core today**
+Run every `docker compose` command from the repository root, where `compose.yaml` lives.
+
+**Core today:**
 
 1. **Dockerfiles:** copy the backend's into each service directory; drop the data directory; change the port and `CMD` (keep `--host 0.0.0.0`); add `.dockerignore`. **Checkpoint:** `docker compose build` succeeds.
 2. **`compose.yaml`:** three services, `name:` set, no `version:`, `ports:` only for the frontend and backend, both bound to `127.0.0.1`.
@@ -497,14 +503,14 @@ Containerize **your** product. Use your own service names, and keep the shape. R
 5. **Data:** a named volume and a four-slash `DATABASE_URL`.
 6. **Settings:** `.env.example` committed, `.env` ignored, `env_file` with `required: false`, `${AI_MODEL:-test}`. **Checkpoint:** it starts with **no** `.env`.
 
-**Finish before next meeting**
+**Before Lecture 9:**
 
 7. **Run the full flow** in the browser, AI feature included.
 8. **Restart test:** data survives `down` and `up`; `down -v` resets to the seed. **Checkpoint:** you can say which row of the "What each command destroys" table you just used.
 9. **Peer review (optional, recommended; about 10 min).** Swap `compose.yaml` with a classmate. Apply the Pattern 1 checklist from [Working with AI assistants](#working-with-ai-assistants) to *their* file, and report one concrete observation together with the command that shows it (for example: "`curl -sS localhost:8001/health` answers, so the AI port is published"). **Done when:** you have sent one observation and received one.
 10. **README "Run it":** commands, ports, a `down -v` warning, and the real-model switch.
 
-**Extension:** the optional break-it drill 4, then the [stretch goals](#stretch-goals). If you keep an `AGENTS.md` file ([student setup, Part B](../guides/student-setup.md#part-b-at-the-end-of-lecture-1)), add the line `Verify with: docker compose up --build --wait --wait-timeout 180` so an assistant runs the same check you do.
+**Optional:** if you keep an `AGENTS.md` file ([student setup, Part B](../guides/student-setup.md#part-b-at-the-end-of-lecture-1)), add the line `Verify with: docker compose up --build --wait --wait-timeout 180` so an assistant runs the same check you do.
 
 ## Break it on purpose
 

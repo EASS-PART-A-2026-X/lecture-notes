@@ -666,11 +666,15 @@ No. The browser loads only Streamlit's own page, scripts, styles and fonts, plus
 
 ## Hands-on lab
 
-Build the same four flows for **your own domain**. Run every command from `frontend/` unless a step says otherwise.
+Build the same four flows for **your own domain**. Plan your time:
+
+- **Core today:** steps 1–6
+- **Before Lecture 5:** steps 7–9
+- **Extension (optional):** the [Stretch goals](#stretch-goals), once the completion check passes
 
 > **EX2 progress:** the four flows you build today are the "core flows" of EX2 (due Mon 30 Nov 2026, 23:59); Lecture 5 adds the error states and the automated flow. See the README's [assignments table](../README.md#assignments-and-deadlines).
 
-**Core today:** steps 1–6. **Finish before Lecture 5:** steps 7–9. **Extension:** the [Stretch goals](#stretch-goals), once the completion check passes.
+Run every command from `frontend/` unless a step says otherwise.
 
 1. Create `frontend/` with the commands in Live demo steps 1–2 (from the repository root), add `.streamlit/config.toml`, and commit `pyproject.toml`, `uv.lock` and `.python-version`.
 2. Write `api.py` with list, create, update and delete for your resource. **Checkpoint:** the `uv run python -c "import api; ..."` call prints your seed count.

@@ -102,6 +102,18 @@ A blockquote whose first line is exactly `**At a glance**`, then a blank quoted 
 
 Student setup opens with the same card, directly after its navigation line, with labels for its own job: **Part A**, **Part B**, **You need**, **Not required**, **Project home** and **Stuck in Part A?**. The same rules apply: meeting dates and times exactly as the README states them, durations labelled as estimates, and no requirement added or dropped. Other guides do not use the card.
 
+### Lab time plan (lectures 1–10, first block under `## Hands-on lab`)
+
+One sentence that sets the lab in the student's own domain and ends with `Plan your time:`, then a tight list. The first item is `**Core today:**`, the last is `**Extension (optional):**`, and the items between say when the rest fits, such as `**Before Lecture 5:**`, `**Before EX2 (due Mon 30 Nov 2026, 23:59):**`, `**During the lab, if time allows:**` or `**May finish in Meeting 11:**`. Refer to steps by their numbers and drills by number and name; when a long lab is split into groups, label each group with the same words (`**Core today:**`, `**Before Lecture 8:**`). `test_course_components.py` checks the sentence and the first and last labels.
+
+```markdown
+Do every step for **your own** domain. Plan your time:
+
+- **Core today:** steps 1–7
+- **Before Lecture 2:** drill 4, "Undo without panic", in [Break it on purpose](#break-it-on-purpose)
+- **Extension (optional):** the [Stretch goals](#stretch-goals)
+```
+
 ### Predict, then reveal
 
 Every prediction has a hidden answer directly after it. Use one of these summaries: `Check your prediction`, `Check your answer`, `Check your answers`, `Show a model answer`, `Show the expected output`.
