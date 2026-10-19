@@ -10,7 +10,7 @@
 > - **Part B:** your repository, a practice pull request, `/health`, and a first assistant task, *at the end of Lecture 1*, after the live demo shows each step. Do not try Part B alone the night before.
 > - **You need:** your own **free GitHub account with a verified email** for repositories, pull requests, and course submissions. An existing personal account is fine; follow [Connect Git and GitHub](#connect-git-and-github).
 > - **Not required:** a paid AI subscription, a model API key, a GPU, a particular editor, a paid GitHub plan, or GitHub Education approval.
-> - **Project home:** your course product repository belongs to **[EASS-PART-A-2026-X](https://github.com/EASS-PART-A-2026-X)**, the same organization as the course material. Your personal account identifies your contributions; the organization owns the project repository ([Join the course organization](#join-the-course-organization)).
+> - **Project home (required):** your course product repository belongs to **[EASS-PART-A-2026-X](https://github.com/EASS-PART-A-2026-X)**, the same organization as the course material. Your personal account identifies your contributions; the organization owns the project repository ([Join the course organization](#join-the-course-organization)).
 > - **Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
 
 <details markdown="1" class="lecture-toc">
@@ -117,7 +117,7 @@ Five different things are often called "the AI". They can be different companies
 | Editor | where you work with files | VS Code, Cursor | a model, or access to GitHub |
 | Chat product | an interface for asking questions | ChatGPT, Gemini, Claude, Z.ai chat | API credits, or another company's coding tool |
 | Coding harness (coding agent) | a tool that can read your workspace and run permitted commands | Copilot, Codex, Antigravity CLI, OpenCode, Claude Code | `git push` rights: GitHub uses its own login (`gh auth login`) |
-| Model | the trained weights that generate the responses; it runs no commands itself | chosen inside the tool, or a local model | anything; it is what the other layers call |
+| Model | the program that generates the responses; it runs no commands itself | chosen inside the tool, or a local model | anything; it is what the other layers call |
 | Provider | the service that answers model requests through an API; hosted ones are paid or metered | OpenAI, Google, Anthropic or Z.ai APIs | a chat subscription; API keys are billed separately |
 
 ### Install the development tools

@@ -100,7 +100,7 @@ A blockquote whose first line is exactly `**At a glance**`, then a blank quoted 
 > - **Done when:** `uv run pytest` prints `10 passed`
 ```
 
-Student setup opens with the same card, directly after its navigation line, with labels for its own job: **Part A**, **Part B**, **You need**, **Not required**, **Project home** and **Stuck in Part A?**. The same rules apply: meeting dates and times exactly as the README states them, durations labelled as estimates, and no requirement added or dropped. Other guides do not use the card.
+Student setup opens with the same card, directly after its navigation line, with labels for its own job: **Part A**, **Part B**, **You need**, **Not required**, **Project home (required)** and **Stuck in Part A?**. The same rules apply: meeting dates and times exactly as the README states them, durations labelled as estimates, and no requirement added or dropped. Other guides do not use the card.
 
 ### Lab time plan (lectures 1–10, first block under `## Hands-on lab`)
 
