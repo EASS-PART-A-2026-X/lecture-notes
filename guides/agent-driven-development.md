@@ -4,7 +4,7 @@
 
 [Course guide](../README.md) · [Software factory lab](software-factory-lab.md)
 
-**Related guides:** [Student setup](student-setup.md) and [Models and AI literacy](models-and-ai-literacy.md) for tools and terms · [Agent sandboxes](agent-sandboxes.md#week-1-minimum) for the execution boundary · [Local inference](local-inference.md) for the model-server path · [Engineering contracts](engineering-contracts.md) for manifests, skills and evaluations · [the learning map](learning-map.md) for the class-by-class route.
+**Related guides:** [Student setup](student-setup.md) and [Models and AI literacy](models-and-ai-literacy.md) for tools and terms · [Agent sandboxes](agent-sandboxes.md#week-1-minimum) for the execution boundary · [Local inference](local-inference.md) for the model-server path · [Manifests, skills and evals](engineering-contracts.md) for engineering contracts · [the learning map](learning-map.md) for the class-by-class route.
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>

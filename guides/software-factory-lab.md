@@ -6,7 +6,7 @@
 
 **When:** Parts A and B after Lecture 2 or 3, about 45–60 minutes in total (estimate). Part C's outage drill needs the three services, so do it after Lecture 7. Revisit the delivery milestones in Lecture 10. This is formative practice with a separate demonstration repository; it adds no assignment or infrastructure requirement.
 
-**Related:** [Engineering contracts](engineering-contracts.md) turns the same ideas into manifests, Docker reference checks and a skill-comparison exercise.
+**Related:** [Manifests, skills and evals](engineering-contracts.md) turns the same ideas into manifests, Docker reference checks and a skill-comparison exercise.
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>

@@ -2,7 +2,7 @@
 
 <!-- {% raw %} -->
 
-[Course home](../README.md) · [Learning map](learning-map.md) · [Lecture 7](../lectures/07-third-service-contracts.md) · [Engineering contracts](engineering-contracts.md)
+[Course home](../README.md) · [Learning map](learning-map.md) · [Lecture 7](../lectures/07-third-service-contracts.md) · [Manifests, skills and evals](engineering-contracts.md)
 
 **A visual review for Lectures 3 and 7–10; optional depth.** Use it with your existing product; it adds no framework and no assignment. Follow one successful request, predict how it fails, and collect evidence at the right boundary. The diagrams describe Recipe Box's Streamlit route; a React browser client has a different first HTTP hop.
 

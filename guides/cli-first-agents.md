@@ -2,7 +2,7 @@
 
 <!-- {% raw %} -->
 
-[Course home](../README.md) · [Agent-driven engineering](agent-driven-development.md) · [Engineering contracts](engineering-contracts.md) · [Sandboxes](agent-sandboxes.md)
+[Course home](../README.md) · [Agent-driven engineering](agent-driven-development.md) · [Manifests, skills and evals](engineering-contracts.md) · [Sandboxes](agent-sandboxes.md)
 
 **Optional lab after Lectures 6–10; about 30–45 minutes (estimate).** Use ordinary commands to complete one observable task before adding orchestration. This lab needs only the course's Python 3.14: no model, API key, MCP server, skill installation or extra application service. It adds no assessment requirement.
 
