@@ -50,6 +50,7 @@
   --ed-muted: #535c6b;       // captions, dates, labels, list numerals         6.8:1 (5.7 on paper-deep)
   --ed-link: #1d4e89;        // links and the focus ring                       8.4:1
   --ed-accent: #9b2c2c;      // the one accent: kickers, active page, deadlines 7.5:1
+  --ed-current: var(--ed-link); // where you are in the semester: the home board and next meeting
   --ed-on-ink: #fff;         // text on ink and accent fills
   --ed-rule: #ddd7ca;        // hairlines (decorative)
   --ed-rule-strong: #b9b1a1; // rails and spines (decorative)
@@ -2109,57 +2110,37 @@ $ed-code-languages: (
     max-width: var(--ed-measure);
   }
 
-  // "On this page:" links as buttons; the first ("Start here") is the filled primary action.
-  // The " · " separators stay in the source (GitHub, screen readers) but take no space here:
-  // font-size 0 hides them, and spacing comes from margins, not gap (they are flex items too).
+  // "On this page:" a calm, wrapped row of text links (the board above holds the one primary
+  // action). The " · " separators stay in the source (GitHub, screen readers) but take no space
+  // here: font-size 0 hides them, and spacing comes from margins, not gap (they are flex items too).
   > p.home-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     max-width: none;
-    margin: 1.5rem -0.5rem 0 0;
+    margin: 1.25rem 0 0;
     font-size: 0;
 
     > strong:first-child {
-      flex: 0 0 100%;
-      margin-bottom: 0.65rem;
-      @include ed-kicker(var(--ed-ink));
+      margin-right: 1rem;
+      font-family: var(--ed-sans);
+      font-size: var(--fs-15);
+      font-weight: 650;
+      line-height: 1.25;
+      color: var(--ed-ink);
     }
 
     > a {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      margin: 0 0.5rem 0.5rem 0;
-      min-height: 2.75rem;
-      padding: 0.5rem 0.95rem;
+      min-height: 2rem;
+      margin-right: 1.1rem;
       font-family: var(--ed-sans);
       font-size: var(--fs-15);
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.25;
-      color: var(--ed-ink);
-      text-decoration: none;
-      background: var(--ed-bg);
-      border: 1px solid var(--ed-ink);
-      border-radius: 2px;
-
-      &:hover {
-        background: var(--ed-paper);
-      }
-    }
-
-    > strong:first-child + a {
-      color: var(--ed-on-ink);
-      background: var(--ed-ink);
-
-      &::after {
-        @include ed-icon(var(--ed-i-arrow), 1.15rem);
-        height: 0.8rem;
-      }
-
-      &:hover {
-        background: var(--ed-link);
-        border-color: var(--ed-link);
-      }
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
     }
   }
 }
@@ -2185,20 +2166,8 @@ $ed-code-languages: (
   }
 }
 
-// Phones: two buttons per row, the primary across the full width; facts run in, term first.
+// Phones: facts run in, term first.
 @container content (max-width: 30rem) {
-  .main-content .home-hero > p.home-actions {
-    > a {
-      flex: 1 1 calc(50% - 0.5rem);
-      justify-content: center;
-      text-align: center;
-    }
-
-    > strong:first-child + a {
-      flex-basis: 100%;
-    }
-  }
-
   .main-content .home-hero > ul.home-facts > li {
     padding: 0.4rem 0;
 
@@ -2208,18 +2177,29 @@ $ed-code-languages: (
   }
 }
 
-// "Next meeting", inserted by course.js after the hero from the calendar table.
+// Touch screens: every home link row is a full 44 px target.
+@media (pointer: coarse) {
+  .main-content .home-hero > p.home-actions > a,
+  .main-content .this-week .this-week-actions > a {
+    min-height: 2.75rem;
+  }
+}
+
+// The semester clock, inserted by course.js directly under the home title from the README's
+// calendar and assignments tables: today's or the next meeting, what to open, the next deadline.
+// Navy is "where you are" (the left rule and the label); oxblood stays for the deadline tags.
 .main-content .this-week {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.2rem;
   max-width: none;
-  margin: 0 0 2rem;
-  padding: 0.9rem 1.25rem 1rem;
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.25rem 1.1rem;
   font-family: var(--ed-sans);
-  font-size: var(--fs-15);
+  font-size: var(--fs-16);
   line-height: 1.5;
+  color: var(--ed-text);
   background: var(--ed-paper);
-  border-left: 3px solid var(--ed-accent);
+  border-left: 3px solid var(--ed-current);
 
   p {
     max-width: none;
@@ -2227,31 +2207,24 @@ $ed-code-languages: (
   }
 
   .this-week-label {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    @include ed-kicker(var(--ed-accent));
-
-    &::before {
-      content: "";
-      width: 0.5rem;
-      height: 0.5rem;
-      background: var(--ed-accent);
-      border-radius: 50%;
-    }
+    font-size: var(--fs-16);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ed-current);
   }
 
   .this-week-when {
-    color: var(--ed-muted);
     font-variant-numeric: tabular-nums;
   }
 
   .this-week-focus {
-    font-family: var(--ed-serif-display);
-    font-size: var(--fs-20);
-    font-weight: 600;
-    line-height: 1.3;
+    margin: 0.35rem 0 0.15rem;
+    font-family: var(--ed-serif);
+    font-size: var(--fs-22);
+    font-weight: 700;
+    line-height: 1.25;
     color: var(--ed-ink);
+    text-wrap: balance;
   }
 
   .this-week-term {
@@ -2259,15 +2232,37 @@ $ed-code-languages: (
     color: var(--ed-term);
   }
 
-  .this-week-calendar {
-    justify-self: start;
-    display: inline-flex;
+  .this-week-actions {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    min-height: 1.75rem;
-    margin-top: 0.2rem;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
+    margin: 0.65rem 0 0.15rem;
+    font-size: 0; // the spaces between links take no room; margins space them
+
+    > a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      margin: 0.25rem 1.25rem 0.25rem 0;
+      font-size: var(--fs-16);
+      font-weight: 600;
+      line-height: 1.25;
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+    }
+
+    > a.this-week-open {
+      min-height: 2.75rem;
+      padding: 0.5rem 1.1rem;
+      color: var(--ed-on-ink);
+      text-decoration: none;
+      background: var(--ed-ink);
+      border-radius: 2px;
+    }
+  }
+
+  .this-week-deadline {
+    margin-top: 0.5rem;
   }
 
   strong {
@@ -2275,6 +2270,40 @@ $ed-code-languages: (
     color: var(--ed-accent);
     background: var(--ed-red-tint);
     border: 1px solid currentColor;
+  }
+}
+
+@media (hover: hover) {
+  .main-content .this-week .this-week-actions > a.this-week-open:hover {
+    background: var(--ed-link);
+  }
+}
+
+// Press feedback on the one primary action (motion only answers the reader's own press).
+@media (prefers-reduced-motion: no-preference) {
+  .main-content .this-week .this-week-actions > a.this-week-open {
+    transition: transform 140ms ease-out;
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Phones: the primary action spans the board, the two text links share the next row.
+@container content (max-width: 30rem) {
+  .main-content .this-week {
+    padding: 0.9rem 1rem 1rem;
+
+    .this-week-focus {
+      font-size: var(--fs-20);
+    }
+
+    .this-week-actions > a.this-week-open {
+      flex: 1 1 100%;
+      justify-content: center;
+      margin-right: 0;
+    }
   }
 }
 
@@ -2374,7 +2403,7 @@ $ed-code-languages: (
   }
 
   tr.is-next td:first-child {
-    box-shadow: inset 3px 0 0 var(--ed-accent);
+    box-shadow: inset 3px 0 0 var(--ed-current);
     padding-left: 0.5rem;
   }
 }
@@ -2450,7 +2479,7 @@ $ed-code-languages: (
 
     tr.is-next {
       background: var(--ed-paper-deep);
-      box-shadow: inset 3px 0 0 var(--ed-accent);
+      box-shadow: inset 3px 0 0 var(--ed-current);
 
       td {
         background: none;
@@ -2949,6 +2978,20 @@ $ed-code-languages: (
 
     > p.home-actions {
       display: none;
+    }
+  }
+
+  // "Next" changes every week; the printed calendar marks no row (the board is hidden too).
+  .main-content table.schedule tr.is-next {
+    &,
+    td,
+    td:first-child {
+      background: none;
+      box-shadow: none;
+    }
+
+    td:first-child {
+      padding-left: 0;
     }
   }
 

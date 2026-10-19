@@ -6,7 +6,8 @@
 #   > **At a glance** + a list                -> <blockquote class="glance">
 #   [← Course home](../README.md) · ...       -> <p class="page-nav">
 # Lecture pages 01-10 also get <main class="lecture-page"> (phase markers in CSS) and a
-# section panel around six stable sections. The README gets its home-page hooks.
+# section panel around six stable sections. The README gets its home-page hooks (hero, start
+# path, and the calendar and deadlines tables that assets/js/course.js reads).
 #
 # String transforms only, on Just the Docs 0.12.0 + kramdown output. Like
 # search_focus_guard.rb, the hook raises when an expected shape is missing, so a theme or
@@ -204,6 +205,8 @@ module CourseComponents
 
     html = mark_after(path, html, '<h2 id="start-here"', "<ol>", '<ol class="start-path">')
     html = mark_after(path, html, '<h2 id="calendar-and-13-meeting-schedule"', "<table>", '<table class="schedule">')
+    # course.js reads the next deadline for the home-page board from this table.
+    html = mark_after(path, html, '<h2 id="assignments-and-deadlines"', "<table>", '<table class="deadlines">')
     schedule_labels(path, html)
   end
 

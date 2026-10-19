@@ -175,7 +175,7 @@ class CourseComponentsTest(unittest.TestCase):
     def test_home_page_hooks(self):
         html = self.pages["index.html"]
         for hook in ('<div class="home-hero">', '<ul class="home-facts">', '<p class="home-actions">',
-                     '<ol class="start-path">', '<table class="schedule">'):
+                     '<ol class="start-path">', '<table class="schedule">', '<table class="deadlines">'):
             with self.subTest(hook=hook):
                 self.assertEqual(html.count(hook), 1)
         hero = re.search(r'<div class="home-hero">(.*?)<p class="home-actions">', html, re.S)
@@ -183,6 +183,17 @@ class CourseComponentsTest(unittest.TestCase):
         self.assertEqual(hero.group(1).count("<h1"), 1, "the page title sits inside the hero")
         self.assertEqual(html.count("<h1"), 1)
         self.assertNotIn('class="pager"', html, "the home page has no previous/next pager")
+
+    def test_home_tables_keep_the_columns_course_js_reads(self):
+        html = self.pages["index.html"]
+        for table, columns in (("schedule", ["#", "Date", "Focus", "Deliverable"]),
+                               ("deadlines", ["Assignment", "Deadline"])):
+            with self.subTest(table=table):
+                body = re.search(rf'<table class="{table}">(.*?)</table>', html, re.S)
+                self.assertIsNotNone(body)
+                headers = [re.sub(r"<[^>]+>", "", cell).strip()
+                           for cell in re.findall(r"<th\b[^>]*>(.*?)</th>", body.group(1), re.S)]
+                self.assertEqual(headers[:len(columns)], columns)
 
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():
