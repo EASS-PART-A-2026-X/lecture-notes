@@ -73,7 +73,12 @@ curl -s http://127.0.0.1:11434/api/generate -H 'Content-Type: application/json' 
 
 Repeat with the Hebrew sentence and compare the two `prompt_eval_count` values.
 
+<details markdown="1">
+<summary>Check your prediction</summary>
+
 On 17 October 2026, `qwen2.5:7b` counted **14 tokens for each**, although the Hebrew has a third fewer characters. Another model's tokenizer can split them differently. That is the point: measure with the tokenizer of the model you use, and never estimate cost or context from characters or words. Relate the count to [Lecture 9's](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) token limits.
+
+</details>
 
 </details>
 

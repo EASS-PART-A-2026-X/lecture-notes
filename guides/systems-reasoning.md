@@ -392,9 +392,16 @@ Suppose a request launches `n` dependencies in parallel and needs **every** resu
 
 [Dean and Barroso's *The Tail at Scale*](https://research.google/pubs/the-tail-at-scale/) motivates examining latency tails as systems grow. The following numbers are our own independent-branch arithmetic, not measurements from that paper or a model server.
 
-<div id="reliability-lab" class="reliability-lab" markdown="1">
+**Predict first:** each dependency is 99% fast. If a request requires 100 of them, is the whole request 99% fast? Write your estimate before you open the answer or read the calculator below.
 
-**Predict first:** each dependency is 99% fast. If a request requires 100 of them, is the whole request 99% fast?
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+No. All 100 finish in time with probability `0.99¹⁰⁰`, about **36.60%**; at least one is slow **63.40%** of the time. Each extra required dependency multiplies in another 0.99, so the whole request is far less fast than any one part.
+
+</details>
+
+<div id="reliability-lab" class="reliability-lab" markdown="1">
 
 <form hidden aria-label="Independent dependency calculator">
   <div class="reliability-inputs">
