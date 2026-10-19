@@ -58,6 +58,8 @@ You need Python basics, a terminal, your own free GitHub account with a verified
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Interface, loopback:** a network interface is one way into a machine (Wi-Fi, a cable, a virtual network). *Loopback* is the private one that reaches only the same machine: `127.0.0.1`, also called `localhost`.
 - **Bind:** a server *binds* to an address and port to listen there. Bound to `127.0.0.1`, it hears only its own machine; bound to `0.0.0.0`, it hears every interface.
 - **Daemon:** a background program that waits for work. The Docker daemon (engine) runs containers; the `docker` command only sends it requests.

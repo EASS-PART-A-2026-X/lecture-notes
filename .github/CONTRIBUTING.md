@@ -184,6 +184,7 @@ Write ordinary Markdown tables with a header row. Below a 36 rem column (phones,
 Students revisit two pages more than any other: `guides/reference-card.md` (ports, commands by task, status codes, the "When you are behind" ladder, PARD and the open-source rule) and the glossary at the end of `guides/engineering-foundations.md`. Neither may add a fact of its own; each points to where the course teaches it.
 
 - **Reference card:** every table row ends with a "Taught in" link, and every code snippet in a row appears word for word on a page it links to; its ladder repeats the learning map's. When you change a command, port, status code or rung in a lecture or the learning map, change the card in the same PR: `test_course_components.py` fails otherwise.
+- **Glossary:** every term in a lecture's "Words you'll meet today" list has a row (the term, one line in the lecture's own words, and a "First taught" link), in alphabetical order. Put a qualifier or an alias in brackets when a word has two meanings or two names: `Commit (Git)`, `Volume (named volume)`. Each word list opens with a link to the glossary; the same test checks both.
 
 ### What the site adds automatically
 

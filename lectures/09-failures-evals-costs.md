@@ -54,6 +54,8 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Transient failure:** one that may succeed if you simply try again (a timeout, a busy server). A bug or a spent budget is not transient.
 - **Retry predicate:** the function that decides which errors are worth another attempt (`_is_transient` today).
 - **Backoff:** waiting longer before each new attempt (0.5 s, then 1 s), so a struggling service gets room to recover.

@@ -1,6 +1,7 @@
 """Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager,
-table labels and phone cards), for the time plan that opens every lecture lab, and for the
-reference card, which repeats only what its links teach.
+table labels and phone cards), for the time plan that opens every lecture lab, and for the two pages
+students look things up in: the reference card repeats only what its links teach, and the glossary
+holds every lecture's word list.
 
 Run after the Jekyll build, from the repository root:
     python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -314,6 +315,35 @@ class CourseComponentsTest(unittest.TestCase):
         expected = ladder(self.pages["guides/learning-map.html"])
         self.assertEqual(len(expected), 8)
         self.assertEqual(ladder(self.pages["guides/reference-card.html"]), expected)
+
+    def test_lecture_word_lists_are_in_the_glossary(self):
+        """Every term a lecture's "Words you'll meet today" list defines has a glossary row. A label
+        such as "Tag versus digest" or "Lint, format" names several terms; each must appear as words
+        in a glossary term, whose brackets may add a qualifier or an alias ("Volume (named volume)")."""
+        glossary = re.search(r'<h2 id="glossary".*?<tbody>(.*?)</tbody>',
+                             self.pages["guides/engineering-foundations.html"], re.S)
+        self.assertIsNotNone(glossary)
+        terms = [plain(cell) for cell in re.findall(r"<tr>\s*<td\b[^>]*>(.*?)</td>", glossary.group(1), re.S)]
+        self.assertEqual(terms, sorted(terms, key=lambda t: t.lower()), "glossary rows stay alphabetical")
+
+        def words(text):
+            return " " + " ".join(re.findall(r"[a-z0-9]+", text.lower())) + " "
+
+        forms = {words(t) for t in terms} | {words(re.sub(r"\([^)]*\)", " ", t)) for t in terms}
+        lists = 0
+        for name, html in self.lectures.items():
+            box = re.search(r"<summary>Words you.{1,7}ll meet today</summary>(.*?)</details>", html, re.S)
+            if box is None:
+                continue
+            lists += 1
+            self.assertIn("engineering-foundations.html#glossary", box.group(1), "the list links to the glossary")
+            for label in re.findall(r"<li><strong>(.*?)</strong>", box.group(1), re.S):
+                text = re.sub(r"\([^)]*\)", " ", plain(label).rstrip(":"))
+                for part in re.split(r",| / | versus | vs ", text):
+                    with self.subTest(page=name, term=part.strip()):
+                        self.assertTrue(any(words(part) in form for form in forms),
+                                        f"add a glossary row for {part.strip()!r}")
+        self.assertGreaterEqual(lists, 9)
 
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():

@@ -81,6 +81,8 @@ Each line comes from today's code. Say what it does in one sentence, then check.
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Fixture:** a pytest function that prepares something a test needs (here, a `client`) and cleans up afterwards.
 - **Dependency injection:** the framework hands your route the things it needs (`store: StoreDep`) instead of the route creating them, so a test can hand in a different one.
 - **In-process:** `TestClient` calls your app as a Python function in the same process; no server, no network, no port.

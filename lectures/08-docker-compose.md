@@ -62,6 +62,8 @@ You need:
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Service:** one entry under `services:` in `compose.yaml`; Compose runs one container for it (or more, if scaled).
 - **Project:** everything Compose creates for one `compose.yaml`: containers, a network and volumes, all prefixed with the project name (`recipe-box`).
 - **Service DNS name:** inside the project's network, each service name (`backend`, `ai-service`) resolves to that service's container.

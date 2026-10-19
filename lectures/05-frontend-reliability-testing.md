@@ -62,6 +62,8 @@ Your Recipe Box works on a good day. Today it learns to behave on a bad one: an 
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Mock (fake):** a stand-in that answers like the real thing, for example respx answering `GET /recipes` with JSON you wrote, so no backend is needed.
 - **respx route:** one faked URL, such as `backend.post("/recipes")`. It records every request it answered, so a test can read what was sent.
 - **AppTest:** Streamlit's test runner. It runs `streamlit_app.py` **in-process** (inside the test's own Python process, with no server and no browser) and lets a test read and click widgets.

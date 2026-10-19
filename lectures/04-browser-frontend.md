@@ -57,6 +57,8 @@ You need two terminals, one for the backend and one for the frontend. On Windows
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Frontend server:** the Streamlit process (port 8501). It runs your Python and sends the page to the browser.
 - **Websocket:** a long-lived, two-way connection. Streamlit's browser page uses one to send clicks to the frontend server and receive the updated page.
 - **Rerun:** Streamlit runs your whole script again, top to bottom, after every interaction.

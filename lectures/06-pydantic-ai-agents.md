@@ -63,6 +63,8 @@ Optional: the [training/runtime data map](../guides/models-and-ai-literacy.md#a-
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Model:** the trained weights that turn input tokens into output tokens. It runs nothing itself.
 - **Provider:** the service that answers model requests (a hosted API, or Ollama on your laptop).
 - **Agent:** in Pydantic AI, a model plus instructions, tools, an output type and dependencies, run as a loop.

@@ -55,6 +55,8 @@ You also need your product on GitHub with `main` as the default branch, the Lect
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Workflow:** a YAML file in `.github/workflows/` that tells GitHub what to run and when.
 - **Runner:** the fresh virtual machine GitHub starts for one job and throws away afterwards.
 - **Job:** a named group of steps that runs on one runner. Jobs run in parallel unless one `needs` another.

@@ -176,6 +176,6 @@ Before you ask, write one sentence saying what you think is wrong, and why: a [d
 
 ## Terms
 
-The [glossary](engineering-foundations.md#glossary) gives each course term one line and a link to where it is first taught. Its last line is a five-term drill to run before each lecture.
+The [glossary](engineering-foundations.md#glossary) gives each course term one line and a link to where it is first taught, including every term in the lectures' "Words you'll meet today" lists. Its last line is a five-term drill to run before each lecture.
 
 <!-- {% endraw %} -->

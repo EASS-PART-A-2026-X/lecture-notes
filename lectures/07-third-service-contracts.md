@@ -60,6 +60,8 @@ You need:
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Contract:** everything a caller relies on: method, path, request body, response body, status codes and error shape.
 - **Consumer:** the side that calls an API and depends on its contract. Here the backend consumes the AI service's `POST /extract`.
 - **Schema snapshot:** a copy of the other service's published OpenAPI schema, saved in your repository so a test can compare against it.
