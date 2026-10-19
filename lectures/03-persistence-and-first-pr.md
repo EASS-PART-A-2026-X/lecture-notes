@@ -1049,21 +1049,17 @@ Only the named volume. `docker rm` deletes the container and its writable layer;
 
 </details>
 
-Q6. A user deletes every recipe and restarts the backend. What does `GET /recipes` return, and what are two ways to change that behavior?
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q6. A user deletes every recipe and restarts the backend. What does GET /recipes return, and what are two ways to change that behavior?</summary>
 
-**Answer:** the three demo rows: `seed_if_empty` sees an empty table and seeds again. Either seed only when the table has just been created, or seed only when a setting such as `SEED_DEMO_DATA=1` is present. Keeping the simple version is fine for EX1 if the README says so.
+The three demo rows: `seed_if_empty` sees an empty table and seeds again. Either seed only when the table has just been created, or seed only when a setting such as `SEED_DEMO_DATA=1` is present. Keeping the simple version is fine for EX1 if the README says so.
 
 </details>
 
-Q7. Why is a named volume not a backup?
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q7. Why is a named volume not a backup?</summary>
 
-**Answer:** it is the live copy, not a second one. `docker volume rm`, a bad migration, or a bug that deletes rows destroys the data in the volume itself. A backup is a separate, consistent copy (for example from SQLite's backup API) that you have actually restored once somewhere else.
+It is the live copy, not a second one. `docker volume rm`, a bad migration, or a bug that deletes rows destroys the data in the volume itself. A backup is a separate, consistent copy (for example from SQLite's backup API) that you have actually restored once somewhere else.
 
 </details>
 
