@@ -64,6 +64,9 @@ jobs:
       - name: Execute printed CLI interface lab
         run: uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py
 
+      - name: Execute printed decision routing lab
+        run: python3 .github/scripts/check_decision_lab.py
+
       - name: Validate the printed Compose manifest
         run: python3 .github/scripts/check_compose.py
 

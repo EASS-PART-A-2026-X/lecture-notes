@@ -34,6 +34,8 @@
 
 </details>
 
+**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
+
 ## Mission
 
 Paste a messy recipe, get back validated JSON. You build a small agent that turns free text into a typed result with schema and domain checks, served by its own FastAPI app on port 8001, and you test it with no network, no API key and no bill. Whether the answers are *right* is a separate question, which Lecture 9's evaluation cases answer. In Lecture 7 this agent becomes your third service.

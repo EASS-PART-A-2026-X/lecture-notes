@@ -35,6 +35,8 @@
 
 </details>
 
+**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
+
 ## Mission
 
 Today you break your stack on purpose: stop the AI service mid-demo, feed the model garbage, let it loop, make it slow. Every failure ends with a test, a status code and a sentence a user can act on. You also measure the AI feature's quality and apply stopping rules to its work and usage.

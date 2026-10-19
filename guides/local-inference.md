@@ -29,6 +29,8 @@
 
 **Optional:** [Visual inference engineering](inference-engineering.md) explains the main optimization methods with ten original diagrams, worked examples and predict-then-reveal exercises. Use it alongside Lectures 6–10.
 
+**Optional decision clinic:** [Model APIs and decisions](model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
+
 ## Learning checkpoint
 
 Be able to trace text → tokens → model computation → generated tokens → validated application result. Explain why a larger context consumes resources, why an HTTP-compatible endpoint may still fail an agent task, and why local inference does not sandbox generated code.

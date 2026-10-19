@@ -31,6 +31,8 @@ For the mechanics behind these choices, read [Local inference and transformers](
 
 </details>
 
+**Optional decision clinic:** [Model APIs and decisions](model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
+
 ## Learning checkpoint
 
 By the end of the week 1 core, you should be able to:

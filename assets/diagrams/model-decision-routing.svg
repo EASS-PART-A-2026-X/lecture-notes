@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640 600" role="img" aria-labelledby="title desc">
+<title id="title">Code, decision model or LLM?</title>
+<desc id="desc">Input passes through application validation and exact rules. Remaining cases reach a narrow classifier. A supported decision chooses a bounded route. Uncertain cases defer or escalate once. Every route returns through validation and authorization before any write.</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#3b4453"/></marker></defs>
+<rect width="640" height="600" fill="white"/>
+<g font-family="Helvetica, Arial, sans-serif" fill="#0f1e3a">
+<text x="32" y="36" font-size="22" font-weight="700">Code, decision model or LLM?</text>
+<rect x="32" y="62" width="576" height="64" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<text x="50" y="88" font-size="19" font-weight="700">Application validates input and applies policy</text>
+<text x="50" y="112" font-size="17">Exact rules handle known cases without inference.</text>
+<path d="M320 128 V166" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="334" y="153" font-size="16">remaining cases</text>
+<rect x="32" y="176" width="576" height="66" rx="6" fill="#eff6f6" stroke="#22616b"/>
+<text x="50" y="204" font-size="19" font-weight="700">Narrow decision model</text>
+<text x="50" y="228" font-size="17">A label or bounded judgment; evaluate on your inputs.</text>
+<path d="M175 244 V306 M465 244 V306" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="90" y="278" font-size="16">supported decision</text>
+<text x="385" y="278" font-size="16">uncertain / unavailable</text>
+<rect x="32" y="316" width="272" height="104" rx="6" fill="#f1f7f3" stroke="#2a6a47"/>
+<text x="50" y="346" font-size="19" font-weight="700">Choose a bounded route</text>
+<text x="50" y="374" font-size="17">Extract, ignore or review;</text>
+<text x="50" y="399" font-size="17">no automatic publication.</text>
+<rect x="336" y="316" width="272" height="104" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<text x="354" y="346" font-size="19" font-weight="700">Defer or escalate once</text>
+<text x="354" y="374" font-size="17">LLM only within approved</text>
+<text x="354" y="399" font-size="17">data, time and cost limits.</text>
+<path d="M168 422 V454 H320 V480 M472 422 V454 H320" stroke="#3b4453" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+<rect x="32" y="492" width="576" height="64" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<text x="50" y="519" font-size="19" font-weight="700">Validate result; authorize before any write</text>
+<text x="50" y="543" font-size="17">Schema validity and confidence do not establish truth.</text>
+<text x="32" y="584" font-size="17" fill="#535c6b">Keep manual entry usable when AI is unavailable.</text>
+</g></svg>

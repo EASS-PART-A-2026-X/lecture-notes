@@ -34,6 +34,8 @@
 
 </details>
 
+**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
+
 ## Mission
 
 Today your three services start talking. A user pastes messy recipe text into the browser. The frontend sends it to the backend, the backend asks the AI service, checks the answer against a contract and saves a clean recipe. Then you unplug the AI service on purpose. The user should see a calm "try again in a minute", not a stack trace or a spinner that never stops.
