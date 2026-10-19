@@ -1,6 +1,7 @@
-// EASS · Class X course design: a typeset handbook. Serif reading text at a ~70-character measure,
-// a sans for interface and data, ink navy with one oxblood accent, hairline rules, and quiet
-// callouts whose labels are real text (GitHub, screen readers and the PDF keep them).
+// EASS · Class X course design: an evidence-first handbook. Two typefaces: the system sans for
+// structure (headings, labels, navigation, tables, interface) and a reading serif for running text
+// at a ~70-character measure. Ink navy on white; colour is state, not decoration (see the tokens);
+// callout labels are real text (GitHub, screen readers and the PDF keep them).
 // Theme settings: _sass/custom/setup.scss and _sass/color_schemes/eass.scss.
 // Markup comes from plain Markdown (see .github/CONTRIBUTING.md, "Authoring components") and from
 // _plugins/course_components.rb, which adds the class names styled here. Light only, by design.
@@ -13,9 +14,8 @@
 :root {
   color-scheme: light;
 
-  // Type stacks: system fonts only; Liberation is the Linux/PDF fallback.
-  --ed-serif-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Charter,
-    "Bitstream Charter", Cambria, Georgia, "Liberation Serif", serif;
+  // Type stacks: system fonts only; Liberation is the Linux/PDF fallback. Headings and labels use
+  // the sans (the same face on every platform's own system font), running text the serif.
   --ed-serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia,
     "Liberation Serif", "Times New Roman", serif;
   --ed-sans: #{$body-font-family};
@@ -35,7 +35,7 @@
   --fs-34: 2.125rem;
   --fs-40: 2.5rem;
   --fs-44: 2.75rem;
-  --fs-52: 3.25rem;
+  --fs-48: 3rem;
 
   // Reading measure: 648px, about 66–74 characters per line of 18px Charter. Prose, lists, callouts
   // and quizzes stop here; tables, code, figures and the structural components use the full column.
@@ -215,11 +215,12 @@ body {
     color: var(--ed-ink);
   }
 
-  // Headings: display serif; each h2 has a hairline section rule with a short oxblood tab.
+  // Headings: the system sans, bold and slightly tightened, so they read the same on Windows,
+  // macOS and Linux; each h2 has a hairline section rule with a short oxblood tab.
   h1,
   h2,
   h3 {
-    font-family: var(--ed-serif-display);
+    font-family: var(--ed-sans);
     color: var(--ed-ink);
     font-variant-numeric: lining-nums;
     text-wrap: balance;
@@ -228,9 +229,9 @@ body {
   h1 {
     margin: 0.25rem 0 1.25rem;
     font-size: var(--fs-34) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.12 !important;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.02em;
   }
 
   h2 {
@@ -238,9 +239,9 @@ body {
     margin-bottom: 0.85rem;
     padding-top: 1.1rem;
     font-size: var(--fs-24) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2 !important;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.01em;
     border-top: 1px solid var(--ed-rule);
     background: linear-gradient(var(--ed-accent), var(--ed-accent)) left top / 2.5rem 2px no-repeat;
 
@@ -253,8 +254,9 @@ body {
     margin-top: 2.25rem;
     margin-bottom: 0.5rem;
     font-size: var(--fs-20) !important;
-    font-weight: 700;
+    font-weight: 650;
     line-height: 1.3 !important;
+    letter-spacing: -0.005em;
   }
 
   // The theme draws h4 as tiny uppercase; keep it a readable sans subheading.
@@ -468,12 +470,12 @@ a.skip-to-main:active {
   }
 }
 
-// Wordmark: the course name in the display serif.
+// Wordmark: the course name, set like the headings.
 .site-title {
-  font-family: var(--ed-serif-display);
-  font-size: var(--fs-22) !important;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-20) !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ed-ink);
 
   &:hover {
@@ -1717,9 +1719,8 @@ $ed-code-languages: (
   }
 
   .pager-title {
-    font-family: var(--ed-serif-display);
-    font-size: var(--fs-18);
-    font-weight: 600;
+    font-size: var(--fs-17);
+    font-weight: 650;
     line-height: 1.3;
     font-variant-numeric: lining-nums;
   }
@@ -1973,9 +1974,10 @@ $ed-code-languages: (
         place-items: center;
         width: 2rem;
         height: 2rem;
-        font-family: var(--ed-serif-display);
-        font-size: var(--fs-16) !important;
-        font-weight: 600;
+        font-family: var(--ed-sans);
+        font-size: var(--fs-15) !important;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
         line-height: 1;
         color: var(--ed-ink);
         background: var(--ed-bg);
@@ -2164,8 +2166,8 @@ $ed-code-languages: (
     max-width: none;
     margin: 0.6rem 0 1.25rem;
     font-size: var(--fs-40) !important;
-    line-height: 1.05 !important;
-    letter-spacing: -0.02em;
+    line-height: 1.08 !important;
+    letter-spacing: -0.025em;
   }
 
   // The facts: a two-column ledger of term and value, hairline rows.
@@ -2198,10 +2200,9 @@ $ed-code-languages: (
     }
   }
 
-  // The promise: the first paragraph after the facts, in the display serif.
+  // The promise: the first paragraph after the facts, a larger lead in the reading face.
   > ul.home-facts + p {
     max-width: 36em;
-    font-family: var(--ed-serif-display);
     font-size: var(--fs-20);
     line-height: 1.45;
     color: var(--ed-text-2);
@@ -2249,7 +2250,7 @@ $ed-code-languages: (
 @container content (min-width: 40rem) {
   .main-content .home-hero {
     h1 {
-      font-size: var(--fs-52) !important;
+      font-size: var(--fs-48) !important;
     }
 
     > ul.home-facts {
@@ -2320,10 +2321,10 @@ $ed-code-languages: (
 
   .this-week-focus {
     margin: 0.35rem 0 0.15rem;
-    font-family: var(--ed-serif);
     font-size: var(--fs-22);
     font-weight: 700;
     line-height: 1.25;
+    letter-spacing: -0.01em;
     color: var(--ed-ink);
     text-wrap: balance;
   }
@@ -2430,10 +2431,10 @@ $ed-code-languages: (
       width: 2.25rem;
       height: 2.25rem;
       margin: 0;
-      font-family: var(--ed-serif-display);
-      font-size: var(--fs-18) !important;
-      font-weight: 600;
-      font-variant-numeric: lining-nums;
+      font-family: var(--ed-sans);
+      font-size: var(--fs-16) !important;
+      font-weight: 650;
+      font-variant-numeric: lining-nums tabular-nums;
       line-height: 1;
       text-align: center;
       color: var(--ed-ink);
@@ -2462,11 +2463,6 @@ $ed-code-languages: (
       &::after {
         content: none;
       }
-    }
-
-    > strong:first-child {
-      font-family: var(--ed-serif-display);
-      font-size: 1.05em;
     }
   }
 }
@@ -2554,9 +2550,9 @@ $ed-code-languages: (
       grid-row: 1 / span 3;
       width: auto;
       padding-left: 0;
-      font-family: var(--ed-serif-display);
       font-size: var(--fs-20) !important;
-      font-weight: 600;
+      font-weight: 700;
+      line-height: 1.3;
       color: var(--ed-ink);
     }
 
@@ -2635,9 +2631,9 @@ $ed-code-languages: (
     content: "0" counter(factory-step);
     margin: 0 0 0.45rem;
     padding: 0;
-    font-family: var(--ed-serif-display);
+    font-family: var(--ed-sans);
     font-size: var(--fs-22) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2;
     text-align: left;
     color: var(--ed-accent);
@@ -2854,7 +2850,6 @@ $ed-code-languages: (
 
   :root {
     --ed-serif: Charter, "Iowan Old Style", Georgia, "Liberation Serif", "Times New Roman", serif;
-    --ed-serif-display: "Iowan Old Style", Charter, Georgia, "Liberation Serif", "Times New Roman", serif;
     --ed-sans: "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
     --ed-mono: Menlo, Consolas, "Liberation Mono", monospace;
   }

@@ -3,8 +3,8 @@
 // Values derived from a changed variable are recomputed here, because the theme computed them
 // before this file was read. Components and tokens: custom.scss; colours: color_schemes/eass.scss.
 
-// Type. The theme's body font stays a sans for interface chrome (navigation, search, tables,
-// labels); custom.scss sets reading text in a serif. System fonts only (no font downloads):
+// Type. The theme's body font stays a sans for structure (headings, navigation, search, tables,
+// labels); custom.scss sets running text in a serif. System fonts only (no font downloads):
 // macOS, Windows and Linux (Liberation, used by the PDF build) each have a match.
 $body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial,
   "Liberation Sans", sans-serif;
