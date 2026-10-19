@@ -49,7 +49,7 @@
   --ed-term: #4a5363;        // glance and fact terms                          7.8:1
   --ed-muted: #535c6b;       // captions, dates, labels, list numerals         6.8:1 (5.7 on paper-deep)
   --ed-link: #1d4e89;        // links and the focus ring                       8.4:1
-  --ed-accent: #9b2c2c;      // the one accent: kickers, active page, deadlines 7.5:1
+  --ed-accent: #9b2c2c;      // the one accent: glance title, active page, deadlines 7.5:1
   --ed-current: var(--ed-link); // where you are in the semester: the home board and next meeting
   --ed-on-ink: #fff;         // text on ink and accent fills
   --ed-rule: #ddd7ca;        // hairlines (decorative)
@@ -107,15 +107,17 @@
   --ed-i-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M2.5 3.5h11M2.5 6.5h11M2.5 9.5h11M2.5 12.5h7'/%3E%3C/svg%3E");
 }
 
-// Kicker: a short uppercase label for component titles, phase markers and pager directions.
-@mixin ed-kicker($color: var(--ed-accent)) {
+// Label: the name of a part (phase markers, figure numbers, pager directions, sidebar groups, card
+// and code-tab labels). Words in sentence case at a readable size: no capitals, no tracking, so
+// word shapes survive for readers working in a second language.
+@mixin ed-label($color: var(--ed-term)) {
   font-family: var(--ed-sans);
-  font-size: var(--fs-13);
-  font-weight: 700;
+  font-size: var(--fs-14);
+  font-weight: 650;
   font-style: normal;
-  line-height: 1.35;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
   color: $color;
 }
 
@@ -259,7 +261,7 @@ body {
     letter-spacing: -0.005em;
   }
 
-  // The theme draws h4 as tiny uppercase; keep it a readable sans subheading.
+  // The theme draws h4 small and in capitals; keep it a readable sans subheading.
   h4 {
     margin-top: 1.75rem;
     font-family: var(--ed-sans);
@@ -560,15 +562,9 @@ a.skip-to-main:active {
   border-top: 1px solid var(--ed-rule);
 
   &::before {
+    @include ed-label(var(--ed-term));
     display: block;
     padding: 0.7rem 1rem 0.2rem;
-    font-family: var(--ed-sans);
-    font-size: var(--fs-13);
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ed-muted);
 
     @include mq(md) {
       padding: 0.65rem 1rem 0.2rem 2rem;
@@ -888,15 +884,9 @@ a.skip-to-main:active {
 
   // Language tab from the fence (```python). Decorative: screen readers skip it (alt text "").
   div.highlighter-rouge[class*="language-"]::before {
+    @include ed-label(var(--ed-term));
     display: block;
     padding: 0.35rem 3rem 0.3rem 1.1rem;
-    font-family: var(--ed-sans);
-    font-size: var(--fs-13);
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--ed-muted);
     background: var(--ed-paper-deep);
     border-bottom: 1px solid var(--ed-code-line);
     border-radius: 3px 3px 0 0;
@@ -1129,13 +1119,10 @@ $ed-code-languages: (
       }
 
       td:not(:first-child)::before {
+        @include ed-label(var(--ed-term));
         content: attr(data-label);
         display: block;
         margin-bottom: 0.05rem;
-        font-size: var(--fs-14);
-        font-weight: 650;
-        line-height: 1.4;
-        color: var(--ed-term);
       }
 
       // "Step | …" tables whose first cells are numbers: the card title reads "Step 1".
@@ -1251,8 +1238,8 @@ $ed-code-languages: (
   border: 1px solid var(--ed-rule);
   border-radius: 2px;
 
+  // The summary reads like every other disclosure ("On this page", sentence case).
   > summary {
-    @include ed-kicker(var(--ed-ink));
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -1263,6 +1250,7 @@ $ed-code-languages: (
     }
   }
 
+  // Section names only: the headings are not a numbered sequence, so the list carries no numbers.
   > ul {
     max-width: none;
     margin: 0 0 0.75rem;
@@ -1271,30 +1259,14 @@ $ed-code-languages: (
     font-size: var(--fs-15);
     list-style: none;
     border-top: 1px solid var(--ed-rule);
-    counter-reset: toc;
 
     > li {
-      position: relative;
       margin: 0;
-      padding-left: 2.1rem;
-      counter-increment: toc;
+      padding-left: 0;
       break-inside: avoid;
 
       &::before {
-        content: counter(toc, decimal-leading-zero);
-        position: absolute;
-        top: 0.4rem;
-        left: 0;
-        width: auto;
-        height: auto;
-        margin: 0;
-        font-family: var(--ed-sans);
-        font-size: var(--fs-13);
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-        color: var(--ed-muted);
-        background: none;
-        border-radius: 0;
+        content: none;
       }
     }
 
@@ -1491,13 +1463,17 @@ $ed-code-languages: (
   border-top: 2px solid var(--ed-ink);
   border-bottom: 1px solid var(--ed-ink);
 
+  // The card's title, as written ("At a glance"): a sentence-case label one step above the terms.
   > p.glance-title {
+    @include ed-label(var(--ed-accent));
     max-width: none;
     margin: 0;
-    padding: 0.7rem 0 0.55rem;
-    @include ed-kicker(var(--ed-accent));
+    padding: 0.65rem 0 0.5rem;
+    font-size: var(--fs-16);
+    font-weight: 700;
 
     strong {
+      font-weight: inherit;
       color: inherit;
     }
   }
@@ -1568,12 +1544,14 @@ $ed-code-languages: (
 
 // 8.3 Lecture pages: phase markers above each h2, and panels around six sections.
 
+// The phase is a word above the heading (sentence case, term grey), so a student scanning the page
+// sees where Prepare ends and Practice begins; it is not read aloud (alt text "").
 .main-content main.lecture-page > h2::before {
+  @include ed-label(var(--ed-term));
   display: block;
-  margin-bottom: 0.4rem;
-  @include ed-kicker(var(--ed-muted));
-  font-size: var(--fs-13) !important;
-  line-height: 1.35 !important;
+  margin-bottom: 0.3rem;
+  font-size: var(--fs-14) !important;
+  line-height: 1.4 !important;
 }
 
 .main-content main.lecture-page > h2:is(#mission, #before-you-start, #learning-checkpoint)::before {
@@ -1712,10 +1690,10 @@ $ed-code-languages: (
   }
 
   .pager-label {
+    @include ed-label(var(--ed-term));
     display: flex;
     gap: 0.45rem;
     align-items: center;
-    @include ed-kicker(var(--ed-muted));
   }
 
   .pager-title {
@@ -1801,11 +1779,11 @@ $ed-code-languages: (
 
     // Plate number (decorative; screen readers read the caption itself).
     &::before {
+      @include ed-label(var(--ed-ink));
       content: "Figure " counter(figure);
       content: "Figure " counter(figure) / "";
       display: block;
       margin-bottom: 0.2rem;
-      @include ed-kicker(var(--ed-ink));
     }
 
     strong {
@@ -2628,7 +2606,7 @@ $ed-code-languages: (
     position: static;
     display: block;
     width: auto;
-    content: "0" counter(factory-step);
+    content: counter(factory-step);
     margin: 0 0 0.45rem;
     padding: 0;
     font-family: var(--ed-sans);
@@ -3051,7 +3029,7 @@ $ed-code-languages: (
   }
 
   .main-content main.lecture-page > h2::before {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
   }
 
   .main-content .home-hero {

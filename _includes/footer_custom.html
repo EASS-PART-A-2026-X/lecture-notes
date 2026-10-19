@@ -19,7 +19,7 @@
 </nav>
 {%- endif -%}
 {%- endunless %}
-<p class="text-small mb-0">Site updated {{ site.time | date: "%-d %B %Y" }} · <a href="{{ '/EASS-Class-X-course.pdf' | relative_url }}">Download the course PDF</a></p>
+<p class="text-small mb-0">Site updated on {{ site.time | date: "%-d %B %Y" }}. <a href="{{ '/EASS-Class-X-course.pdf' | relative_url }}">Download the course PDF</a>.</p>
 {% if page.path == 'guides/local-inference.md' %}
 <script src="{{ '/assets/js/inference-lab.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
 {% endif %}
