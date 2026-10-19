@@ -2374,6 +2374,26 @@ $ed-code-languages: (
   }
 }
 
+// Until course.js fills it, the plugin's empty board (data-pending) holds the board's usual height,
+// which grows as the column narrows and the lines wrap (measured across the semester's 13 boards
+// at 320-1440 px), so the hero does not jump down when the board arrives. Without JavaScript a
+// <noscript> style hides it; if course.js never arrives, the space is given back after 4 s.
+.main-content .this-week[data-pending] {
+  min-height: 16.5rem;
+  min-height: clamp(16.5rem, calc(42.25rem - 71cqi), 30rem);
+  animation: this-week-give-back 0s 4s forwards;
+}
+
+@keyframes this-week-give-back {
+  to {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-left-width: 0;
+    visibility: hidden;
+  }
+}
+
 @media (hover: hover) {
   .main-content .this-week .this-week-actions > a.this-week-open:hover {
     background: var(--ed-link);

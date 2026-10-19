@@ -195,6 +195,8 @@ module CourseComponents
   end
 
   # (e) Home page hooks.
+  BOARD_SLOT = '<aside class="this-week" data-pending aria-hidden="true"></aside>'
+
   def home_page(path, html)
     h1 = html.index("<h1") or fail_shape(path, "home page needs its <h1>")
     actions = "<p><strong>On this page:</strong>"
@@ -207,6 +209,12 @@ module CourseComponents
     facts_at = hero.index("<ul>") or fail_shape(path, "expected the facts list (<ul>) after the title")
     hero[facts_at, 4] = '<ul class="home-facts">'
     hero = hero.sub(actions, %(<p class="home-actions"><strong>On this page:</strong>))
+    # course.js fills this empty board under the title after the page has painted; reserving its
+    # place now keeps the facts and the introduction from jumping down when it arrives. A
+    # <noscript> style (head_custom.html) hides it when scripts are off.
+    title_end = hero.index("</h1>") or fail_shape(path, "the home title needs its </h1>")
+    title_end += "</h1>".length
+    hero = hero[0...title_end] + BOARD_SLOT + hero[title_end..]
     html = html[0...h1] + %(<div class="home-hero">) + hero + "</div>" + html[actions_end..]
 
     html = mark_after(path, html, '<h2 id="start-here"', "<ol>", '<ol class="start-path">')

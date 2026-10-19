@@ -343,9 +343,11 @@
     return line;
   }
 
-  function showSemesterBoard() {
+  // The board for today's or the next meeting, or null when the calendar is missing, over, or
+  // holds a date that does not parse. Also marks that meeting's calendar row.
+  function semesterBoard() {
     const table = document.querySelector(".main-content table.schedule");
-    if (!table || !table.tBodies.length) return;
+    if (!table || !table.tBodies.length) return null;
     const now = Date.now();
     const column = headerIndex(table);
     const dateColumn = column("date") >= 0 ? column("date") : 1;
@@ -353,13 +355,11 @@
     const meetings = rows.map(row => parseScheduleDate(cellText(row.cells[dateColumn])));
     const index = nextMeetingIndex(meetings, now);
     // An unreadable date could hide the real next meeting: then say nothing rather than guess.
-    if (index < 0 || meetings.some(meeting => !meeting)) return;
+    if (index < 0 || meetings.some(meeting => !meeting)) return null;
 
     const row = rows[index];
     const meeting = meetings[index];
     row.classList.add("is-next");
-    const title = document.querySelector(".main-content .home-hero > h1");
-    if (!title) return;
     const today = meeting.date === courseDate(now);
     const cell = name => (column(name) >= 0 ? row.cells[column(name)] : null);
     const number = cellText(cell("#")) || String(index + 1);
@@ -396,7 +396,19 @@
     board.append(actions);
 
     if (deadline) board.append(deadline);
-    title.after(board);
+    return board;
+  }
+
+  // The plugin reserves the board's place under the title (an empty aside.this-week[data-pending]),
+  // so the facts and introduction do not jump down when it arrives; with nothing to show, the
+  // place is given back.
+  function showSemesterBoard() {
+    const slot = document.querySelector(".main-content .home-hero > aside.this-week[data-pending]");
+    const title = document.querySelector(".main-content .home-hero > h1");
+    const board = semesterBoard();
+    if (board && slot) slot.replaceWith(board);
+    else if (board && title) title.after(board);
+    else if (slot) slot.remove();
   }
   showSemesterBoard();
 

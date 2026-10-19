@@ -214,6 +214,10 @@ class CourseComponentsTest(unittest.TestCase):
         self.assertIsNotNone(hero)
         self.assertEqual(hero.group(1).count("<h1"), 1, "the page title sits inside the hero")
         self.assertEqual(html.count("<h1"), 1)
+        # The board's place is reserved under the title (no layout shift when course.js fills it)
+        # and hidden when scripts are off.
+        self.assertRegex(hero.group(1), r'</h1>\s*<aside class="this-week" data-pending aria-hidden="true"></aside>')
+        self.assertIn("<noscript><style>.this-week[data-pending]{display:none!important}</style></noscript>", html)
         self.assertNotIn('class="pager"', html, "the home page has no previous/next pager")
 
     def test_home_tables_keep_the_columns_course_js_reads(self):
