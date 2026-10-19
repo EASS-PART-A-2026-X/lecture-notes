@@ -2158,9 +2158,11 @@ $ed-code-languages: (
   margin: 0 0 1.75rem;
   padding: 0;
 
+  // The same top margin as every other page's first h1 (the theme's 0.5em), so the title does
+  // not jump between Home and the rest.
   h1 {
     max-width: none;
-    margin: 0.25rem 0 1.25rem;
+    margin: 0.5em 0 1.25rem;
     font-size: var(--fs-40) !important;
     line-height: 1.08 !important;
     letter-spacing: -0.025em;
