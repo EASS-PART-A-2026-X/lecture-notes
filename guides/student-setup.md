@@ -4,17 +4,14 @@
 
 [Course home](../README.md) · [Learning map](learning-map.md) · [Models and AI literacy](models-and-ai-literacy.md) · [Lecture 1](../lectures/01-environment-git-docker-ai.md)
 
-**Setup has two parts.** Do **Part A** (tools and accounts) *before* the first meeting on Monday 19 October 2026, 18:00 Israel time. Allow 1–3 hours plus download time (estimate), and finish by **Sunday 18 October in the evening**. Do **Part B** (your repository, a practice pull request, `/health`, and a first assistant task) *at the end of Lecture 1*, after the live demo shows each step. Do not try Part B alone the night before. The course requires no paid AI subscription, model API key, GPU, or particular editor.
-
-**Required account:** each student needs their own **free GitHub account with a verified email** for repositories, pull requests, and course submissions. An existing personal account is fine. Follow [Connect Git and GitHub](#connect-git-and-github) below; a paid GitHub plan and GitHub Education approval are not required.
-
-**Required project location:** your course product repository belongs to **[EASS-PART-A-2026-X](https://github.com/EASS-PART-A-2026-X)**, the same organization as the course material. Your personal account identifies your contributions; the organization owns the project repository. See [Join the course organization](#join-the-course-organization).
-
-**You will be able to:** say which terminal runs each course command, show that uv, Git, the GitHub CLI and Docker work on your laptop, and, in Part B, keep or undo an assistant's change with Git.
-
-**Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
-
-**Instructor pilot:** use the [student setup pilot](submission-evidence.md#a-student-setup-pilot) to check real invitations, laptop setup, public-site access and grader cloning. Automated course checks cannot establish those account-specific results.
+> **At a glance**
+>
+> - **Part A:** tools and accounts, *before* the first meeting on Monday 19 October 2026, 18:00 Israel time. Allow 1–3 hours plus download time (estimate), and finish by **Sunday 18 October in the evening**.
+> - **Part B:** your repository, a practice pull request, `/health`, and a first assistant task, *at the end of Lecture 1*, after the live demo shows each step. Do not try Part B alone the night before.
+> - **You need:** your own **free GitHub account with a verified email** for repositories, pull requests, and course submissions. An existing personal account is fine; follow [Connect Git and GitHub](#connect-git-and-github).
+> - **Not required:** a paid AI subscription, a model API key, a GPU, a particular editor, a paid GitHub plan, or GitHub Education approval.
+> - **Project home:** your course product repository belongs to **[EASS-PART-A-2026-X](https://github.com/EASS-PART-A-2026-X)**, the same organization as the course material. Your personal account identifies your contributions; the organization owns the project repository ([Join the course organization](#join-the-course-organization)).
+> - **Stuck in Part A?** Post the blocker before class in the channel the instructor provides, written as [PARD](../lectures/01-environment-git-docker-ai.md#asking-for-help-the-pard-template): problem, actions, result, desired. Redact secrets first.
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
@@ -25,6 +22,8 @@
 - [When setup fails](#when-setup-fails)
 
 </details>
+
+**You will be able to:** say which terminal runs each course command, show that uv, Git, the GitHub CLI and Docker work on your laptop, and, in Part B, keep or undo an assistant's change with Git.
 
 ## Where each command runs
 
@@ -432,5 +431,7 @@ Find your symptom, run the first check, then apply the safe fix. If it still fai
 | Quota exhausted | The tool's usage page | Pause model use; continue with the lecture examples and local tests |
 
 On a managed laptop without installation rights, contact the instructor early to arrange an approved environment. Browser chat alone cannot run the required Docker stack.
+
+**Instructor pilot:** use the [student setup pilot](submission-evidence.md#a-student-setup-pilot) to check real invitations, laptop setup, public-site access and grader cloning. Automated course checks cannot establish those account-specific results.
 
 <!-- {% endraw %} -->
