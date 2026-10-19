@@ -171,6 +171,7 @@ Write ordinary Markdown tables with a header row. Below a 36 rem column (phones,
 
 - **The first column names the row.** It becomes the card's title, in bold, without its column name. When every first cell is a number (`Step | …` with 1, 2, 3), the title reads "Step 1".
 - **Keep column headers short.** Every other cell shows its header as a small label above its value, once per card: `Pass when`, not `Pass when (what you should see after running it)`.
+- **Code in cells:** a short token (at most 16 characters) that holds a hyphen, slash, colon or similar never splits on screen (`git --version` wraps at its space, not after `--`); longer code wraps where it must.
 
 ```markdown
 | Check | Pass when | Repair |
@@ -230,7 +231,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Section panel | `div.section-panel.section-panel--{prereq,objectives,checkpoint,optional,pitfall,instructor}` | plugin (lectures 1–10) |
 | Page navigation | `p.page-nav` (top), `p.page-nav.page-nav--bottom` (hidden on the site) | plugin |
 | Pager | `nav.pager` with `a.pager-prev`, `a.pager-next` | `_includes/footer_custom.html` |
-| Table | `td[data-label]` on every body cell; `table.stack` (three or more columns: cards below a 36 rem column, screen only), `table.stack--numbered` (first cells are numbers) | plugin (every page) |
+| Table | `td[data-label]` on every body cell; `table.stack` (three or more columns: cards below a 36 rem column, screen only), `table.stack--numbered` (first cells are numbers); `span.nobr` around short code tokens in cells | plugin (every page) |
 | Home | `div.home-hero`, `ul.home-facts`, `p.home-actions`, `ol.start-path`, `table.schedule` (also `stack`; keeps its own calendar cards), `table.deadlines` (also `stack`), `tr.is-next`; `aside.this-week` (inside `div.home-hero`, right after the `h1`) with `this-week-label`, `-when`, `-focus`, `-deliverable`, `-actions` (`a.this-week-open` is the primary link) and `-deadline` | plugin (README) and `course.js` |
 | Figure | `figure.course-diagram` (`--wide` for 960-wide images), `div.diagram-scroll`; the text version is the `details` right after the figure | author HTML |
 | Stepper | `div.stepper` around one `ol`; `course.js` adds `is-enhanced`, `is-current`, `is-all` and the `stepper-controls` | author HTML and `course.js` |
@@ -289,7 +290,7 @@ A minimal diagram that passes `check_site.py` (verified):
 
 `build_pdf.py` prints every sidebar page on A4 with backgrounds, after opening every `<details>`; the print rules live at the end of `custom.scss`. When you add a component, decide what it does in print and check the PDF.
 
-- Body text is 10.5 pt and code 8.75 pt; code wraps instead of scrolling, and tables lose their scroll regions. Tables never turn into cards in print (the cards are screen-only).
+- Body text is 10.5 pt and code 8.75 pt; code wraps instead of scrolling, and tables lose their scroll regions. Tables never turn into cards in print (the cards and the unbreakable code tokens are screen-only).
 - Hidden in print: the sidebar, header, search, "On this page", heading anchors, copy buttons, the page navigation line, the pager, the home board and the next meeting's row marker, stepper buttons, `.screen-only` text, and the text version after a figure (the figure itself prints). `.print-only` text appears.
 - Every answer prints open without its disclosure chrome; every stepper step prints; a figure is at most 60 % of the page height, and an in-flow (640-wide) figure at most 28 rem wide.
 - Kept whole on one page where possible: one-paragraph callouts, the first paragraph of a blockquote callout (its label stays with its content), the glance card, code blocks, table rows, figures, start-path steps, stepper steps and the existing course blocks. Keep such blocks shorter than about half a page; a longer block leaves a gap before it.

@@ -253,6 +253,26 @@ class CourseComponentsTest(unittest.TestCase):
                                 and all(re.fullmatch(r"\d{1,3}", text) for text in firsts))
                     self.assertEqual("stack--numbered" in classes, numbered, firsts[:3])
 
+    def test_short_code_tokens_in_cells_stay_whole(self):
+        """span.nobr wraps only short code tokens inside table cells, and only tokens that hold a
+        character a browser may break after (a hyphen, slash, colon, …)."""
+        longest = plugin_constant("NOBR_MAX_CHARS")
+        for name, html in self.pages.items():
+            spans = re.findall(r'<span class="nobr">(.*?)</span>', html)
+            in_cells = sum(len(re.findall(r'<span class="nobr">', cell))
+                           for cell in re.findall(r"<td\b[^>]*>(.*?)</td>", html, re.S))
+            with self.subTest(page=name):
+                self.assertEqual(len(spans), in_cells, "span.nobr only inside table cells")
+                for token in spans:
+                    text = htmllib.unescape(token)
+                    self.assertRegex(text, r"^\S{2,%d}$" % longest)
+                    self.assertRegex(text, r"[^A-Za-z0-9_.,]")
+                for cell in re.findall(r"<td\b[^>]*>.*?</td>", html, re.S):
+                    for inner in re.findall(r"<code\b[^>]*>(.*?)</code>", cell, re.S):
+                        if "<span" in inner:
+                            self.assertNotRegex(re.sub(r'<span class="nobr">[^<]*</span>', "", inner), r"<",
+                                                "nothing else is added inside code")
+
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():
             if not name.startswith("lectures/"):

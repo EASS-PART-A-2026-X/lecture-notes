@@ -8,8 +8,9 @@
 # Lecture pages 01-10 also get <main class="lecture-page"> (phase markers in CSS) and a
 # section panel around six stable sections. The README gets its home-page hooks (hero, start
 # path, and the calendar and deadlines tables that assets/js/course.js reads). On every page,
-# each table body cell carries its column name (data-label) and a table with three or more
-# columns gets class="stack" (phones show it as labelled cards).
+# each table body cell carries its column name (data-label), a table with three or more
+# columns gets class="stack" (phones show it as labelled cards), and short code tokens in cells
+# are wrapped so that the screen never splits them at a hyphen.
 #
 # String transforms only, on Just the Docs 0.12.0 + kramdown output. Like
 # search_focus_guard.rb, the hook raises when an expected shape is missing, so a theme or
@@ -233,9 +234,12 @@ module CourseComponents
   # more columns also gets the class "stack" (merged with schedule/deadlines), which phones show
   # as one labelled card per row; when every first cell is a number ("Step | …" with 1, 2, 3),
   # "stack--numbered" lets the card title read "Step 1". Tables without a header row are left
-  # alone.
+  # alone. Inside cells, short code tokens that contain a break point (a hyphen, slash, colon…)
+  # are wrapped in <span class="nobr">, so `git --version` wraps at its space, never after "--".
   STACK_MIN_COLUMNS = 3
+  NOBR_MAX_CHARS = 16
   TABLE = %r{<table\b([^>]*)>(.*?)</table>}m
+  CELL_CODE = %r{(<code\b[^>]*>)([^<]*)(</code>)}
 
   def tables(html)
     html.gsub(TABLE) do
@@ -255,7 +259,7 @@ module CourseComponents
             column += 1
             firsts << plain_text(content) if column.zero?
             label = CGI.escapeHTML(headers[column].to_s)
-            %(<td#{cell_attrs} data-label="#{label}">#{content}</td>)
+            %(<td#{cell_attrs} data-label="#{label}">#{keep_tokens(content)}</td>)
           end
           "<tr>#{cells}</tr>"
         end
@@ -280,6 +284,25 @@ module CourseComponents
     return %(#{attrs} class="#{name}") unless attrs.include?('class="')
 
     attrs.sub(/class="([^"]*)"/) { %(class="#{Regexp.last_match(1)} #{name}") }
+  end
+
+  # Letters, digits, "_", "." and "," never offer a line break inside a word; most other
+  # characters (-, /, :, ?) can, so a short token holding any of them is kept whole.
+  def keep_tokens(cell)
+    cell.gsub(CELL_CODE) do
+      open_tag = Regexp.last_match(1)
+      code = Regexp.last_match(2)
+      close_tag = Regexp.last_match(3)
+      tokens = code.gsub(/\S+/) do |token|
+        text = CGI.unescapeHTML(token)
+        if text.length.between?(2, NOBR_MAX_CHARS) && text.match?(/[^A-Za-z0-9_.,]/)
+          %(<span class="nobr">#{token}</span>)
+        else
+          token
+        end
+      end
+      open_tag + tokens + close_tag
+    end
   end
 
   def fail_shape(path, message)
