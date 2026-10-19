@@ -240,7 +240,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Stepper | `div.stepper` around one `ol`; `course.js` adds `is-enhanced`, `is-current`, `is-all` and the `stepper-controls` | author HTML and `course.js` |
 | Screen or print only | `span.screen-only`, `span.print-only` | author HTML |
 | Sidebar groups | CSS labels Start here (the two required guides), Reference (Submission evidence, Engineering foundations, Models and AI literacy), Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
-| Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab` | author HTML (unchanged; restyled with the tokens) |
+| Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab`, `reliability-lab` (the two labs share one frame, sans controls and button style) | author HTML (unchanged; restyled with the tokens) |
 
 ### Diagrams
 
