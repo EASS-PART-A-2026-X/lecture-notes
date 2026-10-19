@@ -620,11 +620,10 @@ docker compose -p clean-check down -v
 | `curl -sS localhost:8001/health` fails: the AI port is not published | the error line | [Networking](#networking-where-is-localhost) |
 | Data survives `down` and `up`; `down -v` resets to the seed | the two recipe lists | [Volumes](#volumes-where-the-sqlite-file-lives) |
 | `git check-ignore .env` prints `.env`, and `.env.example` is committed | the command output | [Secrets](#secrets) |
+| Your README's "Run it" section matches what you just typed | the README on GitHub | [Hands-on lab](#hands-on-lab), step 10 |
+| PR #3 is opened, and the evidence table has its row | the PR link in your evidence table | [Open-source track](#open-source-track) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Your README's "Run it" section matches what you just typed.
-- [ ] PR #3 is opened, and the evidence table has its row.
 
 ## Quick quiz
 

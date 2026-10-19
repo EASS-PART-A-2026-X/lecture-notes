@@ -944,19 +944,15 @@ Expected: `3 passed` for the core tests shown above, `6 passed` with the three e
 
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
-| `uv run pytest` in `ai-service/` passes with no key and no network | the terminal output in your PR description | [Common pitfalls](#common-pitfalls) · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
-| Deleting your output validator's `raise` makes at least one test fail | one line in your notes: which test failed | [Break it on purpose](#break-it-on-purpose), drill 1 |
+| The agent has an `output_type`, `instructions`, a deps-backed tool, a plain tool and an output validator | `app/agent.py` in your PR | [Live demo](#live-demo), step 3 · [Hands-on lab](#hands-on-lab), steps 2–5 |
+| `uv run pytest` in `ai-service/` passes with no key and no network, with `ALLOW_MODEL_REQUESTS = False` set in `tests/conftest.py` | the terminal output in your PR description | [Common pitfalls](#common-pitfalls) · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
+| Each test fails when its rule breaks: deleting your output validator's `raise` makes at least one test fail | one line in your notes: which test failed | [Break it on purpose](#break-it-on-purpose), drill&nbsp;1 |
 | `curl` to `POST /extract` on port 8001 returns schema-valid JSON; `GET /health` returns `{"status":"ok"}` | the two commands and their output | [Live demo](#live-demo), steps 4–5 |
-| At the repository root, `git check-ignore -v .env` prints a rule and `git ls-files .env` prints nothing | the command output | [Lecture 1](01-environment-git-docker-ai.md) |
+| No outdated Pydantic AI names: the `grep` from pattern 1 prints nothing | the empty output | [Working with AI assistants](#working-with-ai-assistants), pattern 1 and "Spot the outdated suggestion" |
+| No key in Git: at the repository root, `git check-ignore -v .env` prints a rule and `git ls-files .env` prints nothing | the command output | [Lecture 1](01-environment-git-docker-ai.md) |
 | PR #2 is opened and its evidence row says merge evidence is pending | the PR link in your evidence table | [Open-source track](#open-source-track) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] The agent has an `output_type`, `instructions`, a deps-backed tool, a plain tool and an output validator.
-- [ ] Tests pass offline, `ALLOW_MODEL_REQUESTS = False` is set, and each test fails when its rule breaks.
-- [ ] The service runs on port 8001 with `GET /health`.
-- [ ] No outdated API names, no keys in Git.
-- [ ] PR #2 is opened, and the evidence table has its row.
 
 ## Quick quiz
 

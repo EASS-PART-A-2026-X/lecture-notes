@@ -1551,18 +1551,14 @@ docker compose up --wait
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
 | Backend: `26 passed` for Recipe Box (25 without the contract test) | the pytest summary in your PR description | [Live demo step 3](#live-demo) · [Common pitfalls](#common-pitfalls) |
+| Retries in one layer: timeouts, connect errors, 503 and 504, at most 3 attempts with backoff; one try each for 429, 502, 500, other 4xx and a broken 200, proven by tests | the test names | [Retry at one layer only](#retry-at-one-layer-only) · [Live demo steps 2–3](#live-demo) |
 | AI service: `13 passed` for Recipe Box (plus 2 for the optional usage counters, plus 1 for the `caplog` test) | the pytest summary | [Live demo step 5](#live-demo) |
-| `evals.run_evals` prints a table with an Averages row | a dated results row in your README | [Live demo step 6](#live-demo) |
+| Agent failures map to 429, 502, 504 and 500, with tests; usage is logged without the user's text | the test names | [Live demo step 5](#live-demo) · [Hands-on lab](#hands-on-lab), step&nbsp;4 |
+| `evals.run_evals` prints a table with an Averages row, from 8–10 cases and 3 or more evaluators | a dated results row in your README | [Live demo step 6](#live-demo) · [Hands-on lab](#hands-on-lab), step&nbsp;6 |
 | `curl` prints `503 in` a few seconds, not 30 or more | the curl line | [Drill 3](#break-it-on-purpose) |
 | The UI shows a friendly sentence with the ai-service stopped and with the backend stopped | a screenshot or a sentence in your README failure table | [Lecture 7 frontend](07-third-service-contracts.md#live-demo) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Retries in one layer: timeouts, connect errors, 503 and 504; at most 3 attempts, with backoff.
-- [ ] One try each for 429, 502, 500, other 4xx and a broken 200, proven by tests.
-- [ ] Agent failures map to 429, 502, 504 and 500, with tests; usage logged without user text.
-- [ ] 8–10 eval cases, 3+ evaluators, a dated results row.
-- [ ] Friendly UI messages with the ai-service stopped and with the backend stopped.
 
 ## Quick quiz
 

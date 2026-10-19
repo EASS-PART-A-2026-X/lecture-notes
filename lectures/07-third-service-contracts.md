@@ -1064,17 +1064,16 @@ Expected: a JSON recipe with an `id`. Stop the AI service and repeat. Expected: 
 
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
+| EX2 is submitted through the submission channel provided by the instructor | the product repository URL you submitted | [Submission evidence: EX2](../guides/submission-evidence.md#ex2-the-browser-and-backend) |
 | `uv run pytest` in `backend/` passes with Wi-Fi off | the terminal output in your PR description | [Live demo](#live-demo), step 4 · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
 | Tests cover success, 503 (refused, timeout, 5xx), 502 (4xx, broken body) and 422 with zero calls | the test names | [Hands-on lab](#hands-on-lab), step 5 |
 | `test_contract.py` passes against a freshly generated `ai_openapi.json` | the regeneration command in your README | [Hands-on lab](#hands-on-lab), step 6 |
+| A paste in the browser shows a spinner, then the new recipe in the list | a screenshot or a one-line note | [Hands-on lab](#hands-on-lab), steps&nbsp;7–8 |
 | With the AI service stopped, a paste shows a friendly message at once and the Recipes tab still works | a screenshot or a one-line note | [Common pitfalls](#common-pitfalls) |
 | `uv run pytest` in `frontend/` passes, including the paste tests | the terminal output | [Live demo](#live-demo), step 5 |
+| Your README has the contract table, the data flow, the run commands and the snapshot command | the README on GitHub | [Hands-on lab](#hands-on-lab), steps&nbsp;1 and&nbsp;9 |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Paste, spinner, then the new recipe in the list.
-- [ ] Your README has the contract table, the data flow, the run commands and the snapshot command.
-- [ ] EX2 is submitted through the submission channel provided by the instructor.
 
 ## Quick quiz
 
