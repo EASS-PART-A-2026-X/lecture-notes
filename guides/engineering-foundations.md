@@ -1466,6 +1466,8 @@ One line per term, with a link to where the course first teaches it. Every term 
 | Advisory | A published record of a known vulnerability in a package version, with an ID such as `GHSA-…`, `PYSEC-…` or `CVE-…` | [Lecture 10](../lectures/10-ci-security-release.md#dependency-hygiene) |
 | Agent (Pydantic AI) | A model plus instructions, tools, an output type and dependencies, run as a loop | [Lecture 6](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) |
 | API contract | The paths, bodies, status codes and meanings that callers may rely on | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#rest-nouns-in-paths-verbs-in-methods) |
+| Application agent (product agent) | Your own agent inside `ai-service`, such as Recipe Box's `extract_agent`: it runs at request time, and your code decides its tools, validators and retries | [Lecture 6](../lectures/06-pydantic-ai-agents.md#model-provider-coding-harness-application-agent) |
+| Application framework | A library your code uses to build agent runs, tools, validation and state, such as Pydantic AI or Mastra | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
 | `AppTest` | Streamlit's test runner: it runs `streamlit_app.py` in-process, with no server and no browser, and lets a test read and click widgets | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
 | ARIA role | A label such as `button`, `tab` or `alert` that tells screen readers (and Playwright) what an element is | [Lecture 5](../lectures/05-frontend-reliability-testing.md#four-states-every-screen-needs) |
 | Assertion versus score | An evaluator that returns pass or fail (`bool`) versus one that returns a number between 0 and 1 (`float`) | [Lecture 9](../lectures/09-failures-evals-costs.md#task-evaluations) |
@@ -1473,8 +1475,10 @@ One line per term, with a link to where the course first teaches it. Every term 
 | Baseline | A simple, cheap system whose score a real model has to beat | [Lecture 9](../lectures/09-failures-evals-costs.md#task-evaluations) |
 | Bind address | The address a server listens on: `127.0.0.1` (this machine or container only) or `0.0.0.0` (all addresses) | [Containers in one page](#containers-in-one-page) |
 | Branch | A movable label on a line of commits | [Lecture 1](../lectures/01-environment-git-docker-ai.md#git-and-github-commits-branches-pull-requests) |
+| Chat product | An interface for asking a model questions, such as ChatGPT or Gemini; a chat subscription does not automatically grant API credits | [Student setup](student-setup.md#choose-a-simple-route) |
 | Check run | One row in a pull request's Checks list, one per job, green or red | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
 | CI | Running the same checks automatically on every push | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
+| Coding harness (coding agent) | A harness you use while you develop, such as Codex, Claude Code or OpenCode: it reads your workspace and runs the commands you permit | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
 | Commit (database) | Ends a transaction so its changes become durable and visible to others | [Lecture 3](../lectures/03-persistence-and-first-pr.md#engine-session-and-the-session-dependency) |
 | Commit (Git) | A snapshot of the staged files plus a message saying why | [Lecture 1](../lectures/01-environment-git-docker-ai.md#git-and-github-commits-branches-pull-requests) |
 | Consumer | The side that calls an API and depends on its contract; the backend consumes the AI service's `POST /extract` | [Lecture 7](../lectures/07-third-service-contracts.md#http-contracts) |
@@ -1500,7 +1504,7 @@ One line per term, with a link to where the course first teaches it. Every term 
 | Form (Streamlit) | `st.form`: a group of inputs that is sent only when its submit button is pressed | [Lecture 4](../lectures/04-browser-frontend.md#forms-and-keys) |
 | Frontend server | The Streamlit process (port 8501): it runs your Python and sends the page to the browser | [Lecture 4](../lectures/04-browser-frontend.md#where-the-frontend-sits) |
 | `FunctionModel` | Pydantic AI's fake model whose replies you script in a function | [Lecture 6](../lectures/06-pydantic-ai-agents.md#deterministic-model-substitutes) |
-| Harness | The controller code around a model that builds context, exposes tools, runs tool calls and enforces limits | [Lecture 6](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) |
+| Harness | The controller code around a model that builds context, exposes tools, runs tool calls and enforces limits; a coding harness and an application agent are both harnesses | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
 | Health check | An endpoint or command that reports whether a service can do its job | [Lecture 8](../lectures/08-docker-compose.md#health-and-readiness) |
 | Healthcheck (Compose) | A command Docker runs inside the container every few seconds; its result is the container's health: `starting`, `healthy` or `unhealthy` | [Lecture 8](../lectures/08-docker-compose.md#health-and-readiness) |
 | `httpx.MockTransport` | A fake network: each request goes to a Python function you write, and nothing leaves your machine | [Lecture 7](../lectures/07-third-service-contracts.md#http-contracts) |

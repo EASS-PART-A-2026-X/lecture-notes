@@ -35,7 +35,7 @@ For the mechanics behind these choices, read [Local inference and transformers](
 
 By the end of the week 1 core, you should be able to:
 
-- Name which layer (product, coding harness, model, provider, framework, your application) is responsible for a behavior, and who controls it.
+- Name which layer (editor or chat product, coding harness, model, provider, application framework, your application) is responsible for a behavior, and who controls it.
 - Explain why a valid structure, a correct meaning and a permitted operation are three separate checks.
 - Turn a model's catalogue name into an `AI_MODEL` value, and check that the model is still supported before you rely on it (week 6).
 
@@ -54,14 +54,14 @@ Only (a). The assistant's model is part of your **coding harness** at developmen
 
 | Layer | Example | What you should inspect |
 |---|---|---|
-| Product/interface | ChatGPT, Gemini chat, Cursor, Copilot | Account, data settings, available features |
-| Coding harness | Codex, Claude Code, OpenCode | Workspace, tools, instructions, execution controls |
+| Editor or chat product | VS Code, Cursor; ChatGPT, Gemini chat | Account, data settings, available features |
+| Coding harness (coding agent) | Copilot, Codex, Claude Code, OpenCode | Workspace, tools, instructions, execution controls |
 | Model | A particular GPT, Claude, Gemini, or GLM model | Model ID/version, supported inputs, quality, limits |
-| Provider/host | The service answering model requests | Endpoint, credentials, region/access, billing |
+| Provider | The service that answers model requests: a hosted API, or Ollama on your laptop | Endpoint, credentials, region/access, billing |
 | Application framework | Pydantic AI or Mastra | How your code builds runs, tools, validation, and state |
-| Your application | Recipe Box's three services | User behavior, contracts, authorization, tests, and operations |
+| Your application | Recipe Box's three services, including the application agent in `ai-service` | User behavior, contracts, authorization, tests, and operations |
 
-A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
+A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness**, often called a coding agent, which you use at development time. Inside your product, the **application agent** (the Pydantic AI agent loop in `ai-service`) plays that role at request time. Lecture 6 and the [glossary](engineering-foundations.md#glossary) use the same names; some guides call the application agent the *product agent*.
 
 <figure class="course-diagram">
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Two stacks diagram, scroll horizontally">

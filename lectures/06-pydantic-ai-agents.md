@@ -74,7 +74,7 @@ Every term here is also in the course [glossary](../guides/engineering-foundatio
 - **`ModelRetry`:** an exception that sends a message back to the model for another try.
 - **`TestModel` / `FunctionModel`:** fake models for tests: automatic placeholder data, or replies you script.
 - **Token:** a model-specific unit of text; requests are measured and billed in tokens.
-- **Harness:** the controller code around a model (defined in [Concepts](#model-provider-coding-harness-application-agent)).
+- **Harness:** the controller code around a model; your coding harness and today's application agent are both harnesses ([Concepts](#model-provider-coding-harness-application-agent)).
 
 </details>
 
@@ -149,7 +149,7 @@ Four different things are casually called "the AI". They run at different times 
 | **Coding harness** | Claude Code, Codex or OpenCode in your editor or terminal | development time, while you write code | you, through its permission settings and [sandbox](../guides/agent-sandboxes.md) |
 | **Application agent** | `extract_agent` in `ai-service`: the Pydantic AI agent loop | request time, once per `POST /extract` | your code: the tools you register, the validators, `retries`, and what the service can reach |
 
-A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
+The coding harness and the application agent are both **harnesses**: controller code that builds a model's context and runs the tool calls the model proposes ([definition](../guides/models-and-ai-literacy.md#six-things-to-distinguish)). One edits your source code while you develop; the other turns a user's text into a checked result at request time.
 
 Changing the model in your editor does not change `ai-service`'s `AI_MODEL`, and the other way round.
 
@@ -897,7 +897,7 @@ This week: **open PR #2** and keep PR #1 moving ([rules](../README.md#open-sourc
 
 ## Working with AI assistants
 
-Your coding assistant is a coding harness: it changes source code during development, with the permissions you give it. This Pydantic AI agent handles product input at request time, with the tools your code registers. They need different tools, permissions and checks; the [product loop](../guides/agent-driven-development.md#the-product-loop) compares them.
+Your coding assistant is a coding harness: it changes source code during development, with the permissions you give it. Today's application agent handles product input at request time, with the tools your code registers. They need different tools, permissions and checks; the [product loop](../guides/agent-driven-development.md#the-product-loop) compares them.
 
 When you delegate part of today's lab, write the request with the course's [one work-order template](../guides/agent-driven-development.md#one-work-order-template): one **Outcome**, the **Files** it may change, **Non-goals**, the exact **Verify with** command (`uv run pytest` in `ai-service/`), and your **Review focus** (usually the validator and the tests). Read the whole diff before you run it, and add one line to your README's AI-use note: the tool, what it helped with, and the check you ran.
 

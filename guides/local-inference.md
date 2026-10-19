@@ -57,7 +57,7 @@ Messages + tool definitions
   → the tool result becomes context for another model request
 ```
 
-The model does not execute a Python function by predicting its name. The **agent loop** (the harness around the model) parses the request, checks the arguments and the authority, runs the function, and returns its result. A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant is a coding harness at development time; in Recipe Box, the Pydantic AI agent loop in `ai-service` plays that role at request time. A local model is still a model inside this loop; it is not a replacement for the harness.
+The model does not execute a Python function by predicting its name. The **agent loop** (the [harness](models-and-ai-literacy.md#six-things-to-distinguish) around the model) parses the request, checks the arguments and the authority, runs the function, and returns its result. In Recipe Box that loop is the application agent in `ai-service`; your coding harness runs the same kind of loop at development time. A local model is still a model inside this loop; it is not a replacement for the harness.
 
 <details markdown="1">
 <summary>Optional: predict and measure tokens in Hebrew and English (10 minutes, CPU only)</summary>
