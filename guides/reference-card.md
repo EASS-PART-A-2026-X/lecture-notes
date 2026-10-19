@@ -101,12 +101,12 @@ Pick the undo by where the mistake lives.
 
 | I want to | Safe command | Careful | Taught in |
 |---|---|---|---|
-| Throw away an edit I have not staged | `git restore <file>` | the edit is gone for good: Git never stored it | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
-| Unstage a file but keep the edit | `git restore --staged <file>` | nothing is lost | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
-| Fix the last commit's message before pushing | `git commit --amend -m "Better message"` | do not amend commits you already pushed | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
-| Undo a commit that is already pushed | `git revert <sha>` | safe on shared branches: a new commit reverses the old one | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
-| Abandon an experiment branch | `git switch main`, then `git branch -D try-x` | unmerged work disappears from view | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
-| Get out of a merge I do not understand | `git merge --abort` | works only while the merge is unfinished | [Undo&nbsp;safely](engineering-foundations.md#undo-safely) |
+| Throw away an edit I have not staged | `git restore <file>` | the edit is gone for good: Git never stored it | [Undo safely](engineering-foundations.md#undo-safely) |
+| Unstage a file but keep the edit | `git restore --staged <file>` | nothing is lost | [Undo safely](engineering-foundations.md#undo-safely) |
+| Fix the last commit's message before pushing | `git commit --amend -m "Better message"` | do not amend commits you already pushed | [Undo safely](engineering-foundations.md#undo-safely) |
+| Undo a commit that is already pushed | `git revert <sha>` | safe on shared branches: a new commit reverses the old one | [Undo safely](engineering-foundations.md#undo-safely) |
+| Abandon an experiment branch | `git switch main`, then `git branch -D try-x` | unmerged work disappears from view | [Undo safely](engineering-foundations.md#undo-safely) |
+| Get out of a merge I do not understand | `git merge --abort` | works only while the merge is unfinished | [Undo safely](engineering-foundations.md#undo-safely) |
 
 **Watch out:** never rewrite pushed `main`. If a bad commit reached GitHub, `git revert` it and push the new commit.
 
