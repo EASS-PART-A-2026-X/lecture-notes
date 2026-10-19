@@ -31,8 +31,6 @@ For the mechanics behind these choices, read [Local inference and transformers](
 
 </details>
 
-**Optional decision clinic:** [Model APIs and decisions](model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
-
 ## Learning checkpoint
 
 By the end of the week 1 core, you should be able to:
@@ -197,6 +195,12 @@ A provider may have a separate data-use policy; "inference does not update these
 Reasoning/effort settings can trade time and resource use for performance. They do not turn a response into a proof. Sampling settings such as temperature affect generation; setting a value to zero is not a universal correctness or reproducibility guarantee. Some models do not expose the same settings.
 
 A model that gives a better explanation may be worse at obeying a narrow JSON contract. Choose using your task cases and constraints, not one leaderboard or a provider's marketing label.
+
+### First decide whether generation is needed
+
+An exact conversion or access rule belongs in code. A finite-label judgment may fit a decision model. Extracting an arbitrary title and ingredient list requires generating values; a typed schema constrains the result but does not turn it into a narrow classifier. A mixed design routes only the cases that need generation or deeper reasoning, and defers when its policy cannot accept a result.
+
+“System 1 / System 2” is useful shorthand for quick judgment versus deliberation, not an API guarantee or literal model anatomy. Compare the task's correctness and resource use. Start with [Lecture 6's design exercise](../lectures/06-pydantic-ai-agents.md#code-a-quick-decision-or-deeper-reasoning); consult the optional [decision guide](model-apis-and-decisions.md#system-1-and-system-2-a-useful-analogy-with-limits) for provider controls and examples. Lecture 9 supplies the measurement and release decision.
 
 ## A dated model landscape
 

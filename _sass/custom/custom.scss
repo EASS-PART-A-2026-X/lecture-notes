@@ -885,8 +885,8 @@ a.skip-to-main:active {
     font-size: var(--fs-13);
     font-weight: 700;
     line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0;
+    text-transform: none;
     color: var(--ed-muted);
     background: var(--ed-paper-deep);
     border-bottom: 1px solid var(--ed-code-line);
@@ -935,11 +935,11 @@ a.skip-to-main:active {
 }
 
 $ed-code-languages: (
-  "bash": "Shell",
-  "sh": "Shell",
-  "shell": "Shell",
-  "zsh": "Shell",
-  "console": "Terminal",
+  "bash": "Run in terminal",
+  "sh": "Run in terminal",
+  "shell": "Run in terminal",
+  "zsh": "Run in terminal",
+  "console": "Example terminal output",
   "powershell": "PowerShell",
   "python": "Python",
   "py": "Python",
@@ -3029,3 +3029,120 @@ $ed-code-languages: (
   .main-content .reasoning-answer,
   .main-content .inference-answer { break-inside: avoid; }
 }
+
+// File examples identify the destination independently from executable terminal commands.
+// Captions are real text and stay available without JavaScript and in the course PDF.
+.main-content .file-example {
+  position: relative;
+  min-width: 0;
+  margin: 1.25rem 0 1.5rem;
+  border: 1px solid var(--ed-code-line);
+  border-radius: 4px;
+  background: var(--ed-code-bg);
+
+  > figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .3rem 1rem;
+    min-height: 2.75rem;
+    padding: .6rem 3.25rem .6rem 1rem;
+    border-bottom: 1px solid var(--ed-code-line);
+    background: var(--ed-paper-deep);
+    font-family: var(--ed-sans);
+    font-size: var(--fs-14);
+    line-height: 1.5;
+  }
+
+  .file-example-action { color: var(--ed-muted); }
+  .file-example-path {
+    overflow-wrap: anywhere;
+    font-family: var(--ed-mono);
+    font-weight: 600;
+    color: var(--ed-ink);
+  }
+
+  div.highlighter-rouge {
+    position: static;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    &::before { display: none; }
+    > button { top: 0; right: 0; width: 2.75rem; height: 2.75rem; }
+  }
+}
+
+// The repository comparison uses live HTML text: selectable, zoomable and responsive.
+.main-content .repo-map {
+  margin: 1.5rem 0;
+  border: 1px solid var(--ed-rule-strong);
+  border-radius: 4px;
+  overflow: clip;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-15);
+  line-height: 1.5;
+
+  > figcaption {
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid var(--ed-rule);
+    background: var(--ed-paper);
+    strong, span { display: block; }
+    span { margin-top: .35rem; color: var(--ed-muted); }
+  }
+
+  .repo-map-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  section { min-width: 0; padding: 1rem 1.1rem; }
+  .repo-map-share { border-top: 4px solid #2a6a47; }
+  .repo-map-local { border-top: 4px solid #8b3c3b; border-left: 1px solid var(--ed-rule); }
+  h4 { margin: 0 0 .3rem; font-family: var(--ed-sans); font-size: var(--fs-18); }
+  section > p { margin: 0 0 .75rem; color: var(--ed-muted); }
+  ul { padding: 0; margin: 0; list-style: none; }
+  li { padding: .7rem 0; margin: 0; border-top: 1px solid var(--ed-rule); }
+  li::before { display: none !important; }
+  li span { display: block; margin-top: .2rem; color: var(--ed-muted); }
+  code { overflow-wrap: anywhere; white-space: normal; font-size: .9em; }
+  .repo-map-rule { max-width: none; margin: 0; padding: .85rem 1.1rem; border-top: 1px solid var(--ed-rule); background: var(--ed-paper); }
+}
+
+@container content (max-width: 35rem) {
+  .main-content .repo-map {
+    .repo-map-columns { grid-template-columns: minmax(0, 1fr); }
+    .repo-map-local { border-left: 0; }
+  }
+}
+
+@media (pointer: coarse) {
+  .main-content div.highlighter-rouge[class*="language-"]::before { min-height: 2.75rem; padding-block: .7rem; }
+  .main-content div.highlighter-rouge > button { width: 2.75rem; height: 2.75rem; }
+}
+
+@media print {
+  .main-content .file-example {
+    > figcaption { min-height: 0; padding: .3rem .65rem; font-size: 9pt; break-after: avoid; }
+    div.highlighter-rouge { break-inside: auto; }
+  }
+  .main-content .repo-map {
+    font-size: 9pt;
+    break-inside: avoid;
+    .repo-map-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    h4 { font-size: 11pt; }
+    li { padding-block: .35rem; }
+    section { padding: .6rem .75rem; }
+  }
+}
+
+.main-content .example-key {
+  max-width: var(--ed-measure);
+  margin: 1rem 0 1.5rem;
+  padding: .85rem 1rem;
+  border-block: 1px solid var(--ed-rule-strong);
+  font: var(--fs-14)/1.5 var(--ed-sans);
+  > p { margin: 0 0 .65rem; }
+  ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0; padding: 0; list-style: none; }
+  li { min-width: 0; margin: 0; padding: 0; }
+  li::before { display: none !important; }
+  strong { display: block; color: var(--ed-ink); }
+  li span { display: block; color: var(--ed-muted); }
+}
+@container content (max-width: 30rem) { .main-content .example-key ul { grid-template-columns: minmax(0, 1fr); } }
+@media print { .main-content .example-key { font-size: 9pt; break-inside: avoid; } }

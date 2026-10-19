@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="620" viewBox="0 0 640 620" role="img" aria-labelledby="eval-title eval-desc">
+<title id="eval-title">Evaluate the whole routed system before release</title>
+<desc id="eval-desc">An invented hundred-case comparison uses a fixed baseline, candidate, rubric and quality floor. The baseline has 95 successes at 2000 cost units. The routed candidate has 90 successes at 900 units. The cheaper candidate misses the predefined 95-success floor, so keep the baseline and investigate failures. These values are teaching arithmetic, not measured model results.</desc>
+<defs><marker id="eval-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#3b4453" stroke-width="1.5"/></marker></defs>
+<rect width="640" height="620" fill="#fff"/>
+<g font-family="Helvetica, Arial, sans-serif" fill="#0f1e3a">
+<text x="24" y="34" font-size="22" font-weight="700">Evaluate the whole routed system</text>
+<rect x="24" y="58" width="592" height="78" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<text x="42" y="87" font-size="19" font-weight="700">Freeze configuration and the task rubric</text>
+<text x="42" y="114" font-size="17">Set quality, latency and data constraints before the test.</text>
+<path d="M320 142 V172" stroke="#3b4453" stroke-width="2" marker-end="url(#eval-arrow)"/>
+<rect x="24" y="184" width="592" height="60" rx="6" fill="#eff6f6" stroke="#22616b"/>
+<text x="42" y="210" font-size="19" font-weight="700">Same 100 held-out inputs for both systems</text>
+<text x="42" y="233" font-size="17">Count all final outcomes, including wrong routes and deferrals.</text>
+<path d="M170 250 V279" stroke="#3b4453" stroke-width="2" marker-end="url(#eval-arrow)"/>
+<path d="M470 250 V279" stroke="#3b4453" stroke-width="2" marker-end="url(#eval-arrow)"/>
+<rect x="24" y="290" width="286" height="104" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="330" y="290" width="286" height="104" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<text x="42" y="319" font-size="19" font-weight="700">Single-model baseline</text>
+<text x="42" y="348" font-size="18">95 successful tasks</text>
+<text x="42" y="377" font-size="18">2,000 total cost units</text>
+<text x="348" y="319" font-size="19" font-weight="700">Routed candidate</text>
+<text x="348" y="348" font-size="18">90 successful tasks</text>
+<text x="348" y="377" font-size="18">900 total cost units</text>
+<path d="M170 400 V421 H470 V400" stroke="#3b4453" stroke-width="2" fill="none"/>
+<path d="M320 421 V443" stroke="#3b4453" stroke-width="2" marker-end="url(#eval-arrow)"/>
+<rect x="24" y="455" width="592" height="66" rx="6" fill="#fbf2f1" stroke="#8b3c3b"/>
+<text x="42" y="482" font-size="19" font-weight="700">Predefined floor: at least 95 successes / 100</text>
+<text x="42" y="507" font-size="17">The candidate fails, even though each success costs less.</text>
+<text x="24" y="558" font-size="20" font-weight="700">Keep the baseline; investigate candidate failures.</text>
+<text x="24" y="591" font-size="17" fill="#535c6b">Invented counts and costs: arithmetic, not a model benchmark.</text>
+</g></svg>

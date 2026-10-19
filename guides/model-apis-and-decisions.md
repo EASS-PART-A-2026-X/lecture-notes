@@ -4,9 +4,23 @@
 
 [Course home](../README.md) · [Models and AI literacy](models-and-ai-literacy.md) · [Lecture 6](../lectures/06-pydantic-ai-agents.md) · [Local inference](local-inference.md)
 
-**Optional depth for Lectures 6–9.** Read the vocabulary and routing diagram in 15 minutes; allow another 30–45 minutes for the offline lab. Hosted requests, Jev and GPU serving are optional comparisons, never assessment requirements. Keep the course's three-service architecture and existing deadlines.
+**Optional reference for Lectures 2 and 6–9.** Read the vocabulary and routing diagram in 15 minutes; allow another 30–45 minutes for the offline lab. Hosted requests, Jev and GPU serving are optional comparisons, never assessment requirements. Keep the course's three-service architecture and existing deadlines.
 
 **Learning checkpoint:** distinguish OpenAI from OpenAPI; explain where a provider adapter belongs; choose code, a narrow decision model or generation for a task; measure a mixed route against a simpler baseline.
+
+## Read this guide by class
+
+Learn the concept in its lecture first, then open the relevant section here. Keep the core reference service working before trying a different provider or a router.
+
+| Place in the course | Use this part of the guide | Purpose |
+|---|---|---|
+| [Lecture 2: HTTP and schemas](../lectures/02-http-fastapi-pydantic.md#openapi-describes-this-api-openai-is-a-different-name) | [Vocabulary](#the-names-describe-different-layers) | Separate OpenAPI from OpenAI |
+| [Lecture 6: agent and adapter](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) | [API examples](#the-same-task-across-apis), [System 1/System 2](#system-1-and-system-2-a-useful-analogy-with-limits) | Trace a configured provider and choose the needed capability |
+| [Lecture 7: service contracts](../lectures/07-third-service-contracts.md#two-contracts-two-kinds-of-compatibility) | [Mixed-system boundaries](#a-mixed-system-has-explicit-boundaries) | Keep model changes inside your application contract |
+| [Local inference / Lecture 8](local-inference.md#place-local-serving-behind-the-adapter-boundary) | [vLLM client](#vllm-compatible-transport-independently-tested-behavior), [Jev/ONNX case study](#jev-and-the-openclaw-case-study) | Distinguish runtime, model and network route; optional experiments |
+| [Lecture 9: evaluate the whole system](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) | [Offline policy lab](#offline-lab-confidence-is-a-routing-input-not-permission), [measure the mix](#measure-the-mix-before-keeping-it) | Separate tested routing code from measured model quality |
+
+The two teaching diagrams in [Lecture 6](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) and [Lecture 9](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) connect the API examples below to the product and the evaluation evidence.
 
 **Predict first:** a model says a recipe is safe with confidence `0.99`. Does that permit your application to publish it, certify an allergen claim or bypass the owner's access check?
 

@@ -251,6 +251,14 @@ Two reading rules: after a `422`, your handler never ran; and `404 "Not Found"` 
 
 </details>
 
+### OpenAPI describes this API; OpenAI is a different name
+
+**OpenAPI** is the machine-readable description FastAPI publishes at `/openapi.json`; `/docs` renders an interactive view. It describes operations, inputs and responses. **OpenAI** is a company whose model API we may call later. You can build today's complete API without any model provider or model account.
+
+**Two-minute check, after starting the demo below:** open `/openapi.json`, find `paths` → `/recipes` → `post`, and locate its request schema and declared success response. Compare those declarations with the handler and one API test. Which part describes the request, and which running code validates it? A schema snapshot is evidence of a declared contract; it does not prove the deployed service still follows it or that a caller is authorized. Lecture 7 turns this distinction into a cross-service check.
+
+The optional [API vocabulary table](../guides/model-apis-and-decisions.md#the-names-describe-different-layers) is a reference if the similar names become confusing. No provider setup is part of this check.
+
 ## Live demo
 
 The instructor grows Recipe Box; every command runs from `backend/` unless a step says otherwise.

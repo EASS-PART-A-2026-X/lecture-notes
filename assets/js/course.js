@@ -321,6 +321,22 @@
       });
     }
 
+    // File content is different from a terminal command: name the actual copy destination.
+    if (main) {
+      main.querySelectorAll(".file-example").forEach(example => {
+        const path = example.querySelector(".file-example-path");
+        const button = example.querySelector("button");
+        if (path && button) {
+          const label = `Copy contents of ${path.textContent.trim()}`;
+          button.setAttribute("aria-label", label);
+          button.setAttribute("title", label);
+        }
+      });
+      main.querySelectorAll("pre, code, .file-example-path").forEach(element => {
+        element.setAttribute("translate", "no");
+      });
+    }
+
     enhanceSearch();
 
     // The theme makes every code block a tab stop; keep only those that actually scroll.

@@ -34,8 +34,6 @@
 
 </details>
 
-**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
-
 ## Mission
 
 Today your three services start talking. A user pastes messy recipe text into the browser. The frontend sends it to the backend, the backend asks the AI service, checks the answer against a contract and saves a clean recipe. Then you unplug the AI service on purpose. The user should see a calm "try again in a minute", not a stack trace or a spinner that never stops.
@@ -197,6 +195,20 @@ A contract is everything a caller relies on: method, path, request body, respons
 | Change a type (`minutes` becomes a string) | still pass | fail, once regenerated | `502` when the value is not a whole number |
 
 The consumer tests prove *your* code handles each answer correctly; only the snapshot or a live run notices that the other side changed.
+
+### Two contracts, two kinds of compatibility
+
+Use the [Lecture 6 boundary diagram](06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) to point at the boundary that changed:
+
+| Change | Contract affected | Evidence to check |
+|---|---|---|
+| Rename `minutes` in `/extract` | Your backend ↔ AI-service contract | Regenerated OpenAPI snapshot, consumer validation and the integrated flow |
+| Select OpenAI, Claude or a local server | AI-service ↔ provider protocol and behavior | Correct adapter/settings, provider error handling and task evaluation |
+| Keep the endpoint but change model weights, template or quantization | Model behavior behind the provider contract | The same labelled task cases, latency/usage and failure handling |
+
+An endpoint that accepts an OpenAI-shaped HTTP request has demonstrated transport compatibility for that request. It has not established that your model supports every tool, schema or reasoning option. Keep this uncertainty inside the adapter boundary and translate its failures into your service's declared errors; do not make the backend understand each provider's SDK objects.
+
+**Three-minute check:** name one model change that needs no backend schema migration but still needs re-evaluation, and one schema change that breaks a consumer even if the model becomes more accurate. Use the table above to justify both. The optional [provider examples](../guides/model-apis-and-decisions.md#the-same-task-across-apis) show the wire-level differences; the reference code below still tests your own HTTP boundary offline.
 
 ### Explicit timeouts
 

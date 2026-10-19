@@ -113,12 +113,27 @@ The open-source track runs alongside every class: three qualifying **merged** PR
 
 For a deeper optional clinic after the core checkpoint, use [Systems reasoning](systems-reasoning.md): prove replay/outbox behavior with eight SQLite tests, count user-facing failures, explore fan-out latency assumptions, and audit repeated agent trials. Pick one clinic; it adds no assessment or platform requirement.
 
+### Where API and model decisions enter the course
+
+Follow this sequence inside the existing lectures. The linked guide is a reference; its hosted/GPU experiments stay optional. These short discussions replace a general tour of provider names, not the core labs or completion checks.
+
+| When | Question to answer | Small piece of evidence |
+|---|---|---|
+| [Lecture 2](../lectures/02-http-fastapi-pydantic.md#openapi-describes-this-api-openai-is-a-different-name) | What does OpenAPI describe? | Locate one operation's request/response declaration and its running validation code; about 2 min |
+| [Lecture 6](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) | Where do OpenAI, Claude and a local model fit? | Trace one configured adapter through the API-boundary diagram |
+| [Lecture 6 design exercise](../lectures/06-pydantic-ai-agents.md#code-a-quick-decision-or-deeper-reasoning) | Should code, a classifier or a general model handle this? | Explain four choices with one failure each; about 3 min |
+| [Lecture 7](../lectures/07-third-service-contracts.md#two-contracts-two-kinds-of-compatibility) | Which contract changed? | Separate a consumer-breaking schema change from a model behavior change; about 3 min |
+| [Lectures 6 and 8](local-inference.md#place-local-serving-behind-the-adapter-boundary) | Which process does this model URL reach? | Trace the endpoint from the calling process/container; no GPU experiment required |
+| [Lecture 9](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) | Is the mixed system actually better? | Audit the hypothetical quality/cost tradeoff, then define the evidence your own comparison needs; about 5 min |
+
+After these checkpoints, choose at most one optional experiment from [Model APIs and decisions](model-apis-and-decisions.md#read-this-guide-by-class): inspect an API example, run the seven-test offline policy lab, or plan a real-model comparison if access permits. Do not install every listed provider or runtime.
+
 ## Visual checkpoints
 
 Use a diagram to make a prediction, then follow the code and run the relevant check. The picture explains a model of the system; it is not execution evidence. Cover the caption, trace one ordinary case and one failure, and name what the diagram leaves out.
 
 <details markdown="1">
-<summary>Ten visuals to trace, one per stage of the course</summary>
+<summary>Twelve visuals to trace across the course</summary>
 
 | When studying | Trace this visual | Explain without the assistant |
 |---|---|---|
@@ -128,8 +143,10 @@ Use a diagram to make a prediction, then follow the code and run the relevant ch
 | Class 3: durable state | [Database commit boundary](system-walkthrough.md#follow-the-commit-boundary) | What is still only a candidate, and what has been committed? |
 | Classes 4–5: a usable UI | [Four request states](../lectures/05-frontend-reliability-testing.md#four-states-every-screen-needs) | Why are an empty response and a failed request different? |
 | Class 6: the runtime agent | [Model proposal, tool execution, output checks](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) | Which code executes a tool and which check accepts the output? |
+| Class 6: provider choice | [Application and model API boundaries](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) | Which contract stays yours when the selected provider changes? |
 | Classes 7–8: service boundaries | [Compose service map](../lectures/08-docker-compose.md#networking-where-is-localhost) | Which process sends each HTTP call, and which URL can it resolve? |
 | Class 9: usage and failure | [Token threshold counterexample](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) | Can already processed usage cross a configured threshold? |
+| Class 9: routing quality | [Whole-system evaluation gate](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) | Why does the cheaper candidate fail the predefined quality floor? |
 | Class 10 and clinics: delivery | [Factory lifecycle and evidence](software-factory-lab.md#the-instructors-airflow-factory) | Which revision was checked, and what delivery milestone was actually reached? |
 | Model foundations and optional inference | [Training/runtime data map](models-and-ai-literacy.md#a-visual-data-lifecycle) and [latency experiment](local-inference.md#latency-experiment) | What changes weights, what supplies context, and where does the request spend time? |
 

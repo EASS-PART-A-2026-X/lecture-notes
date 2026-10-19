@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="650" viewBox="0 0 640 650" role="img" aria-labelledby="api-title api-desc">
+<title id="api-title">One application API, one configured model route</title>
+<desc id="api-desc">The backend calls the AI service's application contract. Inside that service, Pydantic AI and schemas use one configured provider adapter. The alternatives are OpenAI Responses, Claude Messages and a compatible local server. Responses return through the adapter for validation. Only the backend owns persistence.</desc>
+<defs><marker id="api-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#3b4453" stroke-width="1.5"/></marker></defs>
+<rect width="640" height="650" fill="#fff"/>
+<g font-family="Helvetica, Arial, sans-serif" fill="#0f1e3a">
+<text x="24" y="34" font-size="21" font-weight="700">One application API, one configured model route</text>
+<rect x="24" y="58" width="592" height="66" rx="6" fill="#f7f5ef" stroke="#3b4453"/>
+<text x="42" y="86" font-size="20" font-weight="700">Browser → backend</text>
+<text x="42" y="111" font-size="17">Backend validates accepted data and owns persistence.</text>
+<path d="M245 130 V203" stroke="#3b4453" stroke-width="2" marker-end="url(#api-arrow)"/>
+<path d="M600 203 V130" stroke="#3b4453" stroke-width="2" marker-end="url(#api-arrow)"/>
+<text x="24" y="154" font-size="17">POST /extract</text>
+<text x="330" y="154" font-size="17">validated result / declared error</text>
+<text x="24" y="187" font-size="17" font-weight="700">Your OpenAPI contract</text>
+<rect x="24" y="214" width="592" height="226" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+<text x="42" y="244" font-size="20" font-weight="700">AI service · your application boundary</text>
+<text x="42" y="273" font-size="18">Pydantic AI loop + application schemas + limits</text>
+<text x="42" y="300" font-size="17">Choose one configured adapter for the run:</text>
+<rect x="42" y="320" width="168" height="58" rx="5" fill="#fff" stroke="#22616b"/>
+<rect x="236" y="320" width="168" height="58" rx="5" fill="#fff" stroke="#22616b"/>
+<rect x="430" y="320" width="168" height="58" rx="5" fill="#fff" stroke="#22616b"/>
+<text x="126" y="344" font-size="18" text-anchor="middle" font-weight="700">OpenAI adapter</text>
+<text x="126" y="367" font-size="16" text-anchor="middle">Responses protocol</text>
+<text x="320" y="344" font-size="18" text-anchor="middle" font-weight="700">Claude adapter</text>
+<text x="320" y="367" font-size="16" text-anchor="middle">Messages protocol</text>
+<text x="514" y="344" font-size="18" text-anchor="middle" font-weight="700">Local adapter</text>
+<text x="514" y="367" font-size="16" text-anchor="middle">supported protocol</text>
+<text x="42" y="407" font-size="17">Candidate returns here for application validation.</text>
+<path d="M126 446 V517" stroke="#3b4453" stroke-width="2" marker-start="url(#api-arrow)" marker-end="url(#api-arrow)"/>
+<path d="M320 446 V517" stroke="#3b4453" stroke-width="2" marker-start="url(#api-arrow)" marker-end="url(#api-arrow)"/>
+<path d="M514 446 V517" stroke="#3b4453" stroke-width="2" marker-start="url(#api-arrow)" marker-end="url(#api-arrow)"/>
+<text x="145" y="490" font-size="16">provider HTTP</text>
+<rect x="24" y="528" width="190" height="65" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="225" y="528" width="190" height="65" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<rect x="426" y="528" width="190" height="65" rx="6" fill="#f3f6fa" stroke="#1d4e89"/>
+<text x="119" y="556" font-size="19" font-weight="700" text-anchor="middle">OpenAI host</text>
+<text x="119" y="580" font-size="17" text-anchor="middle">selected model</text>
+<text x="320" y="556" font-size="19" font-weight="700" text-anchor="middle">Anthropic host</text>
+<text x="320" y="580" font-size="17" text-anchor="middle">selected Claude</text>
+<text x="521" y="556" font-size="19" font-weight="700" text-anchor="middle">Local server</text>
+<text x="521" y="580" font-size="17" text-anchor="middle">Ollama / vLLM route</text>
+<text x="24" y="625" font-size="17" fill="#535c6b">Same application schema does not guarantee equal task quality.</text>
+</g></svg>

@@ -34,8 +34,6 @@
 
 </details>
 
-**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
-
 ## Mission
 
 Paste a messy recipe, get back validated JSON. You build a small agent that turns free text into a typed result with schema and domain checks, served by its own FastAPI app on port 8001, and you test it with no network, no API key and no bill. Whether the answers are *right* is a separate question, which Lecture 9's evaluation cases answer. In Lecture 7 this agent becomes your third service.
@@ -292,6 +290,29 @@ The agent reads `AI_MODEL` and defaults to `test` (the built-in `TestModel`), so
 `defer_model_check=True` resolves the model at the first run, not at import; without it, `AI_MODEL=openai:...` with no key breaks every test. A real-model run is optional and separate; keys live only in the git-ignored `.env`.
 
 > **Version note:** checked 17 October 2026 with `pydantic-ai-slim` 2.57.0 and the [Pydantic AI migration guide](https://pydantic.dev/docs/ai/overview/migration/). `openai:` uses OpenAI's Responses API and `openai-chat:` its Chat Completions API; both are valid, and this course uses `openai:`. An error hint may suggest `google-cloud:`: that is Vertex AI and needs Google Cloud credentials, so use `google:` with `GOOGLE_API_KEY`. Model IDs are retired on a schedule: take a current ID from the [dated model landscape](../guides/models-and-ai-literacy.md#a-dated-model-landscape) and check the provider's deprecation page before a run.
+
+### One application contract, several provider adapters
+
+The `RecipeExtraction` type belongs to your application. Pydantic AI's configured adapter translates model requests into the selected provider's protocol and translates the response back. OpenAI Responses, Claude Messages and a local server's compatible API are different interfaces behind that adapter. Choose **one** route for a run; listing alternatives does not mean each request calls all of them.
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Application and model API boundaries, scroll horizontally">
+    <img src="../assets/diagrams/model-api-boundaries.svg" alt="The backend calls the AI service through the application's POST extract contract. Inside the AI service, Pydantic AI and application schemas use one configured adapter. Alternative routes lead to OpenAI Responses, Claude Messages or a compatible local model server. Provider responses return for application validation; the backend owns persistence." width="640" height="650">
+  </div>
+  <figcaption><strong>Your API stays yours.</strong> Changing the model route can change behavior, cost and latency while the backend's HTTP contract stays the same. <a href="../assets/diagrams/model-api-boundaries.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+**Trace it:** browser → backend → `POST /extract` → Pydantic AI → one adapter → model endpoint → candidate → application validation → backend. Only the backend persists an accepted recipe. An OpenAPI document describes the application boundary; it does not make providers interchangeable. Keys belong in `ai-service`, never the browser.
+
+**Predict:** switching from `test` to a real provider leaves the JSON schema unchanged. Can extraction accuracy, tool behavior or response time still change? **Yes**: the contract constrains shape, not semantic quality or latency. Keep today's offline tests, then use Lecture 9's separate task evaluations before trusting a new model.
+
+Optional examples: [OpenAI typed extraction](../guides/model-apis-and-decisions.md#openai-typed-extraction-through-responses), [Claude Messages](../guides/model-apis-and-decisions.md#claude-messages-is-a-different-contract) and [Pydantic AI adapters](../guides/model-apis-and-decisions.md#pydantic-ai-one-application-type-different-adapters). They are scratch experiments; today's service remains the reference implementation.
+
+### Code, a quick decision or deeper reasoning?
+
+Use Python for unit conversions, access checks and exact limits. A narrow decision model can choose among labels, such as recipe / unrelated / uncertain; it does not replace the general model that writes an arbitrary title and ingredients. A capable reasoning model may help with an ambiguous task, at a different resource cost. “System 1 / System 2” is an analogy for quick judgment versus deliberation, not a literal pair of brains inside an API.
+
+**Pair exercise, three minutes:** assign each operation to code, a classifier, a general model or human review: convert 1.5 hours to minutes; classify unrelated text; extract ingredients; authorize a database write. Explain the failure that would change your choice. Code computes the conversion and checks authorization; classification is a possible narrow-model task; extraction needs generation. A consequential unresolved judgment can defer to a person. These choices need no extra model installation. [Jev and mixed routing](../guides/model-apis-and-decisions.md#jev-and-the-openclaw-case-study) are optional depth after the core agent works.
 
 ### Why a separate service
 

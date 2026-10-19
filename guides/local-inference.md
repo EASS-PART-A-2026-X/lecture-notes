@@ -29,8 +29,6 @@
 
 **Optional:** [Visual inference engineering](inference-engineering.md) explains the main optimization methods with ten original diagrams, worked examples and predict-then-reveal exercises. Use it alongside Lectures 6–10.
 
-**Optional decision clinic:** [Model APIs and decisions](model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
-
 ## Learning checkpoint
 
 Be able to trace text → tokens → model computation → generated tokens → validated application result. Explain why a larger context consumes resources, why an HTTP-compatible endpoint may still fail an agent task, and why local inference does not sandbox generated code.
@@ -192,6 +190,14 @@ These products overlap, and desktop tools may use lower-level inference engines 
 </details>
 
 An "OpenAI-compatible" API describes a supported interface. It does not promise all endpoints, tool calls, JSON-schema constraints, streaming events, usage fields, or model behaviors match another server. Verify the particular server + model + framework combination. Compatibility also does not imply requests go to OpenAI: inspect the actual base URL and any fallback configuration.
+
+### Place local serving behind the adapter boundary
+
+Choose the serving tool only after identifying the task: a narrow classifier returns bounded decisions; a general model generates text or structured candidates; vLLM serves supported model workloads. These roles are distinct. A fast server does not turn a general model into a calibrated classifier, and using a classifier does not require deploying vLLM.
+
+The [Lecture 6 API diagram](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) shows where a local endpoint replaces a hosted provider. Keep your own `/extract` contract. Test model/template/output compatibility separately from the ability to send an HTTP request. At Lecture 8, trace the hostname from **inside the calling container**: loopback is that container, a Compose service name addresses another service, and a host model needs the platform-specific host route below.
+
+For optional GPU-host practice, use the [vLLM client example](model-apis-and-decisions.md#vllm-compatible-transport-independently-tested-behavior). For a narrow decision-model comparison, read [Jev and OpenClaw's local ONNX case study](model-apis-and-decisions.md#jev-and-the-openclaw-case-study), including its development-version caveat. Neither route adds a required service or download to the course.
 
 ## Optional local request lab
 

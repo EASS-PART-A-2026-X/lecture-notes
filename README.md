@@ -38,7 +38,7 @@ Seventeen guides support the lectures. Student setup and the learning map are re
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | Alongside your first assistant tasks (Lecture 1) and your agent (Lecture 6) |
 | [Agent sandboxes](guides/agent-sandboxes.md) | *Optional depth* | Its [Week 1 minimum](guides/agent-sandboxes.md#week-1-minimum) before your first agent session; the rest with Lectures 6, 8 and 10 |
 | [Local inference](guides/local-inference.md) | *Optional depth* | How models run and what a transformer computes; with Lectures 6 and 9. Hardware-intensive experiments stay optional |
-| [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | OpenAI versus OpenAPI, Claude, Pydantic AI, Jev, vLLM and a tested offline routing policy; Lectures 6–9 |
+| [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | OpenAI versus OpenAPI, Claude, Pydantic AI, Jev, vLLM and a tested offline routing policy; vocabulary in Lecture 2, design and evaluation in Lectures 6–9 |
 | [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | Visual overview of model choice, quantization, caching, speculation, batching, parallelism and serving; Lectures 6–10 |
 | [Engineering contracts](guides/engineering-contracts.md) | *Optional depth* | Manifests, skills, factories and evaluations next to your Docker/Compose workflow; Lectures 8–10 |
 | [CLI-first agents](guides/cli-first-agents.md) | *Optional depth* | A working command, eight interface checks, focused skills and when MCP earns its complexity; after Lectures 6–10 |

@@ -169,6 +169,8 @@ The file below binds the published ports to `127.0.0.1` for local demonstrations
 
 > **Optional:** a browser-side frontend (React, Vue) in Compose. A Node build stage compiles the static files; a small web server in the frontend container (for example nginx) serves them and forwards every `/api/...` request to `http://backend:8000`. The browser then talks only to the frontend's origin, so no CORS is needed, and the backend keeps its single loopback port for your own checks. Streamlit stays the worked example in this course.
 
+**Apply the same address rule to a model endpoint.** The AI service is the caller of Ollama or another model server; a working URL from your laptop can still fail inside that container. Trace the [adapter boundary](06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters), then use [the local-serving address guide](../guides/local-inference.md#place-local-serving-behind-the-adapter-boundary). The optional vLLM route is a deployment choice, not a replacement for Pydantic AI or a required fourth service. The clean-checkout demo below still uses `TestModel`.
+
 ### Volumes: where the SQLite file lives
 
 The named volume `backend-data` is mounted at `/app/data`, and `DATABASE_URL` is `sqlite:////app/data/app.db`: `sqlite:///` plus the absolute path, four slashes. `docker compose down` removes containers and the network but **keeps volumes**; `down -v` deletes them too, and the seed runs again.
@@ -277,6 +279,9 @@ Each `.dockerignore` lists `.venv`, `__pycache__`, `.pytest_cache`, `.ruff_cache
 
 **2. The compose file**, at the repository root:
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Create at repository root</span> <span class="file-example-path">compose.yaml</span></figcaption>
+
 ```yaml
 # compose.yaml (Compose Specification: no top-level "version:" key)
 name: recipe-box
@@ -356,9 +361,14 @@ volumes:
   backend-data:
 ```
 
+</figure>
+
 `>-` is YAML for "fold these lines into one", so Compose receives one line of Python.
 
 **3. Settings that stay out of Git:**
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Create template · placeholders only</span> <span class="file-example-path">.env.example</span></figcaption>
 
 ```bash
 # .env.example: copy to .env (git-ignored) and edit. Never commit .env.
@@ -374,6 +384,8 @@ AI_MODEL=test
 # BACKEND_PORT=8000
 # FRONTEND_PORT=8501
 ```
+
+</figure>
 
 The root `.gitignore` lists `.env`; `git check-ignore .env` prints `.env` to confirm.
 

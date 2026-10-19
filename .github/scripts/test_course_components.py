@@ -164,6 +164,14 @@ class CourseComponentsTest(unittest.TestCase):
                 opened = len(re.findall(r'class="callout callout--', html))
                 self.assertEqual(html.count('class="callout-label"'), opened)
 
+    def test_theme_styles_have_a_release_fingerprint(self):
+        for name, html in self.pages.items():
+            styles = re.findall(r'href="([^" ]*/assets/css/just-the-docs-(?:default|head-nav)\.css[^" ]*)"', html)
+            with self.subTest(page=name):
+                self.assertEqual(len(styles), 2)
+                for href in styles:
+                    self.assertRegex(href, r"\.css\?v=[0-9a-f]{12}$")
+
     def test_home_page_hooks(self):
         html = self.pages["index.html"]
         for hook in ('<div class="home-hero">', '<ul class="home-facts">', '<p class="home-actions">',

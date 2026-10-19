@@ -35,8 +35,6 @@
 
 </details>
 
-**Optional decision clinic:** [Model APIs and decisions](../guides/model-apis-and-decisions.md) connects OpenAI/OpenAPI, Claude, Pydantic AI, Jev and vLLM with an offline routing lab. Use it to decide when code, a classifier, a general model or human review belongs in the flow.
-
 ## Mission
 
 Today you break your stack on purpose: stop the AI service mid-demo, feed the model garbage, let it loop, make it slow. Every failure ends with a test, a status code and a sentence a user can act on. You also measure the AI feature's quality and apply stopping rules to its work and usage.
@@ -330,6 +328,23 @@ def test_a_reported_response_can_cross_the_token_threshold():
 A unit test asks "does my code handle this output?" with a fake model. An **evaluation** asks "how good is the model at my task?" with realistic inputs and expected results. In Pydantic Evals, a `Dataset` holds `Case`s and small `Evaluator`s return a bool (an assertion) or a float (a score). Start with a **baseline**, a naive regex parser behind `FunctionModel`: offline, free, and the number a real model must beat.
 
 Keep a few cases out of prompt development and use them to check the final change. Record the actual model/provider, date, relevant settings, and available usage/latency measurements; automatic routing may hide the exact model, which you should report as unknown. A tiny dataset supports a bounded comparison, not a universal model ranking. See the [comparison exercise](../guides/models-and-ai-literacy.md#a-small-comparison-exercise).
+
+### Evaluate the entire routed system
+
+After the core evaluation works, compare a single-model baseline with an optional code → classifier → LLM route. Score the **final user outcome**, including ignored requests, deferred cases and escalations; evaluating only the requests that reached the LLM can hide routing errors. Keep deferred outcomes visible and define beforehand whether they satisfy the task.
+
+<figure class="course-diagram">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Routing evaluation release gate, scroll horizontally">
+    <img src="../assets/diagrams/model-routing-evaluation.svg" alt="Freeze a baseline, a candidate and a rubric before evaluating the same held-out cases. In a hypothetical hundred-case comparison, the baseline succeeds on 95 cases at 2000 cost units while the routed candidate succeeds on 90 at 900 units. A predefined quality floor of 95 successes rejects the cheaper candidate. Keep the baseline and investigate the failures." width="640" height="620">
+  </div>
+  <figcaption><strong>Cheaper is one measurement, not the release decision.</strong> All counts, costs and the quality floor here are invented teaching inputs. <a href="../assets/diagrams/model-routing-evaluation.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+**Worked audit:** 100 requests × 20 cost units = 2,000 for the baseline. For the candidate, routing costs 100 × 1, and 40 escalations cost 40 × 20: **900 units**. Assume the other 60 cases require no additional model call. If another route invokes extraction too, include that cost. The baseline succeeds on 95 cases; the candidate on 90. Cost per successful task falls from `2000 / 95 ≈ 21.05` to `900 / 90 = 10`, but the candidate misses the predefined quality floor of 95/100. Keep the baseline, inspect the wrong routes and revise on development data before a fresh held-out evaluation.
+
+**Before comparing:** fix the task rubric, quality floor, important input slices, latency limit and data policy. Tune thresholds on development cases, freeze the configuration, then use separate held-out cases. Record a confusion matrix for routing, deferral/escalation rates, end-to-end success and p50/p95 latency. Small samples have uncertainty; these hundred invented outcomes are arithmetic, not measured evidence or a production acceptance standard.
+
+**Five-minute discussion:** what would you conclude if the candidate had 97 successes overall but performed worse on Hebrew inputs, or violated your latency limit? An average alone cannot establish every agreed constraint. [The offline routing lab](../guides/model-apis-and-decisions.md#offline-lab-confidence-is-a-routing-input-not-permission) checks policy branches with seven tests; it does not supply the quality evidence in this comparison.
 
 ## Live demo
 

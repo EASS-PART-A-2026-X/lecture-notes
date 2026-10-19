@@ -242,6 +242,15 @@ You need three PRs **merged** into qualifying projects ([rules](../README.md#ope
 
 ## Live demo
 
+<aside class="example-key" aria-label="How to read course examples">
+<p><strong>Choose the action from the example's label</strong></p>
+<ul>
+<li><strong>File + path</strong><span>Create or edit that file. Copy its contents, not a terminal command.</span></li>
+<li><strong>Run in terminal</strong><span>Check the stated folder, then execute the command.</span></li>
+<li><strong>Example terminal output</strong><span>Compare with what you observe. Do not run the output as a command.</span></li>
+</ul>
+</aside>
+
 **1. Check the tools** (macOS, Linux, WSL; any folder). *Observe the real result.*
 
 ```bash
@@ -269,6 +278,9 @@ rm main.py
 
 **Version note:** since uv 0.12, `uv init --app` creates a packaged `src/` layout; `--no-package` keeps the flat `app/` layout used all semester. uv 0.13 downloads Python 3.15 by default, so we pin `--python 3.14`. (Checked 17 October 2026 with uv 0.13.1: [uv 0.12.0](https://github.com/astral-sh/uv/releases/tag/0.12.0), [uv 0.13.0](https://github.com/astral-sh/uv/releases/tag/0.13.0).)
 
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Create file</span> <span class="file-example-path">backend/app/main.py</span></figcaption>
+
 ```python
 # backend/app/main.py
 from fastapi import FastAPI
@@ -281,12 +293,19 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 ```
 
+</figure>
+
 Append to `backend/pyproject.toml`, so `fastapi dev` and later `fastapi run` (Docker) use an explicit entrypoint instead of guessing. Without it, the CLI auto-discovers `app/main.py` and suggests this exact table.
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Append to file</span> <span class="file-example-path">backend/pyproject.toml</span></figcaption>
 
 ```toml
 [tool.fastapi]
 entrypoint = "app.main:app"
 ```
+
+</figure>
 
 Start the server from `backend/`, and leave it running. Then open a second terminal.
 
@@ -329,7 +348,12 @@ cd ..     # back to recipe-box/, the repo root
 pwd       # must end in /recipe-box
 ```
 
+### Keep local files out of Git with .gitignore
+
 Create `.gitignore` at the repo root (`recipe-box/.gitignore`):
+
+<figure class="file-example" markdown="1">
+<figcaption><span class="file-example-action">Create at repository root</span> <span class="file-example-path">recipe-box/.gitignore</span></figcaption>
 
 ```text
 .env
@@ -341,14 +365,45 @@ data/
 *.db
 ```
 
+</figure>
+
+<figure class="repo-map" aria-label="What the root gitignore keeps local">
+<figcaption><strong>One working folder. Two different destinations.</strong><span>For new, untracked files, these root rules apply to matching paths below the repository root.</span></figcaption>
+<div class="repo-map-columns">
+<section class="repo-map-share" aria-label="Files to review and commit">
+<h4 id="files-to-review-and-commit">Review and commit</h4>
+<p>Source and reproducible setup</p>
+<ul>
+<li><code>.gitignore</code><span>The team's shared ignore rules</span></li>
+<li><code>backend/app/*.py</code><span>The code you write</span></li>
+<li><code>backend/pyproject.toml</code> + <code>backend/uv.lock</code><span>Dependencies and resolved versions</span></li>
+<li><code>backend/.python-version</code> + <code>backend/README.md</code><span>Runtime choice and instructions</span></li>
+</ul>
+</section>
+<section class="repo-map-local" aria-label="Files kept on your machine">
+<h4 id="files-to-keep-local">Keep local</h4>
+<p>Secrets, generated files and runtime data</p>
+<ul>
+<li><code>.env</code><span>Local settings and real API keys</span></li>
+<li><code>.venv/</code><span>Rebuild from the lockfile</span></li>
+<li><code>__pycache__/</code> and test/lint caches<span>Generated, disposable output</span></li>
+<li><code>data/</code> and <code>*.db</code><span>Runtime data, not source code</span></li>
+</ul>
+</section>
+</div>
+<p class="repo-map-rule"><strong>Already tracked?</strong> Adding an ignore rule does not remove a file from Git's index or past commits.</p>
+</figure>
+
+**Check the boundary:** from the repository root, run `git check-ignore -v backend/.venv/` to see the matching rule. After staging, `git ls-files .env` must print nothing; it checks whether that path is tracked, which is a different question. These rules do not prevent a deliberate `git add -f`. If a real credential was committed or pushed, stop using it and revoke/rotate it; adding `.env` here does not erase history. See the [Git ignore reference](https://git-scm.com/docs/gitignore).
+
 **Predict:** after `git add .`, which seven files will `git diff --staged --stat` list, and which folder must *not* appear?
 
 <details markdown="1">
 <summary>Check your prediction</summary>
 
-The seven paths below. The line counts on the right differ on your machine; the paths must match. If you see `.venv/` (or `backend/.venv/...`), stop: your `.gitignore` is not at the repo root. Before your first commit, unstage a wrong path with `git rm -r --cached <path>` (that is what `git status` suggests then); after it, use `git restore --staged <path>`.
+The seven paths below. The line counts on the right differ on your machine; the paths must match. If you see `.venv/` (or `backend/.venv/...`), stop: check that `.gitignore` is at the repo root and the rule matches. Also check whether the path was already staged/tracked or added with `-f`; ignore rules do not undo those states. Before your first commit, unstage a wrong path with `git rm -r --cached <path>` (that is what `git status` suggests then); after it, use `git restore --staged <path>`.
 
-```text
+```console
  .gitignore              |    7 +
  backend/.python-version |    1 +
  backend/README.md       |    0

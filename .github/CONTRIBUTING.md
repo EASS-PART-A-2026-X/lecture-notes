@@ -293,3 +293,11 @@ The `integrated-stack` CI job must pass before Pages deploys. These checks cover
 ## CLI interface lab
 
 `uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py` extracts the command and the two ordered test-file fences in `guides/cli-first-agents.md` and runs eight tests through the command's process interface. They cover help, human/JSON output, missing records, invalid identifiers, unsupported flags/operations and hostile text treated as data. No SDK, model or service is needed. These checks do not establish live-agent behavior or sandbox arbitrary processes. The teaching skill remains a Markdown example, never an automatically installed instruction file.
+
+### File examples and repository maps
+
+When a fence is file content, make its destination explicit with a `figure.file-example` (`markdown="1"`). Its real `figcaption` contains a `.file-example-action` span (Create file / Append to file) and a `.file-example-path` span. Keep only actual file contents inside the fenced block; the copy button must copy those contents without the caption. See Lecture 1's `.gitignore` example and Lecture 8's `.env.example`. Use ordinary shell fences for commands to execute.
+
+`figure.repo-map` supports a text-based two-column comparison that stacks on phones and remains visible in print without JavaScript. Use headings and explanatory words as well as color. Keep the local/committed distinction accurate: ignore patterns affect untracked paths; they do not remove tracked files or erase history.
+
+The `stylesheet_cache.rb` hook versions the two generated theme stylesheet URLs from the Sass sources, site configuration and Gemfile lock. This lets returning browsers fetch a visual release without changing the static asset paths. The rendered component checks verify those versioned links.
