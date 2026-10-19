@@ -48,9 +48,9 @@ The PDF must be built before the link check because every page links to it. The 
 
 The rendered search-handler tests use Node.js's built-in test runner (Node 18 or newer). A small Jekyll hook guards a null focus target in Just the Docs 0.12.0 and adds a content fingerprint to its script URL, so refreshed pages fetch the corrected asset. It preserves the theme's search behavior and fails the build if the expected handler changes; review and remove the compatibility guard when upgrading to a theme that fixes this upstream.
 
-A second hook, `_plugins/course_components.rb`, turns the Markdown conventions below into styled components after each page renders. It fails the build with a `course_components:` message when a page loses a shape it depends on: one `<main>`, each of the six panelled lecture sections followed by another `##` heading, and on the README the title, the facts list, the `**On this page:**` paragraph, the list under `## Start here` and the table under `## Calendar and 13-meeting schedule`. `test_course_components.py` checks the rendered result, and `test_course_js.cjs` checks the date, next-meeting and stepper helpers in `assets/js/course.js`. Every lecture 1–10 must open with one "At a glance" card; while a lecture is being rewritten, `COURSE_GLANCE=optional` relaxes that check locally (CI always enforces it).
+A second hook, `_plugins/course_components.rb`, turns the Markdown conventions below into styled components after each page renders. It fails the build with a `course_components:` message when a page loses a shape it depends on: one `<main>`, each of the six panelled lecture sections followed by another `##` heading, and on the README the title (under which it reserves the board's place), the facts list, the `**On this page:**` paragraph, the list under `## Start here`, the table under `## Calendar and 13-meeting schedule` and the first table under `## Assignments and deadlines` (each with a header row). On every page it also labels table cells for phones (see [Tables](#tables)). `test_course_components.py` checks the rendered result (including the column names `course.js` reads, every cell's label, and the [reference card and glossary](#reference-card-and-glossary) rules), and `test_course_js.cjs` checks the date, next-meeting, deadline and stepper helpers in `assets/js/course.js`. Every lecture 1–10 must open with one "At a glance" card; while a lecture is being rewritten, `COURSE_GLANCE=optional` relaxes that check locally (CI always enforces it).
 
-For content edits, check the previous/next lecture links and the collapsible section list. Keep section links in sync when renaming a heading, and keep each page's "On this page" list equal to its `##` headings. For UI edits, check desktop (1440 px), a phone (390 px) and the narrowest supported width (320 px), keyboard focus (the first Tab must reach "Skip to main content"), the mobile menu and Escape, search, table and code scrolling, a quiz disclosure, a stepper with and without JavaScript, and the PDF. Keep tables, code and diagrams scrollable inside their own regions without creating horizontal overflow on the whole page. Lecture section links, quiz disclosures and course text must remain usable without JavaScript. `assets/js/course.js` only enhances: it labels overflowing tables, code and diagrams for keyboard users, marks the current page in the sidebar, closes the mobile menu with Escape, announces search results, restores the skip link as the first Tab stop, turns `.stepper` lists into step-throughs, and highlights the next meeting on the home page.
+For content edits, check the previous/next lecture links and the collapsible section list. Keep section links in sync when renaming a heading, and keep each page's "On this page" list equal to its `##` headings. For UI edits, check desktop (1440 px), a phone (390 px) and the narrowest supported width (320 px), keyboard focus (the first Tab must reach "Skip to main content"), the mobile menu and Escape, search, tables as cards at 390 px and 320 px, code scrolling, a quiz disclosure, a stepper with and without JavaScript, and the PDF. Keep tables, code and diagrams inside their own regions (cards or a sideways scroll) without creating horizontal overflow on the whole page. Lecture section links, quiz disclosures and course text must remain usable without JavaScript. `assets/js/course.js` only enhances: it labels overflowing tables, code and diagrams for keyboard users, marks the current page in the sidebar, closes the mobile menu with Escape, announces search results, restores the skip link as the first Tab stop, turns `.stepper` lists into step-throughs, and on the home page puts the semester board under the title and marks the next meeting in the calendar. The board reads only the README tables: change a date there, never in the script, and check the board at 1440 px and 320 px.
 
 Open a focused PR with the problem, resulting behavior and checks run. Pull requests build the site and PDF and check internal links. Only `main` publishes to GitHub Pages. Coordinate with other agents by fetching the latest `main` before starting and before finalizing your branch; never overwrite their work.
 
@@ -100,6 +100,20 @@ A blockquote whose first line is exactly `**At a glance**`, then a blank quoted 
 > - **Product milestone:** EX1 (due Mon 9 Nov 2026, 23:59)
 > - **Time:** prerequisite check about 10 min before class; lab about 2 h after class (estimate)
 > - **Done when:** `uv run pytest` prints `10 passed`
+```
+
+Student setup opens with the same card, directly after its navigation line, with labels for its own job: **Part A**, **Part B**, **You need**, **Not required**, **Project home (required)** and **Stuck in Part A?**. The same rules apply: meeting dates and times exactly as the README states them, durations labelled as estimates, and no requirement added or dropped. Other guides do not use the card.
+
+### Lab time plan (lectures 1–10, first block under `## Hands-on lab`)
+
+One sentence that sets the lab in the student's own domain and ends with `Plan your time:`, then a tight list. The first item is `**Core today:**`, the last is `**Extension (optional):**`, and the items between say when the rest fits, such as `**Before Lecture 5:**`, `**Before EX2 (due Mon 30 Nov 2026, 23:59):**`, `**During the lab, if time allows:**` or `**May finish in Meeting 11:**`. Refer to steps by their numbers and drills by number and name; when a long lab is split into groups, label each group with the same words (`**Core today:**`, `**Before Lecture 8:**`). `test_course_components.py` checks the sentence and the first and last labels.
+
+```markdown
+Do every step for **your own** domain. Plan your time:
+
+- **Core today:** steps 1–7
+- **Before Lecture 2:** drill 4, "Undo without panic", in [Break it on purpose](#break-it-on-purpose)
+- **Extension (optional):** the [Stretch goals](#stretch-goals)
 ```
 
 ### Predict, then reveal
@@ -153,24 +167,50 @@ A short ordered list (3–8 steps) that the site shows one step at a time, with 
 </div>
 ```
 
+### Tables
+
+Write ordinary Markdown tables with a header row. Below a 36 rem column (phones, and windows about 800–890 px wide, where the sidebar leaves a narrow column) every table with three or more columns becomes one card per row, so no column hides off-screen; desktop and the PDF keep the table. Two-column tables stay tables and let long words wrap.
+
+- **The first column names the row.** It becomes the card's title, in bold, without its column name. When every first cell is a number (`Step | …` with 1, 2, 3), the title reads "Step 1".
+- **Keep column headers short.** Every other cell shows its header as a small label above its value, once per card: `Pass when`, not `Pass when (what you should see after running it)`.
+- **Code in cells:** a short token (at most 16 characters) that holds a hyphen, slash, colon or similar never splits on screen (`git --version` wraps at its space, not after `--`); longer code wraps where it must. The same holds in a disclosure's `<summary>`, such as a quiz question.
+
+```markdown
+| Check | Pass when | Repair |
+|---|---|---|
+| `uv --version` | prints uv 0.12 or newer | [Student setup, Part A](student-setup.md#part-a-before-the-first-meeting) |
+```
+
+### Reference card and glossary
+
+Students revisit two pages more than any other: `guides/reference-card.md` (ports, commands by task, status codes, the "When you are behind" ladder, PARD and the open-source rule) and the glossary at the end of `guides/engineering-foundations.md`. Neither may add a fact of its own; each points to where the course teaches it.
+
+- **Reference card:** every table row ends with a "Taught in" link, and every code snippet in a row appears word for word on a page it links to; its ladder repeats the learning map's; its **Policy:** callout quotes the README's open-source rule word for word, never in part. When you change a command, port, status code or rung in a lecture or the learning map, change the card in the same PR: `test_course_components.py` fails otherwise.
+- **Glossary:** every term in a lecture's "Words you'll meet today" list has a row (the term, one line in the lecture's own words, and a "First taught" link), in alphabetical order. Put a qualifier or an alias in brackets when a word has two meanings or two names: `Commit (Git)`, `Volume (named volume)`. Each word list opens with a link to the glossary; the same test checks both.
+
 ### What the site adds automatically
 
 - **Lectures 1–10:** a phase marker above each `##` heading (Prepare, Learn, Practice, Check, Extend), and a panel around Before you start, Learning checkpoint, Completion check, Stretch goals, Common pitfalls and Instructor notes. Keep the 15 standard `##` headings; add `###` headings, callouts or `<details>` inside them instead.
+- **Tables:** each body cell gets its column name (`data-label`), and tables with three or more columns stack into labelled cards on phones (see [Tables](#tables)).
 - **Navigation:** the hand-written `[← Course home](../README.md) · …` line becomes a compact row (its bottom copy is hidden on the site), and every page except Home ends with a previous/next pager in sidebar order. Both are hidden in the PDF.
-- **Home:** the title, facts list, introduction and `**On this page:**` line form the hero; the `## Start here` list becomes numbered steps; the calendar gets a "Next meeting" strip (from its Date column) and stacks into cards on phones.
+- **Home:** the title, facts list, introduction and `**On this page:**` line form the hero. Directly under the title, the plugin reserves an empty board as tall as the usual board at that column width (so nothing jumps when it fills; a `<noscript>` style in `_includes/head_custom.html` hides it without JavaScript, and it gives its space back after 4 s if `course.js` never runs), and `course.js` fills it: today's or the next meeting ("Meeting 1 of 13", its date and time in Israel and, for readers elsewhere, their local time), its focus and deliverable, an "Open Lecture N" link with "Before you start" for Lectures 1–10, and the next deadline from the first table under `## Assignments and deadlines` (23:59 Israel time, with "in N days", "tomorrow" or "today"). A date that does not parse, including a weekday that does not match its date, hides the board (a calendar date) or the deadline line (an assignments date) rather than guessing; `test_course_js.cjs` fails on such a date first. The `## Start here` list becomes numbered steps; the calendar marks the next meeting's row and stacks into cards on phones. Keep the column names (`#`, `Date`, `Focus`, `Deliverable`; `Assignment`, `Deadline`) and the date format (`Mon 9 Nov 2026`, optionally `, 18:00`).
 
 ### Design tokens
 
 The look of the site lives in three files: `_sass/color_schemes/eass.scss` (the theme's colour variables), `_sass/custom/setup.scss` (font stacks, sidebar rhythm, the 54 rem column) and `_sass/custom/custom.scss` (CSS custom properties on `:root`, every component, and print). Components use the custom properties; do not hard-code a colour or a font size in a component. The site is light only, by design: the teaching diagrams are drawn on white and the PDF prints from this palette.
+
+Colour is state, not decoration, and matches the diagram palette below: navy is the path (links, where you are, the primary action, focus), green is checked or done, oxblood is a deadline, a pitfall or a failure; each callout kind keeps its own ink (below). Headings, bullets, rules and other labels stay ink, grey or paper: give a new component a colour only when it carries one of these meanings, and say it in words too.
 
 | Token | Value | Use | On white |
 |---|---|---|---|
 | `--ed-ink` | `#0f1e3a` | headings, strong rules, primary button | 16.6:1 |
 | `--ed-text` | `#232b38` | reading text | 14.3:1 |
 | `--ed-text-2` | `#384152` | secondary reading text (the home-page promise) | 10.3:1 |
-| `--ed-muted` | `#535c6b` | captions, dates, labels, list numerals | 6.8:1 |
-| `--ed-link`, `--ed-focus` | `#1d4e89` | links (always underlined) and the 3 px focus ring, 2 px clear of the element | 8.4:1 |
-| `--ed-accent` | `#9b2c2c` | the one accent: kickers, the active page, deadlines, pitfalls | 7.5:1 |
+| `--ed-term` | `#4a5363` | labels (`ed-label`: phase markers, sidebar groups, pager directions, card and code-tab labels), glance and fact terms | 7.8:1 (7.1:1 on paper) |
+| `--ed-muted` | `#535c6b` | captions, dates, list bullets and numerals | 6.8:1 |
+| `--ed-link`, `--ed-focus` | `#1d4e89` | links (always underlined), disclosure chevrons, and the 3 px focus ring, 2 px clear of the element | 8.4:1 |
+| `--ed-accent` | `#9b2c2c` | deadline tags, pitfalls and failures only (never decoration) | 7.5:1 (6.9:1 on its tint) |
+| `--ed-current` | `var(--ed-link)` (`#1d4e89`) | where you are: the active sidebar item, the home board's rule and label, the next meeting's calendar row | 8.4:1 (7.7:1 on paper) |
 | `--ed-rule`, `--ed-rule-strong` | `#ddd7ca`, `#b9b1a1` | hairlines, spines and rails (decorative) | — |
 | `--ed-rule-ui` | `#8a8070` | borders of form controls (WCAG 1.4.11) | 3.9:1 |
 | `--ed-paper`, `--ed-paper-deep` | `#f7f5ef`, `#efebe1` | sidebar, figure panels, contents box; hover, code tab, next-meeting row | — |
@@ -189,7 +229,7 @@ Each callout kind has one ink (label, left rule and icon) and one tint (backgrou
 | optional | umber `#5c574d` | none | 7.2:1 on white | dashed outline, dashed plus icon |
 | note | ink `#0f1e3a` | paper `#f7f5ef` | 15.2:1 | info icon |
 
-Type uses system fonts only (no downloads): a serif for reading (`--ed-serif`: Charter, then Iowan Old Style, Cambria, Georgia, Liberation Serif), a display serif for headings (`--ed-serif-display`: Iowan Old Style, Palatino, Charter, …), the system sans for interface, labels, tables and the glance card (`--ed-sans`), and `--ed-mono` for code. Sizes come from the scale `--fs-13` … `--fs-52` (whole pixels at a 16 px root): reading text 17 px on phones and 18 px from 50 rem, tables 15 px, code blocks 13–14 px, labels 13 px (the floor; nothing else is smaller than 14 px). Prose, lists, callouts and quizzes stop at the reading measure (`--ed-measure`, 40.5 rem, about 70 characters); tables, code, figures and the structural components use the whole column. Corners are 2–3 px (round step markers aside), and the only soft shadows are under diagram plates and the open search panel.
+Type uses system fonts only (no downloads) and two families. The system sans (`--ed-sans`: each platform's own interface face, Liberation Sans in the PDF) sets structure: headings, the wordmark, labels, navigation, tables, the glance card and every control. A serif (`--ed-serif`: Charter, then Iowan Old Style, Cambria, Georgia, Liberation Serif) sets running text, including the home page's lead paragraph. `--ed-mono` is for code only. Headings are bold and slightly tightened: h1 34 px (44 px once the column is 40 rem wide; 40/48 px on Home), h2 24/28 px, h3 20 px. Sizes come from the scale `--fs-13` … `--fs-48` (whole pixels at a 16 px root): reading text 17 px on phones and 18 px from 50 rem, tables 15 px, code blocks 13–14 px, labels 14 px and status tags 13 px (the floor). Labels (the `ed-label` mixin: phase markers, figure numbers, pager directions, sidebar groups, card and code-tab labels) are semibold words in sentence case, never tracked capitals; the source text is the label, so write it the way it should read. Prose, lists, callouts and quizzes stop at the reading measure (`--ed-measure`, 40.5 rem, about 70 characters); tables, code, figures and the structural components use the whole column. Corners are 2–3 px (round step markers aside), and the only soft shadows are under diagram plates and the open search panel.
 
 ### Component classes
 
@@ -203,13 +243,14 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Section panel | `div.section-panel.section-panel--{prereq,objectives,checkpoint,optional,pitfall,instructor}` | plugin (lectures 1–10) |
 | Page navigation | `p.page-nav` (top), `p.page-nav.page-nav--bottom` (hidden on the site) | plugin |
 | Pager | `nav.pager` with `a.pager-prev`, `a.pager-next` | `_includes/footer_custom.html` |
-| Home | `div.home-hero`, `ul.home-facts`, `p.home-actions`, `ol.start-path`, `table.schedule` (cells carry `data-label`), `tr.is-next`, `aside.this-week` | plugin (README) and `course.js` |
+| Table | `td[data-label]` on every body cell; `table.stack` (three or more columns: cards below a 36 rem column, screen only), `table.stack--numbered` (first cells are numbers); `span.nobr` around short code tokens in cells and in `<summary>` | plugin (every page) |
+| Home | `div.home-hero`, `ul.home-facts`, `p.home-actions`, `ol.start-path`, `table.schedule` (also `stack`; keeps its own calendar cards), `table.deadlines` (also `stack`), `tr.is-next`; `aside.this-week` (inside `div.home-hero`, right after the `h1`; the plugin writes it empty with `data-pending`, `course.js` replaces it with the filled board or removes it) with `this-week-label`, `-when`, `-focus`, `-deliverable`, `-actions` (`a.this-week-open` is the primary link) and `-deadline` | plugin (README) and `course.js` |
 | Figure | `figure.course-diagram` (`--wide` for 960-wide images), `div.diagram-scroll`; the text version is the `details` right after the figure | author HTML |
 | Stepper | `div.stepper` around one `ol`; `course.js` adds `is-enhanced`, `is-current`, `is-all` and the `stepper-controls` | author HTML and `course.js` |
 | Screen or print only | `span.screen-only`, `span.print-only` | author HTML |
-| Sidebar groups | CSS labels Start here, Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
-| Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab` | author HTML (unchanged; restyled with the tokens) |
-| Simulator | `div.sim` (with `id="sim-NAME"`), `p.sim-title`, `div.sim-fallback`; the script adds `is-live` and `div.sim-app` | author HTML and `assets/js/sim-*.js` |
+| Sidebar groups | CSS labels Start here (the two required guides), Reference (Reference card, Submission evidence, Engineering foundations, Models and AI literacy), Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
+| Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab`, `reliability-lab` (the two labs share one frame, sans controls and button style) | author HTML (unchanged; restyled with the tokens) |
+| Simulator | `div.sim` (with `id="sim-NAME"`), `p.sim-title`, `div.sim-fallback`; the script adds `is-live` and `div.sim-app` | author HTML and `assets/js/sim-*.js` (the labs' frame: a 3 px ink rule on the left; state badges are sentence-case words) |
 
 ### Diagrams
 
@@ -262,8 +303,8 @@ A minimal diagram that passes `check_site.py` (verified):
 
 `build_pdf.py` prints every sidebar page on A4 with backgrounds, after opening every `<details>`; the print rules live at the end of `custom.scss`. When you add a component, decide what it does in print and check the PDF.
 
-- Body text is 10.5 pt and code 8.75 pt; code wraps instead of scrolling, and tables lose their scroll regions.
-- Hidden in print: the sidebar, header, search, "On this page", heading anchors, copy buttons, the page navigation line, the pager, the "Next meeting" strip, stepper buttons, `.screen-only` text, and the text version after a figure (the figure itself prints). `.print-only` text appears.
+- Body text is 10.5 pt and code 8.75 pt; code wraps instead of scrolling, and tables lose their scroll regions. Tables never turn into cards in print (the cards and the unbreakable code tokens are screen-only).
+- Hidden in print: the sidebar, header, search, "On this page", heading anchors, copy buttons, the page navigation line, the pager, the home board and the next meeting's row marker, stepper buttons, `.screen-only` text, and the text version after a figure (the figure itself prints). `.print-only` text appears.
 - Every answer prints open without its disclosure chrome; every stepper step prints; a figure is at most 60 % of the page height, and an in-flow (640-wide) figure at most 28 rem wide.
 - Kept whole on one page where possible: one-paragraph callouts, the first paragraph of a blockquote callout (its label stays with its content), the glance card, code blocks, table rows, figures, start-path steps, stepper steps and the existing course blocks. Keep such blocks shorter than about half a page; a longer block leaves a gap before it.
 - Callout tints and inks print, so a printed page keeps the same cues as the screen; links in the PDF point to the public site.

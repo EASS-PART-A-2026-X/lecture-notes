@@ -850,9 +850,15 @@ A container has its own writable layer; a named volume is stored separately by D
 
 ## Hands-on lab
 
-Apply each step to **your own domain**; Recipe Box is only the example. Commands run from `backend/`.
+Apply each step to **your own domain**; Recipe Box is only the example. Plan your time:
 
-**Core today (steps 1–5):**
+- **Core today:** steps 1–5
+- **Before Lecture 4:** steps 6–8 (EX1 is due that day, Mon 9 Nov 2026, 23:59)
+- **Extension (optional):** step 9
+
+Commands run from `backend/`.
+
+**Core today:**
 
 1. Turn your Lecture 2 models into SQLModel classes: a base, a `table=True` class with `id`, and the Create, Update and Public schemas.
 2. Add `app/db.py` and switch every route to `db.SessionDep`, keeping the contract.
@@ -860,7 +866,7 @@ Apply each step to **your own domain**; Recipe Box is only the example. Commands
 4. Write `app/seed.py` with 2–3 realistic rows as dicts, built with `Recipe.model_validate(row)`, call it from the lifespan, and add `test_seed_is_idempotent` with its validation loop. **Checkpoint:** change one seed value to break a limit (for example `"minutes": 0`); `uv run pytest -k idempotent` fails with a `ValidationError` naming that field. Undo it.
 5. Add `tests/test_restart.py`. **Checkpoint:** temporarily replace `session.commit()` with `session.flush()` in `save()`; the restart test must fail. Undo it.
 
-**Finish before the next meeting (steps 6–8; EX1 is due then):**
+**Before Lecture 4:**
 
 6. Check that your Lecture 1 `.gitignore` covers `data/` and `*.db`, then create a record with `uv run fastapi dev`, restart and confirm it is still there.
 7. Stop `fastapi dev` (Ctrl+C). Add the `Dockerfile` and `.dockerignore`. **Checkpoint:** `docker ps --filter name=backend --format '{{.Names}} {{.Status}}'` shows `Up`, and a record survives the build, `rm`, run sequence from demo step 8.
@@ -1065,21 +1071,17 @@ Only the named volume. `docker rm` deletes the container and its writable layer;
 
 </details>
 
-Q6. A user deletes every recipe and restarts the backend. What does `GET /recipes` return, and what are two ways to change that behavior?
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q6. A user deletes every recipe and restarts the backend. What does GET /recipes return, and what are two ways to change that behavior?</summary>
 
-**Answer:** the three demo rows: `seed_if_empty` sees an empty table and seeds again. Either seed only when the table has just been created, or seed only when a setting such as `SEED_DEMO_DATA=1` is present. Keeping the simple version is fine for EX1 if the README says so.
+The three demo rows: `seed_if_empty` sees an empty table and seeds again. Either seed only when the table has just been created, or seed only when a setting such as `SEED_DEMO_DATA=1` is present. Keeping the simple version is fine for EX1 if the README says so.
 
 </details>
 
-Q7. Why is a named volume not a backup?
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q7. Why is a named volume not a backup?</summary>
 
-**Answer:** it is the live copy, not a second one. `docker volume rm`, a bad migration, or a bug that deletes rows destroys the data in the volume itself. A backup is a separate, consistent copy (for example from SQLite's backup API) that you have actually restored once somewhere else.
+It is the live copy, not a second one. `docker volume rm`, a bad migration, or a bug that deletes rows destroys the data in the volume itself. A backup is a separate, consistent copy (for example from SQLite's backup API) that you have actually restored once somewhere else.
 
 </details>
 

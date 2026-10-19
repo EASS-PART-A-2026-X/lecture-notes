@@ -1,4 +1,7 @@
-"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager).
+"""Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager,
+table labels and phone cards), for the time plan that opens every lecture lab, and for the two pages
+students look things up in: the reference card repeats only what its links teach, and the glossary
+holds every lecture's word list.
 
 Run after the Jekyll build, from the repository root:
     python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -7,14 +10,17 @@ Every lecture 1-10 must open with one "At a glance" card; COURSE_GLANCE=optional
 "at most one" while a lecture is being rewritten.
 """
 
+import html as htmllib
 import os
 import re
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urljoin, urlsplit
 
 SITE = Path(os.environ.get("SITE_DIR", "_site"))
 PLUGIN = Path(__file__).resolve().parents[2] / "_plugins" / "course_components.rb"
+CONFIG = Path(__file__).resolve().parents[2] / "_config.yml"
 GLANCE_REQUIRED = os.environ.get("COURSE_GLANCE") != "optional"
 
 CALLOUT_KINDS = {"objectives", "prereq", "predict", "explain", "checkpoint", "pitfall", "optional", "note"}
@@ -89,6 +95,16 @@ def main_of(html):
     return match.group(1) if match else ""
 
 
+def plain(fragment):
+    """Text of an HTML fragment as the plugin computes it: tags stripped, entities decoded, spaces
+    collapsed."""
+    return re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", "", fragment))).strip()
+
+
+def plugin_constant(name):
+    return int(re.search(rf"{name} = (\d+)", PLUGIN.read_text(encoding="utf-8")).group(1))
+
+
 @unittest.skipUnless(SITE.is_dir(), f"no built site at {SITE}")
 class CourseComponentsTest(unittest.TestCase):
     @classmethod
@@ -130,6 +146,22 @@ class CourseComponentsTest(unittest.TestCase):
                     self.assertIn('<p class="glance-title"><strong>At a glance</strong></p>', html)
         if not GLANCE_REQUIRED:
             self.skipTest("COURSE_GLANCE=optional: the At a glance card is not required")
+
+    def test_lecture_labs_open_with_the_time_plan(self):
+        """Every lab starts with one sentence ending "Plan your time:" and a list that runs from
+        "Core today:" to "Extension (optional):"; any item between names a later time."""
+        for name, html in self.lectures.items():
+            with self.subTest(page=name):
+                lab = html.partition('<h2 id="hands-on-lab"')[2].partition("</h2>")[2]
+                match = re.match(r"\s*<p>((?:(?!</p>).)*)</p>\s*<ul>((?:(?!</ul>).)*)</ul>", lab, re.S)
+                self.assertIsNotNone(match, "the lab opens with a sentence and the time-plan list")
+                self.assertTrue(match.group(1).endswith("Plan your time:"), match.group(1)[-200:])
+                labels = re.findall(r"<li><strong>([^<]+)</strong>", match.group(2))
+                self.assertGreaterEqual(len(labels), 2, labels)
+                self.assertEqual(labels[0], "Core today:")
+                self.assertEqual(labels[-1], "Extension (optional):")
+                for label in labels[1:-1]:
+                    self.assertRegex(label, r"^(Before |During |May finish )")
 
     def test_top_level_labels_become_callouts(self):
         labels = plugin_labels()
@@ -175,14 +207,162 @@ class CourseComponentsTest(unittest.TestCase):
     def test_home_page_hooks(self):
         html = self.pages["index.html"]
         for hook in ('<div class="home-hero">', '<ul class="home-facts">', '<p class="home-actions">',
-                     '<ol class="start-path">', '<table class="schedule">'):
+                     '<ol class="start-path">', '<table class="schedule stack">', '<table class="deadlines stack">'):
             with self.subTest(hook=hook):
                 self.assertEqual(html.count(hook), 1)
         hero = re.search(r'<div class="home-hero">(.*?)<p class="home-actions">', html, re.S)
         self.assertIsNotNone(hero)
         self.assertEqual(hero.group(1).count("<h1"), 1, "the page title sits inside the hero")
         self.assertEqual(html.count("<h1"), 1)
+        # The board's place is reserved under the title (no layout shift when course.js fills it)
+        # and hidden when scripts are off.
+        self.assertRegex(hero.group(1), r'</h1>\s*<aside class="this-week" data-pending aria-hidden="true"></aside>')
+        self.assertIn("<noscript><style>.this-week[data-pending]{display:none!important}</style></noscript>", html)
         self.assertNotIn('class="pager"', html, "the home page has no previous/next pager")
+
+    def test_home_tables_keep_the_columns_course_js_reads(self):
+        html = self.pages["index.html"]
+        for table, columns in (("schedule", ["#", "Date", "Focus", "Deliverable"]),
+                               ("deadlines", ["Assignment", "Deadline"])):
+            with self.subTest(table=table):
+                body = re.search(rf'<table class="{table}\b[^"]*">(.*?)</table>', html, re.S)
+                self.assertIsNotNone(body)
+                headers = [re.sub(r"<[^>]+>", "", cell).strip()
+                           for cell in re.findall(r"<th\b[^>]*>(.*?)</th>", body.group(1), re.S)]
+                self.assertEqual(headers[:len(columns)], columns)
+
+    def test_tables_name_every_cell_and_stack_from_three_columns(self):
+        """Every body cell carries its column name (data-label, the header text); a table with
+        three or more columns has the class "stack", which phones show as labelled cards; and
+        "stack--numbered" marks exactly the stacked tables whose first cells are all numbers."""
+        minimum = plugin_constant("STACK_MIN_COLUMNS")
+        self.assertEqual(minimum, 3)
+        for name, html in self.pages.items():
+            tables = re.findall(r"<table\b([^>]*)>(.*?)</table>", main_of(html), re.S)
+            for index, (attrs, inner) in enumerate(tables):
+                with self.subTest(page=name, table=index):
+                    match = re.search(r'class="([^"]*)"', attrs)
+                    classes = match.group(1).split() if match else []
+                    head = re.search(r"<thead>(.*?)</thead>", inner, re.S)
+                    self.assertIsNotNone(head, "every table needs a header row (it names the card fields)")
+                    headers = [plain(h) for h in re.findall(r"<th\b[^>]*>(.*?)</th>", head.group(1), re.S)]
+                    self.assertEqual("stack" in classes, len(headers) >= minimum, headers)
+                    firsts = []
+                    for row in re.findall(r"<tr>(.*?)</tr>", inner.partition("<tbody>")[2], re.S):
+                        cells = re.findall(r"<td\b([^>]*)>(.*?)</td>", row, re.S)
+                        for column, (cell_attrs, content) in enumerate(cells):
+                            label = re.search(r'data-label="([^"]*)"', cell_attrs)
+                            self.assertIsNotNone(label, f"cell without data-label: {content[:60]}")
+                            expected = headers[column] if column < len(headers) else ""
+                            self.assertEqual(htmllib.unescape(label.group(1)), expected)
+                        if cells:
+                            firsts.append(plain(cells[0][1]))
+                    numbered = (len(headers) >= minimum and headers[0] not in ("", "#") and bool(firsts)
+                                and all(re.fullmatch(r"\d{1,3}", text) for text in firsts))
+                    self.assertEqual("stack--numbered" in classes, numbered, firsts[:3])
+
+    def test_short_code_tokens_in_cells_stay_whole(self):
+        """span.nobr wraps only short code tokens inside table cells and disclosure summaries (quiz
+        questions), and only tokens that hold a character a browser may break after (a hyphen,
+        slash, colon, …)."""
+        longest = plugin_constant("NOBR_MAX_CHARS")
+        for name, html in self.pages.items():
+            spans = re.findall(r'<span class="nobr">(.*?)</span>', html)
+            in_cells = sum(len(re.findall(r'<span class="nobr">', part))
+                           for pattern in (r"<td\b[^>]*>(.*?)</td>", r"<summary\b[^>]*>(.*?)</summary>")
+                           for part in re.findall(pattern, html, re.S))
+            with self.subTest(page=name):
+                self.assertEqual(len(spans), in_cells, "span.nobr only inside table cells and summaries")
+                for token in spans:
+                    text = htmllib.unescape(token)
+                    self.assertRegex(text, r"^\S{2,%d}$" % longest)
+                    self.assertRegex(text, r"[^A-Za-z0-9_.,]")
+                for cell in re.findall(r"<td\b[^>]*>.*?</td>|<summary\b[^>]*>.*?</summary>", html, re.S):
+                    for inner in re.findall(r"<code\b[^>]*>(.*?)</code>", cell, re.S):
+                        if "<span" in inner:
+                            self.assertNotRegex(re.sub(r'<span class="nobr">[^<]*</span>', "", inner), r"<",
+                                                "nothing else is added inside code")
+
+    def test_reference_card_repeats_what_its_links_teach(self):
+        """The reference card adds no fact of its own: every table row links to a course page, every
+        code snippet in a row appears on a page that row links to, its "When you are behind"
+        ladder equals the learning map's (the card adds only the "Taught in" column), and its
+        open-source rule quotes the README word for word."""
+        card = main_of(self.pages["guides/reference-card.html"])
+        base = re.search(r"^baseurl: (\S+)", CONFIG.read_text(encoding="utf-8"), re.M).group(1).strip("/")
+        here = f"https://site/{base}/guides/reference-card.html"
+        bodies = "".join(t.partition("<tbody>")[2] for t in re.findall(r"<table\b[^>]*>(.*?)</table>", card, re.S))
+        rows = re.findall(r"<tr>(.*?)</tr>", bodies, re.S)
+        self.assertGreaterEqual(len(rows), 40)
+        texts = {}
+        for row in rows:
+            with self.subTest(row=plain(row)[:70]):
+                targets = []
+                for href in re.findall(r'<a href="([^"]+)"', row):
+                    path = urlsplit(urljoin(here, href)).path
+                    self.assertTrue(path.startswith(f"/{base}/"), href)
+                    page = path[len(base) + 2:] or "index.html"
+                    self.assertIn(page, self.pages, f"links to a course page: {href}")
+                    targets.append(page)
+                self.assertTrue(targets, "every row links to where it is taught")
+                for code in re.findall(r"<code\b[^>]*>(.*?)</code>", row, re.S):
+                    snippet = plain(code)
+                    for page in targets:
+                        if page not in texts:
+                            texts[page] = plain(main_of(self.pages[page]))
+                    self.assertTrue(any(snippet in texts[page] for page in targets),
+                                    f"{snippet!r} appears on none of {targets}")
+
+        def ladder(html):
+            section = re.search(r'<h2 id="when-you-are-behind".*?<tbody>(.*?)</tbody>', main_of(html), re.S)
+            self.assertIsNotNone(section)
+            return [[plain(cell) for cell in re.findall(r"<td\b[^>]*>(.*?)</td>", row, re.S)[:3]]
+                    for row in re.findall(r"<tr>(.*?)</tr>", section.group(1), re.S)]
+
+        expected = ladder(self.pages["guides/learning-map.html"])
+        self.assertEqual(len(expected), 8)
+        self.assertEqual(ladder(self.pages["guides/reference-card.html"]), expected)
+
+        # Policy is quoted, never paraphrased: each sentence of the Policy callout's first paragraph
+        # and each condition in its list appears in the README exactly as written.
+        policy = re.search(r'<strong class="callout-label">Policy:</strong>(.*?)</p>\s*<ul>(.*?)</ul>', card, re.S)
+        self.assertIsNotNone(policy, "the open-source rule is a Policy callout with its list of conditions")
+        readme = plain(main_of(self.pages["index.html"]))
+        quoted = [part for part in re.split(r"(?<=[.:])\s+", plain(policy.group(1))) if part.endswith(".")]
+        quoted += [plain(item) for item in re.findall(r"<li>(.*?)</li>", policy.group(2), re.S)]
+        self.assertGreaterEqual(len(quoted), 4)
+        for text in quoted:
+            with self.subTest(policy=text[:60]):
+                self.assertTrue(text in readme, f"the Policy callout must quote the README word for word: {text!r}")
+
+    def test_lecture_word_lists_are_in_the_glossary(self):
+        """Every term a lecture's "Words you'll meet today" list defines has a glossary row. A label
+        such as "Tag versus digest" or "Lint, format" names several terms; each must appear as words
+        in a glossary term, whose brackets may add a qualifier or an alias ("Volume (named volume)")."""
+        glossary = re.search(r'<h2 id="glossary".*?<tbody>(.*?)</tbody>',
+                             self.pages["guides/engineering-foundations.html"], re.S)
+        self.assertIsNotNone(glossary)
+        terms = [plain(cell) for cell in re.findall(r"<tr>\s*<td\b[^>]*>(.*?)</td>", glossary.group(1), re.S)]
+        self.assertEqual(terms, sorted(terms, key=lambda t: t.lower()), "glossary rows stay alphabetical")
+
+        def words(text):
+            return " " + " ".join(re.findall(r"[a-z0-9]+", text.lower())) + " "
+
+        forms = {words(t) for t in terms} | {words(re.sub(r"\([^)]*\)", " ", t)) for t in terms}
+        lists = 0
+        for name, html in self.lectures.items():
+            box = re.search(r"<summary>Words you.{1,7}ll meet today</summary>(.*?)</details>", html, re.S)
+            if box is None:
+                continue
+            lists += 1
+            self.assertIn("engineering-foundations.html#glossary", box.group(1), "the list links to the glossary")
+            for label in re.findall(r"<li><strong>(.*?)</strong>", box.group(1), re.S):
+                text = re.sub(r"\([^)]*\)", " ", plain(label).rstrip(":"))
+                for part in re.split(r",| / | versus | vs ", text):
+                    with self.subTest(page=name, term=part.strip()):
+                        self.assertTrue(any(words(part) in form for form in forms),
+                                        f"add a glossary row for {part.strip()!r}")
+        self.assertGreaterEqual(lists, 9)
 
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():

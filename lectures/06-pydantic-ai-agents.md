@@ -63,6 +63,8 @@ Optional: the [training/runtime data map](../guides/models-and-ai-literacy.md#a-
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Model:** the trained weights that turn input tokens into output tokens. It runs nothing itself.
 - **Provider:** the service that answers model requests (a hosted API, or Ollama on your laptop).
 - **Agent:** in Pydantic AI, a model plus instructions, tools, an output type and dependencies, run as a loop.
@@ -72,7 +74,7 @@ Optional: the [training/runtime data map](../guides/models-and-ai-literacy.md#a-
 - **`ModelRetry`:** an exception that sends a message back to the model for another try.
 - **`TestModel` / `FunctionModel`:** fake models for tests: automatic placeholder data, or replies you script.
 - **Token:** a model-specific unit of text; requests are measured and billed in tokens.
-- **Harness:** the controller code around a model (defined in [Concepts](#model-provider-coding-harness-application-agent)).
+- **Harness:** the controller code around a model; your coding harness and today's application agent are both harnesses ([Concepts](#model-provider-coding-harness-application-agent)).
 
 </details>
 
@@ -147,7 +149,7 @@ Four different things are casually called "the AI". They run at different times 
 | **Coding harness** | Claude Code, Codex or OpenCode in your editor or terminal | development time, while you write code | you, through its permission settings and [sandbox](../guides/agent-sandboxes.md) |
 | **Application agent** | `extract_agent` in `ai-service`: the Pydantic AI agent loop | request time, once per `POST /extract` | your code: the tools you register, the validators, `retries`, and what the service can reach |
 
-A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
+The coding harness and the application agent are both **harnesses**: controller code that builds a model's context and runs the tool calls the model proposes ([definition](../guides/models-and-ai-literacy.md#six-things-to-distinguish)). One edits your source code while you develop; the other turns a user's text into a checked result at request time.
 
 Changing the model in your editor does not change `ai-service`'s `AI_MODEL`, and the other way round.
 
@@ -299,12 +301,31 @@ The `RecipeExtraction` type belongs to your application. Pydantic AI's configure
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Application and model API boundaries, scroll horizontally">
     <img src="../assets/diagrams/model-api-boundaries.svg" alt="The backend calls the AI service through the application's POST extract contract. Inside the AI service, Pydantic AI and application schemas use one configured adapter. Alternative routes lead to OpenAI Responses, Claude Messages or a compatible local model server. Provider responses return for application validation; the backend owns persistence." width="640" height="650">
   </div>
-  <figcaption><strong>Your API stays yours.</strong> Changing the model route can change behavior, cost and latency while the backend's HTTP contract stays the same. <a href="../assets/diagrams/model-api-boundaries.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Your API stays yours.</strong> Changing the model route can change behavior, cost and latency while the backend's HTTP contract stays the same. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/model-api-boundaries.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Browser → backend.** The backend validates accepted data and owns persistence.
+2. **Your OpenAPI contract.** The backend sends `POST /extract` to the AI service and gets back a validated result or a declared error.
+3. **AI service: your application boundary.** The Pydantic AI loop, the application schemas and the limits run here. Choose one configured adapter for the run: the OpenAI adapter (Responses protocol), the Claude adapter (Messages protocol) or a local adapter (a supported protocol).
+4. **Provider HTTP.** The chosen adapter calls its host: the OpenAI host (the selected model), the Anthropic host (the selected Claude model) or a local server (an Ollama or vLLM route). The candidate comes back through the adapter for application validation.
+
+The same application schema does not guarantee equal task quality.
+
+</details>
 
 **Trace it:** browser → backend → `POST /extract` → Pydantic AI → one adapter → model endpoint → candidate → application validation → backend. Only the backend persists an accepted recipe. An OpenAPI document describes the application boundary; it does not make providers interchangeable. Keys belong in `ai-service`, never the browser.
 
-**Predict:** switching from `test` to a real provider leaves the JSON schema unchanged. Can extraction accuracy, tool behavior or response time still change? **Yes**: the contract constrains shape, not semantic quality or latency. Keep today's offline tests, then use Lecture 9's separate task evaluations before trusting a new model.
+**Predict:** switching from `test` to a real provider leaves the JSON schema unchanged. Can extraction accuracy, tool behavior or response time still change?
+
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+**Yes**: the contract constrains shape, not semantic quality or latency. Keep today's offline tests, then use Lecture 9's separate task evaluations before trusting a new model.
+
+</details>
 
 Optional examples: [OpenAI typed extraction](../guides/model-apis-and-decisions.md#openai-typed-extraction-through-responses), [Claude Messages](../guides/model-apis-and-decisions.md#claude-messages-is-a-different-contract) and [Pydantic AI adapters](../guides/model-apis-and-decisions.md#pydantic-ai-one-application-type-different-adapters). They are scratch experiments; today's service remains the reference implementation.
 
@@ -680,7 +701,10 @@ def test_tools_are_plain_functions():
 
 ## Hands-on lab
 
-Build the agent for **your own domain**: a syllabus paragraph becomes study tasks, an invoice email becomes line items, a product blurb becomes catalogue fields.
+Build the agent for **your own domain**: a syllabus paragraph becomes study tasks, an invoice email becomes line items, a product blurb becomes catalogue fields. Plan your time:
+
+- **Core today:** steps 1–8, with the design checklist below done before step 2
+- **Extension (optional):** a real-model run (after step 8), and the dependency-override test and the trace dissection in [Stretch goals](#stretch-goals)
 
 **Design checklist** (5 minutes, on paper, before step 2):
 
@@ -751,11 +775,18 @@ def due_in_future(
 
 **Predict:** you run this agent under a plain `TestModel()` with `PlannerDeps(today=date(2026, 11, 23))`. What happens?
 
-The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)`. `TestModel` fills a `date` field with `2024-01-01`, which is in the past, so the validator rejects it, and the placeholder never changes (this agent keeps the default of one retry). Use `TestModel(custom_output_args=[{"course": "EASS", "title": "EX2", "due": "2026-11-30"}])` for the happy path, and a `FunctionModel` for the retry. Also notice that nothing *enforces* "use only those codes" yet: adding that check to the validator is the same move as `check_tags`.
+<details markdown="1">
+<summary>Check your prediction</summary>
+
+The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)`. `TestModel` fills a `date` field with `2024-01-01`, which is in the past, so the validator rejects it, and the placeholder never changes (this agent keeps the default of one retry). Use `TestModel(custom_output_args=[{"course": "EASS", "title": "EX2", "due": "2026-11-30"}])` for the happy path, and a `FunctionModel` for the retry.
 
 </details>
 
-**Core today**
+Notice also that nothing *enforces* "use only those codes" yet: adding that check to the validator is the same move as `check_tags`.
+
+</details>
+
+**Core today:**
 
 1. Scaffold `ai-service/` next to `backend/` and `frontend/`, as in the demo.
 2. Write `schemas.py`: a request model (`extra="forbid"`, `str_strip_whitespace=True`, length limits) and an output model from your design checklist.
@@ -773,7 +804,7 @@ The run fails with `UnexpectedModelBehavior: Exceeded maximum output retries (1)
 
 > **EX3 progress:** this service is the Pydantic AI part of EX3. Lecture 7 connects your backend to it over HTTP, Lecture 8 runs it in Compose, and Lecture 9 adds limits and evaluation cases. EX2 (due 30 Nov) does not depend on it.
 
-**Extension (optional)**
+**Extension (optional):**
 
 - **A real-model run.** The free route is a local model through Ollama; [Use a local model in your AI service](../guides/local-inference.md#use-a-local-model-in-your-ai-service) gives a dated default tag, expected latency and the exact settings. Put the settings in a git-ignored `.env` at the repository root (`git check-ignore -v .env` proves it is ignored), then run `uv run --env-file ../.env fastapi dev --port 8001` in `ai-service/`:
 
@@ -866,7 +897,7 @@ This week: **open PR #2** and keep PR #1 moving ([rules](../README.md#open-sourc
 
 ## Working with AI assistants
 
-Your coding assistant is a coding harness: it changes source code during development, with the permissions you give it. This Pydantic AI agent handles product input at request time, with the tools your code registers. They need different tools, permissions and checks; the [product loop](../guides/agent-driven-development.md#the-product-loop) compares them.
+Your coding assistant is a coding harness: it changes source code during development, with the permissions you give it. Today's application agent handles product input at request time, with the tools your code registers. They need different tools, permissions and checks; the [product loop](../guides/agent-driven-development.md#the-product-loop) compares them.
 
 When you delegate part of today's lab, write the request with the course's [one work-order template](../guides/agent-driven-development.md#one-work-order-template): one **Outcome**, the **Files** it may change, **Non-goals**, the exact **Verify with** command (`uv run pytest` in `ai-service/`), and your **Review focus** (usually the validator and the tests). Read the whole diff before you run it, and add one line to your README's AI-use note: the tool, what it helped with, and the check you ran.
 
@@ -913,19 +944,15 @@ Expected: `3 passed` for the core tests shown above, `6 passed` with the three e
 
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
-| `uv run pytest` in `ai-service/` passes with no key and no network | the terminal output in your PR description | [Common pitfalls](#common-pitfalls) · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
-| Deleting your output validator's `raise` makes at least one test fail | one line in your notes: which test failed | [Break it on purpose](#break-it-on-purpose), drill 1 |
+| The agent has an `output_type`, `instructions`, a deps-backed tool, a plain tool and an output validator | `app/agent.py` in your PR | [Live demo](#live-demo), step 3 · [Hands-on lab](#hands-on-lab), steps 2–5 |
+| `uv run pytest` in `ai-service/` passes with no key and no network, with `ALLOW_MODEL_REQUESTS = False` set in `tests/conftest.py` | the terminal output in your PR description | [Common pitfalls](#common-pitfalls) · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
+| Each test fails when its rule breaks: deleting your output validator's `raise` makes at least one test fail | one line in your notes: which test failed | [Break it on purpose](#break-it-on-purpose), drill&nbsp;1 |
 | `curl` to `POST /extract` on port 8001 returns schema-valid JSON; `GET /health` returns `{"status":"ok"}` | the two commands and their output | [Live demo](#live-demo), steps 4–5 |
-| At the repository root, `git check-ignore -v .env` prints a rule and `git ls-files .env` prints nothing | the command output | [Lecture 1](01-environment-git-docker-ai.md) |
+| No outdated Pydantic AI names: the `grep` from pattern 1 prints nothing | the empty output | [Working with AI assistants](#working-with-ai-assistants), pattern 1 and "Spot the outdated suggestion" |
+| No key in Git: at the repository root, `git check-ignore -v .env` prints a rule and `git ls-files .env` prints nothing | the command output | [Lecture 1](01-environment-git-docker-ai.md) |
 | PR #2 is opened and its evidence row says merge evidence is pending | the PR link in your evidence table | [Open-source track](#open-source-track) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] The agent has an `output_type`, `instructions`, a deps-backed tool, a plain tool and an output validator.
-- [ ] Tests pass offline, `ALLOW_MODEL_REQUESTS = False` is set, and each test fails when its rule breaks.
-- [ ] The service runs on port 8001 with `GET /health`.
-- [ ] No outdated API names, no keys in Git.
-- [ ] PR #2 is opened, and the evidence table has its row.
 
 ## Quick quiz
 
@@ -966,14 +993,14 @@ Both replace what you don't control at its boundary: HTTP in Lecture 5, the mode
 
 Q6. Your product's tags are a fixed list that changes once a semester. Which design fits best?
 
-- (a) Keep `allowed_tags` as a tool plus `check_tags`, because tools are always more flexible.
-- (b) Use `tags: list[Literal[...]]` in `RecipeExtraction` and drop the tool and validator.
-- (c) Put the list in the instructions only.
+- (a) Use `list[Literal[...]]` for the `tags` field
+- (b) Keep the `allowed_tags` tool and `check_tags` validator
+- (c) Name the allowed tags only in `instructions`
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). The schema enforces the rule and tells the model the allowed values (an `enum` in the JSON schema), with no extra round trip: a well-behaved run needs 1 model request instead of 2, and one mistake costs 2 instead of 3. The cost is that a tag change is a contract change for Lecture 7's backend copy. (a) is right when the set changes at run time, for example per user. (c) is not enforcement: instructions are one defense, not a boundary.
+**Answer:** (a). Declare `tags: list[Literal[...]]` in `RecipeExtraction` and drop the tool and the validator. The schema enforces the rule and tells the model the allowed values (an `enum` in the JSON schema), with no extra round trip: a well-behaved run needs 1 model request instead of 2, and one mistake costs 2 instead of 3. The cost is that a tag change is a contract change for Lecture 7's backend copy. (b) is right when the set changes at run time, for example per user. (c) is not enforcement: instructions are one defense, not a boundary.
 
 </details>
 
@@ -1094,8 +1121,6 @@ Emphasize: the model proposes, your code validates; tests never need a key; the 
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
 **Before the lab (≤15 min):** [Unit testing with TestModel and FunctionModel](https://pydantic.dev/docs/ai/guides/testing/). Read it with two questions: (1) which of your tests would still pass if the model were replaced by a much worse one, and why is that the point? (2) where does the guide put the `ALLOW_MODEL_REQUESTS` safety net, and why there?
 
 **Go deeper (optional):**
@@ -1104,6 +1129,7 @@ Emphasize: the model proposes, your code validates; tests never need a key; the 
 - [Agents](https://pydantic.dev/docs/ai/core-concepts/agent/), [output](https://pydantic.dev/docs/ai/core-concepts/output/), [tools](https://pydantic.dev/docs/ai/tools-toolsets/tools/) and [dependencies](https://pydantic.dev/docs/ai/core-concepts/dependencies/)
 - [Models and providers](https://pydantic.dev/docs/ai/models/overview/) and [Ollama](https://pydantic.dev/docs/ai/models/ollama/)
 - [V1 to V2 migration map](https://pydantic.dev/docs/ai/overview/migration/)
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 
 ---
 

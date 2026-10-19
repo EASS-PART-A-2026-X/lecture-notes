@@ -57,7 +57,7 @@ Messages + tool definitions
   → the tool result becomes context for another model request
 ```
 
-The model does not execute a Python function by predicting its name. The **agent loop** (the harness around the model) parses the request, checks the arguments and the authority, runs the function, and returns its result. A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant is a coding harness at development time; in Recipe Box, the Pydantic AI agent loop in `ai-service` plays that role at request time. A local model is still a model inside this loop; it is not a replacement for the harness.
+The model does not execute a Python function by predicting its name. The **agent loop** (the [harness](models-and-ai-literacy.md#six-things-to-distinguish) around the model) parses the request, checks the arguments and the authority, runs the function, and returns its result. In Recipe Box that loop is the application agent in `ai-service`; your coding harness runs the same kind of loop at development time. A local model is still a model inside this loop; it is not a replacement for the harness.
 
 <details markdown="1">
 <summary>Optional: predict and measure tokens in Hebrew and English (10 minutes, CPU only)</summary>
@@ -73,7 +73,12 @@ curl -s http://127.0.0.1:11434/api/generate -H 'Content-Type: application/json' 
 
 Repeat with the Hebrew sentence and compare the two `prompt_eval_count` values.
 
+<details markdown="1">
+<summary>Check your prediction</summary>
+
 On 17 October 2026, `qwen2.5:7b` counted **14 tokens for each**, although the Hebrew has a third fewer characters. Another model's tokenizer can split them differently. That is the point: measure with the tokenizer of the model you use, and never estimate cost or context from characters or words. Relate the count to [Lecture 9's](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) token limits.
+
+</details>
 
 </details>
 

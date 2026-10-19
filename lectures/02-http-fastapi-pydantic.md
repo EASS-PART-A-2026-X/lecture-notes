@@ -81,6 +81,8 @@ Each line comes from today's code. Say what it does in one sentence, then check.
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Fixture:** a pytest function that prepares something a test needs (here, a `client`) and cleans up afterwards.
 - **Dependency injection:** the framework hands your route the things it needs (`store: StoreDep`) instead of the route creating them, so a test can hand in a different one.
 - **In-process:** `TestClient` calls your app as a Python function in the same process; no server, no network, no port.
@@ -683,7 +685,11 @@ Expected: `10 passed`, `All checks passed!`, and all files already formatted. Th
 
 ## Hands-on lab
 
-Build the same API for **your** record type, from your repo's `backend/`. Steps 1–4 are **core today**; step 5 is **finish before Lecture 3**; [Stretch goals](#stretch-goals) are the **extension**.
+Build the same API for **your** record type, from your repo's `backend/`. Plan your time:
+
+- **Core today:** steps 1–4
+- **Before Lecture 3:** step 5
+- **Extension (optional):** the [Stretch goals](#stretch-goals)
 
 1. **Models.** Translate your data sketch into `app/models.py` with the four-model split. Give every field a type and a limit, and decide which fields have defaults. **Checkpoint:** `/docs` shows your Create, Update and Public schemas.
 2. **Routes.** Add the five contract routes, renamed for your resource (for example `/tasks/{task_id}`), using the store dependency and `get_or_404`. **Checkpoint:** POST returns 201 with an `id`; a missing id returns 404 with your `detail`.
@@ -824,37 +830,37 @@ Expected: `N passed` (N is at least 8), `All checks passed!`, `404`, and `422`. 
 ## Quick quiz
 
 <details markdown="1">
-<summary>Q1. A client retries POST /recipes after a timeout, and both requests arrive. What happens? (a) One recipe, as POST is idempotent (b) Two recipes, as POST is not idempotent (c) A 409 error</summary>
+<summary>Q1. A client retries POST /recipes after a timeout, and both requests arrive. What happens? (a) One recipe, since POST is idempotent (b) Two recipes with two different ids (c) A 409 Conflict for the retry</summary>
 
-**(b).** Each POST creates a new resource with a new id, like `f(x) = x + 1`. Retrying a POST needs care, which Lecture 9 returns to.
-
-</details>
-
-<details markdown="1">
-<summary>Q2. A client sends "minutes": "40" (a string) to POST /recipes. What does this API return? (a) 422 int_parsing (b) 500 (c) 201 with minutes 40</summary>
-
-**(c).** Pydantic's default *lax* mode converts a numeric string to an int. `"forty"` cannot convert, so it gets 422 `int_parsing`. Strict mode rejects any string.
+**(b).** Each POST creates a new resource with a new id, like `f(x) = x + 1`: POST is not idempotent. Nothing in this API looks for duplicates, so no 409 comes back either. Retrying a POST needs care, which Lecture 9 returns to.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. GET /recipe/1 (no "s") returns {"detail": "Not Found"}. What does that tell you? (a) Recipe 1 was deleted (b) No route matched the path (c) The store is empty</summary>
+<summary>Q2. A client sends "minutes": "40" (a string) to POST /recipes. What does this API return? (a) 422, because "40" is a string (b) 500, because the handler gets text (c) 201, with minutes stored as 40</summary>
 
-**(b).** Your handler would have said `"Recipe not found"`. The generic `"Not Found"` means no route matched, so check the path.
-
-</details>
-
-<details markdown="1">
-<summary>Q4. Why does the client fixture override get_store? (a) It makes tests faster (b) Ruff requires it (c) Each test starts empty, whatever the order</summary>
-
-**(c).** Shared state makes tests depend on each other's leftovers (drill 3). Next week the same override swaps in a test database.
+**(c).** Pydantic's default *lax* mode converts a numeric string to an int. `"forty"` cannot convert, so it gets 422 `int_parsing`. Strict mode rejects any string. Either way, validation runs before your handler (stage 3), so the handler never receives text.
 
 </details>
 
 <details markdown="1">
-<summary>Q5. (Lecture 1) At the repo root, <code>uv run pytest</code> says "Failed to spawn: pytest". Why? (a) A syntax error (b) No uv project at the root (c) FastAPI isn't global</summary>
+<summary>Q3. GET /recipe/1 (no "s") returns {"detail": "Not Found"}. What does that tell you? (a) No route matched the request path (b) The handler found no recipe 1 (c) The store has no recipes yet</summary>
 
-**(b).** `uv run` uses the nearest `pyproject.toml`; the root has none, so `backend/.venv` is never used. With a global pytest you get `No module named 'fastapi'` instead, for the same reason. Run `cd backend` first.
+**(a).** Your handler would have said `"Recipe not found"`, whether recipe 1 was deleted or the store is empty. The generic `"Not Found"` means no route matched, so check the path.
+
+</details>
+
+<details markdown="1">
+<summary>Q4. Why does the client fixture override get_store? (a) Tests can run without a live server (b) Each test gets its own empty store (c) The suite runs faster with fewer rows</summary>
+
+**(b).** Shared state makes tests depend on each other's leftovers (drill 3), so results change with test order. `TestClient` is what removes the server, with or without the override. Next week the same override swaps in a test database.
+
+</details>
+
+<details markdown="1">
+<summary>Q5. (Lecture 1) At the repo root, <code>uv run pytest</code> says "Failed to spawn: pytest". Why? (a) No uv project at the root (b) A syntax error in a test (c) FastAPI is missing from global Python</summary>
+
+**(a).** `uv run` uses the nearest `pyproject.toml`; the root has none, so `backend/.venv` is never used. "Failed to spawn" means uv found no `pytest` program to start, so no test file was read and a syntax error cannot be the cause. With a global pytest you get `No module named 'fastapi'` instead, for the same reason. Run `cd backend` first.
 
 </details>
 

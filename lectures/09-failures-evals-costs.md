@@ -54,6 +54,8 @@ Today you break your stack on purpose: stop the AI service mid-demo, feed the mo
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Transient failure:** one that may succeed if you simply try again (a timeout, a busy server). A bug or a spent budget is not transient.
 - **Retry predicate:** the function that decides which errors are worth another attempt (`_is_transient` today).
 - **Backoff:** waiting longer before each new attempt (0.5 s, then 1 s), so a struggling service gets room to recover.
@@ -285,7 +287,7 @@ Three backend attempts with five counted steps each allow up to **15 counted age
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Usage threshold, scroll horizontally">
     <img src="../assets/diagrams/usage-threshold.svg" alt="A run at 18,500 reported tokens gets a 3,000-token response: 21,500, past the 20,000 threshold. The check raises after the response." width="640" height="600">
   </div>
-  <figcaption><strong>A stopping threshold is not a prepaid allowance.</strong> The bars use synthetic counters, not a measured model run or bill. Explain when the check learns the response's usage, then reproduce the counterexample below. <a href="../assets/diagrams/usage-threshold.svg">Open the full-size usage diagram</a>.</figcaption>
+  <figcaption><strong>A stopping threshold is not a prepaid allowance.</strong> The bars use synthetic counters, not a measured model run or bill. Explain when the check learns the response's usage, then reproduce the counterexample below. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/usage-threshold.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
@@ -362,8 +364,21 @@ After the core evaluation works, compare a single-model baseline with an optiona
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Routing evaluation release gate, scroll horizontally">
     <img src="../assets/diagrams/model-routing-evaluation.svg" alt="Freeze a baseline, a candidate and a rubric before evaluating the same held-out cases. In a hypothetical hundred-case comparison, the baseline succeeds on 95 cases at 2000 cost units while the routed candidate succeeds on 90 at 900 units. A predefined quality floor of 95 successes rejects the cheaper candidate. Keep the baseline and investigate the failures." width="640" height="620">
   </div>
-  <figcaption><strong>Cheaper is one measurement, not the release decision.</strong> All counts, costs and the quality floor here are invented teaching inputs. <a href="../assets/diagrams/model-routing-evaluation.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Cheaper is one measurement, not the release decision.</strong> All counts, costs and the quality floor here are invented teaching inputs. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/model-routing-evaluation.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Freeze the configuration and the task rubric.** Set the quality, latency and data constraints before the test.
+2. **Use the same 100 held-out inputs for both systems.** Count all final outcomes, including wrong routes and deferrals.
+3. **Compare the two results.** The single-model baseline: 95 successful tasks, 2,000 total cost units. The routed candidate: 90 successful tasks, 900 total cost units.
+4. **Apply the predefined floor: at least 95 successes out of 100.** The candidate fails, even though each success costs less.
+5. **Decide.** Keep the baseline; investigate the candidate's failures.
+
+The counts and costs are invented: arithmetic, not a model benchmark.
+
+</details>
 
 **Worked audit:** 100 requests × 20 cost units = 2,000 for the baseline. For the candidate, routing costs 100 × 1, and 40 escalations cost 40 × 20: **900 units**. Assume the other 60 cases require no additional model call. If another route invokes extraction too, include that cost. The baseline succeeds on 95 cases; the candidate on 90. Cost per successful task falls from `2000 / 95 ≈ 21.05` to `900 / 90 = 10`, but the candidate misses the predefined quality floor of 95/100. Keep the baseline, inspect the wrong routes and revise on development data before a fresh held-out evaluation.
 
@@ -1349,15 +1364,13 @@ The one-paragraph result note can say: **hypothesis → fixed setup/cases → ba
 
 ## Hands-on lab
 
-Apply each step to **your** domain. Every command runs from the directory the step names.
+Apply each step to **your** domain. Plan your time:
 
-> **Note:** if you are short on time, do only the **Core today** row: steps 1–3, step 6 with five cases, and drill 3. The rest waits until before Lecture 10.
+- **Core today:** steps 1–3, step 6 (at least five cases) and step 7 (drill 3 at least)
+- **Before Lecture 10:** step 4, the rest of your step 6 cases, and the optional step 5
+- **Extension (optional):** the tenacity investigation after step 7, then the [Stretch goals](#stretch-goals)
 
-| Part | Steps |
-|---|---|
-| **Core today** | 1, 2, 3, 6 (at least five cases), 7 (drill 3 at least) |
-| **Finish before Lecture 10** | 4, the rest of your cases, and the optional step 5 |
-| **Extension** | the tenacity investigation below the list |
+Every command runs from the directory the step names.
 
 1. **Failure table** in your README: one row per failure class, with the status code, the exact UI sentence, and which one layer (if any) retries.
 2. **Bounded retries** with tests (`backend/`): 503 then success, timeout then success, give up after exactly 3 attempts, and one parametrized test proving 429, 502, 500 and other 4xx are tried once. *Checkpoint:* `uv run pytest` is green in under a second; if it takes seconds, the `no_backoff` fixture is missing.
@@ -1408,7 +1421,7 @@ Apply each step to **your** domain. Every command runs from the directory the st
 6. **Your eval dataset** (`ai-service/evals/`): 8–10 messy cases, at least one a prompt injection, with expected outputs **you** write; three or more deterministic evaluators, including one that penalizes invented items; a baseline. Commit a dated README results table and `tests/test_evals.py`. *Checkpoint:* `uv run pytest` prints `13 passed`.
 7. **Drill your stack** with the drills below; drill 3 is the minimum.
 
-**Extension**
+**Extension (optional):**
 
 > **Investigate:** the `no_backoff` fixture patches `AIClient._post_extract.retry.sleep`, an attribute the tenacity documentation does not describe for tests. Open `tenacity/__init__.py` in your backend environment (`uv run python -c "import tenacity; print(tenacity.__file__)"` prints its path) and find `wraps()` and `copy()`.
 >
@@ -1558,18 +1571,14 @@ docker compose up --wait
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
 | Backend: `26 passed` for Recipe Box (25 without the contract test) | the pytest summary in your PR description | [Live demo step 3](#live-demo) · [Common pitfalls](#common-pitfalls) |
+| Retries in one layer: timeouts, connect errors, 503 and 504, at most 3 attempts with backoff; one try each for 429, 502, 500, other 4xx and a broken 200, proven by tests | the test names | [Retry at one layer only](#retry-at-one-layer-only) · [Live demo steps 2–3](#live-demo) |
 | AI service: `13 passed` for Recipe Box (plus 2 for the optional usage counters, plus 1 for the `caplog` test) | the pytest summary | [Live demo step 5](#live-demo) |
-| `evals.run_evals` prints a table with an Averages row | a dated results row in your README | [Live demo step 6](#live-demo) |
+| Agent failures map to 429, 502, 504 and 500, with tests; usage is logged without the user's text | the test names | [Live demo step 5](#live-demo) · [Hands-on lab](#hands-on-lab), step&nbsp;4 |
+| `evals.run_evals` prints a table with an Averages row, from 8–10 cases and 3 or more evaluators | a dated results row in your README | [Live demo step 6](#live-demo) · [Hands-on lab](#hands-on-lab), step&nbsp;6 |
 | `curl` prints `503 in` a few seconds, not 30 or more | the curl line | [Drill 3](#break-it-on-purpose) |
 | The UI shows a friendly sentence with the ai-service stopped and with the backend stopped | a screenshot or a sentence in your README failure table | [Lecture 7 frontend](07-third-service-contracts.md#live-demo) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Retries in one layer: timeouts, connect errors, 503 and 504; at most 3 attempts, with backoff.
-- [ ] One try each for 429, 502, 500, other 4xx and a broken 200, proven by tests.
-- [ ] Agent failures map to 429, 502, 504 and 500, with tests; usage logged without user text.
-- [ ] 8–10 eval cases, 3+ evaluators, a dated results row.
-- [ ] Friendly UI messages with the ai-service stopped and with the backend stopped.
 
 ## Quick quiz
 
@@ -1679,11 +1688,6 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
-- [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome): user-journey budgets, fan-out arithmetic and repeated agent trials; optional depth.
-
-
 **Before the lab (≤15 min):** [Tenacity documentation](https://tenacity.readthedocs.io/en/latest/). Guiding questions: which argument decides *whether* to retry, and which decides *how long* to wait? What does tenacity raise when it gives up without `reraise=True`?
 
 **Go deeper (optional):**
@@ -1692,6 +1696,8 @@ Course CI extracts `tests/test_usage_limits.py` and `eval_clinic.py` from this p
 - [Pydantic AI usage limits](https://pydantic.dev/docs/ai/core-concepts/agent/#usage-limits) and [Pydantic Evals](https://pydantic.dev/docs/ai/evals/evals/).
 - [HTTP 429 Too Many Requests (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429).
 - Lost replies and duplicate work, inspired by MIT 6.5840's [notes on RPC failure](https://pdos.csail.mit.edu/6.824/notes/l-rpc.txt) (Spring 2026). Guiding question: in `from-text`, which component can confirm that a recipe was saved, and where would a duplicate appear if the frontend retried?
+- **Whole-journey reliability:** [Systems reasoning clinics](../guides/systems-reasoning.md#count-the-user-outcome) cover user-journey budgets, fan-out arithmetic and repeated agent trials.
+- **Model serving:** [Visual inference engineering](../guides/inference-engineering.md) covers model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - **Serving measurements:** [Local inference](../guides/local-inference.md#measure-and-diagnose) separates load, queue, prefill, and decode time; its synthetic example supports analysis without a model download. Compare task quality as well as tokens per second.
 - **Engineering practice:** [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md) connects this lecture to configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
 - **Visual review:** [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary, and failure evidence.

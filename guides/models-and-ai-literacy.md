@@ -35,7 +35,7 @@ For the mechanics behind these choices, read [Local inference and transformers](
 
 By the end of the week 1 core, you should be able to:
 
-- Name which layer (product, coding harness, model, provider, framework, your application) is responsible for a behavior, and who controls it.
+- Name which layer (editor or chat product, coding harness, model, provider, application framework, your application) is responsible for a behavior, and who controls it.
 - Explain why a valid structure, a correct meaning and a permitted operation are three separate checks.
 - Turn a model's catalogue name into an `AI_MODEL` value, and check that the model is still supported before you rely on it (week 6).
 
@@ -54,14 +54,14 @@ Only (a). The assistant's model is part of your **coding harness** at developmen
 
 | Layer | Example | What you should inspect |
 |---|---|---|
-| Product/interface | ChatGPT, Gemini chat, Cursor, Copilot | Account, data settings, available features |
-| Coding harness | Codex, Claude Code, OpenCode | Workspace, tools, instructions, execution controls |
+| Editor or chat product | VS Code, Cursor; ChatGPT, Gemini chat | Account, data settings, available features |
+| Coding harness (coding agent) | Copilot, Codex, Claude Code, OpenCode | Workspace, tools, instructions, execution controls |
 | Model | A particular GPT, Claude, Gemini, or GLM model | Model ID/version, supported inputs, quality, limits |
-| Provider/host | The service answering model requests | Endpoint, credentials, region/access, billing |
+| Provider | The service that answers model requests: a hosted API, or Ollama on your laptop | Endpoint, credentials, region/access, billing |
 | Application framework | Pydantic AI or Mastra | How your code builds runs, tools, validation, and state |
-| Your application | Recipe Box's three services | User behavior, contracts, authorization, tests, and operations |
+| Your application | Recipe Box's three services, including the application agent in `ai-service` | User behavior, contracts, authorization, tests, and operations |
 
-A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
+A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness**, often called a coding agent, which you use at development time. Inside your product, the **application agent** (the Pydantic AI agent loop in `ai-service`) plays that role at request time. Lecture 6 and the [glossary](engineering-foundations.md#glossary) use the same names; some guides call the application agent the *product agent*.
 
 <figure class="course-diagram">
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Two stacks diagram, scroll horizontally">
@@ -371,14 +371,14 @@ No. Capacity, relevant evidence, correct retrieval, and effective use of that ev
 
 Q4. You add an updated recipe to the retrieval store your agent searches. What changed?
 
-- (a) The model's weights, because the model has now seen the recipe.
-- (b) The evidence a request can find; the weights are unchanged.
+- (a) The model weights, which now contain it.
+- (b) The evidence that a request can find.
 - (c) Nothing, until the next fine-tuning run.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). Retrieval supplies context at request time; it is not training. The next request that retrieves the recipe can use it immediately. Weights change only through a separate training run, as in the [data lifecycle](#a-visual-data-lifecycle).
+**Answer:** (b). Retrieval supplies context at request time; it is not training, so the weights are unchanged. The next request that retrieves the recipe can use it immediately, without waiting for any training run. Weights change only through a separate training run, as in the [data lifecycle](#a-visual-data-lifecycle).
 
 </details>
 
@@ -393,14 +393,14 @@ Input: 1,500 + 1,550 + 1,750 = 4,800 tokens × $1/M = **$0.0048**. Output: 20 + 
 
 Q6. Held-out case 5 fails. You change the instructions until it passes, then report "5 of 5 cases pass". Is case 5 still a held-out case?
 
-- (a) Yes: it was labelled held-out when you wrote it.
-- (b) No: you used its result to decide a change, so it is now a development case.
-- (c) Yes, as long as you did not edit its expected answer.
+- (a) Yes, it was labelled held-out first.
+- (b) Only if its expected answer is unchanged.
+- (c) No, it has become a development case.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). A held-out case measures a *fixed* candidate. Once its result shaped the fix, a pass no longer says how the system does on unseen input. Report the change honestly, move the case to the development set, and write a new held-out case (Lecture 9's [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) shows the same leak).
+**Answer:** (c). A held-out case measures a *fixed* candidate. You used its result to decide a change, so a pass no longer says how the system does on unseen input, whatever its label and even with its expected answer untouched. Report the change honestly, move the case to the development set, and write a new held-out case (Lecture 9's [evaluation clinic](../lectures/09-failures-evals-costs.md#evaluation-clinic-audit-the-score) shows the same leak).
 
 </details>
 

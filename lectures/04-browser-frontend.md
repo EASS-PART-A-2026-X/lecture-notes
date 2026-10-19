@@ -57,6 +57,8 @@ You need two terminals, one for the backend and one for the frontend. On Windows
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Frontend server:** the Streamlit process (port 8501). It runs your Python and sends the page to the browser.
 - **Websocket:** a long-lived, two-way connection. Streamlit's browser page uses one to send clicks to the frontend server and receive the updated page.
 - **Rerun:** Streamlit runs your whole script again, top to bottom, after every interaction.
@@ -666,11 +668,15 @@ No. The browser loads only Streamlit's own page, scripts, styles and fonts, plus
 
 ## Hands-on lab
 
-Build the same four flows for **your own domain**. Run every command from `frontend/` unless a step says otherwise.
+Build the same four flows for **your own domain**. Plan your time:
+
+- **Core today:** steps 1–6
+- **Before Lecture 5:** steps 7–9
+- **Extension (optional):** the [Stretch goals](#stretch-goals), once the completion check passes
 
 > **EX2 progress:** the four flows you build today are the "core flows" of EX2 (due Mon 30 Nov 2026, 23:59); Lecture 5 adds the error states and the automated flow. See the README's [assignments table](../README.md#assignments-and-deadlines).
 
-**Core today:** steps 1–6. **Finish before Lecture 5:** steps 7–9. **Extension:** the [Stretch goals](#stretch-goals), once the completion check passes.
+Run every command from `frontend/` unless a step says otherwise.
 
 1. Create `frontend/` with the commands in Live demo steps 1–2 (from the repository root), add `.streamlit/config.toml`, and commit `pyproject.toml`, `uv.lock` and `.python-version`.
 2. Write `api.py` with list, create, update and delete for your resource. **Checkpoint:** the `uv run python -c "import api; ..."` call prints your seed count.
@@ -864,13 +870,13 @@ The recipes are safe in the backend's SQLite file. `st.session_state` is lost: i
 Q6. Your recipe titles are validated by Pydantic (1 to 200 characters). Which statement is true?
 
 - (a) Validation guarantees the title is safe to show anywhere.
-- (b) A valid title can still be interpreted as Markdown when it is displayed, so the display must escape it.
-- (c) Escaping is only needed for titles produced by an AI model.
+- (b) A valid title can still be interpreted as Markdown.
+- (c) Only titles produced by an AI model need escaping.
 
 <details markdown="1">
 <summary>Check your answer</summary>
 
-**Answer:** (b). Validation decides which text is *accepted*; the display decides how it is *interpreted*. `[win a prize](https://example.com)` is a valid 1–200 character title and still renders as a link unless `plain()` escapes it. (c) is wrong because any user can type Markdown; model output (Lecture 7) is one more source.
+**Answer:** (b). Validation decides which text is *accepted*; the display decides how it is *interpreted*, so the display must escape it. `[win a prize](https://example.com)` is a valid 1–200 character title and still renders as a link unless `plain()` escapes it. (a) mixes up those two jobs. (c) is wrong because any user can type Markdown; model output (Lecture 7) is one more source.
 
 </details>
 

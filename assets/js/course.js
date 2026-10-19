@@ -10,8 +10,11 @@
 
   const COURSE_TIME_ZONE = "Asia/Jerusalem";
   const DEFAULT_MEETING_TIME = [16, 0]; // README: "Mondays at 16:00 Israel time"
+  const DEADLINE_TIME = [23, 59]; // README: "Deadlines are at 23:59 Israel time"
+  const DAY_MS = 86400000;
+  const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const SCHEDULE_DATE = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+(\d{1,2})\s+([A-Z][a-z]{2})\s+(\d{4})(?:,\s*(\d{1,2}):(\d{2}))?$/;
+  const COURSE_DATE = /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+(\d{1,2})\s+([A-Z][a-z]{2})\s+(\d{4})(?:,\s*(\d{1,2}):(\d{2}))?$/;
 
   const pad = value => String(value).padStart(2, "0");
 
@@ -48,24 +51,37 @@
     return new Date(utcMs + zoneOffsetMinutes(utcMs) * 60000).toISOString().slice(0, 10);
   }
 
-  // Parse a schedule cell such as "Mon 19 Oct 2026, 18:00" or "Mon 26 Oct 2026" (16:00 implied).
-  // Returns {date: "YYYY-MM-DD", hour, minute, time} with `time` in UTC milliseconds, or null.
-  function parseScheduleDate(text) {
-    const match = SCHEDULE_DATE.exec(String(text || "").replace(/\s+/g, " ").trim());
+  // Parse a README date cell such as "Mon 19 Oct 2026, 18:00", or "Mon 26 Oct 2026" with
+  // `defaultTime` implied, as wall-clock time in Israel. Returns {date: "YYYY-MM-DD", hour, minute,
+  // time} with `time` in UTC milliseconds, or null: also when the weekday does not match the date,
+  // because a typo in the README must never become a confident wrong date on the page.
+  function parseCourseDate(text, defaultTime) {
+    const match = COURSE_DATE.exec(String(text || "").replace(/\s+/g, " ").trim());
     if (!match) return null;
-    const [, dayText, monthText, yearText, hourText, minuteText] = match;
+    const [, weekdayText, dayText, monthText, yearText, hourText, minuteText] = match;
     const month = MONTHS.indexOf(monthText);
     const day = Number(dayText), year = Number(yearText);
-    const hour = hourText === undefined ? DEFAULT_MEETING_TIME[0] : Number(hourText);
-    const minute = minuteText === undefined ? DEFAULT_MEETING_TIME[1] : Number(minuteText);
+    const hour = hourText === undefined ? defaultTime[0] : Number(hourText);
+    const minute = minuteText === undefined ? defaultTime[1] : Number(minuteText);
     if (month < 0 || hour > 23 || minute > 59) return null;
     const check = new Date(Date.UTC(year, month, day));
     if (check.getUTCMonth() !== month || check.getUTCDate() !== day) return null; // e.g. 31 Nov
+    if (WEEKDAYS[check.getUTCDay()] !== weekdayText) return null; // e.g. "Tue 19 Oct 2026"
     // Wall-clock time in Israel -> UTC. Two passes settle the offset next to a clock change.
     const wall = Date.UTC(year, month, day, hour, minute);
     let time = wall - zoneOffsetMinutes(wall) * 60000;
     time = wall - zoneOffsetMinutes(time) * 60000;
     return {date: `${year}-${pad(month + 1)}-${pad(day)}`, hour, minute, time};
+  }
+
+  // A calendar cell: "Mon 19 Oct 2026, 18:00", or "Mon 26 Oct 2026" for the regular 16:00 meeting.
+  function parseScheduleDate(text) {
+    return parseCourseDate(text, DEFAULT_MEETING_TIME);
+  }
+
+  // A deadline cell: "Mon 9 Nov 2026" means 23:59 Israel time on that day.
+  function parseDeadline(text) {
+    return parseCourseDate(text, DEADLINE_TIME);
   }
 
   // Index of the next meeting: the first one on or after today's date in Israel. A meeting stays
@@ -79,6 +95,34 @@
     return -1;
   }
 
+  // Index of the next deadline: the earliest one whose minute has not ended yet, so a 23:59
+  // deadline stays next until 23:59:59 Israel time. Returns -1 when every deadline has passed, and
+  // also when any entry is null: an unreadable row could be the real next deadline.
+  function nextDeadlineIndex(deadlines, nowMs) {
+    if (!deadlines.length || deadlines.some(deadline => !deadline)) return -1;
+    let next = -1;
+    deadlines.forEach((deadline, index) => {
+      if (nowMs < deadline.time + 60000 && (next < 0 || deadline.time < deadlines[next].time)) next = index;
+    });
+    return next;
+  }
+
+  // Whole calendar days in Israel from the instant `nowMs` to the date "YYYY-MM-DD": 0 is today,
+  // negative is past, NaN when the date is malformed.
+  function daysUntil(isoDate, nowMs) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(isoDate));
+    if (!match) return NaN;
+    const target = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    return Math.round((target - Date.parse(`${courseDate(nowMs)}T00:00:00Z`)) / DAY_MS);
+  }
+
+  // "today", "tomorrow" or "in N days"; "" for the past or anything that is not a whole number.
+  function dueLabel(days) {
+    if (!Number.isInteger(days) || days < 0) return "";
+    if (days === 0) return "today";
+    return days === 1 ? "tomorrow" : `in ${days} days`;
+  }
+
   // The step to show after moving `delta` steps from `current`, kept within 0..total-1.
   function stepperIndex(current, delta, total) {
     if (!Number.isInteger(total) || total < 1) return 0;
@@ -86,7 +130,10 @@
     return Math.min(Math.max(target, 0), total - 1);
   }
 
-  const helpers = {courseDate, israelRuleOffsetMinutes, nextMeetingIndex, parseScheduleDate, stepperIndex, zoneOffsetMinutes};
+  const helpers = {
+    courseDate, daysUntil, dueLabel, israelRuleOffsetMinutes, nextDeadlineIndex, nextMeetingIndex, parseDeadline,
+    parseScheduleDate, stepperIndex, zoneOffsetMinutes,
+  };
   if (typeof module !== "undefined" && module.exports) module.exports = helpers;
   if (typeof document === "undefined") return;
 
@@ -232,69 +279,138 @@
   }
   document.querySelectorAll(".main-content .stepper").forEach((stepper, index) => enhanceStepper(stepper, index + 1));
 
-  // Home page: highlight the next meeting in the calendar and repeat it below the hero.
-  function showNextMeeting() {
-    const table = document.querySelector(".main-content table.schedule");
-    const hero = document.querySelector(".main-content .home-hero");
-    if (!table || !table.tBodies.length) return;
+  // Home page: the semester clock. A board directly under the title says which meeting is today
+  // or next, what to open for it, and the next deadline, all read from the README's calendar and
+  // assignments tables; the calendar row of that meeting is marked too. Without this script (and
+  // in print) the tables say the same thing, so nothing is lost.
+  const make = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
+  };
+  const makeLink = (className, href, text) => {
+    const anchor = make("a", className, text);
+    anchor.href = href;
+    return anchor;
+  };
+  const headerIndex = table => {
     const headers = [...table.querySelectorAll("thead th")].map(th => th.textContent.trim().toLowerCase());
-    const column = name => headers.indexOf(name);
+    return name => headers.indexOf(name);
+  };
+  const cellText = cell => (cell ? cell.textContent.replace(/\s+/g, " ").trim() : "");
+  const withTime = (text, {hour, minute}) => (text.includes(":") ? text : `${text}, ${pad(hour)}:${pad(minute)}`);
+
+  // "Mon, 17:00 GMT+2 where you are", only when the reader's clock differs from Israel's.
+  function whereYouAre(time) {
+    try {
+      const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (!local || local === COURSE_TIME_ZONE || zoneOffsetMinutes(time) === -new Date(time).getTimezoneOffset()) return "";
+      const format = new Intl.DateTimeFormat(document.documentElement.lang || "en", {
+        weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZoneName: "short",
+      });
+      return `${format.format(new Date(time))} where you are`;
+    } catch {
+      return ""; // the Israel time is enough
+    }
+  }
+
+  // The next deadline line, or null when the table is missing or any of its dates is unreadable.
+  function nextDeadline(nowMs) {
+    const table = document.querySelector(".main-content table.deadlines");
+    if (!table || !table.tBodies.length) return null;
+    const column = headerIndex(table);
+    const what = column("assignment"), when = column("deadline");
+    if (what < 0 || when < 0) return null;
+    const rows = [...table.tBodies[0].rows];
+    const deadlines = rows.map(row => parseDeadline(cellText(row.cells[when])));
+    const index = nextDeadlineIndex(deadlines, nowMs);
+    if (index < 0) return null;
+    const due = deadlines[index];
+    const days = dueLabel(daysUntil(due.date, nowMs));
+    // Several hand-ins on one day (EX3 and the open-source evidence) are named together.
+    const names = rows.filter((row, i) => deadlines[i].time === due.time).map(row => cellText(row.cells[what]));
+    if (!days || names.some(name => !name)) return null;
+
+    const line = make("p", "this-week-deadline");
+    line.append(make("span", "this-week-term", names.length > 1 ? "Next deadlines: " : "Next deadline: "));
+    names.forEach((name, i) => {
+      if (i) line.append(i === names.length - 1 ? " and " : ", ");
+      line.append(make("strong", "", name));
+    });
+    const local = whereYouAre(due.time);
+    line.append(` on ${withTime(cellText(rows[index].cells[when]), due)} Israel time (${days}${local ? `; ${local}` : ""})`);
+    return line;
+  }
+
+  // The board for today's or the next meeting, or null when the calendar is missing, over, or
+  // holds a date that does not parse. Also marks that meeting's calendar row.
+  function semesterBoard() {
+    const table = document.querySelector(".main-content table.schedule");
+    if (!table || !table.tBodies.length) return null;
+    const now = Date.now();
+    const column = headerIndex(table);
     const dateColumn = column("date") >= 0 ? column("date") : 1;
     const rows = [...table.tBodies[0].rows];
-    const meetings = rows.map(row => parseScheduleDate(row.cells[dateColumn] && row.cells[dateColumn].textContent));
-    const index = nextMeetingIndex(meetings, Date.now());
-    if (index < 0) return;
+    const meetings = rows.map(row => parseScheduleDate(cellText(row.cells[dateColumn])));
+    const index = nextMeetingIndex(meetings, now);
+    // An unreadable date could hide the real next meeting: then say nothing rather than guess.
+    if (index < 0 || meetings.some(meeting => !meeting)) return null;
 
     const row = rows[index];
     const meeting = meetings[index];
     row.classList.add("is-next");
-    if (!hero) return;
-    const today = meeting.date === courseDate(Date.now());
+    const today = meeting.date === courseDate(now);
     const cell = name => (column(name) >= 0 ? row.cells[column(name)] : null);
+    const number = cellText(cell("#")) || String(index + 1);
 
-    const strip = document.createElement("aside");
-    strip.className = "this-week";
-    strip.setAttribute("aria-label", today ? "Today's meeting" : "Next meeting");
-    const label = document.createElement("p");
-    label.className = "this-week-label";
-    label.textContent = today ? "Today" : "Next meeting";
-    const when = document.createElement("p");
-    when.className = "this-week-when";
-    const number = cell("#") ? cell("#").textContent.trim() : String(index + 1);
-    const dateText = row.cells[dateColumn].textContent.trim();
-    const time = `${pad(meeting.hour)}:${pad(meeting.minute)}`;
-    when.textContent = `Meeting ${number} · ${dateText.includes(":") ? dateText : `${dateText}, ${time}`} Israel time`;
-    try {
-      const local = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (local && local !== COURSE_TIME_ZONE && zoneOffsetMinutes(meeting.time) !== -new Date(meeting.time).getTimezoneOffset()) {
-        const localTime = new Intl.DateTimeFormat(undefined, {weekday: "short", hour: "2-digit", minute: "2-digit", timeZoneName: "short"})
-          .format(new Date(meeting.time));
-        when.append(` (${localTime} where you are)`);
-      }
-    } catch { /* the Israel time is enough */ }
-    const focus = document.createElement("p");
-    focus.className = "this-week-focus";
+    const board = make("aside", "this-week");
+    const deadline = nextDeadline(now);
+    board.setAttribute("aria-label", `${today ? "Today's meeting" : "Next meeting"}${deadline ? " and next deadline" : ""}`);
+    const when = make("p", "this-week-when", `Meeting ${number} of ${rows.length}: ${withTime(cellText(row.cells[dateColumn]), meeting)} Israel time`);
+    const local = whereYouAre(meeting.time);
+    if (local) when.append(` (${local})`);
+    board.append(make("p", "this-week-label", today ? "Today" : "Next meeting"), when);
+
     const focusCell = cell("focus");
-    if (focusCell) focus.append(...[...focusCell.childNodes].map(node => node.cloneNode(true)));
-    strip.append(label, when, focus);
+    if (cellText(focusCell)) board.append(make("p", "this-week-focus", cellText(focusCell)));
     const deliverableCell = cell("deliverable");
-    if (deliverableCell && deliverableCell.textContent.trim()) {
-      const deliverable = document.createElement("p");
-      deliverable.className = "this-week-deliverable";
-      const term = document.createElement("span");
-      term.className = "this-week-term";
-      term.textContent = "Deliverable: ";
-      deliverable.append(term, ...[...deliverableCell.childNodes].map(node => node.cloneNode(true)));
-      strip.append(deliverable);
+    if (cellText(deliverableCell)) {
+      const deliverable = make("p", "this-week-deliverable");
+      deliverable.append(make("span", "this-week-term", "Deliverable: "),
+        ...[...deliverableCell.childNodes].map(node => node.cloneNode(true)));
+      board.append(deliverable);
     }
-    const calendar = document.createElement("a");
-    calendar.className = "this-week-calendar";
-    calendar.href = "#calendar-and-13-meeting-schedule";
-    calendar.textContent = "Full calendar and notes";
-    strip.append(calendar);
-    hero.after(strip);
+
+    // One primary action (the meeting's page); Lectures 1-10 also offer their prerequisite check.
+    const actions = make("p", "this-week-actions");
+    const target = focusCell && focusCell.querySelector("a[href]");
+    if (target) {
+      const href = target.getAttribute("href");
+      const lecture = /(?:^|\/)lectures\/(0[1-9]|10)-[^/#?]+\.html$/.exec(href);
+      actions.append(makeLink("this-week-open", href, lecture ? `Open Lecture ${Number(lecture[1])}` : `Open meeting ${number}`));
+      if (lecture) actions.append(" ", makeLink("", `${href}#before-you-start`, "Before you start"));
+      actions.append(" ");
+    }
+    actions.append(makeLink("", "#calendar-and-13-meeting-schedule", "Full calendar and notes"));
+    board.append(actions);
+
+    if (deadline) board.append(deadline);
+    return board;
   }
-  showNextMeeting();
+
+  // The plugin reserves the board's place under the title (an empty aside.this-week[data-pending]),
+  // so the facts and introduction do not jump down when it arrives; with nothing to show, the
+  // place is given back.
+  function showSemesterBoard() {
+    const slot = document.querySelector(".main-content .home-hero > aside.this-week[data-pending]");
+    const title = document.querySelector(".main-content .home-hero > h1");
+    const board = semesterBoard();
+    if (board && slot) slot.replaceWith(board);
+    else if (board && title) title.after(board);
+    else if (slot) slot.remove();
+  }
+  showSemesterBoard();
 
   // Sidebar, header and search. These run after the theme's own ready handler: just-the-docs.js
   // registers its DOMContentLoaded listener first (it loads synchronously in <head>).

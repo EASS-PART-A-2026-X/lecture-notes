@@ -62,6 +62,8 @@ You need:
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Service:** one entry under `services:` in `compose.yaml`; Compose runs one container for it (or more, if scaled).
 - **Project:** everything Compose creates for one `compose.yaml`: containers, a network and volumes, all prefixed with the project name (`recipe-box`).
 - **Service DNS name:** inside the project's network, each service name (`backend`, `ai-service`) resolves to that service's container.
@@ -504,11 +506,17 @@ No Compose command deletes `.env`; it is a file in your repository, and Git igno
 
 ## Hands-on lab
 
-Containerize **your** product. Use your own service names, and keep the shape. Run every `docker compose` command from the repository root, where `compose.yaml` lives.
+Containerize **your** product. Use your own service names, and keep the shape. Plan your time:
+
+- **Core today:** steps 1–6
+- **Before Lecture 9:** steps 7–10
+- **Extension (optional):** drill 4, "healthy but unreachable", in [Break it on purpose](#break-it-on-purpose), then the [Stretch goals](#stretch-goals)
 
 > **EX3 progress:** EX3 (due Mon 11 Jan 2027, 23:59) requires Docker Compose as the way to run all three services. A clean clone that starts with `docker compose up --build --wait` and no `.env` is the evidence.
 
-**Core today**
+Run every `docker compose` command from the repository root, where `compose.yaml` lives.
+
+**Core today:**
 
 1. **Dockerfiles:** copy the backend's into each service directory; drop the data directory; change the port and `CMD` (keep `--host 0.0.0.0`); add `.dockerignore`. **Checkpoint:** `docker compose build` succeeds.
 2. **`compose.yaml`:** three services, `name:` set, no `version:`, `ports:` only for the frontend and backend, both bound to `127.0.0.1`.
@@ -517,14 +525,14 @@ Containerize **your** product. Use your own service names, and keep the shape. R
 5. **Data:** a named volume and a four-slash `DATABASE_URL`.
 6. **Settings:** `.env.example` committed, `.env` ignored, `env_file` with `required: false`, `${AI_MODEL:-test}`. **Checkpoint:** it starts with **no** `.env`.
 
-**Finish before next meeting**
+**Before Lecture 9:**
 
 7. **Run the full flow** in the browser, AI feature included.
 8. **Restart test:** data survives `down` and `up`; `down -v` resets to the seed. **Checkpoint:** you can say which row of the "What each command destroys" table you just used.
 9. **Peer review (optional, recommended; about 10 min).** Swap `compose.yaml` with a classmate. Apply the Pattern 1 checklist from [Working with AI assistants](#working-with-ai-assistants) to *their* file, and report one concrete observation together with the command that shows it (for example: "`curl -sS localhost:8001/health` answers, so the AI port is published"). **Done when:** you have sent one observation and received one.
 10. **README "Run it":** commands, ports, a `down -v` warning, and the real-model switch.
 
-**Extension:** the optional break-it drill 4, then the [stretch goals](#stretch-goals). If you keep an `AGENTS.md` file ([student setup, Part B](../guides/student-setup.md#part-b-at-the-end-of-lecture-1)), add the line `Verify with: docker compose up --build --wait --wait-timeout 180` so an assistant runs the same check you do.
+**Optional:** if you keep an `AGENTS.md` file ([student setup, Part B](../guides/student-setup.md#part-b-at-the-end-of-lecture-1)), add the line `Verify with: docker compose up --build --wait --wait-timeout 180` so an assistant runs the same check you do.
 
 ## Break it on purpose
 
@@ -632,11 +640,10 @@ docker compose -p clean-check down -v
 | `curl -sS localhost:8001/health` fails: the AI port is not published | the error line | [Networking](#networking-where-is-localhost) |
 | Data survives `down` and `up`; `down -v` resets to the seed | the two recipe lists | [Volumes](#volumes-where-the-sqlite-file-lives) |
 | `git check-ignore .env` prints `.env`, and `.env.example` is committed | the command output | [Secrets](#secrets) |
+| Your README's "Run it" section matches what you just typed | the README on GitHub | [Hands-on lab](#hands-on-lab), step 10 |
+| PR #3 is opened, and the evidence table has its row | the PR link in your evidence table | [Open-source track](#open-source-track) |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Your README's "Run it" section matches what you just typed.
-- [ ] PR #3 is opened, and the evidence table has its row.
 
 ## Quick quiz
 
@@ -773,8 +780,6 @@ Emphasize: the service name is the address, `down -v` deletes data, a clean chec
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
 **Before the lab (≤15 min):** [Docker: control startup order](https://docs.docker.com/compose/how-tos/startup-order/). Read it with two questions: (1) what exactly does `condition: service_healthy` wait for, and what does it do after that? (2) which healthcheck settings decide how long `up --wait` waits before it gives up?
 
 **Go deeper (optional):**
@@ -784,6 +789,7 @@ Emphasize: the service name is the address, `down -v` deletes data, a clean chec
 - [uv: using uv in Docker](https://docs.astral.sh/uv/guides/integration/docker/)
 - [Docker: Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/) and [secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/)
 - **Execution boundaries:** [Agent sandboxes](../guides/agent-sandboxes.md) distinguishes Compose, restricted containers, OS sandboxes, gVisor and microVMs; [Local inference](../guides/local-inference.md#connect-an-agent-without-changing-its-authority) treats a model server as an optional dependency of the existing AI service.
+- **Model serving:** [Visual inference engineering](../guides/inference-engineering.md) covers model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - **Engineering practice:** [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md) connects this lecture's files to configuration consumers, reusable procedures and evidence.
 - **Visual review:** [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md) connects this checkpoint to service ownership, validation, the commit boundary and failure evidence.
 

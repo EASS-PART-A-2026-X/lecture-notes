@@ -6,12 +6,18 @@
 #   > **At a glance** + a list                -> <blockquote class="glance">
 #   [← Course home](../README.md) · ...       -> <p class="page-nav">
 # Lecture pages 01-10 also get <main class="lecture-page"> (phase markers in CSS) and a
-# section panel around six stable sections. The README gets its home-page hooks.
+# section panel around six stable sections. The README gets its home-page hooks (hero, start
+# path, and the calendar and deadlines tables that assets/js/course.js reads). On every page,
+# each table body cell carries its column name (data-label), a table with three or more
+# columns gets class="stack" (phones show it as labelled cards), and short code tokens in cells
+# are wrapped so that the screen never splits them at a hyphen.
 #
 # String transforms only, on Just the Docs 0.12.0 + kramdown output. Like
 # search_focus_guard.rb, the hook raises when an expected shape is missing, so a theme or
 # structure change fails the build instead of silently dropping the design. It never touches
 # <script> or <h1> elements and never adds ids (check_site.py rejects duplicate ids).
+
+require "cgi/escape"
 
 module CourseComponents
   CALLOUT_LABELS = {
@@ -82,6 +88,8 @@ module CourseComponents
       fail_shape(path, "<main> already has attributes; cannot mark the lecture page") unless main_open.include?("lecture-page")
     end
     body = home_page(path, body) if path == "README.md"
+    body = tables(body)
+    body = summaries(body)
 
     head + main_open + body + main_close + tail
   end
@@ -188,6 +196,8 @@ module CourseComponents
   end
 
   # (e) Home page hooks.
+  BOARD_SLOT = '<aside class="this-week" data-pending aria-hidden="true"></aside>'
+
   def home_page(path, html)
     h1 = html.index("<h1") or fail_shape(path, "home page needs its <h1>")
     actions = "<p><strong>On this page:</strong>"
@@ -200,11 +210,24 @@ module CourseComponents
     facts_at = hero.index("<ul>") or fail_shape(path, "expected the facts list (<ul>) after the title")
     hero[facts_at, 4] = '<ul class="home-facts">'
     hero = hero.sub(actions, %(<p class="home-actions"><strong>On this page:</strong>))
+    # course.js fills this empty board under the title after the page has painted; reserving its
+    # place now keeps the facts and the introduction from jumping down when it arrives. A
+    # <noscript> style (head_custom.html) hides it when scripts are off.
+    title_end = hero.index("</h1>") or fail_shape(path, "the home title needs its </h1>")
+    title_end += "</h1>".length
+    hero = hero[0...title_end] + BOARD_SLOT + hero[title_end..]
     html = html[0...h1] + %(<div class="home-hero">) + hero + "</div>" + html[actions_end..]
 
     html = mark_after(path, html, '<h2 id="start-here"', "<ol>", '<ol class="start-path">')
     html = mark_after(path, html, '<h2 id="calendar-and-13-meeting-schedule"', "<table>", '<table class="schedule">')
-    schedule_labels(path, html)
+    # course.js reads the next deadline for the home-page board from this table.
+    html = mark_after(path, html, '<h2 id="assignments-and-deadlines"', "<table>", '<table class="deadlines">')
+    # Phones show both tables as cards labelled from their header row (see tables below).
+    %w[schedule deadlines].each do |name|
+      table = html[%r{<table class="#{name}">.*?</table>}m]
+      fail_shape(path, "#{name} table needs a header row") unless table.include?("<thead>")
+    end
+    html
   end
 
   def mark_after(path, html, heading, tag, replacement)
@@ -215,28 +238,88 @@ module CourseComponents
     html[0...at] + replacement + html[(at + tag.length)..]
   end
 
-  # Phones show the schedule as stacked rows; each cell carries its column name.
-  def schedule_labels(path, html)
-    start = html.index('<table class="schedule">')
-    stop = html.index("</table>", start) + "</table>".length
-    table = html[start...stop]
-    headers = table[%r{<thead>.*?</thead>}m].to_s.scan(%r{<th\b[^>]*>(.*?)</th>}m).flatten
-                                         .map { |h| h.gsub(/<[^>]+>/, "").strip }
-    fail_shape(path, "schedule table needs a header row") if headers.empty?
+  # (f) Tables. Every table with a header row: each body cell gets data-label="<its column
+  # name>" (tags stripped, attribute-escaped; "" for an empty header). A table with three or
+  # more columns also gets the class "stack" (merged with schedule/deadlines), which phones show
+  # as one labelled card per row; when every first cell is a number ("Step | …" with 1, 2, 3),
+  # "stack--numbered" lets the card title read "Step 1". Tables without a header row are left
+  # alone. Inside cells, short code tokens that contain a break point (a hyphen, slash, colon…)
+  # are wrapped in <span class="nobr">, so `git --version` wraps at its space, never after "--".
+  STACK_MIN_COLUMNS = 3
+  NOBR_MAX_CHARS = 16
+  TABLE = %r{<table\b([^>]*)>(.*?)</table>}m
+  CELL_CODE = %r{(<code\b[^>]*>)([^<]*)(</code>)}
 
-    table = table.gsub(%r{<tr>(.*?)</tr>}m) do
-      row = Regexp.last_match(1)
-      next "<tr>#{row}</tr>" unless row.include?("<td")
+  def tables(html)
+    html.gsub(TABLE) do
+      attrs = Regexp.last_match(1)
+      inner = Regexp.last_match(2)
+      head = inner[%r{<thead>.*?</thead>}m]
+      next "<table#{attrs}>#{inner}</table>" unless head
 
-      column = -1
-      cells = row.gsub(/<td\b([^>]*)>/) do
-        column += 1
-        label = headers[column].to_s.gsub("&", "&amp;").gsub('"', "&quot;")
-        %(<td#{Regexp.last_match(1)} data-label="#{label}">)
+      headers = head.scan(%r{<th\b[^>]*>(.*?)</th>}m).flatten.map { |h| plain_text(h) }
+      firsts = []
+      inner = inner.gsub(%r{<tbody>.*?</tbody>}m) do |tbody|
+        tbody.gsub(%r{<tr>(.*?)</tr>}m) do
+          column = -1
+          cells = Regexp.last_match(1).gsub(%r{<td\b([^>]*)>(.*?)</td>}m) do
+            cell_attrs = Regexp.last_match(1)
+            content = Regexp.last_match(2)
+            column += 1
+            firsts << plain_text(content) if column.zero?
+            label = CGI.escapeHTML(headers[column].to_s)
+            %(<td#{cell_attrs} data-label="#{label}">#{keep_tokens(content)}</td>)
+          end
+          "<tr>#{cells}</tr>"
+        end
       end
-      "<tr>#{cells}</tr>"
+
+      if headers.length >= STACK_MIN_COLUMNS
+        attrs = add_class(attrs, "stack")
+        numbered = !firsts.empty? && firsts.all? { |text| text.match?(/\A\d{1,3}\z/) }
+        attrs = add_class(attrs, "stack--numbered") if numbered && !["", "#"].include?(headers.first)
+      end
+      "<table#{attrs}>#{inner}</table>"
     end
-    html[0...start] + table + html[stop..]
+  end
+
+  # Tags stripped, entities decoded, whitespace (including the no-break space kramdown writes
+  # into an empty header cell) collapsed.
+  def plain_text(html)
+    CGI.unescapeHTML(html.gsub(/<[^>]+>/, "")).gsub(/[[:space:]]+/, " ").strip
+  end
+
+  def add_class(attrs, name)
+    return %(#{attrs} class="#{name}") unless attrs.include?('class="')
+
+    attrs.sub(/class="([^"]*)"/) { %(class="#{Regexp.last_match(1)} #{name}") }
+  end
+
+  # Letters, digits, "_", "." and "," never offer a line break inside a word; most other
+  # characters (-, /, :, ?) can, so a short token holding any of them is kept whole.
+  def keep_tokens(cell)
+    cell.gsub(CELL_CODE) do
+      open_tag = Regexp.last_match(1)
+      code = Regexp.last_match(2)
+      close_tag = Regexp.last_match(3)
+      tokens = code.gsub(/\S+/) do |token|
+        text = CGI.unescapeHTML(token)
+        if text.length.between?(2, NOBR_MAX_CHARS) && text.match?(/[^A-Za-z0-9_.,]/)
+          %(<span class="nobr">#{token}</span>)
+        else
+          token
+        end
+      end
+      open_tag + tokens + close_tag
+    end
+  end
+
+  # (g) Disclosure summaries (quiz questions, "Check your answer"): the same short code tokens
+  # stay whole, so a phone never shows `--rm` as "--" and "rm" on two lines.
+  SUMMARY = %r{<summary\b[^>]*>.*?</summary>}m
+
+  def summaries(html)
+    html.gsub(SUMMARY) { |summary| keep_tokens(summary) }
   end
 
   def fail_shape(path, message)

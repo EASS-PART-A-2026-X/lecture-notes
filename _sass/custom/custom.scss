@@ -1,6 +1,7 @@
-// EASS · Class X course design: a typeset handbook. Serif reading text at a ~70-character measure,
-// a sans for interface and data, ink navy with one oxblood accent, hairline rules, and quiet
-// callouts whose labels are real text (GitHub, screen readers and the PDF keep them).
+// EASS · Class X course design: an evidence-first handbook. Two typefaces: the system sans for
+// structure (headings, labels, navigation, tables, interface) and a reading serif for running text
+// at a ~70-character measure. Ink navy on white; colour is state, not decoration (see the tokens);
+// callout labels are real text (GitHub, screen readers and the PDF keep them).
 // Theme settings: _sass/custom/setup.scss and _sass/color_schemes/eass.scss.
 // Markup comes from plain Markdown (see .github/CONTRIBUTING.md, "Authoring components") and from
 // _plugins/course_components.rb, which adds the class names styled here. Light only, by design.
@@ -13,9 +14,8 @@
 :root {
   color-scheme: light;
 
-  // Type stacks: system fonts only; Liberation is the Linux/PDF fallback.
-  --ed-serif-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Charter,
-    "Bitstream Charter", Cambria, Georgia, "Liberation Serif", serif;
+  // Type stacks: system fonts only; Liberation is the Linux/PDF fallback. Headings and labels use
+  // the sans (the same face on every platform's own system font), running text the serif.
   --ed-serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia,
     "Liberation Serif", "Times New Roman", serif;
   --ed-sans: #{$body-font-family};
@@ -35,22 +35,25 @@
   --fs-34: 2.125rem;
   --fs-40: 2.5rem;
   --fs-44: 2.75rem;
-  --fs-52: 3.25rem;
+  --fs-48: 3rem;
 
   // Reading measure: 648px, about 66–74 characters per line of 18px Charter. Prose, lists, callouts
   // and quizzes stop here; tables, code, figures and the structural components use the full column.
   --ed-measure: 40.5rem;
 
-  // Ink and surfaces. Ratios are against white unless noted.
+  // Ink and surfaces. Ratios are against white unless noted. Colour is state, not decoration:
+  // navy is the path (links, where you are, the primary action, focus), green is checked or done,
+  // oxblood is a deadline, a pitfall or a failure. Everything else is ink, grey or paper.
   --ed-bg: #fff;
   --ed-ink: #0f1e3a;         // headings, strong rules, primary button        16.6:1
   --ed-text: #232b38;        // reading text                                  14.3:1
   --ed-text-2: #384152;      // secondary reading text (hero promise)         10.3:1
-  --ed-term: #4a5363;        // glance and fact terms                          7.8:1
-  --ed-muted: #535c6b;       // captions, dates, labels, list numerals         6.8:1 (5.7 on paper-deep)
-  --ed-link: #1d4e89;        // links and the focus ring                       8.4:1
-  --ed-accent: #9b2c2c;      // the one accent: kickers, active page, deadlines 7.5:1
-  --ed-on-ink: #fff;         // text on ink and accent fills
+  --ed-term: #4a5363;        // labels (ed-label), glance and fact terms       7.8:1 (7.1 on paper)
+  --ed-muted: #535c6b;       // captions, dates, list bullets and numerals      6.8:1 (5.7 on paper-deep)
+  --ed-link: #1d4e89;        // links, disclosure chevrons, the focus ring      8.4:1
+  --ed-accent: #9b2c2c;      // deadlines, pitfalls and failure only            7.5:1 (6.9 on its tint)
+  --ed-current: var(--ed-link); // where you are: active sidebar item, home board, next meeting
+  --ed-on-ink: #fff;         // text on ink fills (primary button, current step)
   --ed-rule: #ddd7ca;        // hairlines (decorative)
   --ed-rule-strong: #b9b1a1; // rails and spines (decorative)
   --ed-rule-ui: #8a8070;     // control borders that must reach 3:1            3.9:1
@@ -106,15 +109,17 @@
   --ed-i-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M2.5 3.5h11M2.5 6.5h11M2.5 9.5h11M2.5 12.5h7'/%3E%3C/svg%3E");
 }
 
-// Kicker: a short uppercase label for component titles, phase markers and pager directions.
-@mixin ed-kicker($color: var(--ed-accent)) {
+// Label: the name of a part (phase markers, figure numbers, pager directions, sidebar groups, card
+// and code-tab labels). Words in sentence case at a readable size: no capitals, no tracking, so
+// word shapes survive for readers working in a second language.
+@mixin ed-label($color: var(--ed-term)) {
   font-family: var(--ed-sans);
-  font-size: var(--fs-13);
-  font-weight: 700;
+  font-size: var(--fs-14);
+  font-weight: 650;
   font-style: normal;
-  line-height: 1.35;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
   color: $color;
 }
 
@@ -214,11 +219,12 @@ body {
     color: var(--ed-ink);
   }
 
-  // Headings: display serif; each h2 has a hairline section rule with a short oxblood tab.
+  // Headings: the system sans, bold and slightly tightened, so they read the same on Windows,
+  // macOS and Linux; each h2 opens a section under a hairline rule.
   h1,
   h2,
   h3 {
-    font-family: var(--ed-serif-display);
+    font-family: var(--ed-sans);
     color: var(--ed-ink);
     font-variant-numeric: lining-nums;
     text-wrap: balance;
@@ -227,9 +233,9 @@ body {
   h1 {
     margin: 0.25rem 0 1.25rem;
     font-size: var(--fs-34) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.12 !important;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.02em;
   }
 
   h2 {
@@ -237,11 +243,10 @@ body {
     margin-bottom: 0.85rem;
     padding-top: 1.1rem;
     font-size: var(--fs-24) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2 !important;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.01em;
     border-top: 1px solid var(--ed-rule);
-    background: linear-gradient(var(--ed-accent), var(--ed-accent)) left top / 2.5rem 2px no-repeat;
 
     @include mq(sm) {
       margin-top: 2.75rem;
@@ -252,11 +257,12 @@ body {
     margin-top: 2.25rem;
     margin-bottom: 0.5rem;
     font-size: var(--fs-20) !important;
-    font-weight: 700;
+    font-weight: 650;
     line-height: 1.3 !important;
+    letter-spacing: -0.005em;
   }
 
-  // The theme draws h4 as tiny uppercase; keep it a readable sans subheading.
+  // The theme draws h4 small and in capitals; keep it a readable sans subheading.
   h4 {
     margin-top: 1.75rem;
     font-family: var(--ed-sans);
@@ -282,7 +288,7 @@ body {
     margin-top: 0;
   }
 
-  // Lists: drawn bullets, and numerals in the reading face at reading size (6.8:1).
+  // Lists: quiet drawn bullets, and numerals in the reading face at reading size (both 6.8:1).
   ul,
   ol {
     padding-left: 1.6em;
@@ -299,7 +305,7 @@ body {
     height: 0.32em;
     margin-top: 0.68em;
     margin-left: -1.05em;
-    background: var(--ed-accent);
+    background: var(--ed-muted);
     border-radius: 50%;
   }
 
@@ -467,12 +473,12 @@ a.skip-to-main:active {
   }
 }
 
-// Wordmark: the course name in the display serif.
+// Wordmark: the course name, set like the headings.
 .site-title {
-  font-family: var(--ed-serif-display);
-  font-size: var(--fs-22) !important;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-20) !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ed-ink);
 
   &:hover {
@@ -540,7 +546,7 @@ a.skip-to-main:active {
       font-weight: 650;
       background-image: none;
       background-color: var(--ed-bg);
-      box-shadow: inset 3px 0 0 var(--ed-accent);
+      box-shadow: inset 3px 0 0 var(--ed-current);
     }
   }
 }
@@ -549,6 +555,7 @@ a.skip-to-main:active {
 // and the PDF builder). course.js keeps the current page's href, so its label stays too.
 .site-nav > .nav-list > .nav-list-item:is(
     :has(> .nav-list-link[href$="/guides/student-setup.html"]),
+    :has(> .nav-list-link[href$="/guides/reference-card.html"]),
     :has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"]),
     :has(> .nav-list-link[href$="/guides/agent-driven-development.html"])
   ) {
@@ -556,15 +563,9 @@ a.skip-to-main:active {
   border-top: 1px solid var(--ed-rule);
 
   &::before {
+    @include ed-label(var(--ed-term));
     display: block;
     padding: 0.7rem 1rem 0.2rem;
-    font-family: var(--ed-sans);
-    font-size: var(--fs-13);
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ed-muted);
 
     @include mq(md) {
       padding: 0.65rem 1rem 0.2rem 2rem;
@@ -574,6 +575,12 @@ a.skip-to-main:active {
 
 .site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/student-setup.html"])::before {
   content: "Start here";
+}
+
+// Start here holds only the two required guides (README reading map); Reference opens with the
+// reference card, then submission evidence and the two bridge guides.
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/reference-card.html"])::before {
+  content: "Reference";
 }
 
 .site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"])::before {
@@ -879,15 +886,9 @@ a.skip-to-main:active {
 
   // Language tab from the fence (```python). Decorative: screen readers skip it (alt text "").
   div.highlighter-rouge[class*="language-"]::before {
+    @include ed-label(var(--ed-term));
     display: block;
     padding: 0.35rem 3rem 0.3rem 1.1rem;
-    font-family: var(--ed-sans);
-    font-size: var(--fs-13);
-    font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--ed-muted);
     background: var(--ed-paper-deep);
     border-bottom: 1px solid var(--ed-code-line);
     border-radius: 3px 3px 0 0;
@@ -1058,6 +1059,105 @@ $ed-code-languages: (
   }
 }
 
+// 6.1 Tables on phones and in narrow columns (screen only; print keeps every table a table).
+//     The plugin gives each body cell its column name (data-label) and every table with three or
+//     more columns the class "stack": below a 36rem column each row becomes a card. The first
+//     cell names the card; every other cell shows its column name on a line above its value, so
+//     no column hides off-screen. The home calendar (table.schedule) keeps its own cards (8.8).
+//     Short code tokens (span.nobr, also from the plugin, in cells and disclosure summaries) never
+//     split at a hyphen or slash.
+@media screen {
+  .main-content :is(td, summary) code .nobr {
+    white-space: nowrap;
+  }
+
+  @container content (max-width: 36rem) {
+    .main-content .table-wrapper:has(> table.stack) {
+      overflow: visible;
+    }
+
+    .main-content table.stack:not(.schedule) {
+      display: block;
+      min-width: 0;
+
+      // The header row stays for screen readers; each card repeats its names visibly.
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      tbody,
+      tr,
+      td {
+        display: block;
+      }
+
+      tr {
+        padding: 0.8rem 0 0.85rem;
+        border-bottom: 1px solid var(--ed-rule);
+      }
+
+      tbody tr:last-of-type {
+        border-bottom: 0;
+      }
+
+      td {
+        min-width: 0;
+        padding: 0.4rem 0 0;
+        text-align: start !important; // kramdown writes column alignment as an inline style
+        overflow-wrap: anywhere;
+        border: 0;
+      }
+
+      td:first-child {
+        padding-top: 0;
+        font-size: var(--fs-16) !important;
+        font-weight: 650;
+        line-height: 1.4;
+        color: var(--ed-ink);
+      }
+
+      td:not(:first-child)::before {
+        @include ed-label(var(--ed-term));
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 0.05rem;
+      }
+
+      // "Step | …" tables whose first cells are numbers: the card title reads "Step 1".
+      &.stack--numbered td:first-child::before {
+        content: attr(data-label) " ";
+      }
+
+      td[data-label=""]::before {
+        content: none;
+      }
+
+      td:empty {
+        display: none;
+      }
+    }
+
+    // A two-column table stays a table: a long word ("Model/runtime/configuration") may break
+    // rather than push the second column off-screen.
+    .main-content table:not(.stack) :is(th, td) {
+      overflow-wrap: anywhere;
+    }
+
+    .main-content td code {
+      overflow-wrap: anywhere;
+      // Cloned padding at a line end can overhang the cell by a few pixels, which course.js would
+      // read as a sideways scroll; sliced padding cannot.
+      -webkit-box-decoration-break: slice;
+      box-decoration-break: slice;
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------------------------
 // 7. Disclosures: answers as ruled exam entries; "On this page" as a contents box
 // ---------------------------------------------------------------------------------------------
@@ -1097,7 +1197,7 @@ $ed-code-languages: (
       position: absolute;
       top: calc(0.7rem + 0.25em);
       left: 0.1rem;
-      color: var(--ed-accent);
+      color: var(--ed-link);
     }
 
     &:hover {
@@ -1141,8 +1241,8 @@ $ed-code-languages: (
   border: 1px solid var(--ed-rule);
   border-radius: 2px;
 
+  // The summary reads like every other disclosure ("On this page", sentence case).
   > summary {
-    @include ed-kicker(var(--ed-ink));
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -1153,6 +1253,7 @@ $ed-code-languages: (
     }
   }
 
+  // Section names only: the headings are not a numbered sequence, so the list carries no numbers.
   > ul {
     max-width: none;
     margin: 0 0 0.75rem;
@@ -1161,30 +1262,14 @@ $ed-code-languages: (
     font-size: var(--fs-15);
     list-style: none;
     border-top: 1px solid var(--ed-rule);
-    counter-reset: toc;
 
     > li {
-      position: relative;
       margin: 0;
-      padding-left: 2.1rem;
-      counter-increment: toc;
+      padding-left: 0;
       break-inside: avoid;
 
       &::before {
-        content: counter(toc, decimal-leading-zero);
-        position: absolute;
-        top: 0.4rem;
-        left: 0;
-        width: auto;
-        height: auto;
-        margin: 0;
-        font-family: var(--ed-sans);
-        font-size: var(--fs-13);
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-        color: var(--ed-muted);
-        background: none;
-        border-radius: 0;
+        content: none;
       }
     }
 
@@ -1317,8 +1402,9 @@ $ed-code-languages: (
   border-left: 3px dashed var(--c);
 }
 
-// A reveal straight after a callout ("Check your prediction") hangs from it.
-.main-content .callout + details {
+// A reveal straight after a callout ("Check your prediction") hangs from it. The "On this page"
+// box is not a reveal: after an objectives or prerequisite callout it keeps its own box.
+.main-content .callout + details:not(.lecture-toc) {
   max-width: var(--ed-measure);
   margin-top: -1.5rem;
   border-top: 0;
@@ -1327,9 +1413,9 @@ $ed-code-languages: (
   background: var(--ed-bg);
 }
 
-.main-content .callout--predict + details { border-left-color: var(--ed-plum); }
-.main-content .callout--explain + details { border-left-color: var(--ed-ochre); }
-.main-content .callout--checkpoint + details { border-left-color: var(--ed-green); }
+.main-content .callout--predict + details:not(.lecture-toc) { border-left-color: var(--ed-plum); }
+.main-content .callout--explain + details:not(.lecture-toc) { border-left-color: var(--ed-ochre); }
+.main-content .callout--checkpoint + details:not(.lecture-toc) { border-left-color: var(--ed-green); }
 
 // Learning-practice blocks (L9, local inference) open with a run-in instruction to predict.
 .main-content .learning-practice {
@@ -1381,13 +1467,17 @@ $ed-code-languages: (
   border-top: 2px solid var(--ed-ink);
   border-bottom: 1px solid var(--ed-ink);
 
+  // The card's title, as written ("At a glance"): a sentence-case label one step above the terms.
   > p.glance-title {
+    @include ed-label(var(--ed-ink));
     max-width: none;
     margin: 0;
-    padding: 0.7rem 0 0.55rem;
-    @include ed-kicker(var(--ed-accent));
+    padding: 0.65rem 0 0.5rem;
+    font-size: var(--fs-16);
+    font-weight: 700;
 
     strong {
+      font-weight: inherit;
       color: inherit;
     }
   }
@@ -1458,12 +1548,14 @@ $ed-code-languages: (
 
 // 8.3 Lecture pages: phase markers above each h2, and panels around six sections.
 
+// The phase is a word above the heading (sentence case, term grey), so a student scanning the page
+// sees where Prepare ends and Practice begins; it is not read aloud (alt text "").
 .main-content main.lecture-page > h2::before {
+  @include ed-label(var(--ed-term));
   display: block;
-  margin-bottom: 0.4rem;
-  @include ed-kicker(var(--ed-muted));
-  font-size: var(--fs-13) !important;
-  line-height: 1.35 !important;
+  margin-bottom: 0.3rem;
+  font-size: var(--fs-14) !important;
+  line-height: 1.4 !important;
 }
 
 .main-content main.lecture-page > h2:is(#mission, #before-you-start, #learning-checkpoint)::before {
@@ -1602,16 +1694,15 @@ $ed-code-languages: (
   }
 
   .pager-label {
+    @include ed-label(var(--ed-term));
     display: flex;
     gap: 0.45rem;
     align-items: center;
-    @include ed-kicker(var(--ed-muted));
   }
 
   .pager-title {
-    font-family: var(--ed-serif-display);
-    font-size: var(--fs-18);
-    font-weight: 600;
+    font-size: var(--fs-17);
+    font-weight: 650;
     line-height: 1.3;
     font-variant-numeric: lining-nums;
   }
@@ -1692,11 +1783,11 @@ $ed-code-languages: (
 
     // Plate number (decorative; screen readers read the caption itself).
     &::before {
+      @include ed-label(var(--ed-ink));
       content: "Figure " counter(figure);
       content: "Figure " counter(figure) / "";
       display: block;
       margin-bottom: 0.2rem;
-      @include ed-kicker(var(--ed-ink));
     }
 
     strong {
@@ -1865,9 +1956,10 @@ $ed-code-languages: (
         place-items: center;
         width: 2rem;
         height: 2rem;
-        font-family: var(--ed-serif-display);
-        font-size: var(--fs-16) !important;
-        font-weight: 600;
+        font-family: var(--ed-sans);
+        font-size: var(--fs-15) !important;
+        font-weight: 650;
+        font-variant-numeric: tabular-nums;
         line-height: 1;
         color: var(--ed-ink);
         background: var(--ed-bg);
@@ -1988,10 +2080,6 @@ $ed-code-languages: (
     border: 1px solid var(--ed-ink);
     border-radius: 2px;
 
-    &:hover {
-      background: var(--ed-paper);
-    }
-
     &[aria-disabled="true"] {
       color: var(--ed-muted);
       cursor: default;
@@ -2007,11 +2095,6 @@ $ed-code-languages: (
   .stepper-next:not([aria-disabled="true"]) {
     color: var(--ed-on-ink);
     background: var(--ed-ink);
-
-    &:hover {
-      background: var(--ed-link);
-      border-color: var(--ed-link);
-    }
   }
 
   .stepper-prev::before,
@@ -2029,10 +2112,6 @@ $ed-code-languages: (
     color: var(--ed-link);
     text-decoration: underline;
     text-underline-offset: 0.18em;
-
-    &:hover {
-      background: var(--ed-tint);
-    }
   }
 }
 
@@ -2042,22 +2121,53 @@ $ed-code-languages: (
   }
 }
 
+// Hover only where a pointer can hover (a tap would leave it stuck on a phone); never on a
+// disabled button.
+@media (hover: hover) {
+  .main-content .stepper-controls {
+    .stepper-button:not([aria-disabled="true"]):hover {
+      background: var(--ed-paper);
+    }
+
+    .stepper-next:not([aria-disabled="true"]):hover {
+      background: var(--ed-link);
+      border-color: var(--ed-link);
+    }
+
+    .stepper-all:not([aria-disabled="true"]):hover {
+      background: var(--ed-tint);
+    }
+  }
+}
+
+// Press feedback: the button gives a little under the finger, so a tap visibly registered even
+// when the step text barely changes. Motion only answers the reader's own press.
+@media (prefers-reduced-motion: no-preference) {
+  .main-content .stepper-controls .stepper-button {
+    transition: transform 140ms ease-out;
+
+    &:not([aria-disabled="true"]):active {
+      transform: scale(0.98);
+    }
+  }
+}
+
 // 8.8 Home page: hero, next meeting, first steps, calendar.
 
+// The title opens the page like every other page's title (no rule above it); the board under it
+// is the one strong element.
 .main-content .home-hero {
   margin: 0 0 1.75rem;
-  padding: 1.1rem 0 0;
-  border-top: 3px solid var(--ed-ink);
-  // A printed double rule: a hairline 2px under the heavy one (a gradient, so it prints cleanly).
-  background: linear-gradient(to bottom, transparent 2px, var(--ed-ink) 2px, var(--ed-ink) 3px, transparent 3px)
-    top / 100% 3px no-repeat;
+  padding: 0;
 
+  // The same top margin as every other page's first h1 (the theme's 0.5em), so the title does
+  // not jump between Home and the rest.
   h1 {
     max-width: none;
-    margin: 0.6rem 0 1.25rem;
+    margin: 0.5em 0 1.25rem;
     font-size: var(--fs-40) !important;
-    line-height: 1.05 !important;
-    letter-spacing: -0.02em;
+    line-height: 1.08 !important;
+    letter-spacing: -0.025em;
   }
 
   // The facts: a two-column ledger of term and value, hairline rows.
@@ -2090,10 +2200,9 @@ $ed-code-languages: (
     }
   }
 
-  // The promise: the first paragraph after the facts, in the display serif.
+  // The promise: the first paragraph after the facts, a larger lead in the reading face.
   > ul.home-facts + p {
     max-width: 36em;
-    font-family: var(--ed-serif-display);
     font-size: var(--fs-20);
     line-height: 1.45;
     color: var(--ed-text-2);
@@ -2103,57 +2212,37 @@ $ed-code-languages: (
     max-width: var(--ed-measure);
   }
 
-  // "On this page:" links as buttons; the first ("Start here") is the filled primary action.
-  // The " · " separators stay in the source (GitHub, screen readers) but take no space here:
-  // font-size 0 hides them, and spacing comes from margins, not gap (they are flex items too).
+  // "On this page:" a calm, wrapped row of text links (the board above holds the one primary
+  // action). The " · " separators stay in the source (GitHub, screen readers) but take no space
+  // here: font-size 0 hides them, and spacing comes from margins, not gap (they are flex items too).
   > p.home-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     max-width: none;
-    margin: 1.5rem -0.5rem 0 0;
+    margin: 1.25rem 0 0;
     font-size: 0;
 
     > strong:first-child {
-      flex: 0 0 100%;
-      margin-bottom: 0.65rem;
-      @include ed-kicker(var(--ed-ink));
+      margin-right: 1rem;
+      font-family: var(--ed-sans);
+      font-size: var(--fs-15);
+      font-weight: 650;
+      line-height: 1.25;
+      color: var(--ed-ink);
     }
 
     > a {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      margin: 0 0.5rem 0.5rem 0;
-      min-height: 2.75rem;
-      padding: 0.5rem 0.95rem;
+      min-height: 2rem;
+      margin-right: 1.1rem;
       font-family: var(--ed-sans);
       font-size: var(--fs-15);
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.25;
-      color: var(--ed-ink);
-      text-decoration: none;
-      background: var(--ed-bg);
-      border: 1px solid var(--ed-ink);
-      border-radius: 2px;
-
-      &:hover {
-        background: var(--ed-paper);
-      }
-    }
-
-    > strong:first-child + a {
-      color: var(--ed-on-ink);
-      background: var(--ed-ink);
-
-      &::after {
-        @include ed-icon(var(--ed-i-arrow), 1.15rem);
-        height: 0.8rem;
-      }
-
-      &:hover {
-        background: var(--ed-link);
-        border-color: var(--ed-link);
-      }
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
     }
   }
 }
@@ -2161,7 +2250,7 @@ $ed-code-languages: (
 @container content (min-width: 40rem) {
   .main-content .home-hero {
     h1 {
-      font-size: var(--fs-52) !important;
+      font-size: var(--fs-48) !important;
     }
 
     > ul.home-facts {
@@ -2179,20 +2268,8 @@ $ed-code-languages: (
   }
 }
 
-// Phones: two buttons per row, the primary across the full width; facts run in, term first.
+// Phones: facts run in, term first.
 @container content (max-width: 30rem) {
-  .main-content .home-hero > p.home-actions {
-    > a {
-      flex: 1 1 calc(50% - 0.5rem);
-      justify-content: center;
-      text-align: center;
-    }
-
-    > strong:first-child + a {
-      flex-basis: 100%;
-    }
-  }
-
   .main-content .home-hero > ul.home-facts > li {
     padding: 0.4rem 0;
 
@@ -2202,18 +2279,29 @@ $ed-code-languages: (
   }
 }
 
-// "Next meeting", inserted by course.js after the hero from the calendar table.
+// Touch screens: every home link row is a full 44 px target.
+@media (pointer: coarse) {
+  .main-content .home-hero > p.home-actions > a,
+  .main-content .this-week .this-week-actions > a {
+    min-height: 2.75rem;
+  }
+}
+
+// The semester clock, inserted by course.js directly under the home title from the README's
+// calendar and assignments tables: today's or the next meeting, what to open, the next deadline.
+// Navy is "where you are" (the left rule and the label); oxblood stays for the deadline tags.
 .main-content .this-week {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.2rem;
   max-width: none;
-  margin: 0 0 2rem;
-  padding: 0.9rem 1.25rem 1rem;
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.25rem 1.1rem;
   font-family: var(--ed-sans);
-  font-size: var(--fs-15);
+  font-size: var(--fs-16);
   line-height: 1.5;
+  color: var(--ed-text);
   background: var(--ed-paper);
-  border-left: 3px solid var(--ed-accent);
+  border-left: 3px solid var(--ed-current);
 
   p {
     max-width: none;
@@ -2221,31 +2309,24 @@ $ed-code-languages: (
   }
 
   .this-week-label {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    @include ed-kicker(var(--ed-accent));
-
-    &::before {
-      content: "";
-      width: 0.5rem;
-      height: 0.5rem;
-      background: var(--ed-accent);
-      border-radius: 50%;
-    }
+    font-size: var(--fs-16);
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ed-current);
   }
 
   .this-week-when {
-    color: var(--ed-muted);
     font-variant-numeric: tabular-nums;
   }
 
   .this-week-focus {
-    font-family: var(--ed-serif-display);
-    font-size: var(--fs-20);
-    font-weight: 600;
-    line-height: 1.3;
+    margin: 0.35rem 0 0.15rem;
+    font-size: var(--fs-22);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     color: var(--ed-ink);
+    text-wrap: balance;
   }
 
   .this-week-term {
@@ -2253,15 +2334,37 @@ $ed-code-languages: (
     color: var(--ed-term);
   }
 
-  .this-week-calendar {
-    justify-self: start;
-    display: inline-flex;
+  .this-week-actions {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    min-height: 1.75rem;
-    margin-top: 0.2rem;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
+    margin: 0.65rem 0 0.15rem;
+    font-size: 0; // the spaces between links take no room; margins space them
+
+    > a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      margin: 0.25rem 1.25rem 0.25rem 0;
+      font-size: var(--fs-16);
+      font-weight: 600;
+      line-height: 1.25;
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+    }
+
+    > a.this-week-open {
+      min-height: 2.75rem;
+      padding: 0.5rem 1.1rem;
+      color: var(--ed-on-ink);
+      text-decoration: none;
+      background: var(--ed-ink);
+      border-radius: 2px;
+    }
+  }
+
+  .this-week-deadline {
+    margin-top: 0.5rem;
   }
 
   strong {
@@ -2269,6 +2372,60 @@ $ed-code-languages: (
     color: var(--ed-accent);
     background: var(--ed-red-tint);
     border: 1px solid currentColor;
+  }
+}
+
+// Until course.js fills it, the plugin's empty board (data-pending) holds the board's usual height,
+// which grows as the column narrows and the lines wrap (measured across the semester's 13 boards
+// at 320-1440 px), so the hero does not jump down when the board arrives. Without JavaScript a
+// <noscript> style hides it; if course.js never arrives, the space is given back after 4 s.
+.main-content .this-week[data-pending] {
+  min-height: 16.5rem;
+  min-height: clamp(16.5rem, calc(42.25rem - 71cqi), 30rem);
+  animation: this-week-give-back 0s 4s forwards;
+}
+
+@keyframes this-week-give-back {
+  to {
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border-left-width: 0;
+    visibility: hidden;
+  }
+}
+
+@media (hover: hover) {
+  .main-content .this-week .this-week-actions > a.this-week-open:hover {
+    background: var(--ed-link);
+  }
+}
+
+// Press feedback on the one primary action (motion only answers the reader's own press).
+@media (prefers-reduced-motion: no-preference) {
+  .main-content .this-week .this-week-actions > a.this-week-open {
+    transition: transform 140ms ease-out;
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Phones: the primary action spans the board, the two text links share the next row.
+@container content (max-width: 30rem) {
+  .main-content .this-week {
+    padding: 0.9rem 1rem 1rem;
+
+    .this-week-focus {
+      font-size: var(--fs-20);
+    }
+
+    .this-week-actions > a.this-week-open {
+      flex: 1 1 100%;
+      justify-content: center;
+      margin-right: 0;
+    }
   }
 }
 
@@ -2294,10 +2451,10 @@ $ed-code-languages: (
       width: 2.25rem;
       height: 2.25rem;
       margin: 0;
-      font-family: var(--ed-serif-display);
-      font-size: var(--fs-18) !important;
-      font-weight: 600;
-      font-variant-numeric: lining-nums;
+      font-family: var(--ed-sans);
+      font-size: var(--fs-16) !important;
+      font-weight: 650;
+      font-variant-numeric: lining-nums tabular-nums;
       line-height: 1;
       text-align: center;
       color: var(--ed-ink);
@@ -2326,11 +2483,6 @@ $ed-code-languages: (
       &::after {
         content: none;
       }
-    }
-
-    > strong:first-child {
-      font-family: var(--ed-serif-display);
-      font-size: 1.05em;
     }
   }
 }
@@ -2368,7 +2520,7 @@ $ed-code-languages: (
   }
 
   tr.is-next td:first-child {
-    box-shadow: inset 3px 0 0 var(--ed-accent);
+    box-shadow: inset 3px 0 0 var(--ed-current);
     padding-left: 0.5rem;
   }
 }
@@ -2418,9 +2570,9 @@ $ed-code-languages: (
       grid-row: 1 / span 3;
       width: auto;
       padding-left: 0;
-      font-family: var(--ed-serif-display);
       font-size: var(--fs-20) !important;
-      font-weight: 600;
+      font-weight: 700;
+      line-height: 1.3;
       color: var(--ed-ink);
     }
 
@@ -2444,7 +2596,7 @@ $ed-code-languages: (
 
     tr.is-next {
       background: var(--ed-paper-deep);
-      box-shadow: inset 3px 0 0 var(--ed-accent);
+      box-shadow: inset 3px 0 0 var(--ed-current);
 
       td {
         background: none;
@@ -2496,15 +2648,15 @@ $ed-code-languages: (
     position: static;
     display: block;
     width: auto;
-    content: "0" counter(factory-step);
+    content: counter(factory-step);
     margin: 0 0 0.45rem;
     padding: 0;
-    font-family: var(--ed-serif-display);
+    font-family: var(--ed-sans);
     font-size: var(--fs-22) !important;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2;
     text-align: left;
-    color: var(--ed-accent);
+    color: var(--ed-ink);
   }
 
   strong,
@@ -2601,10 +2753,6 @@ $ed-code-languages: (
     border: 1px solid var(--ed-ink);
     border-radius: 2px;
     cursor: pointer;
-
-    &:hover {
-      background: var(--ed-paper);
-    }
   }
 
   .lab-chart {
@@ -2718,7 +2866,6 @@ $ed-code-languages: (
 
   :root {
     --ed-serif: Charter, "Iowan Old Style", Georgia, "Liberation Serif", "Times New Roman", serif;
-    --ed-serif-display: "Iowan Old Style", Charter, Georgia, "Liberation Serif", "Times New Roman", serif;
     --ed-sans: "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
     --ed-mono: Menlo, Consolas, "Liberation Mono", monospace;
   }
@@ -2841,7 +2988,7 @@ $ed-code-languages: (
     }
   }
 
-  .main-content .callout + details {
+  .main-content .callout + details:not(.lecture-toc) {
     margin-top: -1rem;
   }
 
@@ -2920,7 +3067,7 @@ $ed-code-languages: (
   }
 
   .main-content main.lecture-page > h2::before {
-    font-size: 0.75rem !important;
+    font-size: 0.85rem !important;
   }
 
   .main-content .home-hero {
@@ -2943,6 +3090,20 @@ $ed-code-languages: (
 
     > p.home-actions {
       display: none;
+    }
+  }
+
+  // "Next" changes every week; the printed calendar marks no row (the board is hidden too).
+  .main-content table.schedule tr.is-next {
+    &,
+    td,
+    td:first-child {
+      background: none;
+      box-shadow: none;
+    }
+
+    td:first-child {
+      padding-left: 0;
     }
   }
 
@@ -2995,31 +3156,91 @@ $ed-code-languages: (
   }
 }
 
-// The clinic's arithmetic workbench shares the course type and focus tokens.
+// The clinic's arithmetic workbench: the same frame, type and controls as the inference lab, and
+// colour as state (green: every dependency in time; oxblood: at least one slow; the text says both).
 .main-content .reliability-lab {
-  border: 1px solid var(--ed-rule);
-  padding: 1.2rem;
   margin-block: 1.5rem;
-  background: #f7f5ef;
+  padding: 1.25rem;
+  background: var(--ed-bg);
+  border: 1px solid var(--ed-rule);
+  border-left: 3px solid var(--ed-ink);
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+
   .reliability-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  label { display: block; font-weight: 600; }
-  input { display: block; width: 100%; min-height: 44px; margin-top: .4rem; padding: .4rem; font: inherit; }
-  button { min-height: 44px; margin: .5rem .3rem .5rem 0; padding: .4rem .7rem; font: inherit; }
-  .reliability-bar { display: flex; height: 1.4rem; margin-block: .7rem; background: white; }
-  [data-fast-bar] { background: #24614d; }
-  [data-slow-bar] { background: #8c3034; }
-  [data-error] { color: #8c3034; font-weight: 600; }
+
+  label {
+    display: block;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ed-ink);
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    font: inherit;
+    font-size: var(--fs-16);
+    font-weight: 400;
+    color: var(--ed-text);
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-ui);
+    border-radius: 2px;
+  }
+
+  input:focus-visible {
+    outline: 3px solid var(--ed-focus);
+    outline-offset: 2px;
+  }
+
+  button {
+    min-height: 2.75rem;
+    margin: 0.5rem 0.4rem 0.5rem 0;
+    padding: 0.5rem 0.85rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    font-weight: 600;
+    color: var(--ed-ink);
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-ink);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .reliability-bar { display: flex; height: 1.4rem; margin-block: 0.7rem; background: var(--ed-bg); }
+  [data-fast-bar] { background: var(--ed-green); }
+  [data-slow-bar] { background: var(--ed-red); }
+  [data-error] { color: var(--ed-red); font-weight: 600; }
   @media (max-width: 36rem) { .reliability-inputs { grid-template-columns: 1fr; } }
 }
+
+// Both labs: hover only where a pointer can hover; press feedback inside reduced-motion guards.
+@media (hover: hover) {
+  .main-content :is(.inference-lab, .reliability-lab) button:hover {
+    background: var(--ed-paper);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .main-content :is(.inference-lab, .reliability-lab) button {
+    transition: transform 140ms ease-out;
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
 @media print {
   .main-content .reliability-lab form { display: none !important; }
   .main-content .reliability-lab { break-inside: avoid; padding: .7rem; }
-}
-
-.main-content .reliability-lab input:focus-visible,
-.main-content .reliability-lab button:focus-visible {
-  outline: 3px solid var(--ed-ink);
-  outline-offset: 3px;
 }
 
 // Lecture simulators: <div class="sim"> holds a title and a static worked example (.sim-fallback).
@@ -3032,8 +3253,7 @@ $ed-code-languages: (
   font-size: var(--fs-16);
   background: var(--ed-bg);
   border: 1px solid var(--ed-rule);
-  border-top: 2px solid var(--ed-ink);
-  border-radius: 0 0 2px 2px;
+  border-left: 3px solid var(--ed-ink); // the same frame as the inference and reliability labs
 
   > :last-child { margin-bottom: 0; }
   .sim-title { margin-top: 0; }
@@ -3110,7 +3330,7 @@ $ed-code-languages: (
     p { margin: 0.3rem 0 0; }
   }
   .sim-box-title { font-weight: 700; color: var(--ed-ink); }
-  .sim-badge { display: block; margin-top: 0.2rem; font-size: var(--fs-13); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+  .sim-badge { display: block; margin-top: 0.2rem; font-size: var(--fs-14); font-weight: 700; }
   [data-tone="ok"] { background: var(--ed-green-tint); border-color: var(--ed-green); .sim-badge { color: var(--ed-green); } }
   [data-tone="bad"] { background: var(--ed-red-tint); border-color: var(--ed-red); .sim-badge { color: var(--ed-red); } }
   [data-tone="wait"] { background: var(--ed-ochre-tint); border-color: var(--ed-ochre); .sim-badge { color: var(--ed-ochre); } }

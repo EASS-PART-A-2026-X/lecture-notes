@@ -60,6 +60,8 @@ You need:
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Contract:** everything a caller relies on: method, path, request body, response body, status codes and error shape.
 - **Consumer:** the side that calls an API and depends on its contract. Here the backend consumes the AI service's `POST /extract`.
 - **Schema snapshot:** a copy of the other service's published OpenAPI schema, saved in your repository so a test can compare against it.
@@ -799,11 +801,17 @@ At once, not after 30 seconds: "AI service is unavailable, try again in a minute
 
 ## Hands-on lab
 
-Apply this to **your** domain: your names, the same shape. Run each command from the directory the step names.
+Apply this to **your** domain: your names, the same shape. Plan your time:
+
+- **Core today:** steps 1–5
+- **Before Lecture 8:** steps 6–9
+- **Extension (optional):** the [design studio](#design-studio-deep-or-shallow-client) below, then the [Stretch goals](#stretch-goals)
 
 > **EX3 progress:** a third service that your backend calls over HTTP, with tests for its failures, is a required part of EX3 (due Mon 11 Jan 2027, 23:59). Today's lab is not part of EX2.
 
-**Core today**
+Run each command from the directory the step names.
+
+**Core today:**
 
 1. **Write the contract** in your README as a three-row table. **Checkpoint:** a classmate could call your AI service from it alone.
 2. **Add the request model** in `backend/app/models.py`, with length limits, `extra="forbid"` and `str_strip_whitespace=True`.
@@ -811,7 +819,7 @@ Apply this to **your** domain: your names, the same shape. Run each command from
 4. **Add the route**, mapping the exceptions to 503 and 502 with fixed `detail` text.
 5. **Write MockTransport tests.** From `backend/`, in `tests/test_from_text.py`: success (the row is stored), refused → 503, read timeout → 503, a 4xx or a broken body → 502, empty and whitespace-only input → 422 with zero calls. **Checkpoint:** `uv run pytest` passes with Wi-Fi off, and deleting the route's `except AIServiceUnavailable` makes at least one test fail.
 
-**Finish before next meeting**
+**Before Lecture 8:**
 
 6. **Add the schema check.** Generate a snapshot of the AI service's published contract with no server running. From the repository root:
 
@@ -861,8 +869,6 @@ Apply this to **your** domain: your names, the same shape. Run each command from
 7. **Wire the frontend:** the `api.py` function with a longer timeout, a form with a spinner, plain-word 503/502 messages, and the two AppTest tests. **Checkpoint:** `uv run pytest` in `frontend/` passes.
 8. **Run all three**, finish the flow, then stop the AI service and retry.
 9. **README:** data-flow diagram, start commands, error table, and how to regenerate `ai_openapi.json`.
-
-**Extension:** the design studio below, then the [stretch goals](#stretch-goals).
 
 ### Design studio: deep or shallow client
 
@@ -1058,17 +1064,16 @@ Expected: a JSON recipe with an `id`. Stop the AI service and repeat. Expected: 
 
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|
+| EX2 is submitted through the submission channel provided by the instructor | the product repository URL you submitted | [Submission evidence: EX2](../guides/submission-evidence.md#ex2-the-browser-and-backend) |
 | `uv run pytest` in `backend/` passes with Wi-Fi off | the terminal output in your PR description | [Live demo](#live-demo), step 4 · [Tests with pytest](../guides/engineering-foundations.md#tests-with-pytest) |
 | Tests cover success, 503 (refused, timeout, 5xx), 502 (4xx, broken body) and 422 with zero calls | the test names | [Hands-on lab](#hands-on-lab), step 5 |
 | `test_contract.py` passes against a freshly generated `ai_openapi.json` | the regeneration command in your README | [Hands-on lab](#hands-on-lab), step 6 |
+| A paste in the browser shows a spinner, then the new recipe in the list | a screenshot or a one-line note | [Hands-on lab](#hands-on-lab), steps&nbsp;7–8 |
 | With the AI service stopped, a paste shows a friendly message at once and the Recipes tab still works | a screenshot or a one-line note | [Common pitfalls](#common-pitfalls) |
 | `uv run pytest` in `frontend/` passes, including the paste tests | the terminal output | [Live demo](#live-demo), step 5 |
+| Your README has the contract table, the data flow, the run commands and the snapshot command | the README on GitHub | [Hands-on lab](#hands-on-lab), steps&nbsp;1 and&nbsp;9 |
 
 **Not yet?** Repair and re-run before starting the next lecture's lab; later layers assume this one works.
-
-- [ ] Paste, spinner, then the new recipe in the list.
-- [ ] Your README has the contract table, the data flow, the run commands and the snapshot command.
-- [ ] EX2 is submitted through the submission channel provided by the instructor.
 
 ## Quick quiz
 
@@ -1169,9 +1174,6 @@ Emphasize that the backend validates the AI service's *response*. Students get s
 
 ## Read more
 
-- [One intent, repeated requests](../guides/systems-reasoning.md#one-intent-repeated-requests): optional replay and outbox clinic with an original SQLite failure lab.
-
-
 **Before the lab (≤15 min):** [HTTPX: timeouts](https://www.python-httpx.org/advanced/timeouts/). Read it with two questions: (1) which of the four limits would fire if the AI service accepted the connection and never answered? (2) what does `timeout=None` mean, and why is it never right for a call to another service?
 
 **Go deeper (optional):**
@@ -1179,6 +1181,7 @@ Emphasize that the backend validates the AI service's *response*. Students get s
 - [HTTPX: transports, including MockTransport](https://www.python-httpx.org/advanced/transports/)
 - [FastAPI: handling errors](https://fastapi.tiangolo.com/tutorial/handling-errors/) and [testing dependencies with overrides](https://fastapi.tiangolo.com/advanced/testing-dependencies/)
 - [MDN: 502 Bad Gateway](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/502) and [503 Service Unavailable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503)
+- [One intent, repeated requests](../guides/systems-reasoning.md#one-intent-repeated-requests): a replay and outbox clinic with an original SQLite failure lab.
 - [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md): this checkpoint as one picture, with service ownership, validation, the commit boundary and failure evidence.
 - [Further study](../guides/further-study.md): course sites on lost replies and end-to-end checks.
 

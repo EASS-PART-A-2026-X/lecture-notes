@@ -55,6 +55,8 @@ You also need your product on GitHub with `main` as the default branch, the Lect
 <details markdown="1">
 <summary>Words you'll meet today</summary>
 
+Every term here is also in the course [glossary](../guides/engineering-foundations.md#glossary), next to the terms from the other lectures.
+
 - **Workflow:** a YAML file in `.github/workflows/` that tells GitHub what to run and when.
 - **Runner:** the fresh virtual machine GitHub starts for one job and throws away afterwards.
 - **Job:** a named group of steps that runs on one runner. Jobs run in parallel unless one `needs` another.
@@ -626,7 +628,12 @@ FAILED (exit 22). Last log lines from each service:
 
 ## Hands-on lab
 
-**Core today:** steps 1, 4 and 7. **Finish before Meeting 11:** steps 2, 3 and 6. **May finish in Meeting 11:** step 5.
+Apply each step to **your own** product. Plan your time:
+
+- **Core today:** steps 1, 4 and 7
+- **Before Meeting 11:** steps 2, 3 and 6
+- **May finish in Meeting 11:** step 5
+- **Extension (optional):** the [Stretch goals](#stretch-goals), after EX3's minimum works
 
 1. **CI.** Copy the workflow to `.github/workflows/ci.yml`; adapt the matrix to your service folders and the smoke step to your endpoints. Open a pull request in your own repository. **Checkpoint:** the three `test` checks and `compose` are green; `audit` is advisory and may show findings.
 2. **Lint it** from the repository root with actionlint and zizmor until both are clean.
@@ -955,11 +962,6 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 
 ## Read more
 
-- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises. Optional depth.
-
-- [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): optional release-decision exercise using reliability and critical-failure evidence.
-
-
 **Before the lab (≤15 min):** [Understanding GitHub Actions](https://docs.github.com/en/actions/get-started/understand-github-actions). Guiding questions: (1) What is the difference between a job and a step? (2) Which events can start a workflow, and which one does Recipe Box leave out on purpose?
 
 **Go deeper (optional):**
@@ -972,6 +974,8 @@ Emphasize: distinguish exact pins from moving version lines, apply least privile
 - [Agent sandboxes: review and release](../guides/agent-sandboxes.md#review-and-release): disposable candidate execution, trusted verification, and release credentials. Container resource limits and agent budgets do not replace authorization.
 - [Manifests, skills and evals: engineering contracts](../guides/engineering-contracts.md): configuration consumers, reusable procedures, evidence, and current agent-engineering guidance.
 - [Visual system walkthrough: one request, end to end](../guides/system-walkthrough.md): service ownership, validation, the commit boundary, and failure evidence.
+- [Count the user outcome](../guides/systems-reasoning.md#count-the-user-outcome): a release-decision exercise using reliability and critical-failure evidence.
+- [Visual inference engineering](../guides/inference-engineering.md): model choice, attention, quantization, caching, speculation, batching, parallelism, modalities and production, with worked visual exercises.
 - [Rehearse schema evolution, recovery and the complete change cycle](../guides/industry-studio.md#evolve-data-without-losing-it) in the industry studio. This optional activity deepens the current checkpoint without changing the assignment.
 
 ---

@@ -1455,55 +1455,127 @@ The base image: the tag `3.14-slim` now points to a newer build; pin it with a d
 
 ## Glossary
 
-One line per term, with a link to where the course first teaches it.
+One line per term, with a link to where the course first teaches it. Every term from the lectures' "Words you'll meet today" lists is here; the [reference card](reference-card.md) collects the commands, ports and status codes.
 
 | Term | Meaning | First taught |
 |---|---|---|
 | 422 Unprocessable Content | The request broke the contract: a missing field, a value out of range, an unknown field | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#status-codes-you-must-own) |
+| 502 Bad Gateway | "The service behind me answered with something I cannot use" | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) |
+| 503 Service Unavailable | "A service I depend on is not available right now; try later" | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) |
+| Adapter | Code that translates one service's shapes into another's, such as lists into the backend's comma-separated `tags` | [Lecture 7](../lectures/07-third-service-contracts.md#live-demo) |
+| Advisory | A published record of a known vulnerability in a package version, with an ID such as `GHSA-…`, `PYSEC-…` or `CVE-…` | [Lecture 10](../lectures/10-ci-security-release.md#dependency-hygiene) |
+| Agent (Pydantic AI) | A model plus instructions, tools, an output type and dependencies, run as a loop | [Lecture 6](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) |
 | API contract | The paths, bodies, status codes and meanings that callers may rely on | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#rest-nouns-in-paths-verbs-in-methods) |
+| Application agent (product agent) | Your own agent inside `ai-service`, such as Recipe Box's `extract_agent`: it runs at request time, and your code decides its tools, validators and retries | [Lecture 6](../lectures/06-pydantic-ai-agents.md#model-provider-coding-harness-application-agent) |
+| Application framework | A library your code uses to build agent runs, tools, validation and state, such as Pydantic AI or Mastra | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
+| `AppTest` | Streamlit's test runner: it runs `streamlit_app.py` in-process, with no server and no browser, and lets a test read and click widgets | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
+| ARIA role | A label such as `button`, `tab` or `alert` that tells screen readers (and Playwright) what an element is | [Lecture 5](../lectures/05-frontend-reliability-testing.md#four-states-every-screen-needs) |
+| Assertion versus score | An evaluator that returns pass or fail (`bool`) versus one that returns a number between 0 and 1 (`float`) | [Lecture 9](../lectures/09-failures-evals-costs.md#task-evaluations) |
 | Backoff | Waiting longer before each retry | [Lecture 9](../lectures/09-failures-evals-costs.md#retry-at-one-layer-only) |
+| Baseline | A simple, cheap system whose score a real model has to beat | [Lecture 9](../lectures/09-failures-evals-costs.md#task-evaluations) |
 | Bind address | The address a server listens on: `127.0.0.1` (this machine or container only) or `0.0.0.0` (all addresses) | [Containers in one page](#containers-in-one-page) |
 | Branch | A movable label on a line of commits | [Lecture 1](../lectures/01-environment-git-docker-ai.md#git-and-github-commits-branches-pull-requests) |
+| Chat product | An interface for asking a model questions, such as ChatGPT or Gemini; a chat subscription does not automatically grant API credits | [Student setup](student-setup.md#choose-a-simple-route) |
+| Check run | One row in a pull request's Checks list, one per job, green or red | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
 | CI | Running the same checks automatically on every push | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
+| Coding harness (coding agent) | A harness you use while you develop, such as Codex, Claude Code or OpenCode: it reads your workspace and runs the commands you permit | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
 | Commit (database) | Ends a transaction so its changes become durable and visible to others | [Lecture 3](../lectures/03-persistence-and-first-pr.md#engine-session-and-the-session-dependency) |
 | Commit (Git) | A snapshot of the staged files plus a message saying why | [Lecture 1](../lectures/01-environment-git-docker-ai.md#git-and-github-commits-branches-pull-requests) |
+| Consumer | The side that calls an API and depends on its contract; the backend consumes the AI service's `POST /extract` | [Lecture 7](../lectures/07-third-service-contracts.md#http-contracts) |
 | Container | A running or stopped instance of an image, with its own files, processes and `localhost` | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
 | CORS | Browser rules for which other origins a page may call; not authentication | [Lecture 4](../lectures/04-browser-frontend.md#other-frameworks-and-cors) |
+| Daemon | A background program that waits for work; the Docker daemon runs containers, and the `docker` command only sends it requests | [Lecture 1](../lectures/01-environment-git-docker-ai.md#before-you-start) |
 | Deadline | The total time a caller may spend across all attempts | [Lecture 9](../lectures/09-failures-evals-costs.md#timeout-budgets-outside-in) |
+| Dependencies (`deps`) | Data or clients your code hands to tools and validators for one agent run | [Lecture 6](../lectures/06-pydantic-ai-agents.md#tools-and-dependencies) |
 | Dependency (FastAPI) | A function that `Depends(...)` runs to hand a route a shared object, such as a session | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#fastapi-type-hints-do-the-work) |
+| Dependency injection | The framework hands a route what it needs (`store: StoreDep`) instead of the route creating it, so a test can hand in a different one | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#fastapi-type-hints-do-the-work) |
+| Deprecation warning | A library telling you a feature still works but will be removed; the course's tests turn warnings into failures | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#live-demo) |
+| End-to-end (e2e) test | A test that drives the real browser, the real frontend, the real backend and the real database together | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
 | Environment variable | A name and text value a process receives when it starts | [Configuration and environment variables](#configuration-and-environment-variables) |
+| Escaping | Marking special characters so they are shown as text instead of being interpreted: `\*` shows a star instead of starting bold text | [Lecture 4](../lectures/04-browser-frontend.md#show-user-text-as-text) |
 | Eval slice | A labelled group of evaluation cases, such as "injection" or "missing field", scored separately | [Lecture 9](../lectures/09-failures-evals-costs.md#a-higher-average-can-hide-a-worse-system) |
+| Evaluation (eval) | Scoring realistic inputs against expected outputs that you wrote, to measure quality rather than control flow | [Lecture 9](../lectures/09-failures-evals-costs.md#task-evaluations) |
 | Event loop | The thread that runs `async def` code and switches requests at each `await` | [Python you need to read](#python-you-need-to-read) |
 | Exit status | The number a command returns: `0` for success, anything else for failure (`echo $?`) | [Files, environments, and processes](#files-environments-and-processes) |
+| Factory fixture | A pytest fixture that returns a function, so each test decides how the fake behaves | [Lecture 7](../lectures/07-third-service-contracts.md#live-demo) |
 | Fixture | A function pytest runs to prepare what a test names as a parameter | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#live-demo) |
 | Flush | Sends pending SQL to the database inside the open transaction, without committing | [Lecture 3](../lectures/03-persistence-and-first-pr.md#learning-checkpoint) |
-| Harness | The controller code around a model that builds context, exposes tools, runs tool calls and enforces limits | [Lecture 6](../lectures/06-pydantic-ai-agents.md#an-agent-is-a-loop-around-a-model) |
+| Fork | Your own copy of someone else's GitHub repository; upstream PRs usually go from a branch in your fork to the original project | [Lecture 1](../lectures/01-environment-git-docker-ai.md#before-you-start) |
+| Form (Streamlit) | `st.form`: a group of inputs that is sent only when its submit button is pressed | [Lecture 4](../lectures/04-browser-frontend.md#forms-and-keys) |
+| Frontend server | The Streamlit process (port 8501): it runs your Python and sends the page to the browser | [Lecture 4](../lectures/04-browser-frontend.md#where-the-frontend-sits) |
+| `FunctionModel` | Pydantic AI's fake model whose replies you script in a function | [Lecture 6](../lectures/06-pydantic-ai-agents.md#deterministic-model-substitutes) |
+| Harness | The controller code around a model that builds context, exposes tools, runs tool calls and enforces limits; a coding harness and an application agent are both harnesses | [Models and AI literacy](models-and-ai-literacy.md#six-things-to-distinguish) |
 | Health check | An endpoint or command that reports whether a service can do its job | [Lecture 8](../lectures/08-docker-compose.md#health-and-readiness) |
+| Healthcheck (Compose) | A command Docker runs inside the container every few seconds; its result is the container's health: `starting`, `healthy` or `unhealthy` | [Lecture 8](../lectures/08-docker-compose.md#health-and-readiness) |
+| `httpx.MockTransport` | A fake network: each request goes to a Python function you write, and nothing leaves your machine | [Lecture 7](../lectures/07-third-service-contracts.md#http-contracts) |
 | Idempotent | Repeating the request has the same intended effect as sending it once | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#rest-nouns-in-paths-verbs-in-methods) |
 | Image | A read-only template (files plus a default command) that containers start from | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
 | Image digest | A `sha256:` identifier that names exactly one image build | [Lecture 10](../lectures/10-ci-security-release.md#reproducible-means-pinned) |
+| Import string | `app.main:app`: import the module `app/main.py` and use the object named `app` in it | [Lecture 1](../lectures/01-environment-git-docker-ai.md#live-demo) |
+| In-process | Inside the test's own Python process, with no server, no network and no port, as `TestClient` calls your app | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#live-demo) |
+| Interface (network) | One way into a machine: Wi-Fi, a cable, a virtual network | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
+| Interpolation (Compose) | Compose replacing `${NAME:-default}` in `compose.yaml` while reading the file, before any container exists | [Lecture 8](../lectures/08-docker-compose.md#configuration-interpolation-environment-and-env_file) |
+| Job (CI) | A named group of steps that runs on one runner; jobs run in parallel unless one `needs` another | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
+| Lax versus strict (Pydantic) | Lax mode, the default, converts obvious cases (`"40"` to `40`); strict mode rejects any value of the wrong type | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#before-you-start) |
 | Lifespan | Code that runs once when the app starts and once when it stops | [Lecture 3](../lectures/03-persistence-and-first-pr.md#tables-migrations-and-seeds) |
+| Lint and format | `ruff check` flags suspicious or outdated code; `ruff format` rewrites layout (quotes, spacing) the same way for everyone | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#live-demo) |
+| Linux capability | One slice of root's power, such as changing file owners or opening raw network sockets | [Lecture 10](../lectures/10-ci-security-release.md#least-privilege-layer-by-layer) |
+| Locator | Playwright's description of how to find an element, such as "the button named Add recipe" | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
 | Lockfile | `uv.lock`: the exact version of every installed package | [Lecture 1](../lectures/01-environment-git-docker-ai.md#uv-one-tool-for-python-and-dependencies) |
+| Loopback | The interface that reaches only the same machine: `127.0.0.1`, also called `localhost` | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
 | Migration | A versioned change to an existing database schema that keeps its rows | [Lecture 3](../lectures/03-persistence-and-first-pr.md#tables-migrations-and-seeds) |
 | Mock | A controlled stand-in for a real dependency in a test; it proves nothing about the real one | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
-| Port publishing | `-p HOST:CONTAINER`: forwards a host port to a container port | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
+| Model | The trained weights that turn input tokens into output tokens; it runs nothing itself | [Lecture 6](../lectures/06-pydantic-ai-agents.md#model-provider-coding-harness-application-agent) |
+| `ModelRetry` | An exception that sends a message back to the model for another try | [Lecture 6](../lectures/06-pydantic-ai-agents.md#output-validators-and-modelretry) |
+| Origin | Scheme, host and port, such as `http://localhost:5173`; browsers compare origins before letting JavaScript read another server's reply | [Lecture 4](../lectures/04-browser-frontend.md#where-the-frontend-sits) |
+| Outcome unknown | The request was sent but no reply arrived, so you cannot tell whether the backend did the work | [Lecture 5](../lectures/05-frontend-reliability-testing.md#translating-failures-into-words) |
+| Output tool | The "function" (`final_result`) whose arguments are your typed result | [Lecture 6](../lectures/06-pydantic-ai-agents.md#structured-output) |
+| Port publishing (published port) | `-p HOST:CONTAINER`, or `ports:` in Compose: forwards a host port to a container port | [Lecture 1](../lectures/01-environment-git-docker-ai.md#docker-images-and-containers) |
 | Primary key | The column that identifies each row, such as `id` | [Tables, rows, and SQL](#tables-rows-and-sql) |
+| Project (Compose) | Everything Compose creates for one `compose.yaml` (containers, a network and volumes), all prefixed with the project name | [Lecture 8](../lectures/08-docker-compose.md#one-file-instead-of-three-terminals) |
+| Provider | The service that answers model requests: a hosted API, or Ollama on your laptop | [Lecture 6](../lectures/06-pydantic-ai-agents.md#model-provider-coding-harness-application-agent) |
 | Pull request | A request to merge one branch into another, with the diff for review | [Lecture 1](../lectures/01-environment-git-docker-ai.md#git-and-github-commits-branches-pull-requests) |
 | Rebase | Replaying commits on top of another branch, which rewrites their ids; a rebase merge still counts as merged | [README](../README.md#what-counts-as-merged) |
 | Regression test | A test added for a bug you fixed, so it cannot silently return | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#break-it-on-purpose) |
+| Release candidate (RC) | A version you believe is final, published so others can try it, such as `v1.0.0-rc.1` | [Lecture 10](../lectures/10-ci-security-release.md#releases) |
+| Rerun | Streamlit runs your whole script again, top to bottom, after every interaction | [Lecture 4](../lectures/04-browser-frontend.md#the-rerun-model) |
+| respx route | One faked URL, such as `backend.post("/recipes")`; it records every request it answered, so a test can read what was sent | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
 | Retry budget | The most attempts (and time) one layer may spend retrying | [Lecture 9](../lectures/09-failures-evals-costs.md#retry-at-one-layer-only) |
+| Retry predicate | The function that decides which errors are worth another attempt (`_is_transient`) | [Lecture 9](../lectures/09-failures-evals-costs.md#retry-at-one-layer-only) |
+| Runner | The fresh virtual machine GitHub starts for one job and throws away afterwards | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
 | Safe method | A method that does not ask the server to change business state, such as `GET` | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#rest-nouns-in-paths-verbs-in-methods) |
 | Schema | The declared shape and rules of data: a Pydantic model, or a table's columns | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#pydantic-the-contract-as-code) |
+| Schema snapshot | A copy of another service's published OpenAPI schema, saved in your repository so a test can compare against it | [Lecture 7](../lectures/07-third-service-contracts.md#http-contracts) |
 | Seed | Demo rows inserted into an empty database; running it twice must insert nothing new | [Lecture 3](../lectures/03-persistence-and-first-pr.md#tables-migrations-and-seeds) |
+| Service (Compose) | One entry under `services:` in `compose.yaml`; Compose runs one container for it (or more, if scaled) | [Lecture 8](../lectures/08-docker-compose.md#one-file-instead-of-three-terminals) |
+| Service DNS name | Inside a Compose project's network, each service name (`backend`, `ai-service`) resolves to that service's container | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
 | Session (database) | One unit of work with the database: add objects, then commit or roll back | [Lecture 3](../lectures/03-persistence-and-first-pr.md#engine-session-and-the-session-dependency) |
+| Session state | `st.session_state`: a dictionary the frontend server keeps for one browser tab | [Lecture 4](../lectures/04-browser-frontend.md#the-rerun-model) |
+| SHA | The 40-character hash that names exactly one commit, such as `3d3c42e5…` | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
+| Slim image | A smaller variant of an image, such as `python:3.14-slim`, with fewer system tools; it has no `curl` | [Lecture 1](../lectures/01-environment-git-docker-ai.md#live-demo) |
+| Squash merge | Merging a PR as one new commit that contains all of its changes | [Lecture 1](../lectures/01-environment-git-docker-ai.md#live-demo) |
 | Staging area | The snapshot Git will record in your next commit (`git add` puts changes there) | [Git you need to operate](#git-you-need-to-operate) |
+| Step and action (CI) | One command (`run:`) or one published, reusable piece of workflow code (`uses:`) | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
+| Strict mode (Playwright) | Playwright refuses to act when a locator matches more than one element | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
 | Structured output | Model output validated against a declared type, such as a Pydantic model | [Lecture 6](../lectures/06-pydantic-ai-agents.md#structured-output) |
+| Tag (image) | A movable name such as `3.14-slim` that can point to a newer build tomorrow; a digest names one exact build | [Lecture 1](../lectures/01-environment-git-docker-ai.md#before-you-start) |
 | `TestModel` | Pydantic AI's built-in fake model for tests: no key, no network, no cost | [Lecture 6](../lectures/06-pydantic-ai-agents.md#deterministic-model-substitutes) |
 | Timeout | How long one attempt waits before giving up | [Lecture 7](../lectures/07-third-service-contracts.md#explicit-timeouts) |
+| Timeout budget | How long each layer may wait; an outer layer must wait longer than the worst case inside it | [Lecture 9](../lectures/09-failures-evals-costs.md#timeout-budgets-outside-in) |
+| Timeout phase | One of httpx's four separate limits: connect, write, read and pool | [Lecture 7](../lectures/07-third-service-contracts.md#explicit-timeouts) |
+| Token | A model-specific unit of text; requests are measured and billed in tokens | [Models and AI literacy](models-and-ai-literacy.md#tokens-context-memory-and-retrieval) |
 | Tool (agent) | A function the model may ask the agent loop to run | [Lecture 6](../lectures/06-pydantic-ai-agents.md#tools-and-dependencies) |
 | Traceback | Python's report of an uncaught exception: the chain of calls, newest last | [Debug with a hypothesis](#debug-with-a-hypothesis) |
 | Transaction | A group of database changes that are committed together or rolled back together | [Tables, rows, and SQL](#tables-rows-and-sql) |
-| Volume | Docker-managed storage that outlives containers, mounted at a path | [Lecture 3](../lectures/03-persistence-and-first-pr.md#where-data-lives) |
+| Transient failure | A failure that may succeed if you try again, such as a timeout or a busy server; a bug or a spent budget is not transient | [Lecture 9](../lectures/09-failures-evals-costs.md#the-main-ways-the-ai-path-fails) |
+| Usage limit | A stopping rule for one agent run: requests, tool calls, tokens or cost (`UsageLimits`) | [Lecture 9](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) |
+| Virtual environment | `.venv/`: a project-private folder of installed packages, so projects do not share or break each other's libraries | [Lecture 1](../lectures/01-environment-git-docker-ai.md#uv-one-tool-for-python-and-dependencies) |
+| Volume (named volume) | Docker-managed storage that outlives containers, mounted at a path; `docker compose down` keeps it, `down -v` deletes it | [Lecture 3](../lectures/03-persistence-and-first-pr.md#where-data-lives) |
+| Web-first assertion | An `expect(...)` check that retries until it passes or a timeout runs out, instead of checking once | [Lecture 5](../lectures/05-frontend-reliability-testing.md#testing-a-ui-in-layers) |
+| Websocket | A long-lived, two-way connection; Streamlit's page uses one to send clicks to the frontend server and receive the updated page | [Lecture 4](../lectures/04-browser-frontend.md#where-the-frontend-sits) |
+| Widget key | The name Streamlit uses to remember a widget's value between reruns; derive it from the record's id, never the loop position | [Lecture 4](../lectures/04-browser-frontend.md#forms-and-keys) |
+| Worker thread | FastAPI runs each plain `def` route in a thread from a fixed-size pool; a stuck request keeps its thread | [Lecture 7](../lectures/07-third-service-contracts.md#why-a-separate-process) |
+| Workflow (CI) | A YAML file in `.github/workflows/` that tells GitHub what to run and when | [Lecture 10](../lectures/10-ci-security-release.md#ci-the-same-checks-on-every-push) |
 | Working tree | The files on disk, including edits Git has not stored yet | [Git you need to operate](#git-you-need-to-operate) |
 
 **Check yourself:** Before each lecture, cover the Meaning column, pick five terms from lectures you have already had, and say each meaning aloud in one sentence; then uncover and compare. After you repair a section, retake its item in the [readiness check](#readiness-check).

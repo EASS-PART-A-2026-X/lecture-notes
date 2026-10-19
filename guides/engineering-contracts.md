@@ -34,7 +34,7 @@
 - **Consumer:** the program that reads a file and acts on it: Docker reads a `Dockerfile`, GitHub Actions reads a workflow, a coding harness reads `AGENTS.md`.
 - **Controller:** trusted code that decides what a run may do and starts it. It is not the task being run, and the task cannot change it.
 - **Policy profile:** a named, pre-approved set of permissions (for example "offline tests, no release") that a controller looks up. A task may *name* one; it cannot *define* one.
-- **Harness:** the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
+- **Harness:** the controller code around a model ([definition](models-and-ai-literacy.md#six-things-to-distinguish)). Your coding harness (Claude Code, Codex, OpenCode) and the application agent in `ai-service` are both harnesses.
 - **Factory candidate:** one proposed change (a commit) that a delivery process builds, checks and may later release.
 - **Held-out case:** an evaluation case you keep aside and do not tune against, so it can still reveal overfitting.
 - **Model judge:** a model asked to grade another model's output. Its grades need checking against a few cases a person labelled.

@@ -3,8 +3,8 @@
 // Values derived from a changed variable are recomputed here, because the theme computed them
 // before this file was read. Components and tokens: custom.scss; colours: color_schemes/eass.scss.
 
-// Type. The theme's body font stays a sans for interface chrome (navigation, search, tables,
-// labels); custom.scss sets reading text in a serif. System fonts only (no font downloads):
+// Type. The theme's body font stays a sans for structure (headings, navigation, search, tables,
+// labels); custom.scss sets running text in a serif. System fonts only (no font downloads):
 // macOS, Windows and Linux (Liberation, used by the PDF build) each have a match.
 $body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial,
   "Liberation Sans", sans-serif;
@@ -17,7 +17,8 @@ $body-heading-line-height: 1.2;
 // The theme's light grey (#959396, 2.9:1 on white) colours ordered-list numbers and breadcrumbs.
 $grey-dk-000: #535c6b;
 
-// Sidebar rhythm: 26 items and 3 group labels fit a 900 px tall window.
+// Sidebar rhythm: 30 items and 4 group labels are about 1,080 px tall, so in a window shorter than
+// about 1,360 px the list scrolls above the colophon.
 $nav-list-item-height: 1.875rem;
 
 // Layout. A 54rem main column (50rem of content after the gutters) gives figures, tables and code

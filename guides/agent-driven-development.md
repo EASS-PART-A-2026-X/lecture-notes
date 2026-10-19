@@ -4,7 +4,7 @@
 
 [Course guide](../README.md) · [Software factory lab](software-factory-lab.md)
 
-**Related guides:** [Student setup](student-setup.md) and [Models and AI literacy](models-and-ai-literacy.md) for tools and terms · [Agent sandboxes](agent-sandboxes.md#week-1-minimum) for the execution boundary · [Local inference](local-inference.md) for the model-server path · [Engineering contracts](engineering-contracts.md) for manifests, skills and evaluations · [the learning map](learning-map.md) for the class-by-class route.
+**Related guides:** [Student setup](student-setup.md) and [Models and AI literacy](models-and-ai-literacy.md) for tools and terms · [Agent sandboxes](agent-sandboxes.md#week-1-minimum) for the execution boundary · [Local inference](local-inference.md) for the model-server path · [Manifests, skills and evals](engineering-contracts.md) for engineering contracts · [the learning map](learning-map.md) for the class-by-class route.
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
@@ -91,17 +91,15 @@ The learning goal is to explain and improve each loop: its inputs, tools, state,
 | Concept | Meaning in this course | Concrete example |
 |---|---|---|
 | Model | Produces text or structured requests for actions | Suggests calling `allowed_tags` (Lecture 6: the extractor's read-only tag-list tool) |
-| Agent | Uses model decisions and tool results to pursue a bounded task | Recipe extraction with validation retries |
+| Agent | Uses model decisions and tool results to pursue a bounded task | The application agent in `ai-service` (this guide's product agent): recipe extraction with validation retries |
 | Tool | An operation exposed through a defined interface | Read the allowed domain tags |
 | Workflow | Code determines the allowed stages and transitions | Validate → extract → validate → save |
-| Harness | The controller code around a model (definition below) | Codex, Claude Code, OpenCode; the agent loop in `ai-service` |
+| Harness | The controller code around a model ([definition](models-and-ai-literacy.md#six-things-to-distinguish)) | A coding harness (this guide's coding agent) such as Codex, Claude Code or OpenCode; the application agent's loop in `ai-service` |
 | Software factory | Coordinates changes through verification and delivery | Work order → isolated candidate → CI → PR |
 | Context | Information available for the current decision | Relevant schema, request, and tool result |
 | Memory | Information retained for later turns or runs | A conversation summary scoped to one user |
 | Skill | Reusable instructions and supporting resources | A project's review procedure |
 | MCP | Model Context Protocol: a standard way to connect tools and data sources to an assistant | A connector exposing repository search |
-
-A **harness** is the controller code around a model: it builds the context, exposes tools, validates and runs tool calls, and enforces limits. Your coding assistant (Claude Code, Codex, OpenCode) is a **coding harness** you use at development time. Inside your product, the **Pydantic AI agent loop** in `ai-service` plays that role at request time.
 
 Names overlap across products. Inspect what a component actually executes, persists, and permits. A skill describes a method; an MCP connection exposes capabilities; neither substitutes for authorization.
 
