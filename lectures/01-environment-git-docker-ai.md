@@ -819,9 +819,9 @@ Expected: `Python 3.14.x`; three or more commits; two merged PRs (the sketch and
 </details>
 
 <details markdown="1">
-<summary>Q2. In -p 8080:8000, which port does your browser use? (a) 8080, the host port (b) 8000, the container port (c) Whichever port is free</summary>
+<summary>Q2. In -p 8080:8000, which port does your browser use? (a) 8000, the container port (b) Whichever port is free (c) 8080, the host port</summary>
 
-**(a).** The format is `HOST:CONTAINER`. The browser talks to the host on 8080, and Docker forwards that to 8000 inside the container, where nothing listens on 8080.
+**(c).** The format is `HOST:CONTAINER`. The browser talks to the host on 8080, and Docker forwards that to 8000 inside the container, where nothing listens on 8080.
 
 </details>
 
