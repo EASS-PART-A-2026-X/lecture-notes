@@ -279,8 +279,9 @@ class CourseComponentsTest(unittest.TestCase):
 
     def test_reference_card_repeats_what_its_links_teach(self):
         """The reference card adds no fact of its own: every table row links to a course page, every
-        code snippet in a row appears on a page that row links to, and its "When you are behind"
-        ladder equals the learning map's (the card adds only the "Taught in" column)."""
+        code snippet in a row appears on a page that row links to, its "When you are behind"
+        ladder equals the learning map's (the card adds only the "Taught in" column), and its
+        open-source rule quotes the README word for word."""
         card = main_of(self.pages["guides/reference-card.html"])
         base = re.search(r"^baseurl: (\S+)", CONFIG.read_text(encoding="utf-8"), re.M).group(1).strip("/")
         here = f"https://site/{base}/guides/reference-card.html"
@@ -315,6 +316,18 @@ class CourseComponentsTest(unittest.TestCase):
         expected = ladder(self.pages["guides/learning-map.html"])
         self.assertEqual(len(expected), 8)
         self.assertEqual(ladder(self.pages["guides/reference-card.html"]), expected)
+
+        # Policy is quoted, never paraphrased: each sentence of the Policy callout's first paragraph
+        # and each condition in its list appears in the README exactly as written.
+        policy = re.search(r'<strong class="callout-label">Policy:</strong>(.*?)</p>\s*<ul>(.*?)</ul>', card, re.S)
+        self.assertIsNotNone(policy, "the open-source rule is a Policy callout with its list of conditions")
+        readme = plain(main_of(self.pages["index.html"]))
+        quoted = [part for part in re.split(r"(?<=[.:])\s+", plain(policy.group(1))) if part.endswith(".")]
+        quoted += [plain(item) for item in re.findall(r"<li>(.*?)</li>", policy.group(2), re.S)]
+        self.assertGreaterEqual(len(quoted), 4)
+        for text in quoted:
+            with self.subTest(policy=text[:60]):
+                self.assertTrue(text in readme, f"the Policy callout must quote the README word for word: {text!r}")
 
     def test_lecture_word_lists_are_in_the_glossary(self):
         """Every term a lecture's "Words you'll meet today" list defines has a glossary row. A label

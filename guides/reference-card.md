@@ -37,7 +37,8 @@ Every container has its own `localhost`, so the right address depends on where t
 | Your browser | the frontend | `http://localhost:8501` | [Lecture 4](../lectures/04-browser-frontend.md#live-demo) |
 | Your terminal (`curl`, `/docs`) | the backend | `http://localhost:8000` | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#live-demo) |
 | The backend, run by hand | the AI service | `http://localhost:8001` | [Lecture 7](../lectures/07-third-service-contracts.md#live-demo) |
-| The frontend, under Compose | the backend | `http://backend:8000` | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
+| The frontend's Python (Streamlit), under Compose | the backend | `http://backend:8000` | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
+| A React app (it runs in your browser), under Compose | the backend | `http://localhost:8000` plus CORS, or the proxy in Lecture 8's optional box | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
 | The backend, under Compose | the AI service | `http://ai-service:8001` | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
 | Your laptop, under Compose | the AI service | nothing: the AI service has no `ports:` | [Lecture 8](../lectures/08-docker-compose.md#networking-where-is-localhost) |
 
@@ -138,8 +139,8 @@ These meanings are Recipe Box's contract and retry policy, not a rule for every 
 | 422 Unprocessable Content | The request broke the contract: a missing field, a value out of range or, in FastAPI, invalid JSON | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#status-codes-you-must-own) |
 | 429 Too Many Requests | From the AI service: this run's usage budget is spent. The backend does not retry it and answers 503 | [Lecture 9](../lectures/09-failures-evals-costs.md#retry-at-one-layer-only) |
 | 500 Internal Server Error | A bug on your side: the stack trace belongs in the server log, never in the reply. An AI-service 500 (a crash or a provider failure) is not retried; the backend answers 503 | [Lecture 2](../lectures/02-http-fastapi-pydantic.md#status-codes-you-must-own) · [Lecture 9](../lectures/09-failures-evals-costs.md#the-main-ways-the-ai-path-fails) |
-| 502 Bad Gateway | The AI service answered with something the backend cannot use: a 4xx, or a 200 that breaks the contract. From Lecture 9 the AI service also sends 502 when the model's output is still invalid after the agent's retries | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) · [Lecture 9](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) |
-| 503 Service Unavailable | A dependency is not available; try later. The backend's answer when a call to the AI service is refused, fails DNS, times out or gets a 5xx | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) |
+| 502 Bad Gateway | The AI service answered with something the backend cannot use: a 4xx, or a 200 that breaks the contract. From Lecture 9 the AI service also sends 502 when the model's output is still invalid after the agent's retries, and the backend passes it on as 502 without retrying | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) · [Lecture 9](../lectures/09-failures-evals-costs.md#malformed-output-and-cost-limits) |
+| 503 Service Unavailable | A dependency is not available; try later. The backend's answer when a call to the AI service is refused, fails DNS, times out, or gets a 500, 503 or 504. Lecture 7 maps every AI-service 5xx to 503; from Lecture 9 an AI-service 502 passes through as 502 | [Lecture 7](../lectures/07-third-service-contracts.md#service-errors-without-leaking-internals) · [Lecture 9](../lectures/09-failures-evals-costs.md#the-main-ways-the-ai-path-fails) |
 | 504 Gateway Timeout | The AI service's 25 s cap fired. Transient: the backend retries it, which runs the model again (paid), then answers 503 | [Lecture 9](../lectures/09-failures-evals-costs.md#the-main-ways-the-ai-path-fails) |
 
 ## When you are behind
@@ -172,7 +173,13 @@ Before you ask, write one sentence saying what you think is wrong, and why: a [d
 
 ## The open-source rule
 
-**Policy:** each student needs at least three distinct pull requests of their own, merged into established open-source projects: the official public upstream repository on GitHub, under an open-source license, with more than 10,000 stars on the day you open the PR. Record each PR in your [evidence table](../README.md#evidence-table). The README defines [qualifying repositories](../README.md#qualifying-repositories), [what counts as merged](../README.md#what-counts-as-merged) and the [deadline](../README.md#assignments-and-deadlines).
+> **Policy:** Each student needs at least three distinct pull requests (PRs) of their own accepted and merged into established open-source projects; credit is per student, not per team, and each PR counts for one student only. A repository qualifies only when it meets all three conditions:
+>
+> - The official public upstream repository on GitHub, under an open-source license, of an established project with ongoing maintainer activity.
+> - More than 10,000 GitHub stars on the day you open the PR; exactly 10,000 is not enough.
+> - Not a fork, a classroom repository, a personal copy, or a repository created to satisfy this assignment.
+>
+> Quoted word for word from the course README, which remains the authority: read its [qualifying repositories](../README.md#qualifying-repositories), [what counts as merged](../README.md#what-counts-as-merged) and the [deadline](../README.md#assignments-and-deadlines). Record each PR in your [evidence table](../README.md#evidence-table).
 
 ## Terms
 
