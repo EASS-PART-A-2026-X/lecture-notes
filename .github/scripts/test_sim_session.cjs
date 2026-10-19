@@ -24,7 +24,11 @@ test('commit makes the row visible and durable; commit after add flushes first',
   const result = run('add', 'commit');
   assert.deepEqual(result.sql.map(line => line.split(' ')[0]), ['BEGIN', 'INSERT', "('Falafel',", 'COMMIT']);
   assert.equal(result.state.committed, 1);
-  assert.match(view(result.state).restart[0], /^1 row survive/);
+  assert.match(view(result.state).restart[0], /^1 row survives\./);
+});
+test('the restart line agrees in number with the committed rows', () => {
+  assert.match(view(initial()).restart[0], /^0 rows survive\./);
+  assert.match(view(run('add', 'commit', 'add', 'commit').state).restart[0], /^2 rows survive\./);
 });
 test('rollback undoes the INSERT but the object keeps its id, and SQLite reuses it', () => {
   let result = run('add', 'flush', 'rollback');
