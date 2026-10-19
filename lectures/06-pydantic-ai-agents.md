@@ -301,8 +301,20 @@ The `RecipeExtraction` type belongs to your application. Pydantic AI's configure
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Application and model API boundaries, scroll horizontally">
     <img src="../assets/diagrams/model-api-boundaries.svg" alt="The backend calls the AI service through the application's POST extract contract. Inside the AI service, Pydantic AI and application schemas use one configured adapter. Alternative routes lead to OpenAI Responses, Claude Messages or a compatible local model server. Provider responses return for application validation; the backend owns persistence." width="640" height="650">
   </div>
-  <figcaption><strong>Your API stays yours.</strong> Changing the model route can change behavior, cost and latency while the backend's HTTP contract stays the same. <a href="../assets/diagrams/model-api-boundaries.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Your API stays yours.</strong> Changing the model route can change behavior, cost and latency while the backend's HTTP contract stays the same. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/model-api-boundaries.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Browser → backend.** The backend validates accepted data and owns persistence.
+2. **Your OpenAPI contract.** The backend sends `POST /extract` to the AI service and gets back a validated result or a declared error.
+3. **AI service: your application boundary.** The Pydantic AI loop, the application schemas and the limits run here. Choose one configured adapter for the run: the OpenAI adapter (Responses protocol), the Claude adapter (Messages protocol) or a local adapter (a supported protocol).
+4. **Provider HTTP.** The chosen adapter calls its host: the OpenAI host (the selected model), the Anthropic host (the selected Claude model) or a local server (an Ollama or vLLM route). The candidate comes back through the adapter for application validation.
+
+The same application schema does not guarantee equal task quality.
+
+</details>
 
 **Trace it:** browser → backend → `POST /extract` → Pydantic AI → one adapter → model endpoint → candidate → application validation → backend. Only the backend persists an accepted recipe. An OpenAPI document describes the application boundary; it does not make providers interchangeable. Keys belong in `ai-service`, never the browser.
 

@@ -267,7 +267,7 @@ Three backend attempts with five counted steps each allow up to **15 counted age
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Usage threshold, scroll horizontally">
     <img src="../assets/diagrams/usage-threshold.svg" alt="A run at 18,500 reported tokens gets a 3,000-token response: 21,500, past the 20,000 threshold. The check raises after the response." width="640" height="600">
   </div>
-  <figcaption><strong>A stopping threshold is not a prepaid allowance.</strong> The bars use synthetic counters, not a measured model run or bill. Explain when the check learns the response's usage, then reproduce the counterexample below. <a href="../assets/diagrams/usage-threshold.svg">Open the full-size usage diagram</a>.</figcaption>
+  <figcaption><strong>A stopping threshold is not a prepaid allowance.</strong> The bars use synthetic counters, not a measured model run or bill. Explain when the check learns the response's usage, then reproduce the counterexample below. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/usage-threshold.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
@@ -344,8 +344,21 @@ After the core evaluation works, compare a single-model baseline with an optiona
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Routing evaluation release gate, scroll horizontally">
     <img src="../assets/diagrams/model-routing-evaluation.svg" alt="Freeze a baseline, a candidate and a rubric before evaluating the same held-out cases. In a hypothetical hundred-case comparison, the baseline succeeds on 95 cases at 2000 cost units while the routed candidate succeeds on 90 at 900 units. A predefined quality floor of 95 successes rejects the cheaper candidate. Keep the baseline and investigate the failures." width="640" height="620">
   </div>
-  <figcaption><strong>Cheaper is one measurement, not the release decision.</strong> All counts, costs and the quality floor here are invented teaching inputs. <a href="../assets/diagrams/model-routing-evaluation.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Cheaper is one measurement, not the release decision.</strong> All counts, costs and the quality floor here are invented teaching inputs. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/model-routing-evaluation.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **Freeze the configuration and the task rubric.** Set the quality, latency and data constraints before the test.
+2. **Use the same 100 held-out inputs for both systems.** Count all final outcomes, including wrong routes and deferrals.
+3. **Compare the two results.** The single-model baseline: 95 successful tasks, 2,000 total cost units. The routed candidate: 90 successful tasks, 900 total cost units.
+4. **Apply the predefined floor: at least 95 successes out of 100.** The candidate fails, even though each success costs less.
+5. **Decide.** Keep the baseline; investigate the candidate's failures.
+
+The counts and costs are invented: arithmetic, not a model benchmark.
+
+</details>
 
 **Worked audit:** 100 requests × 20 cost units = 2,000 for the baseline. For the candidate, routing costs 100 × 1, and 40 escalations cost 40 × 20: **900 units**. Assume the other 60 cases require no additional model call. If another route invokes extraction too, include that cost. The baseline succeeds on 95 cases; the candidate on 90. Cost per successful task falls from `2000 / 95 ≈ 21.05` to `900 / 90 = 10`, but the candidate misses the predefined quality floor of 95/100. Keep the baseline, inspect the wrong routes and revise on development data before a fresh held-out evaluation.
 

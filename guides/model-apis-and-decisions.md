@@ -72,8 +72,21 @@ For a supported model, OpenAI Responses accepts `reasoning={"effort": "low"}`; s
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Decision routing diagram, scroll horizontally">
     <img src="../assets/diagrams/model-decision-routing.svg" alt="Application code validates input. Exact rules handle known cases. Remaining inputs go to a narrow decision model. Accepted labels choose a bounded route; uncertain or unsupported cases defer or use one bounded LLM call. All results pass application validation and authorization before a write." width="640" height="600">
   </div>
-  <figcaption><strong>Spend intelligence where it helps.</strong> Every route returns through application checks. An LLM is an optional escalation, not an escape from policy. <a href="../assets/diagrams/model-decision-routing.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Spend intelligence where it helps.</strong> Every route returns through application checks. An LLM is an optional escalation, not an escape from policy. <span class="screen-only">On a narrow screen, scroll the diagram sideways.</span> <a href="../assets/diagrams/model-decision-routing.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+1. **The application validates input and applies policy.** Exact rules handle known cases without inference.
+2. **Remaining cases go to a narrow decision model.** It returns a label or a bounded judgment; evaluate it on your inputs.
+3. **A supported decision chooses a bounded route:** extract, ignore or review. Nothing is published automatically.
+4. **An uncertain decision, or an unavailable model, defers or escalates once:** an LLM only within approved data, time and cost limits.
+5. **Both routes end in the same check: validate the result and authorize before any write.** Schema validity and confidence do not establish truth.
+
+Keep manual entry usable when AI is unavailable.
+
+</details>
 
 **Text trace:** validate → use an exact rule if one applies → otherwise classify → accept a supported decision or defer/escalate once → validate the result → check authority before a write. A timeout also needs an explicit route. For Recipe Box, manual entry remains usable when AI is unavailable.
 
