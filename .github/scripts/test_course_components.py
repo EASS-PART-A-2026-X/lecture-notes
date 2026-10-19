@@ -1,5 +1,6 @@
 """Rendered-site checks for _plugins/course_components.rb (callouts, glance, panels, home, pager,
-table labels and phone cards) and for the time plan that opens every lecture lab.
+table labels and phone cards), for the time plan that opens every lecture lab, and for the
+reference card, which repeats only what its links teach.
 
 Run after the Jekyll build, from the repository root:
     python3 -m unittest discover -s .github/scripts -p 'test_*.py'
@@ -14,9 +15,11 @@ import re
 import unittest
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urljoin, urlsplit
 
 SITE = Path(os.environ.get("SITE_DIR", "_site"))
 PLUGIN = Path(__file__).resolve().parents[2] / "_plugins" / "course_components.rb"
+CONFIG = Path(__file__).resolve().parents[2] / "_config.yml"
 GLANCE_REQUIRED = os.environ.get("COURSE_GLANCE") != "optional"
 
 CALLOUT_KINDS = {"objectives", "prereq", "predict", "explain", "checkpoint", "pitfall", "optional", "note"}
@@ -272,6 +275,45 @@ class CourseComponentsTest(unittest.TestCase):
                         if "<span" in inner:
                             self.assertNotRegex(re.sub(r'<span class="nobr">[^<]*</span>', "", inner), r"<",
                                                 "nothing else is added inside code")
+
+    def test_reference_card_repeats_what_its_links_teach(self):
+        """The reference card adds no fact of its own: every table row links to a course page, every
+        code snippet in a row appears on a page that row links to, and its "When you are behind"
+        ladder equals the learning map's (the card adds only the "Taught in" column)."""
+        card = main_of(self.pages["guides/reference-card.html"])
+        base = re.search(r"^baseurl: (\S+)", CONFIG.read_text(encoding="utf-8"), re.M).group(1).strip("/")
+        here = f"https://site/{base}/guides/reference-card.html"
+        bodies = "".join(t.partition("<tbody>")[2] for t in re.findall(r"<table\b[^>]*>(.*?)</table>", card, re.S))
+        rows = re.findall(r"<tr>(.*?)</tr>", bodies, re.S)
+        self.assertGreaterEqual(len(rows), 40)
+        texts = {}
+        for row in rows:
+            with self.subTest(row=plain(row)[:70]):
+                targets = []
+                for href in re.findall(r'<a href="([^"]+)"', row):
+                    path = urlsplit(urljoin(here, href)).path
+                    self.assertTrue(path.startswith(f"/{base}/"), href)
+                    page = path[len(base) + 2:] or "index.html"
+                    self.assertIn(page, self.pages, f"links to a course page: {href}")
+                    targets.append(page)
+                self.assertTrue(targets, "every row links to where it is taught")
+                for code in re.findall(r"<code\b[^>]*>(.*?)</code>", row, re.S):
+                    snippet = plain(code)
+                    for page in targets:
+                        if page not in texts:
+                            texts[page] = plain(main_of(self.pages[page]))
+                    self.assertTrue(any(snippet in texts[page] for page in targets),
+                                    f"{snippet!r} appears on none of {targets}")
+
+        def ladder(html):
+            section = re.search(r'<h2 id="when-you-are-behind".*?<tbody>(.*?)</tbody>', main_of(html), re.S)
+            self.assertIsNotNone(section)
+            return [[plain(cell) for cell in re.findall(r"<td\b[^>]*>(.*?)</td>", row, re.S)[:3]]
+                    for row in re.findall(r"<tr>(.*?)</tr>", section.group(1), re.S)]
+
+        expected = ladder(self.pages["guides/learning-map.html"])
+        self.assertEqual(len(expected), 8)
+        self.assertEqual(ladder(self.pages["guides/reference-card.html"]), expected)
 
     def test_pager_on_lecture_pages(self):
         for name, html in self.pages.items():

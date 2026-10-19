@@ -19,19 +19,20 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 ## Start here
 
 1. **Set up before class:** complete **Part A** of [Student setup](guides/student-setup.md#part-a-before-the-first-meeting) for Windows/WSL, macOS or Linux, including **your own free GitHub account with a verified email** and GitHub CLI login. Part B happens at the end of Lecture 1. No paid GitHub or AI plan is required.
-2. **Understand the path:** read the [learning map](guides/learning-map.md). Not sure your basics are solid? Take the 10-minute [readiness check](guides/engineering-foundations.md#readiness-check). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model.
+2. **Understand the path:** read the [learning map](guides/learning-map.md). Not sure your basics are solid? Take the 10-minute [readiness check](guides/engineering-foundations.md#readiness-check). Use [engineering foundations](guides/engineering-foundations.md) to repair prerequisite gaps and [models and AI literacy](guides/models-and-ai-literacy.md) to choose and verify an assistant/model. Look up commands, ports, status codes and terms on the [reference card](guides/reference-card.md).
 3. **Prepare for the first meeting:** read [Lecture 1's Before you start](lectures/01-environment-git-docker-ai.md#before-you-start) the evening before. If a check fails, bring one precise blocker written as PARD.
 4. **Plan your product:** read the [three-service requirements](#three-service-product-requirements) and [assignment deadlines](#assignments-and-deadlines). You grow the same product through EX1, EX2 and EX3. Use [Submission evidence](guides/submission-evidence.md) to rehearse what each hand-in demonstrates.
 5. **Start the open-source track early:** check the [qualifying-project rules](#qualifying-repositories). Each student needs three merged PRs; finding suitable projects and waiting for reviews takes time.
 
 ### Reading map
 
-Seventeen guides support the lectures. Student setup and the learning map are required; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
+Eighteen guides support the lectures. Student setup and the learning map are required; the reference card collects the commands, ports, status codes and terms you look up most; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
 
 | Guide | Status | When to use it |
 |---|---|---|
 | [Student setup](guides/student-setup.md) | *Required* | Part A before Lecture 1; Part B at the end of Lecture 1 |
 | [Learning map](guides/learning-map.md) | *Required* | In week 1, then its row for each class |
+| [Reference card](guides/reference-card.md) | *Reference* | Whenever you need a command, a port, a status code or a term; each row links to where the course teaches it |
 | [Submission evidence](guides/submission-evidence.md) | *Submission reference* | Before you hand in EX1, EX2 and EX3, to check that your repository shows what the assignment asks for |
 | [Engineering foundations](guides/engineering-foundations.md) | *Bridge when stuck* | Its readiness check before Lecture 1; later, one section whenever a lecture's prerequisite check fails |
 | [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose a coding assistant or a model, and before Lecture 6 |

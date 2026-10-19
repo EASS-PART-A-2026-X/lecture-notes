@@ -17,7 +17,8 @@ $body-heading-line-height: 1.2;
 // The theme's light grey (#959396, 2.9:1 on white) colours ordered-list numbers and breadcrumbs.
 $grey-dk-000: #535c6b;
 
-// Sidebar rhythm: 26 items and 3 group labels fit a 900 px tall window.
+// Sidebar rhythm: 30 items and 4 group labels are about 1,080 px tall, so in a window shorter than
+// about 1,360 px the list scrolls above the colophon.
 $nav-list-item-height: 1.875rem;
 
 // Layout. A 54rem main column (50rem of content after the gutters) gives figures, tables and code
