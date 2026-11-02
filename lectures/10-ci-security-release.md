@@ -889,21 +889,17 @@ Graders and CI have none. `env_file` with `required: false` and `AI_MODEL=${AI_M
 
 </details>
 
-**Q6.** Your ai-service publishes no port. Name a process that can still call it. What does the optional shared token add, and what does it not add?
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q6. Your ai-service publishes no port. Name a process that can still call it. What does the optional shared token add, and what does it not add?</summary>
 
-**Answer:** any container on the same Compose network, not only your backend (another service you add, or a compromised one). The token adds **service authentication**: a caller without the secret gets 401. It does not add authorization (which records a caller may touch), user identity, or encryption; anyone who holds the secret, including a leaked `.env`, passes.
+Any container on the same Compose network, not only your backend (another service you add, or a compromised one). The token adds **service authentication**: a caller without the secret gets 401. It does not add authorization (which records a caller may touch), user identity, or encryption; anyone who holds the secret, including a leaked `.env`, passes.
 
 </details>
 
-**Q7.** Name two things that `uv.lock` does not freeze.
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q7. Name two things that <code>uv.lock</code> does not freeze.</summary>
 
-**Answer:** any two of: the base image behind a tag such as `python:3.14-slim`; the behaviour of a remote model or external API; the actions your workflow uses (pinned separately by SHA); uv itself (pinned separately); new advisories about the locked versions.
+Any two of: the base image behind a tag such as `python:3.14-slim`; the behaviour of a remote model or external API; the actions your workflow uses (pinned separately by SHA); uv itself (pinned separately); new advisories about the locked versions.
 
 </details>
 
