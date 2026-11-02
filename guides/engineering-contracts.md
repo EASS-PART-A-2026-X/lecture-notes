@@ -2,7 +2,7 @@
 
 <!-- {% raw %} -->
 
-[Course home](../README.md) · [Learning map](learning-map.md) · [Agent-driven engineering](agent-driven-development.md) · [Factory lab](software-factory-lab.md) · [Sandboxes](agent-sandboxes.md)
+[Course home](../README.md) · [Learning map](learning-map.md) · [Agent-driven engineering](agent-driven-development.md) · [Factory lab](software-factory-lab.md) · [Agent sandboxes](agent-sandboxes.md)
 
 **Use with Lectures 8–10; optional earlier practice.** This guide connects files you already use in your product to the question every engineer asks of a configuration file: *who reads this, and what actually stops a violation?* The exercises are formative. Installing commercial agent products, publishing skills or running an orchestration platform is optional, and the course's assignments and deadlines do not change.
 
