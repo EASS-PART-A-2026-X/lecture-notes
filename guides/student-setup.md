@@ -50,7 +50,7 @@ The FastAPI development server running **inside Ubuntu (WSL 2)** answers. Ubuntu
 
 On a Windows laptop there are three places where programs run:
 
-1. **Windows apps.** PowerShell (as administrator, only for `wsl --install -d Ubuntu` and `wsl -l -v`), your browser, the editor window, and the Docker Desktop app.
+1. **Windows apps.** PowerShell (as administrator, only for `wsl --install -d Ubuntu`, `wsl -l -v` and the Server service check), your browser, the editor window, and the Docker Desktop app.
 2. **WSL 2: Ubuntu (Linux).** The Ubuntu terminal runs **every course command**: `uv`, `git`, `gh` and the `docker` client. Your code lives at `~/eass/<your-product>` in Ubuntu's own file system. `uv run fastapi dev` starts your server here, listening on port 8000.
 3. **Docker engine.** Docker Desktop runs its engine in its own Linux environment (its `docker-desktop` WSL distribution). Containers run there, never in Ubuntu or Windows directly.
 
@@ -72,7 +72,7 @@ The arrows between them:
 
 Four rules follow from the picture:
 
-1. **On Windows, type course commands in Ubuntu.** An Ubuntu prompt looks like `you@laptop:~$`; PowerShell looks like `PS C:\Users\you>`. PowerShell is only for the two `wsl` commands.
+1. **On Windows, type course commands in Ubuntu.** An Ubuntu prompt looks like `you@laptop:~$`; PowerShell looks like `PS C:\Users\you>`. PowerShell is only for the two `wsl` commands and the Server service check.
 2. **Keep code under your Linux home:** `~/eass/<your-product>`, never `/mnt/c/...`. Recipe Box is only the lecture demo; name the folder after your own product.
 3. **`localhost` means "the machine where this request starts".** Your browser's `localhost` is Windows (or your Mac); WSL and Docker forward chosen ports to it. From Lecture 8 on, each container has its own `localhost`.
 4. **The editor shows the folder it opened.** Run `pwd` in Ubuntu and in your editor's terminal: if the paths differ, the editor and your server are looking at different files.
@@ -97,7 +97,7 @@ Spend 5 minutes on this before you download anything.
 
 Docker Desktop is free for personal and education use; its licence requires a paid subscription only for professional use in larger businesses. **If any check fails, contact the instructor through the channel the instructor provides before Monday 19 October**, so an alternative can be arranged in time.
 
-> **Version note:** requirements from Docker's [Windows](https://docs.docker.com/desktop/setup/install/windows-install/) and [Mac](https://docs.docker.com/desktop/setup/install/mac-install/) installation pages and Microsoft's [WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install), checked 17 October 2026.
+> **Version note:** requirements from Docker's [Windows](https://docs.docker.com/desktop/setup/install/windows-install/) and [Mac](https://docs.docker.com/desktop/setup/install/mac-install/) installation pages and Microsoft's [WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install), checked 17 October 2026; the Windows page again on 2 November 2026, after Docker's 26 October update.
 
 ### Choose a simple route
 
@@ -416,7 +416,7 @@ Find your symptom, run the first check, then apply the safe fix. If it still fai
 |---|---|---|
 | `command not found` | Restart the terminal; check you are in the environment where you installed the tool (Ubuntu, not PowerShell) | Install the tool in the environment where you run course commands |
 | WSL install fails with a virtualization error, or Docker Desktop shows "Unexpected WSL error" | Task Manager → Performance → CPU: `Virtualization` | Enable hardware virtualization in BIOS/UEFI using your laptop maker's instructions; on a managed laptop, ask the instructor |
-| Windows: Docker Desktop will not install or start, although virtualization is enabled | `Get-Service LanmanServer` and `(Get-Service LanmanServer).StartType` in PowerShell | In PowerShell as administrator: `Set-Service LanmanServer -StartupType Automatic`, then `Start-Service LanmanServer`; restart Docker Desktop |
+| Windows: Docker Desktop will not install or start, although virtualization is enabled | `Get-Service LanmanServer` and `(Get-Service LanmanServer).StartType` in PowerShell | In PowerShell as administrator: `Set-Service LanmanServer -StartupType Automatic`, then `Start-Service LanmanServer`; restart Docker Desktop. On a managed laptop, ask the instructor |
 | `wsl -l -v` shows Ubuntu with `VERSION 1` | `wsl --version` in PowerShell | `wsl --set-version Ubuntu 2` in PowerShell |
 | `Cannot connect to the Docker daemon` | Is Docker Desktop running? Is Settings → Resources → WSL Integration on for Ubuntu? | Start Docker Desktop and enable the integration; on Linux, `sudo systemctl start docker` |
 | Linux: `permission denied … /var/run/docker.sock` | `groups` does not list `docker` | Docker's [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/), then log out and in; the `docker` group is root-equivalent, so on a managed machine use `sudo docker …` for today and ask. Never `chmod` the socket |
