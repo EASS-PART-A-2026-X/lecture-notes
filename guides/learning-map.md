@@ -21,8 +21,8 @@
 <summary>On this page</summary>
 
 - [The class-by-class path](#the-class-by-class-path)
-- [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [Your minimum weekly route](#your-minimum-weekly-route)
+- [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [How to read a lecture](#how-to-read-a-lecture)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
@@ -77,22 +77,21 @@ Thirteen Monday meetings, 19 October 2026 to 11 January 2027. Meetings 1–10 ar
 
 The open-source track runs alongside every class: three qualifying **merged** PRs of your own by the README's deadline. A PR on your own product repository is practice and does not count.
 
-For a deeper optional clinic after the core checkpoint, use [Systems reasoning](systems-reasoning.md): prove replay/outbox behavior with eight SQLite tests, count user-facing failures, explore fan-out latency assumptions, and audit repeated agent trials. Pick one clinic; it adds no assessment or platform requirement.
+## Your minimum weekly route
 
-### Where API and model decisions enter the course
+The full PDF is a reference. For the coming class, follow **one row** of the [class-by-class table](#the-class-by-class-path) and these five steps:
 
-Follow this sequence inside the existing lectures. The linked guide is a reference; its hosted/GPU experiments stay optional. These short discussions replace a general tour of provider names, not the core labs or completion checks.
+1. Run the previous completion check. If it fails, use its repair link and bring one PARD blocker.
+2. Read the next lecture's Mission, run its prerequisite check, and write your answer to its "Predict first" question before opening the answer. Steps 1 and 2 are your preparation: about 10–30 minutes before class.
+3. During and after class, work through that lecture's core demo and lab in your product, one checkpoint at a time.
+4. Reproduce one controlled failure, restore the intended behavior, then run the completion check and explain it without an assistant.
+5. Commit the working checkpoint. Keep the open-source track moving and use [Submission evidence](submission-evidence.md) when an assignment is due. Open optional guides after the core checkpoint works, or when a specific question needs them.
 
-| When | Question to answer | Small piece of evidence |
-|---|---|---|
-| [Lecture 2](../lectures/02-http-fastapi-pydantic.md#openapi-describes-this-api-openai-is-a-different-name) | What does OpenAPI describe? | Locate one operation's request/response declaration and its running validation code; about 2 min |
-| [Lecture 6](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) | Where do OpenAI, Claude and a local model fit? | Trace one configured adapter through the API-boundary diagram |
-| [Lecture 6 design exercise](../lectures/06-pydantic-ai-agents.md#code-a-quick-decision-or-deeper-reasoning) | Should code, a classifier or a general model handle this? | Explain four choices with one failure each; about 3 min |
-| [Lecture 7](../lectures/07-third-service-contracts.md#two-contracts-two-kinds-of-compatibility) | Which contract changed? | Separate a consumer-breaking schema change from a model behavior change; about 3 min |
-| [Lectures 6 and 8](local-inference.md#place-local-serving-behind-the-adapter-boundary) | Which process does this model URL reach? | Trace the endpoint from the calling process/container; no GPU experiment required |
-| [Lecture 9](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) | Is the mixed system actually better? | Audit the hypothetical quality/cost tradeoff, then define the evidence your own comparison needs; about 5 min |
+**Not sure your basics are solid?** Take the [readiness check](engineering-foundations.md#readiness-check) before Lecture 1. Each check that fails links to a short repair section.
 
-After these checkpoints, choose at most one optional experiment from [Model APIs and decisions](model-apis-and-decisions.md#read-this-guide-by-class): inspect an API example, run the seven-test offline policy lab, or plan a real-model comparison if access permits. Do not install every listed provider or runtime.
+**Time estimates are planning aids, not measured guarantees.** First-time setup in [Student setup's Part A](student-setup.md#part-a-before-the-first-meeting) is the exception to step 2's estimate: about 1–3 hours plus downloads. Lab work is separate; use each lecture's “At a glance” estimate and record where you get stuck. The [student pilot](submission-evidence.md#a-student-setup-pilot) checks actual workload before anyone claims these estimates fit every laptop or learner.
+
+The modern engineering habits are part of the existing lecture work: explain the active process and Git revision in Lecture 1; separate model proposals from code-enforced authority in Lecture 6; measure failure and quality in Lecture 9; and verify the released revision in Lecture 10. A particular assistant, skill package, MCP server or inference runtime is never a substitute for those outcomes.
 
 ## What is required and what is a choice
 
@@ -116,22 +115,6 @@ Use the assistant and model you can access; the outcomes stay the same. The [set
 **(d).** Streamlit and PostgreSQL are allowed choices (React or another web framework and SQLite are fine too), and no paid account is ever required. The three merged PRs are mandatory, and only *merged* PRs count.
 
 </details>
-
-## Your minimum weekly route
-
-The full PDF is a reference. For the coming class, follow **one row** of the [class-by-class table](#the-class-by-class-path) and these five steps:
-
-1. Run the previous completion check. If it fails, use its repair link and bring one PARD blocker.
-2. Read the next lecture's Mission, run its prerequisite check, and write your answer to its "Predict first" question before opening the answer. Steps 1 and 2 are your preparation: about 10–30 minutes before class.
-3. During and after class, work through that lecture's core demo and lab in your product, one checkpoint at a time.
-4. Reproduce one controlled failure, restore the intended behavior, then run the completion check and explain it without an assistant.
-5. Commit the working checkpoint. Keep the open-source track moving and use [Submission evidence](submission-evidence.md) when an assignment is due. Open optional guides after the core checkpoint works, or when a specific question needs them.
-
-**Not sure your basics are solid?** Take the [readiness check](engineering-foundations.md#readiness-check) before Lecture 1. Each check that fails links to a short repair section.
-
-**Time estimates are planning aids, not measured guarantees.** First-time setup in [Student setup's Part A](student-setup.md#part-a-before-the-first-meeting) is the exception to step 2's estimate: about 1–3 hours plus downloads. Lab work is separate; use each lecture's “At a glance” estimate and record where you get stuck. The [student pilot](submission-evidence.md#a-student-setup-pilot) checks actual workload before anyone claims these estimates fit every laptop or learner.
-
-The modern engineering habits are part of the existing lecture work: explain the active process and Git revision in Lecture 1; separate model proposals from code-enforced authority in Lecture 6; measure failure and quality in Lecture 9; and verify the released revision in Lecture 10. A particular assistant, skill package, MCP server or inference runtime is never a substitute for those outcomes.
 
 ## How to read a lecture
 
@@ -278,7 +261,7 @@ These are feedback criteria, not replacement marks. A student should be able to 
 
 ## Choose the smallest useful AI system
 
-Read this after Lecture 6, when the terms below have meaning. The required project keeps its bounded AI feature and three-service architecture; the table is design literacy for choosing *how much* AI a problem needs.
+Read the design table below after Lecture 6, when its terms have meaning. The required project keeps its bounded AI feature and three-service architecture; the table is design literacy for choosing *how much* AI a problem needs.
 
 <details markdown="1">
 <summary>Optional design literacy, read after Lecture 6</summary>
@@ -307,6 +290,23 @@ A framework packages choices; it does not decide the product contract. Learn the
 </details>
 
 **Optional:** [Visual inference engineering](inference-engineering.md) explains the main optimization methods with ten original diagrams, worked examples and predict-then-reveal exercises. Use it alongside Lectures 6–10.
+
+For a deeper optional clinic after the core checkpoint, use [Systems reasoning](systems-reasoning.md): prove replay/outbox behavior with eight SQLite tests, count user-facing failures, explore fan-out latency assumptions, and audit repeated agent trials. Pick one clinic; it adds no assessment or platform requirement.
+
+### Where API and model decisions enter the course
+
+Follow this sequence inside the existing lectures. The linked guide is a reference; its hosted/GPU experiments stay optional. These short discussions replace a general tour of provider names, not the core labs or completion checks.
+
+| When | Question to answer | Small piece of evidence |
+|---|---|---|
+| [Lecture 2](../lectures/02-http-fastapi-pydantic.md#openapi-describes-this-api-openai-is-a-different-name) | What does OpenAPI describe? | Locate one operation's request/response declaration and its running validation code; about 2 min |
+| [Lecture 6](../lectures/06-pydantic-ai-agents.md#one-application-contract-several-provider-adapters) | Where do OpenAI, Claude and a local model fit? | Trace one configured adapter through the API-boundary diagram |
+| [Lecture 6 design exercise](../lectures/06-pydantic-ai-agents.md#code-a-quick-decision-or-deeper-reasoning) | Should code, a classifier or a general model handle this? | Explain four choices with one failure each; about 3 min |
+| [Lecture 7](../lectures/07-third-service-contracts.md#two-contracts-two-kinds-of-compatibility) | Which contract changed? | Separate a consumer-breaking schema change from a model behavior change; about 3 min |
+| [Lectures 6 and 8](local-inference.md#place-local-serving-behind-the-adapter-boundary) | Which process does this model URL reach? | Trace the endpoint from the calling process/container; no GPU experiment required |
+| [Lecture 9](../lectures/09-failures-evals-costs.md#evaluate-the-entire-routed-system) | Is the mixed system actually better? | Audit the hypothetical quality/cost tradeoff, then define the evidence your own comparison needs; about 5 min |
+
+After these checkpoints, choose at most one optional experiment from [Model APIs and decisions](model-apis-and-decisions.md#read-this-guide-by-class): inspect an API example, run the seven-test offline policy lab, or plan a real-model comparison if access permits. Do not install every listed provider or runtime.
 
 ## Verified reference checkpoints
 

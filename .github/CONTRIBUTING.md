@@ -250,6 +250,7 @@ Authors never type these classes, except on figures and steppers. They are liste
 | Screen or print only | `span.screen-only`, `span.print-only` | author HTML |
 | Sidebar groups | CSS labels Start here (the two required guides), Reference (Reference card, Submission evidence, Engineering foundations, Models and AI literacy), Lectures and Optional depth, matched on page URLs with `:has()` | CSS |
 | Existing blocks | `lecture-toc`, `learning-practice`, `walkthrough-command`, `walkthrough-quiz`, `studio-quiz`, `factory-milestones`, `factory-check`, `factory-command`, `factory-delivery-map`, `inference-lab`, `reliability-lab` (the two labs share one frame, sans controls and button style) | author HTML (unchanged; restyled with the tokens) |
+| Quiz options | `span.quiz-option` around each option of a question `<summary>` written `Q1. … (a) … (b) … (c) …`: one option per line, in reading weight under the bold question | plugin |
 | Simulator | `div.sim` (with `id="sim-NAME"`), `p.sim-title`, `div.sim-fallback`; the script adds `is-live` and `div.sim-app` | author HTML and `assets/js/sim-*.js` (the labs' frame: a 3 px ink rule on the left; state badges are sentence-case words) |
 
 ### Diagrams

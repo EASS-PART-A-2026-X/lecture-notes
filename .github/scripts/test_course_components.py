@@ -283,6 +283,23 @@ class CourseComponentsTest(unittest.TestCase):
                             self.assertNotRegex(re.sub(r'<span class="nobr">[^<]*</span>', "", inner), r"<",
                                                 "nothing else is added inside code")
 
+    def test_quiz_options_sit_on_their_own_lines(self):
+        """A question summary written "Q1. … (a) … (b) … (c) …" gets one span.quiz-option per
+        option, in letter order, and no lettered option stays inline (Lectures 1, 2 and 4-6)."""
+        lettered = 0
+        for name, html in self.lectures.items():
+            for summary in re.findall(r"<summary\b[^>]*>(Q\d+\..*?)</summary>", html, re.S):
+                question, *options = summary.split('<span class="quiz-option">')
+                with self.subTest(page=name, question=plain(question)[:40]):
+                    self.assertNotRegex(question, r" \(a\) .* \(b\) ", "options outside span.quiz-option")
+                    self.assertEqual([option[1] for option in options],
+                                     [chr(ord("a") + i) for i in range(len(options))])
+                    for option in options:
+                        self.assertRegex(option, r"^\([a-z]\) .*</span>\s*$", "one option per span")
+                        self.assertNotRegex(option[4:], r"\s\([a-z]\)\s", "one option per span")
+                lettered += bool(options)
+        self.assertGreaterEqual(lettered, 13, "Lectures 1 and 2 ask five lettered questions, 4-6 one each")
+
     def test_reference_card_repeats_what_its_links_teach(self):
         """The reference card adds no fact of its own: every table row links to a course page, every
         code snippet in a row appears on a page that row links to, its "When you are behind"

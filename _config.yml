@@ -21,6 +21,7 @@ readme_index:
 # Sidebar group labels (Start here, Reference, Lectures, Optional depth) are CSS in _sass/custom/custom.scss.
 defaults:
   - { scope: { path: "" }, values: { layout: default } }
+  - { scope: { path: "assets/css/just-the-docs-head-nav.css" }, values: { layout: null } }
   - { scope: { path: README.md }, values: { title: "Home", nav_order: 1 } }
   - { scope: { path: "guides/student-setup.md" }, values: { title: "Student setup", nav_order: 2 } }
   - { scope: { path: "guides/learning-map.md" }, values: { title: "Learning map", nav_order: 3 } }

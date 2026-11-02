@@ -2,7 +2,7 @@
 
 <!-- {% raw %} -->
 
-[Course home](../README.md) · [Models and AI literacy](models-and-ai-literacy.md) · [Agents](agent-driven-development.md) · [Sandboxes](agent-sandboxes.md)
+[Course home](../README.md) · [Models and AI literacy](models-and-ai-literacy.md) · [Agents](agent-driven-development.md) · [Agent sandboxes](agent-sandboxes.md)
 
 **Read the core path before Lecture 6; revisit measurements in Lecture 9.** The hands-on routes are optional. No GPU, model download, paid account, or extra service is required for assessment. If hardware or access is limited, use the worked trace and supplied measurement examples below. The required application still has the same three responsibilities.
 

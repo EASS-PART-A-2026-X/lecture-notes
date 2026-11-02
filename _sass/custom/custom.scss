@@ -1207,6 +1207,15 @@ $ed-code-languages: (
     code {
       font-size: var(--fs-14);
     }
+
+    // Lettered quiz options (span.quiz-option, from the plugin): one per line under the
+    // question, in reading weight; the letter hangs so a wrapped option keeps its own edge.
+    .quiz-option {
+      display: block;
+      padding-left: 1.6em;
+      font-weight: 400;
+      text-indent: -1.6em;
+    }
   }
 
   &[open] {
@@ -2977,6 +2986,7 @@ $ed-code-languages: (
     > summary {
       min-height: 0;
       padding: 0.35rem 0;
+      break-inside: avoid;
 
       &::before {
         display: none;
