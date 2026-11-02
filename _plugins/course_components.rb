@@ -319,7 +319,23 @@ module CourseComponents
   SUMMARY = %r{<summary\b[^>]*>.*?</summary>}m
 
   def summaries(html)
-    html.gsub(SUMMARY) { |summary| keep_tokens(summary) }
+    html.gsub(SUMMARY) { |summary| quiz_options(keep_tokens(summary)) }
+  end
+
+  # (h) Lettered quiz options: a question written "Q1. … (a) … (b) … (c) …" gets one
+  # <span class="quiz-option"> per option, so each option starts its own line under the question.
+  QUIZ_QUESTION = %r{\A(<summary\b[^>]*>Q\d+\..*?) (\(a\) .*)(</summary>)\z}m
+
+  def quiz_options(summary)
+    return summary unless summary =~ QUIZ_QUESTION
+
+    question = Regexp.last_match(1)
+    close_tag = Regexp.last_match(3)
+    options = Regexp.last_match(2).split(/ (?=\([b-z]\) )/)
+    letters = options.map { |option| option[1] }
+    return summary unless options.length > 1 && letters == ("a".."z").first(options.length)
+
+    question + options.map { |option| %( <span class="quiz-option">#{option}</span>) }.join + close_tag
   end
 
   def fail_shape(path, message)
