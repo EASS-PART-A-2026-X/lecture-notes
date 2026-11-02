@@ -2986,6 +2986,7 @@ $ed-code-languages: (
     > summary {
       min-height: 0;
       padding: 0.35rem 0;
+      break-inside: avoid;
 
       &::before {
         display: none;

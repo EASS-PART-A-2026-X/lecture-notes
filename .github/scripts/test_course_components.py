@@ -285,7 +285,7 @@ class CourseComponentsTest(unittest.TestCase):
 
     def test_quiz_options_sit_on_their_own_lines(self):
         """A question summary written "Q1. … (a) … (b) … (c) …" gets one span.quiz-option per
-        option, in letter order, and no lettered option stays inline (Lectures 1 and 2)."""
+        option, in letter order, and no lettered option stays inline (Lectures 1, 2 and 4-6)."""
         lettered = 0
         for name, html in self.lectures.items():
             for summary in re.findall(r"<summary\b[^>]*>(Q\d+\..*?)</summary>", html, re.S):
@@ -296,8 +296,9 @@ class CourseComponentsTest(unittest.TestCase):
                                      [chr(ord("a") + i) for i in range(len(options))])
                     for option in options:
                         self.assertRegex(option, r"^\([a-z]\) .*</span>\s*$", "one option per span")
+                        self.assertNotRegex(option[4:], r"\s\([a-z]\)\s", "one option per span")
                 lettered += bool(options)
-        self.assertGreaterEqual(lettered, 10, "Lectures 1 and 2 each ask five lettered questions")
+        self.assertGreaterEqual(lettered, 13, "Lectures 1 and 2 ask five lettered questions, 4-6 one each")
 
     def test_reference_card_repeats_what_its_links_teach(self):
         """The reference card adds no fact of its own: every table row links to a course page, every

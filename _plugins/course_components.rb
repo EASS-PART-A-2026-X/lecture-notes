@@ -324,7 +324,7 @@ module CourseComponents
 
   # (h) Lettered quiz options: a question written "Q1. … (a) … (b) … (c) …" gets one
   # <span class="quiz-option"> per option, so each option starts its own line under the question.
-  QUIZ_QUESTION = %r{\A(<summary\b[^>]*>Q\d+\..*?) (\(a\) .*)(</summary>)\z}m
+  QUIZ_QUESTION = %r{\A(<summary\b[^>]*>Q\d+\..*) (\(a\) .*)(</summary>)\z}m
 
   def quiz_options(summary)
     return summary unless summary =~ QUIZ_QUESTION

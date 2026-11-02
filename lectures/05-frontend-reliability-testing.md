@@ -1058,16 +1058,10 @@ The database persists between runs (Lecture 3). With a fixed title, the second r
 
 </details>
 
-Q6. A teammate proposes that `_request` retry every failed request three times before showing an error. For which failure is that most dangerous?
-
-- (a) A refused connection on `GET /recipes`
-- (b) A 422 reply to `POST /recipes`
-- (c) A read timeout on `POST /recipes`
-
 <details markdown="1">
-<summary>Check your answer</summary>
+<summary>Q6. A teammate proposes that <code>_request</code> retry every failed request three times before showing an error. For which failure is that most dangerous? (a) A refused connection on <code>GET /recipes</code> (b) A 422 reply to <code>POST /recipes</code> (c) A read timeout on <code>POST /recipes</code></summary>
 
-**Answer:** (c). The request was sent and the backend may already have stored the recipe; each retry can store another copy. (a) is harmless to repeat, because nothing was sent and a read changes nothing. (b) is pointless to repeat: the same body fails the same validation. That is why the frontend never retries automatically.
+**(c).** The request was sent and the backend may already have stored the recipe; each retry can store another copy. (a) is harmless to repeat, because nothing was sent and a read changes nothing. (b) is pointless to repeat: the same body fails the same validation. That is why the frontend never retries automatically.
 
 </details>
 
