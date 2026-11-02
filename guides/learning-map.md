@@ -21,8 +21,8 @@
 <summary>On this page</summary>
 
 - [The class-by-class path](#the-class-by-class-path)
-- [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [Your minimum weekly route](#your-minimum-weekly-route)
+- [What is required and what is a choice](#what-is-required-and-what-is-a-choice)
 - [How to read a lecture](#how-to-read-a-lecture)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
@@ -77,6 +77,22 @@ Thirteen Monday meetings, 19 October 2026 to 11 January 2027. Meetings 1–10 ar
 
 The open-source track runs alongside every class: three qualifying **merged** PRs of your own by the README's deadline. A PR on your own product repository is practice and does not count.
 
+## Your minimum weekly route
+
+The full PDF is a reference. For the coming class, follow **one row** of the [class-by-class table](#the-class-by-class-path) and these five steps:
+
+1. Run the previous completion check. If it fails, use its repair link and bring one PARD blocker.
+2. Read the next lecture's Mission, run its prerequisite check, and write your answer to its "Predict first" question before opening the answer. Steps 1 and 2 are your preparation: about 10–30 minutes before class.
+3. During and after class, work through that lecture's core demo and lab in your product, one checkpoint at a time.
+4. Reproduce one controlled failure, restore the intended behavior, then run the completion check and explain it without an assistant.
+5. Commit the working checkpoint. Keep the open-source track moving and use [Submission evidence](submission-evidence.md) when an assignment is due. Open optional guides after the core checkpoint works, or when a specific question needs them.
+
+**Not sure your basics are solid?** Take the [readiness check](engineering-foundations.md#readiness-check) before Lecture 1. Each check that fails links to a short repair section.
+
+**Time estimates are planning aids, not measured guarantees.** First-time setup in [Student setup's Part A](student-setup.md#part-a-before-the-first-meeting) is the exception to step 2's estimate: about 1–3 hours plus downloads. Lab work is separate; use each lecture's “At a glance” estimate and record where you get stuck. The [student pilot](submission-evidence.md#a-student-setup-pilot) checks actual workload before anyone claims these estimates fit every laptop or learner.
+
+The modern engineering habits are part of the existing lecture work: explain the active process and Git revision in Lecture 1; separate model proposals from code-enforced authority in Lecture 6; measure failure and quality in Lecture 9; and verify the released revision in Lecture 10. A particular assistant, skill package, MCP server or inference runtime is never a substitute for those outcomes.
+
 ## What is required and what is a choice
 
 | Area | Required (README is the authority) | Your choice |
@@ -99,22 +115,6 @@ Use the assistant and model you can access; the outcomes stay the same. The [set
 **(d).** Streamlit and PostgreSQL are allowed choices (React or another web framework and SQLite are fine too), and no paid account is ever required. The three merged PRs are mandatory, and only *merged* PRs count.
 
 </details>
-
-## Your minimum weekly route
-
-The full PDF is a reference. For the coming class, follow **one row** of the [class-by-class table](#the-class-by-class-path) and these five steps:
-
-1. Run the previous completion check. If it fails, use its repair link and bring one PARD blocker.
-2. Read the next lecture's Mission, run its prerequisite check, and write your answer to its "Predict first" question before opening the answer. Steps 1 and 2 are your preparation: about 10–30 minutes before class.
-3. During and after class, work through that lecture's core demo and lab in your product, one checkpoint at a time.
-4. Reproduce one controlled failure, restore the intended behavior, then run the completion check and explain it without an assistant.
-5. Commit the working checkpoint. Keep the open-source track moving and use [Submission evidence](submission-evidence.md) when an assignment is due. Open optional guides after the core checkpoint works, or when a specific question needs them.
-
-**Not sure your basics are solid?** Take the [readiness check](engineering-foundations.md#readiness-check) before Lecture 1. Each check that fails links to a short repair section.
-
-**Time estimates are planning aids, not measured guarantees.** First-time setup in [Student setup's Part A](student-setup.md#part-a-before-the-first-meeting) is the exception to step 2's estimate: about 1–3 hours plus downloads. Lab work is separate; use each lecture's “At a glance” estimate and record where you get stuck. The [student pilot](submission-evidence.md#a-student-setup-pilot) checks actual workload before anyone claims these estimates fit every laptop or learner.
-
-The modern engineering habits are part of the existing lecture work: explain the active process and Git revision in Lecture 1; separate model proposals from code-enforced authority in Lecture 6; measure failure and quality in Lecture 9; and verify the released revision in Lecture 10. A particular assistant, skill package, MCP server or inference runtime is never a substitute for those outcomes.
 
 ## How to read a lecture
 
@@ -261,7 +261,7 @@ These are feedback criteria, not replacement marks. A student should be able to 
 
 ## Choose the smallest useful AI system
 
-Read this after Lecture 6, when the terms below have meaning. The required project keeps its bounded AI feature and three-service architecture; the table is design literacy for choosing *how much* AI a problem needs.
+Read the design table below after Lecture 6, when its terms have meaning. The required project keeps its bounded AI feature and three-service architecture; the table is design literacy for choosing *how much* AI a problem needs.
 
 <details markdown="1">
 <summary>Optional design literacy, read after Lecture 6</summary>
