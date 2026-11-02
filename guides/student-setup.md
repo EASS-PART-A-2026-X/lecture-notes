@@ -87,10 +87,11 @@ Spend 5 minutes on this before you download anything.
 
 > **You need:**
 >
-> - **Windows:** 64-bit Windows 10 22H2 (build 19045) or Windows 11 23H2 (build 22631) or later. Press Win+R, type `winver`, and read the version and build. Docker notes that Home editions run Linux containers only, which is all this course uses.
+> - **Windows:** 64-bit Windows 10 22H2 (build 19045) or Windows 11 23H2 (build 22631) or later. Press Win+R, type `winver`, and read the version and build. Docker's requirements list the Pro, Enterprise and Education editions; the same page says Home and Education run Linux containers only, which is all this course uses. On Home, run the [Docker check](#verify) early and send a PARD message if it fails.
 > - **Memory:** 8 GB RAM, Docker Desktop's minimum for Windows with WSL 2. On a Mac, Docker Desktop's minimum is 4 GB, and it supports the current and two previous major macOS releases.
 > - **Disk:** about 20 GB free (a course estimate covering Docker images, Python versions, your repositories, and an optional local model).
 > - **Virtualization (Windows):** hardware virtualization must be enabled in BIOS/UEFI. Task Manager → Performance → CPU shows `Virtualization: Enabled`.
+> - **Server service (Windows):** Docker also requires the Windows Server service (LanmanServer) to be enabled, with startup type Automatic. In PowerShell, `Get-Service LanmanServer` shows `Running` and `(Get-Service LanmanServer).StartType` shows `Automatic`.
 > - **WSL (Windows, after installing it below):** in PowerShell, `wsl --version` shows a WSL version of 2.1.5 or later, and `wsl -l -v` lists Ubuntu with `VERSION` 2.
 > - **Mac:** choose the Docker Desktop installer for your chip (Apple menu → About This Mac: "Apple M…" means Apple silicon, otherwise Intel).
 
@@ -415,6 +416,7 @@ Find your symptom, run the first check, then apply the safe fix. If it still fai
 |---|---|---|
 | `command not found` | Restart the terminal; check you are in the environment where you installed the tool (Ubuntu, not PowerShell) | Install the tool in the environment where you run course commands |
 | WSL install fails with a virtualization error, or Docker Desktop shows "Unexpected WSL error" | Task Manager → Performance → CPU: `Virtualization` | Enable hardware virtualization in BIOS/UEFI using your laptop maker's instructions; on a managed laptop, ask the instructor |
+| Windows: Docker Desktop will not install or start, although virtualization is enabled | `Get-Service LanmanServer` and `(Get-Service LanmanServer).StartType` in PowerShell | In PowerShell as administrator: `Set-Service LanmanServer -StartupType Automatic`, then `Start-Service LanmanServer`; restart Docker Desktop |
 | `wsl -l -v` shows Ubuntu with `VERSION 1` | `wsl --version` in PowerShell | `wsl --set-version Ubuntu 2` in PowerShell |
 | `Cannot connect to the Docker daemon` | Is Docker Desktop running? Is Settings → Resources → WSL Integration on for Ubuntu? | Start Docker Desktop and enable the integration; on Linux, `sudo systemctl start docker` |
 | Linux: `permission denied … /var/run/docker.sock` | `groups` does not list `docker` | Docker's [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/), then log out and in; the `docker` group is root-equivalent, so on a managed machine use `sudo docker …` for today and ask. Never `chmod` the socket |
