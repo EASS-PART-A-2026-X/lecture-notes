@@ -17,7 +17,7 @@ Open <http://127.0.0.1:4000/lecture-notes/>. The configured `url` and `baseurl` 
 
 ```bash
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter
-node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs
+node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs .github/scripts/test_sim_factoryops.cjs
 uv run --locked .github/scripts/check_examples.py
 uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py
 python3 .github/scripts/check_compose.py
@@ -35,7 +35,7 @@ python3 .github/scripts/check_site.py _site https://eass-part-a-2026-x.github.io
 OUT="$HOME/tmp/eass-build"   # any directory outside the repository
 JEKYLL_ENV=production bundle exec jekyll build --strict_front_matter --disable-disk-cache -d "$OUT/_site"
 uv run .github/scripts/build_pdf.py "$OUT/_site" https://eass-part-a-2026-x.github.io/lecture-notes
-SITE_DIR="$OUT/_site" node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs
+SITE_DIR="$OUT/_site" node --test .github/scripts/test_search.cjs .github/scripts/test_inference_lab.cjs .github/scripts/test_reliability_lab.cjs .github/scripts/test_course_js.cjs .github/scripts/test_sim_git.cjs .github/scripts/test_sim_status.cjs .github/scripts/test_sim_session.cjs .github/scripts/test_sim_compose.cjs .github/scripts/test_sim_retry.cjs .github/scripts/test_sim_factoryops.cjs
 SITE_DIR="$OUT/_site" python3 -m unittest discover -s .github/scripts -p 'test_*.py'
 python3 .github/scripts/check_site.py "$OUT/_site" https://eass-part-a-2026-x.github.io/lecture-notes
 ```
@@ -55,6 +55,8 @@ For content edits, check the previous/next lecture links and the collapsible sec
 Open a focused PR with the problem, resulting behavior and checks run. Pull requests build the site and PDF and check internal links. Only `main` publishes to GitHub Pages. Coordinate with other agents by fetching the latest `main` before starting and before finalizing your branch; never overwrite their work.
 
 Lectures 1, 2, 3, 8 and 9 each have one simulator: a `div.sim` next to the matching figure or section (Git areas, status-code stages, the session explorer, Compose startup, the retry budget). Its Markdown is a title and a static worked example (`div.sim-fallback`); `_includes/footer_custom.html` loads that page's `assets/js/sim-*.js`, which adds the controls above the worked example and hides it on screen. Without JavaScript, on GitHub and in the PDF the worked example is the content. Each script keeps its model in pure functions tested by `.github/scripts/test_sim_*.cjs` (which also check the rendered fallback and the asset), uses real buttons or radio buttons at least 44 px tall, announces results in `role="status"`, and states every result in words. The Lecture 2 bodies were captured from the Lecture 2 API, and the Compose model follows the printed `compose.yaml`: re-check both when those examples change.
+
+The optional FactoryOps guide has an additional fixed-receipt decision lab (`sim-factoryops`): no agent, command, merge or deployment runs in the browser. Its Node tests check revision binding, failed checks, repair limits, approval and observed delivery. Keep its static worked example for GitHub, print and no-JavaScript use.
 
 The inference teaching calculator has nine Node tests for its equations, stage comparisons, edge cases, input rejection and rendered static fallback. It is a fixed-rate synthetic model, not a real-model benchmark. Verify its controls, invalid-input state and static/print fallback when editing it.
 
