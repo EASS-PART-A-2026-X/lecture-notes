@@ -356,6 +356,18 @@ In the instructor factory, Airflow owns the managed lifecycle. A stage agent can
 
 Before adding parallel agents, define input revisions, separate workspaces, budgets, and who integrates the results. Test the combined candidate after integration. Sibling agents starting from the same code and instructions do not provide independent evidence merely because there are several of them.
 
+**Optional FactoryOps / Metamachine extension:** after completing the required three-service
+product, explore the [four-concern architecture](factoryops-metamachine.md): build the
+product; build a factory that proposes verified candidate changes; operate the factory
+through evidence, budgets and human decisions; and operate the runners, sandboxes, CI
+and deployments that support both systems. Start with **one real change and one
+independent failing/passing check**, not a decorative agent dashboard. The
+[Solar System Machine](https://github.com/EASS-PART-A-2026-X/solar-system-machine/tree/a81083e)
+is an example to critique rather than a compulsory architecture. Its shared-document
+convergence does not prove shared understanding, and a textual STOP order is not the
+same as a supervisor-enforced termination. This extension is **not** a fourth EX3
+application service or a replacement for the [required narrated video](../README.md#ex3-recorded-demo-in-english-required).
+
 **The three controls.** This is the course's single statement of them; other pages link here. When you discuss any harness, separate:
 
 - **Guidance:** project instructions and skills describe how to work. The model reads them; nothing enforces them.

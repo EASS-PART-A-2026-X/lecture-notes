@@ -52,8 +52,8 @@
 | [9 — Evals](../lectures/09-failures-evals-costs.md) | How do you measure quality and bound a bad request? | Selective retry tests, budgets, dataset/evaluators, dated results | Bridge: [Tests, evaluations, and observability](engineering-foundations.md#tests-evaluations-and-observability) | — |
 | [10 — Release](../lectures/10-ci-security-release.md) | What evidence and controls make a release reviewable? | Green CI, clean-checkout run, security controls, tag and runbook | Bridge: [A release has a data lifecycle](engineering-foundations.md#a-release-has-a-data-lifecycle) | — |
 | [11 — Integration clinic](../lectures/11-13-clinics-and-demos.md#meeting-11--integration-and-upstream-review-clinic) | Where is the first broken boundary? | A reproduced blocker, targeted repair, upstream-review next steps | Your earliest failing checkpoint, written as PARD | PR reviews followed up |
-| [12 — Rehearsal](../lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Can someone else repeat the demonstration? | Fresh-clone rehearsal, failure recovery, checked contribution evidence | A fresh clone that starts from your README | evidence table reviewed |
-| [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Working user journey, individual answers, verified merged PRs | Your rehearsed demo and evidence table | **EX3 and open-source evidence due** (Mon 11 Jan 2027, 23:59) |
+| [12 — Rehearsal](../lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Can someone else repeat the demonstration? | Fresh-clone rehearsal, English-narrated video draft, failure recovery, checked contribution evidence | A fresh clone that starts from your README | evidence table reviewed |
+| [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Live demo, English-narrated product video, individual answers, verified merged PRs | Your video link, rehearsed demo and evidence table | **EX3 and open-source evidence due** (Mon 11 Jan 2027, 23:59) |
 
 For every due date and open-source checkpoint, the README's [calendar](../README.md#calendar-and-13-meeting-schedule) and [deadlines](../README.md#assignments-and-deadlines) are the authority. Open a row's bridge section only when that lecture's prerequisite check fails. What to do before, during and after each class is in [Your minimum weekly route](#your-minimum-weekly-route).
 
@@ -100,10 +100,10 @@ The modern engineering habits are part of the existing lecture work: explain the
 | Stack | FastAPI, Pydantic, Pydantic AI, Docker; Docker Compose runs all three services | Editor and assistant (or none); React, Streamlit, or another web framework for the frontend |
 | Application services | A backend, a browser frontend (a CLI alone is not enough), and an independent AI service the backend calls over HTTP | Your domain, and what the AI service does (extraction, analysis, recommendations, or domain assistance) |
 | Persistence | Persistent data that only the backend touches | SQLite or PostgreSQL |
-| Evidence | Automated and failure tests, basic CI, a small AI evaluation dataset with results, a demo, and a short runbook | Which model you use for real runs: a free local model is enough; no paid account is needed |
+| Evidence | Automated and failure tests, basic CI, a small AI evaluation dataset with results, a live demo, an English-narrated recorded demo, and a short runbook | Which model you use for real runs: a free local model is enough; no paid account is needed |
 | Open source | Three merged PRs of your own in official upstream repositories with more than 10,000 stars on the day you open each PR, evidenced by Mon 11 Jan 2027 | Which projects (the course publishes no list) and what you contribute |
 | Explanation | You individually explain your own product work and each of your contributions | Building individually or in a pair |
-| Infrastructure | — | Redis, Kubernetes, cloud hosting, JWT, Mastra, Airflow, RAG, multi-agent orchestration: optional exploration only |
+| Infrastructure | — | Redis, Kubernetes, cloud hosting, JWT, Mastra, Airflow, RAG, and FactoryOps / multi-agent orchestration: optional exploration only |
 
 Use the assistant and model you can access; the outcomes stay the same. The [setup guide](student-setup.md) lists routes, including a manual one, and the [model guide](models-and-ai-literacy.md) explains how to compare them.
 

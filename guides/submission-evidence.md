@@ -76,9 +76,12 @@ Do not paste credentials, `.env`, database contents, private records, or full as
 | Automated tests and failure tests | Run the checks, stop the AI service, verify ordinary CRUD, then recover | Why does a timeout not prove that remote work stopped? |
 | Basic CI | Open the successful run for the submitted revision | Which commands ran, and what do they leave untested? |
 | Small AI evaluation dataset and results | Show the cases, expected behavior, model/configuration, date and results | Which outcomes are schema checks, domain quality, or control-flow checks? |
-| Demo and short runbook | Follow the clean-clone demonstration, including one failure and recovery | How do restart, reset, rollback and restore differ? |
+| Live demo and short runbook | Follow the clean-clone demonstration, including one failure and recovery | How do restart, reset, rollback and restore differ? |
+| Recorded product demo in spoken English | Link a playable ~5-minute screen recording from your README; narrate the real browser, three-service AI flow, persistence, fault/recovery, and final CI/evaluation evidence | Which real behaviors are observed? Can each partner explain their own work in English? |
 | Individual understanding and AI-use note | Explain your own changes and how you verified assistant help | Which part did you personally inspect or test? |
 | Three qualifying merged upstream PRs per student | Complete the [seven-field evidence table](../README.md#evidence-table) and check each merge | Why does a PR in the course organization not satisfy the upstream rule? |
+
+The [recorded video requirements](../README.md#ex3-recorded-demo-in-english-required) are mandatory for EX3; both partners narrate a meaningful part if working as a pair. The [FactoryOps extension](../README.md#optional-factoryops-and-the-metamachine) is optional and does not replace any required service, test, live demo or open-source contribution.
 
 Real-model instructions remain separate and optional. Deterministic substitutes keep automated tests free and repeatable; their passing results do not measure a real model's quality. If an evaluation uses canned outputs or a fake model, label that condition. Record unavailable measurements as unknown.
 
