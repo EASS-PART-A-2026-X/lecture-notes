@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 780" role="img" aria-labelledby="t d">
+  <title id="t">Two systems to build, two responsibilities to operate</title>
+  <desc id="d">Human intent enters the software factory, which proposes a candidate revision and its checks to a trusted delivery gate. Human approval and repository rules authorize deployment to the product. FactoryOps receives factory status and observed product outcomes, sets limits and requests a stop. An enclosing DevOps and platform boundary runs both systems and enforces execution and delivery permissions. A proposed candidate never bypasses the trusted gate. Arrows are labelled with their action; colour repeats the labels.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="640" height="780" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="34" text-anchor="middle" font-size="24" font-weight="700">Build two systems. Operate both.</text>
+    <text x="320" y="61" text-anchor="middle" font-size="17" fill="#535c6b">A candidate needs evidence and an authorized delivery decision.</text>
+
+    <rect x="12" y="140" width="616" height="616" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="160" y="112" text-anchor="middle" font-size="18" font-weight="700">Work order / human intent</text>
+    <path d="M160 122 V158" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+    <rect x="36" y="162" width="248" height="142" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="56" y="194" font-size="22" font-weight="700">Software factory</text>
+    <text x="56" y="219" font-size="17" fill="#22616b">Build the production process</text>
+    <text x="56" y="251" font-size="17">Spec → agent → checks</text>
+    <text x="56" y="277" font-size="17">Revision + check evidence</text>
+
+    <rect x="356" y="174" width="248" height="118" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="376" y="207" font-size="21" font-weight="700">Trusted delivery gate</text>
+    <text x="376" y="237" font-size="17">Human approval</text>
+    <text x="376" y="263" font-size="17">+ repository / release rules</text>
+    <path d="M284 233 H352" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="320" y="219" text-anchor="middle" font-size="16">propose</text>
+
+    <rect x="36" y="460" width="248" height="142" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="56" y="492" font-size="22" font-weight="700">FactoryOps</text>
+    <text x="56" y="517" font-size="17" fill="#1d4e89">Operate / Mission Control</text>
+    <text x="56" y="549" font-size="17">Attention, budget, stop</text>
+    <text x="56" y="575" font-size="17">Accept or reject delivery</text>
+
+    <path d="M72 304 V456" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="86" y="353" font-size="17">report</text>
+    <text x="86" y="377" font-size="17">status</text>
+    <path d="M248 460 V308" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="234" y="410" text-anchor="end" font-size="17">set limits /</text>
+    <text x="234" y="434" text-anchor="end" font-size="17">request stop</text>
+
+    <rect x="356" y="460" width="248" height="142" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="376" y="492" font-size="22" font-weight="700">Product</text>
+    <text x="376" y="517" font-size="17" fill="#2a6a47">Build for real users</text>
+    <text x="376" y="549" font-size="17">Browser → backend → AI</text>
+    <text x="376" y="575" font-size="17">Only backend owns the DB</text>
+
+    <path d="M480 292 V456" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="494" y="365" font-size="17">authorize,</text>
+    <text x="494" y="389" font-size="17">then deploy</text>
+    <path d="M356 531 H288" fill="none" stroke="#3b4453" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="320" y="516" text-anchor="middle" font-size="16">observe</text>
+    <text x="320" y="556" text-anchor="middle" font-size="16">outcomes</text>
+
+    <path d="M36 638 H604" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="36" y="674" font-size="23" font-weight="700">DevOps / platform</text>
+    <text x="36" y="703" font-size="17">Runs both systems: CI, runners, sandboxes, secrets, deploys.</text>
+    <text x="36" y="730" font-size="17" font-weight="700">Enforces execution limits and delivery permissions.</text>
+  </g>
+</svg>

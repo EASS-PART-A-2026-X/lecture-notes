@@ -31,6 +31,7 @@
   {%- when 'lectures/03-persistence-and-first-pr.md' -%}{%- assign simulator = 'sim-session' -%}
   {%- when 'lectures/08-docker-compose.md' -%}{%- assign simulator = 'sim-compose' -%}
   {%- when 'lectures/09-failures-evals-costs.md' -%}{%- assign simulator = 'sim-retry' -%}
+  {%- when 'guides/factoryops-metamachine.md' -%}{%- assign simulator = 'sim-factoryops' -%}
 {%- endcase -%}
 {%- if simulator %}
 <script src="{{ '/assets/js/' | append: simulator | append: '.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>

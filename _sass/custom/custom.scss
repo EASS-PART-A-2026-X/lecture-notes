@@ -3389,6 +3389,36 @@ $ed-code-languages: (
   .main-content .sim.is-live .sim-fallback { display: block !important; }
 }
 
+// The FactoryOps lab presents one evidence receipt, then asks for the next authorized step.
+.main-content #sim-factoryops {
+  select {
+    width: 100%;
+    min-height: 2.75rem;
+    margin-top: 0.35rem;
+    padding: 0.5rem;
+    font: inherit;
+    font-weight: 400;
+    color: var(--ed-text);
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-ui);
+    border-radius: 2px;
+  }
+  .factoryops-receipt {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0;
+    margin: 1rem 0;
+    padding: 0 0.8rem;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-15);
+    background: var(--ed-paper);
+    border-left: 3px solid var(--ed-navy);
+    > div { min-width: 0; padding: 0.65rem 0.5rem; }
+    dt { margin: 0 0 0.2rem; text-align: left; font-size: var(--fs-14); font-weight: 600; color: var(--ed-muted); }
+    dd { margin: 0; overflow-wrap: anywhere; color: var(--ed-ink); }
+  }
+}
+
 @media print {
   // These complete source files span pages; let them use remaining page space.
   .main-content .reasoning-code div.highlighter-rouge { break-inside: auto; }
