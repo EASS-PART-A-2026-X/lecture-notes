@@ -42,6 +42,7 @@ defaults:
   - { scope: { path: "lectures/11-*" }, values: { title: "11–13 · Clinics and demos", nav_order: 18 } }
   - { scope: { path: "guides/agent-driven-development.md" }, values: { title: "Agent-driven engineering", nav_order: 19 } }
   - { scope: { path: "guides/software-factory-lab.md" }, values: { title: "Software factory lab", nav_order: 20 } }
+  - { scope: { path: "guides/factoryops-metamachine.md" }, values: { title: "FactoryOps / Metamachine", nav_order: 20.5 } }
   - { scope: { path: "guides/local-inference.md" }, values: { title: "Local inference", nav_order: 21 } }
   - { scope: { path: "guides/model-apis-and-decisions.md" }, values: { title: "Model APIs and decisions", nav_order: 22 } }
   - { scope: { path: "guides/inference-engineering.md" }, values: { title: "Visual inference engineering", nav_order: 23 } }

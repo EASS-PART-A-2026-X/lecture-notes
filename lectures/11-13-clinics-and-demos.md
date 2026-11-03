@@ -134,7 +134,7 @@ Use [engineering foundations](../guides/engineering-foundations.md#a-release-has
 
 - Your project URL under **`https://github.com/EASS-PART-A-2026-X/<your-product>`**, and a partner to clone it. For a private repository, ask the instructor or authorized repository administrator to arrange read access for the rehearsal, or share your screen while your partner dictates the steps. Keep course contributor access intact; do not grant broad organization access for a rehearsal.
 - Your release candidate tag (`v1.0.0-rc.1` or later) on a commit with green CI.
-- A short demo script, plus your filled-in evidence table and AI-use note. The script starts with your product's purpose in one sentence, then performs your [Lecture 1 operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live ("after X does A, then B; afterwards C holds"), then one failure, then one test.
+- A short **spoken-English demo narration script** and a rehearsal recording for EX3, plus your filled-in evidence table and AI-use note. The script starts with your product's purpose in one sentence, then performs your [Lecture 1 operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live ("after X does A, then B; afterwards C holds"), then one failure, then one test. Pairs should rehearse meaningful narration by both students.
 
 ### Suggested agenda
 
@@ -178,6 +178,15 @@ Use [engineering foundations](../guides/engineering-foundations.md#a-release-has
 6. **Evidence:** open your README's evidence table.
 7. **Clean up**, in `fresh-check` with the same shell: `docker compose down -v`, then `unset COMPOSE_PROJECT_NAME` and `cd ..`, so later `docker compose` commands in this terminal target your dev stack again.
 8. **Close the loop.** If the rehearsal needed fixes: in your working copy, commit and push them, wait until `gh run list --workflow ci.yml --commit "$(git rev-parse HEAD)" --json status,conclusion` shows `completed` and `success`, then tag the next candidate (`v1.0.0-rc.2`) on that SHA and rehearse again. If nothing needed fixing, that green SHA is your `v1.0.0`.
+
+**Record the mandatory English-narrated product demonstration:** use the same verified
+product revision from the rehearsal for a 4-7-minute target screen recording. Narrate
+purpose, real browser workflow, the three application services and persistence, the
+AI feature (real or test model, labelled), one deliberate failure and recovery, and
+final revision/CI/evaluation evidence. Review it once from beginning to end. Check
+the link as a grader would, without login or an access request; redact tokens and
+private records. The [README video contract](../README.md#ex3-recorded-demo-in-english-required)
+is authoritative. FactoryOps is optional and may be shown *after* the product flow.
 
 ### Peer feedback form
 
@@ -259,6 +268,7 @@ The [individual-understanding prompts](../guides/learning-map.md#individual-unde
 
 - `v1.0.0`, tagged on a SHA with green CI (`gh run list --workflow ci.yml --commit "$(git rev-parse 'v1.0.0^{commit}')" --json status,conclusion` shows `completed` and `success`), already started from a clean clone of that tag (`git clone --branch v1.0.0 <your-repo-url> demo`).
 - Your README, open at the runbook and the evidence table.
+- A playable, **English-narrated product demo video** linked from your README and EX3 submission. Each partner speaks a meaningful portion of a paired project's recording.
 
 ### Suggested agenda
 

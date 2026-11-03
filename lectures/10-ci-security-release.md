@@ -833,7 +833,9 @@ git tag --list "v1.0.0*"
 
 Expect `Clean checkout OK: <sha>`, `"status": "completed"` with `"conclusion": "success"` for the tagged commit, and `v1.0.0-rc.1`.
 
-**EX3 minimum (from the README):**
+**EX3 minimum release and CI subset (from the README):**
+
+EX3 also requires a [screen-recorded product demo narrated in English](../README.md#ex3-recorded-demo-in-english-required) and the live demonstration. This table lists the release/CI subset, not the complete assignment. The [FactoryOps extension](../README.md#optional-factoryops-and-the-metamachine) is optional.
 
 | Must work | Evidence you keep | If it fails, repair here |
 |---|---|---|

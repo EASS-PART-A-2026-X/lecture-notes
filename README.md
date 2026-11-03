@@ -26,7 +26,7 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ### Reading map
 
-Eighteen guides support the lectures. Student setup and the learning map are required; the reference card collects the commands, ports, status codes and terms you look up most; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
+Nineteen guides support the lectures. Student setup and the learning map are required; the reference card collects the commands, ports, status codes and terms you look up most; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
 
 | Guide | Status | When to use it |
 |---|---|---|
@@ -38,6 +38,7 @@ Eighteen guides support the lectures. Student setup and the learning map are req
 | [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose a coding assistant or a model, and before Lecture 6 |
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | With your first tasks for a coding assistant (Lecture 1), and again when you build your own agent (Lecture 6) |
 | [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | Parts A and B after Lecture 2 or 3, Part C after Lecture 7, again with Lecture 10: follow one small change from a written request through a failed build, a fix, review and delivery |
+| [FactoryOps and the Metamachine](guides/factoryops-metamachine.md) | *Optional depth* | After your required product works: distinguish the product, software factory, Mission Control, and the platform; test evidence and authority boundaries |
 | [Local inference](guides/local-inference.md) | *Optional depth* | Before Lecture 6, to see how a model turns your text into an answer and how your AI service can use a model on your own computer; again in Lecture 9 for its measurements. Experiments that need strong hardware stay optional |
 | [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | With Lecture 2 for the vocabulary; with Lectures 6–9 to decide whether plain code, a small classifier or a language model should handle a request, and to test that choice offline |
 | [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | With Lectures 6–10, when you want pictures of what makes a model answer faster or cheaper, and what each speed-up costs |
@@ -70,8 +71,8 @@ Ten planned lectures come first, then three flexible meetings.
 | 9 | Mon 14 Dec 2026 | [Failures, evaluations and costs](lectures/09-failures-evals-costs.md) | Failure tests; small evaluation dataset with results |
 | 10 | Mon 21 Dec 2026 | [CI, security and release](lectures/10-ci-security-release.md) | Release candidate with runbook |
 | 11 | Mon 28 Dec 2026 | [Flexible: integration and upstream-review clinic](lectures/11-13-clinics-and-demos.md#meeting-11--integration-and-upstream-review-clinic) | Integrated stack; PR reviews followed up |
-| 12 | Mon 4 Jan 2027 | [Flexible: demo rehearsal, troubleshooting and evidence review](lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Rehearsed demo and individual explanation; evidence table reviewed |
-| 13 | Mon 11 Jan 2027 | [Final demos and individual technical discussion](lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Final demo; **EX3 and open-source evidence due** |
+| 12 | Mon 4 Jan 2027 | [Flexible: demo rehearsal, troubleshooting and evidence review](lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Rehearsed English-narrated product recording and individual explanation; evidence table reviewed |
+| 13 | Mon 11 Jan 2027 | [Final demos and individual technical discussion](lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Live demo and English-narrated video; **EX3 and open-source evidence due** |
 
 Notes, checked against the [HIT academic calendar](https://www.hit.ac.il/students/calender/) on 16 October 2026:
 
@@ -131,10 +132,69 @@ Deadlines are at 23:59 Israel time on the dates below. Submit through the submis
 |---|---|---|
 | EX1 — Backend | Mon 9 Nov 2026 | CRUD API with Pydantic validation, persistent data, tests, a backend Dockerfile, and setup, run, and test instructions |
 | EX2 — Frontend plus backend | Mon 30 Nov 2026 | Browser UI integrated with EX1: core flows, error states, one automated UI or integration flow, and reproducible run instructions |
-| EX3 — Complete product | Mon 11 Jan 2027 | Three application services, Pydantic AI functionality, Docker Compose, persistent data initialization, automated and failure tests, basic CI, a small AI evaluation dataset with results, a demo, and a short runbook |
+| EX3 — Complete product | Mon 11 Jan 2027 | Three application services, Pydantic AI functionality, Docker Compose, persistent data initialization, automated and failure tests, basic CI, a small AI evaluation dataset with results, a live demo, **an English-narrated recorded product video**, and a short runbook |
 | Open-source evidence | Mon 11 Jan 2027 | Three qualifying merged PRs, documented in your evidence table |
 
 Both the application and the open-source requirement are mandatory.
+
+### EX3 recorded demo in English (required)
+
+Submit **one screen-recorded product demonstration with spoken English narration** per
+project. Aim for **about five minutes (4-7 minutes is a useful target)**. The student(s)
+must narrate their own engineering work; for a pair, both students must explain a
+meaningful portion. Accents and production polish are not assessed. A webcam, commercial
+screen recorder, expensive model, or professional editing are not required.
+
+The recording must show **the actual running application**, not just slides, a mock-up,
+a synthetic promotional animation, or a generated voice-over. Cover:
+
+1. **Purpose and architecture:** what problem you solve, and the real frontend -> FastAPI
+   backend -> separate Pydantic AI service path. Identify the backend as the only owner
+   of persistent data.
+2. **Working product:** use the browser to complete a meaningful workflow; demonstrate
+   that saved state reaches the backend and persists, not just that a screen looks right.
+3. **AI functionality:** show a request to the separate service and a validated result.
+   State clearly whether the recording uses a real model or a deterministic test model.
+4. **Failure and recovery:** deliberately show one relevant fault and its user-visible
+   response, then restore the intended behavior.
+5. **Verification:** show the final release tag or exact commit, green CI for that
+   revision, one dated evaluation result, and one known limitation.
+
+**Submit the video link in both the product README and the EX3 submission**, next to the
+final revision (`v1.0.0` in the course rehearsal). A playable unlisted video or a
+shared-drive recording is fine if a grader can open it without an access request.
+Test the link signed out. Do not commit large media files, expose tokens or credentials,
+or record other people's data; use synthetic data. This recorded demonstration
+**supplements, rather than replaces**, the live final demonstration, reproducible
+repository, tests, runbook, individual questions, or upstream PR evidence. Contact the
+instructor directly for accessibility accommodations.
+
+### Optional FactoryOps and the Metamachine
+
+**Build the product. Build the factory. Run the factory. Run the platform.**
+
+AI coding agents make the production process itself something engineers can build,
+inspect, test and operate. The [FactoryOps teaching guide](guides/factoryops-metamachine.md)
+distinguishes **two systems to build** (the customer product and the software factory
+that proposes verified changes) from **two responsibilities to operate** (FactoryOps
+/ Mission Control for oversight and decisions, and DevOps / platform for CI, runners,
+sandboxes, caching, deployments and monitoring).
+
+A factory can use a single bounded agent or a simple script. A visible dashboard is
+optional; reliable evidence, observable failures and enforced approval boundaries
+matter more than the number of agents. As an example, inspect the course's
+[Solar System Machine](https://github.com/EASS-PART-A-2026-X/solar-system-machine/tree/a81083e),
+but note its limitations: synchronized shared text is not proof of agreement, textual
+`done` is not verification, and an agent-readable STOP message is not necessarily
+an enforced process termination. The demo shows agents constructing a product, **not**
+a universal constructor or a proven self-reproducing factory.
+
+**This extension is entirely optional for EX3.** It adds no deadline, grade weight,
+required fourth service, prescribed framework, or substitute for the three required
+application services and three qualifying merged upstream PRs. Complete and narrate
+the real product first; if you try FactoryOps, show one genuine work order, exact
+candidate revision, independent check, bounded repair and human delivery decision.
+
 
 ## Open-source contribution rule and evidence
 

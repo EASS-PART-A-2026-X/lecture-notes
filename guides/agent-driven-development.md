@@ -467,7 +467,7 @@ Start with one agent and explicit tools. Add a specialist when it needs a genuin
 
 For development, two coding agents editing the same checkout can overwrite assumptions and invalidate tests. Separate candidate branches or worktrees, define file ownership, integrate deliberately, and rerun checks on the combined revision. A worktree separates files, not processes or credentials ([the three controls](software-factory-lab.md#from-a-local-loop-to-orchestration)).
 
-A reviewer agent can find a counterexample, but agreement among agents is not a substitute for evidence. They may share the same incorrect premise. Humans must be able to challenge the specification, tests, and patch.
+A reviewer agent can find a counterexample, but agreement among agents is not a substitute for evidence. They may share the same incorrect premise. Humans must be able to challenge the specification, tests, and patch. For the optional engineering of the production process itself, see [FactoryOps and the Metamachine](factoryops-metamachine.md): shared state is not shared understanding, green checks are not universal proofs, and approval messages are not publishing authority.
 
 ## Other agent frameworks (optional)
 
