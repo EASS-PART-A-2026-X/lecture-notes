@@ -6,7 +6,7 @@
 
 **When:** Parts A and B after Lecture 2 or 3, about 45–60 minutes in total (estimate). Part C's outage drill needs the three services, so do it after Lecture 7. Revisit the delivery milestones in Lecture 10. This is formative practice with a separate demonstration repository; it adds no assignment or infrastructure requirement.
 
-**Related:** [Manifests, skills and evals](engineering-contracts.md) turns the same ideas into manifests, Docker reference checks and a skill-comparison exercise. [FactoryOps and Mission Control](factoryops-metamachine.md) places this factory among four concerns (Product, Factory, Mission Control, DevOps) and adds the queueing and verification mathematics.
+**Related:** [Manifests, skills and evals](engineering-contracts.md) turns the same ideas into manifests, Docker reference checks and a skill-comparison exercise. The optional [FactoryOps / Metamachine guide](factoryops-metamachine.md) treats the factory as a system you build and operate, alongside the product, Mission Control and the platform.
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>

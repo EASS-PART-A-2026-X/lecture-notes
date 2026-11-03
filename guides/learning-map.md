@@ -26,7 +26,6 @@
 - [How to read a lecture](#how-to-read-a-lecture)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
-- [Final demo and the four engineering concerns](#final-demo-and-the-four-engineering-concerns)
 - [A repeatable study cycle](#a-repeatable-study-cycle)
 - [Visual checkpoints](#visual-checkpoints)
 - [Engineering studio and review criteria](#engineering-studio-and-review-criteria)
@@ -54,7 +53,7 @@
 | [10 — Release](../lectures/10-ci-security-release.md) | What evidence and controls make a release reviewable? | Green CI, clean-checkout run, security controls, tag and runbook | Bridge: [A release has a data lifecycle](engineering-foundations.md#a-release-has-a-data-lifecycle) | — |
 | [11 — Integration clinic](../lectures/11-13-clinics-and-demos.md#meeting-11--integration-and-upstream-review-clinic) | Where is the first broken boundary? | A reproduced blocker, targeted repair, upstream-review next steps | Your earliest failing checkpoint, written as PARD | PR reviews followed up |
 | [12 — Rehearsal](../lectures/11-13-clinics-and-demos.md#meeting-12--demo-rehearsal-troubleshooting-and-evidence-review) | Can someone else repeat the demonstration? | Fresh-clone rehearsal, failure recovery, checked contribution evidence | A fresh clone that starts from your README | evidence table reviewed |
-| [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Working user journey, individual answers, verified merged PRs | Your rehearsed demo and evidence table | **EX3 and open-source evidence due** (Mon 11 Jan 2027, 23:59) |
+| [13 — Demonstration](../lectures/11-13-clinics-and-demos.md#meeting-13--final-demos-and-individual-technical-discussion) | Can you operate and explain the product you submit? | Working user journey, individual answers, verified merged PRs | Your rehearsed demo, your English-narrated demo video link, and your evidence table | **EX3 and open-source evidence due** (Mon 11 Jan 2027, 23:59) |
 
 For every due date and open-source checkpoint, the README's [calendar](../README.md#calendar-and-13-meeting-schedule) and [deadlines](../README.md#assignments-and-deadlines) are the authority. Open a row's bridge section only when that lecture's prerequisite check fails. What to do before, during and after each class is in [Your minimum weekly route](#your-minimum-weekly-route).
 
@@ -101,10 +100,10 @@ The modern engineering habits are part of the existing lecture work: explain the
 | Stack | FastAPI, Pydantic, Pydantic AI, Docker; Docker Compose runs all three services | Editor and assistant (or none); React, Streamlit, or another web framework for the frontend |
 | Application services | A backend, a browser frontend (a CLI alone is not enough), and an independent AI service the backend calls over HTTP | Your domain, and what the AI service does (extraction, analysis, recommendations, or domain assistance) |
 | Persistence | Persistent data that only the backend touches | SQLite or PostgreSQL |
-| Evidence | Automated and failure tests, basic CI, a small AI evaluation dataset with results, a demo, and a short runbook | Which model you use for real runs: a free local model is enough; no paid account is needed |
+| Evidence | Automated and failure tests, basic CI, a small AI evaluation dataset with results, a live demo, an [English-narrated recorded product video](../README.md#ex3-recorded-demo-in-english-required), and a short runbook | Which model you use for real runs: a free local model is enough; no paid account is needed |
 | Open source | Three merged PRs of your own in official upstream repositories with more than 10,000 stars on the day you open each PR, evidenced by Mon 11 Jan 2027 | Which projects (the course publishes no list) and what you contribute |
 | Explanation | You individually explain your own product work and each of your contributions | Building individually or in a pair |
-| Infrastructure | — | Redis, Kubernetes, cloud hosting, JWT, Mastra, Airflow, RAG, multi-agent orchestration: optional exploration only |
+| Infrastructure | — | Redis, Kubernetes, cloud hosting, JWT, Mastra, Airflow, RAG, multi-agent orchestration, the [FactoryOps / Metamachine](factoryops-metamachine.md) challenge: optional exploration only |
 
 Use the assistant and model you can access; the outcomes stay the same. The [setup guide](student-setup.md) lists routes, including a manual one, and the [model guide](models-and-ai-literacy.md) explains how to compare them.
 
@@ -178,21 +177,6 @@ Rate your own explanations with three levels. Aim for level 3 on your own code:
 | 3. Purpose and the failure it prevents | adds what would go wrong without it | "…so every route answers a missing id with the same 404 and message, instead of crashing into a 500." |
 
 These support the existing individual technical discussion. They apply whether code was typed manually, completed by an editor, or produced by a coding agent.
-
-## Final demo and the four engineering concerns
-
-Meeting 13 is where the three tracks meet. Prepare with the [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions), rehearse with the [Meeting 12 checklist](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist), and check each requirement in [Submission evidence](submission-evidence.md#ex3-the-complete-product). Deadlines are in the [README](../README.md#assignments-and-deadlines). The [EX3 demonstration video section](../lectures/11-13-clinics-and-demos.md#ex3-demonstration-video-english-narration) describes the narrated reference run; the recording itself is not published yet.
-
-If you want a frame for explaining your project, the optional [FactoryOps and Mission Control](factoryops-metamachine.md) guide splits software built with agents into four concerns. Each one already appears in the course:
-
-| Concern | Where the course teaches it | What you can show in the final demo |
-|---|---|---|
-| Product | Lectures 2–9: API, persistence, browser, AI service, Compose | The happy path and the AI flow |
-| Factory | [Agent-driven engineering](agent-driven-development.md), the [software factory lab](software-factory-lab.md) | One change from request to verified PR |
-| Mission Control | Lecture 10's release rules, Meetings 11–13 evidence review | Why you trust the tagged SHA: green CI and the evidence table |
-| DevOps | Lectures 1, 8 and 10: Docker, Compose, CI | Clean clone of the tag, one outage drill, recovery |
-
-This framing is optional depth and adds no requirement; grading remains as stated in the course guide.
 
 ## A repeatable study cycle
 

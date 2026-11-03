@@ -12,7 +12,7 @@
 
 In this course you build, test, run, debug, and explain a useful full-stack application, and you contribute accepted changes to established open-source projects.
 
-**Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery; [FactoryOps and Mission Control](guides/factoryops-metamachine.md) names the four concerns (Product, Factory, Mission Control, DevOps) and the mathematics of checking agent work.
+**Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery; the optional [FactoryOps / Metamachine guide](guides/factoryops-metamachine.md) treats the factory itself as something to build, inspect, test and operate.
 
 **On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [FAQ](#frequently-asked-questions) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
 
@@ -38,7 +38,7 @@ Nineteen guides support the lectures. Student setup and the learning map are req
 | [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose a coding assistant or a model, and before Lecture 6 |
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | With your first tasks for a coding assistant (Lecture 1), and again when you build your own agent (Lecture 6) |
 | [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | Parts A and B after Lecture 2 or 3, Part C after Lecture 7, again with Lecture 10: follow one small change from a written request through a failed build, a fix, review and delivery |
-| [FactoryOps and Mission Control](guides/factoryops-metamachine.md) | *Optional depth* | After the factory lab's Part A, or with Lecture 10 and the clinics: the four concerns when agents build software (Product, Factory, Mission Control, DevOps), queueing and review capacity, and why correlated checks or agent branches are weaker evidence than their count suggests |
+| [FactoryOps / Metamachine](guides/factoryops-metamachine.md) | *Optional depth* | After the factory lab, or with Lecture 10 and the clinics: build the product, build the factory, run the factory, run the platform; the four non-equivalences behind trusting agent-made changes; an optional EX3 FactoryOps challenge |
 | [Local inference](guides/local-inference.md) | *Optional depth* | Before Lecture 6, to see how a model turns your text into an answer and how your AI service can use a model on your own computer; again in Lecture 9 for its measurements. Experiments that need strong hardware stay optional |
 | [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | With Lecture 2 for the vocabulary; with Lectures 6–9 to decide whether plain code, a small classifier or a language model should handle a request, and to test that choice offline |
 | [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | With Lectures 6–10, when you want pictures of what makes a model answer faster or cheaper, and what each speed-up costs |
@@ -132,10 +132,48 @@ Deadlines are at 23:59 Israel time on the dates below. Submit through the submis
 |---|---|---|
 | EX1 — Backend | Mon 9 Nov 2026 | CRUD API with Pydantic validation, persistent data, tests, a backend Dockerfile, and setup, run, and test instructions |
 | EX2 — Frontend plus backend | Mon 30 Nov 2026 | Browser UI integrated with EX1: core flows, error states, one automated UI or integration flow, and reproducible run instructions |
-| EX3 — Complete product | Mon 11 Jan 2027 | Three application services, Pydantic AI functionality, Docker Compose, persistent data initialization, automated and failure tests, basic CI, a small AI evaluation dataset with results, a demo, and a short runbook |
+| EX3 — Complete product | Mon 11 Jan 2027 | Three application services, Pydantic AI functionality, Docker Compose, persistent data initialization, automated and failure tests, basic CI, a small AI evaluation dataset with results, a live demo, **an English-narrated recorded product video**, and a short runbook |
 | Open-source evidence | Mon 11 Jan 2027 | Three qualifying merged PRs, documented in your evidence table |
 
 Both the application and the open-source requirement are mandatory.
+
+### EX3 recorded demo in English (required)
+
+Submit **one screen-recorded product demonstration with spoken English narration** per
+project. Aim for **about five minutes (4-7 minutes is a useful target)**. The student(s)
+must narrate their own engineering work; for a pair, both students must explain a
+meaningful portion. Accents and production polish are not assessed. A webcam, commercial
+screen recorder, expensive model, or professional editing are not required.
+
+The recording must show **the actual running application**, not just slides, a mock-up,
+a synthetic promotional animation, or a generated voice-over. Cover:
+
+1. Purpose and architecture: frontend -> FastAPI backend -> separate Pydantic AI service.
+2. Working product: real browser workflow and persistent state.
+3. AI functionality: validated result, identifying real versus test models.
+4. Failure and recovery: deliberate fault, observed behavior, and recovery.
+5. Verification: final commit, green CI, dated evaluation, and known limitation.
+
+Submit the video link in both the product README and the EX3 submission.
+The video supplements, rather than replaces, the live final demonstration.
+Rehearse it with the [Meeting 12 checklist](lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist) and check it against [Submission evidence](guides/submission-evidence.md#ex3-the-complete-product).
+
+### Optional FactoryOps and the Metamachine
+
+**Build the product. Build the factory. Run the factory. Run the platform.**
+
+AI coding agents make the production process itself something engineers can build,
+inspect, test and operate.
+
+The [FactoryOps teaching guide](guides/factoryops-metamachine.md) distinguishes two systems to build:
+the customer product and the software factory that proposes verified changes;
+and two responsibilities to operate:
+FactoryOps / Mission Control, and DevOps / platform.
+
+This extension is entirely optional for EX3.
+It adds no deadline, grade weight, required fourth service or prescribed framework.
+It does not replace the three required application services or the
+three qualifying merged upstream PRs.
 
 ## Open-source contribution rule and evidence
 

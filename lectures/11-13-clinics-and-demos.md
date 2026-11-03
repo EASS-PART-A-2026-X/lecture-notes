@@ -134,7 +134,8 @@ Use [engineering foundations](../guides/engineering-foundations.md#a-release-has
 
 - Your project URL under **`https://github.com/EASS-PART-A-2026-X/<your-product>`**, and a partner to clone it. For a private repository, ask the instructor or authorized repository administrator to arrange read access for the rehearsal, or share your screen while your partner dictates the steps. Keep course contributor access intact; do not grant broad organization access for a rehearsal.
 - Your release candidate tag (`v1.0.0-rc.1` or later) on a commit with green CI.
-- A short demo script, plus your filled-in evidence table and AI-use note. The script starts with your product's purpose in one sentence, then performs your [Lecture 1 operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live ("after X does A, then B; afterwards C holds"), then one failure, then one test.
+- A short spoken-English demo narration script and a rehearsal recording
+  for EX3, plus your filled-in evidence table and AI-use note. The script starts with your product's purpose in one sentence, then performs your [Lecture 1 operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live ("after X does A, then B; afterwards C holds"), then one failure, then one test.
 
 ### Suggested agenda
 
@@ -144,6 +145,10 @@ Use [engineering foundations](../guides/engineering-foundations.md#a-release-has
 4. Peer feedback with the [form below](#peer-feedback-form), in words, not scores.
 5. Explain one design decision and its trade-off, then a [formative check-off](#formative-check-off) with two question-bank questions.
 6. Evidence review with the instructor, then a troubleshooting queue.
+
+Record the mandatory English-narrated product demonstration.
+Review the entire recording and verify the link is accessible to graders.
+The [README's recorded-demo requirements](../README.md#ex3-recorded-demo-in-english-required) list what the video must cover.
 
 ### Demo rehearsal checklist
 
@@ -259,38 +264,14 @@ The [individual-understanding prompts](../guides/learning-map.md#individual-unde
 
 - `v1.0.0`, tagged on a SHA with green CI (`gh run list --workflow ci.yml --commit "$(git rev-parse 'v1.0.0^{commit}')" --json status,conclusion` shows `completed` and `success`), already started from a clean clone of that tag (`git clone --branch v1.0.0 <your-repo-url> demo`).
 - Your README, open at the runbook and the evidence table.
+- A playable, English-narrated product demo video linked from your
+  README and EX3 submission. Each partner speaks a meaningful portion.
 
 ### Suggested agenda
 
 1. Final demonstrations in the announced order, following the rehearsal checklist.
 2. Individual technical discussion: questions from several topics below, including your PRs. Partners answer separately.
 3. Close: EX3 and open-source evidence are due at 23:59 Israel time today ([deadlines](../README.md#assignments-and-deadlines)), via the submission channel provided by the instructor.
-
-### Final-demo instructions
-
-These instructions put the existing requirements in run order. They add no new deliverable; the [README](../README.md#assignments-and-deadlines) remains the authority for EX3 and its deadline, and [Submission evidence](../guides/submission-evidence.md#ex3-the-complete-product) lists what each requirement must show.
-
-1. **Start from the tag.** Before your slot, start the stack from a clean clone of `v1.0.0` (see [What you bring](#what-you-bring-2)) and keep the CI run for that SHA open.
-2. **Purpose and principle.** Say your product's purpose in one sentence, then perform your [operational principle](01-environment-git-docker-ai.md#product-scoping-one-narrow-domain-three-services) live.
-3. **Happy path and the AI flow.** Browser → backend → AI service → validated result → saved data, as in the [rehearsal checklist](#demo-rehearsal-checklist).
-4. **One failure and recovery.** Stop the AI service, show that ordinary CRUD still works and that the UI explains the failure, then restore it.
-5. **Tests and evaluations.** Run the README's test command, then show the dated evaluation results with the model and configuration they ran with.
-6. **Evidence.** Open the README's runbook, AI-use note and [evidence table](../README.md#evidence-table).
-7. **Explain one decision.** One design trade-off and one limitation, in your own words. Then answer the individual questions.
-
-Keep to the time and order the instructor announces. If something breaks during the demo, say what you expected, what happened, and which runbook step you would take next: that is part of the demonstration, not a failure of it.
-
-### EX3 demonstration video (English narration)
-
-A short reference video will show one complete EX3 demonstration on the course's integrated reference product, narrated in English, following the seven steps above: clean clone of the tag, purpose, happy path with the AI flow, the AI-service outage and recovery, tests and evaluations, the evidence table, and one explained trade-off. It uses synthetic data and a deterministic model substitute, as the [integrated reference](../guides/system-walkthrough.md#reproduce-the-integrated-reference) does.
-
-**Note:** **TODO (instructor):** the narrated EX3 demonstration video has not been published yet, so there is nothing to play here. This slot will hold the embedded video and its transcript once a real recording exists. Until then, follow the written steps above and the [rehearsal checklist](#demo-rehearsal-checklist).
-
-<!-- TODO(EX3 demo video): replace the Note above with the embedded video, a link to it and a text transcript, once the English-narrated recording is published. Do not add a placeholder URL. -->
-
-When you narrate your own demonstration, speak in English, name each step before you run it, and say what the result shows. A recorded video does not replace the live demonstration and individual discussion in Meeting 13; if you cannot attend, ask the instructor what is accepted.
-
-For how this demonstration maps onto the Product, Factory, Mission Control and DevOps concerns, see [FactoryOps and Mission Control](../guides/factoryops-metamachine.md#map-the-four-concerns-onto-your-ex3-demo).
 
 ## Individual technical discussion · question bank
 

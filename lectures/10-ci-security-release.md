@@ -332,7 +332,7 @@ Recipe Box's CI does not run on tags, on purpose. The tag points at a commit CI 
 
 </details>
 
-The course's [factory lab](../guides/software-factory-lab.md) draws the same rule in general form: evidence belongs to the revision that was checked.
+The course's [factory lab](../guides/software-factory-lab.md) draws the same rule in general form: evidence belongs to the revision that was checked. The optional [FactoryOps / Metamachine guide](../guides/factoryops-metamachine.md#enforcement-boundaries) shows where branch protection, required checks and human approval enforce that rule.
 
 <figure class="course-diagram">
   <div class="diagram-scroll" role="region" tabindex="0" aria-label="Evidence and revision diagram, scroll horizontally">

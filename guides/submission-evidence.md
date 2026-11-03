@@ -67,7 +67,7 @@ Do not paste credentials, `.env`, database contents, private records, or full as
 
 ## EX3: the complete product
 
-**Due Monday 11 January 2027, 23:59 Israel time**, together with the open-source evidence. Use the [full rehearsal](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist) for commands and the [final-demo requirements](../lectures/11-13-clinics-and-demos.md#what-you-bring-2) for the release tag and demonstration. The [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions) put the same requirements in run order, and the [EX3 demonstration video section](../lectures/11-13-clinics-and-demos.md#ex3-demonstration-video-english-narration) describes the narrated reference run (the recording itself is not published yet).
+**Due Monday 11 January 2027, 23:59 Israel time**, together with the open-source evidence. Use the [full rehearsal](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist) for commands and the [final-demo requirements](../lectures/11-13-clinics-and-demos.md#what-you-bring-2) for the release tag and demonstration.
 
 | Existing requirement | Show the behavior | Explain the boundary |
 |---|---|---|
@@ -76,20 +76,19 @@ Do not paste credentials, `.env`, database contents, private records, or full as
 | Automated tests and failure tests | Run the checks, stop the AI service, verify ordinary CRUD, then recover | Why does a timeout not prove that remote work stopped? |
 | Basic CI | Open the successful run for the submitted revision | Which commands ran, and what do they leave untested? |
 | Small AI evaluation dataset and results | Show the cases, expected behavior, model/configuration, date and results | Which outcomes are schema checks, domain quality, or control-flow checks? |
-| Demo and short runbook | Follow the clean-clone demonstration, including one failure and recovery | How do restart, reset, rollback and restore differ? |
+| Live demo and short runbook | Follow the clean-clone demonstration, including one failure and recovery | How do restart, reset, rollback and restore differ? |
+| Recorded product demo in spoken English | A playable screen recording of the actual running application, linked from the README and the EX3 submission: purpose and architecture, the browser workflow and persistent state, a validated AI result (real or test model named), a deliberate fault and recovery, and the final commit with green CI and a dated evaluation | Which part of the recording shows your own engineering work, and which known limitation do you name? |
 | Individual understanding and AI-use note | Explain your own changes and how you verified assistant help | Which part did you personally inspect or test? |
 | Three qualifying merged upstream PRs per student | Complete the [seven-field evidence table](../README.md#evidence-table) and check each merge | Why does a PR in the course organization not satisfy the upstream rule? |
 
 Real-model instructions remain separate and optional. Deterministic substitutes keep automated tests free and repeatable; their passing results do not measure a real model's quality. If an evaluation uses canned outputs or a fake model, label that condition. Record unavailable measurements as unknown.
 
-**Check yourself:** before you submit, confirm each item for the commit you tag as `v1.0.0`:
+The recorded video requirements are mandatory for EX3.
+Both partners narrate a meaningful part if working as a pair.
+FactoryOps is optional and cannot replace any required service,
+test, live demonstration or open-source contribution.
 
-- [ ] Every row in the table above can be shown from a clean clone of that tag, in the order of the [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions).
-- [ ] CI is `completed` and `success` for that SHA.
-- [ ] The README holds the runbook, the dated evaluation results, the AI-use note and the [seven-field evidence table](../README.md#evidence-table).
-- [ ] You can narrate the demonstration in English, naming each step before you run it.
-
-Optional context: [FactoryOps and Mission Control](factoryops-metamachine.md#map-the-four-concerns-onto-your-ex3-demo) maps the same demonstration onto the Product, Factory, Mission Control and DevOps concerns. It adds no criterion.
+The full video requirements are in the [README](../README.md#ex3-recorded-demo-in-english-required); the optional extension is described in [FactoryOps / Metamachine](factoryops-metamachine.md).
 
 ## Annotate the evidence
 
