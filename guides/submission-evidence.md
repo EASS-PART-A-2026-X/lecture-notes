@@ -67,7 +67,7 @@ Do not paste credentials, `.env`, database contents, private records, or full as
 
 ## EX3: the complete product
 
-**Due Monday 11 January 2027, 23:59 Israel time**, together with the open-source evidence. Use the [full rehearsal](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist) for commands and the [final-demo requirements](../lectures/11-13-clinics-and-demos.md#what-you-bring-2) for the release tag and demonstration.
+**Due Monday 11 January 2027, 23:59 Israel time**, together with the open-source evidence. Use the [full rehearsal](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist) for commands and the [final-demo requirements](../lectures/11-13-clinics-and-demos.md#what-you-bring-2) for the release tag and demonstration. The [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions) put the same requirements in run order, and the [EX3 demonstration video section](../lectures/11-13-clinics-and-demos.md#ex3-demonstration-video-english-narration) describes the narrated reference run (the recording itself is not published yet).
 
 | Existing requirement | Show the behavior | Explain the boundary |
 |---|---|---|
@@ -81,6 +81,15 @@ Do not paste credentials, `.env`, database contents, private records, or full as
 | Three qualifying merged upstream PRs per student | Complete the [seven-field evidence table](../README.md#evidence-table) and check each merge | Why does a PR in the course organization not satisfy the upstream rule? |
 
 Real-model instructions remain separate and optional. Deterministic substitutes keep automated tests free and repeatable; their passing results do not measure a real model's quality. If an evaluation uses canned outputs or a fake model, label that condition. Record unavailable measurements as unknown.
+
+**Check yourself:** before you submit, confirm each item for the commit you tag as `v1.0.0`:
+
+- [ ] Every row in the table above can be shown from a clean clone of that tag, in the order of the [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions).
+- [ ] CI is `completed` and `success` for that SHA.
+- [ ] The README holds the runbook, the dated evaluation results, the AI-use note and the [seven-field evidence table](../README.md#evidence-table).
+- [ ] You can narrate the demonstration in English, naming each step before you run it.
+
+Optional context: [FactoryOps and Mission Control](factoryops-metamachine.md#map-the-four-concerns-onto-your-ex3-demo) maps the same demonstration onto the Product, Factory, Mission Control and DevOps concerns. It adds no criterion.
 
 ## Annotate the evidence
 

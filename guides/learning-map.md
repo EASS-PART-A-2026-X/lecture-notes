@@ -26,6 +26,7 @@
 - [How to read a lecture](#how-to-read-a-lecture)
 - [When you are behind](#when-you-are-behind)
 - [Individual understanding](#individual-understanding)
+- [Final demo and the four engineering concerns](#final-demo-and-the-four-engineering-concerns)
 - [A repeatable study cycle](#a-repeatable-study-cycle)
 - [Visual checkpoints](#visual-checkpoints)
 - [Engineering studio and review criteria](#engineering-studio-and-review-criteria)
@@ -177,6 +178,21 @@ Rate your own explanations with three levels. Aim for level 3 on your own code:
 | 3. Purpose and the failure it prevents | adds what would go wrong without it | "…so every route answers a missing id with the same 404 and message, instead of crashing into a 500." |
 
 These support the existing individual technical discussion. They apply whether code was typed manually, completed by an editor, or produced by a coding agent.
+
+## Final demo and the four engineering concerns
+
+Meeting 13 is where the three tracks meet. Prepare with the [final-demo instructions](../lectures/11-13-clinics-and-demos.md#final-demo-instructions), rehearse with the [Meeting 12 checklist](../lectures/11-13-clinics-and-demos.md#demo-rehearsal-checklist), and check each requirement in [Submission evidence](submission-evidence.md#ex3-the-complete-product). Deadlines are in the [README](../README.md#assignments-and-deadlines). The [EX3 demonstration video section](../lectures/11-13-clinics-and-demos.md#ex3-demonstration-video-english-narration) describes the narrated reference run; the recording itself is not published yet.
+
+If you want a frame for explaining your project, the optional [FactoryOps and Mission Control](factoryops-metamachine.md) guide splits software built with agents into four concerns. Each one already appears in the course:
+
+| Concern | Where the course teaches it | What you can show in the final demo |
+|---|---|---|
+| Product | Lectures 2–9: API, persistence, browser, AI service, Compose | The happy path and the AI flow |
+| Factory | [Agent-driven engineering](agent-driven-development.md), the [software factory lab](software-factory-lab.md) | One change from request to verified PR |
+| Mission Control | Lecture 10's release rules, Meetings 11–13 evidence review | Why you trust the tagged SHA: green CI and the evidence table |
+| DevOps | Lectures 1, 8 and 10: Docker, Compose, CI | Clean clone of the tag, one outage drill, recovery |
+
+This framing is optional depth and adds no requirement; grading remains as stated in the course guide.
 
 ## A repeatable study cycle
 

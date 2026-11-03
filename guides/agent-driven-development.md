@@ -575,7 +575,7 @@ Primary documentation reviewed on **17 October 2026**. Product features and defa
 - **OpenCode (V2):** [permissions](https://opencode.ai/v2/docs/permissions), [instructions](https://opencode.ai/v2/docs/instructions) and [agent profiles](https://opencode.ai/v2/docs/agents). V1 and V2 configuration names differ; match your installed version.
 - **Pydantic AI:** [testing with `TestModel`, `FunctionModel` and `capture_run_messages()`](https://pydantic.dev/docs/ai/guides/testing/). The drill above was run with `pydantic-ai-slim` 2.57.0, the course's verification version.
 - **Mastra and OpenClaw:** linked in [Other agent frameworks](#other-agent-frameworks-optional). This guide does not require or claim a tested Mastra or OpenClaw application.
-- **Instructor case study:** [Airflow software factory](https://github.com/zozo123/ariflow-swfactory), explored hands-on in the [factory lab](software-factory-lab.md). Its experimental capabilities are not course requirements.
+- **Instructor case study:** [Airflow software factory](https://github.com/zozo123/ariflow-swfactory), explored hands-on in the [factory lab](software-factory-lab.md) and placed in the four-concern architecture of [FactoryOps and Mission Control](factoryops-metamachine.md). Its experimental capabilities are not course requirements.
 - **Further study:** the course's [further-study page](further-study.md) lists university courses on coding agents and agent security. Inspired-by note: the delegation habits here echo MIT 6.S950's [Lab 1](https://agencyai.mit.edu/lab1/) and the Missing Semester's [agentic coding lecture](https://missing.csail.mit.edu/2026/agentic-coding/); the exercises on this page are original and the course is not affiliated with MIT.
 
 <!-- {% endraw %} -->

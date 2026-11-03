@@ -12,7 +12,7 @@
 
 In this course you build, test, run, debug, and explain a useful full-stack application, and you contribute accepted changes to established open-source projects.
 
-**Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery.
+**Build with agents; learn to build agents.** Use a coding assistant to investigate, implement, and verify small changes throughout the course. From Lecture 6, engineer an agent inside your product too. The [agent-driven engineering guide](guides/agent-driven-development.md) connects both practices; the [software factory lab](guides/software-factory-lab.md) follows a work order through a failed build, repair, review, and delivery; [FactoryOps and Mission Control](guides/factoryops-metamachine.md) names the four concerns (Product, Factory, Mission Control, DevOps) and the mathematics of checking agent work.
 
 **On this page:** [Start here](#start-here) · [Calendar](#calendar-and-13-meeting-schedule) · [Product](#three-service-product-requirements) · [Assignments](#assignments-and-deadlines) · [Open source](#open-source-contribution-rule-and-evidence) · [Working method](#working-method-ai-use-assessment-and-reproducibility) · [FAQ](#frequently-asked-questions) · [Resources](#official-resources) · [Earlier material](#earlier-course-material)
 
@@ -26,7 +26,7 @@ In this course you build, test, run, debug, and explain a useful full-stack appl
 
 ### Reading map
 
-Eighteen guides support the lectures. Student setup and the learning map are required; the reference card collects the commands, ports, status codes and terms you look up most; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
+Nineteen guides support the lectures. Student setup and the learning map are required; the reference card collects the commands, ports, status codes and terms you look up most; submission evidence organizes the existing assignment criteria. Use the remaining guides as bridges or optional depth when needed. The PDF is a reference book, not a weekly cover-to-cover reading assignment.
 
 | Guide | Status | When to use it |
 |---|---|---|
@@ -38,6 +38,7 @@ Eighteen guides support the lectures. Student setup and the learning map are req
 | [Models and AI literacy](guides/models-and-ai-literacy.md) | *Bridge when stuck* | When you choose a coding assistant or a model, and before Lecture 6 |
 | [Agent-driven engineering](guides/agent-driven-development.md) | *Optional depth* | With your first tasks for a coding assistant (Lecture 1), and again when you build your own agent (Lecture 6) |
 | [Software factory lab](guides/software-factory-lab.md) | *Optional depth* | Parts A and B after Lecture 2 or 3, Part C after Lecture 7, again with Lecture 10: follow one small change from a written request through a failed build, a fix, review and delivery |
+| [FactoryOps and Mission Control](guides/factoryops-metamachine.md) | *Optional depth* | After the factory lab's Part A, or with Lecture 10 and the clinics: the four concerns when agents build software (Product, Factory, Mission Control, DevOps), queueing and review capacity, and why correlated checks or agent branches are weaker evidence than their count suggests |
 | [Local inference](guides/local-inference.md) | *Optional depth* | Before Lecture 6, to see how a model turns your text into an answer and how your AI service can use a model on your own computer; again in Lecture 9 for its measurements. Experiments that need strong hardware stay optional |
 | [Model APIs and decisions](guides/model-apis-and-decisions.md) | *Optional depth* | With Lecture 2 for the vocabulary; with Lectures 6–9 to decide whether plain code, a small classifier or a language model should handle a request, and to test that choice offline |
 | [Visual inference engineering](guides/inference-engineering.md) | *Optional depth* | With Lectures 6–10, when you want pictures of what makes a model answer faster or cheaper, and what each speed-up costs |
