@@ -20,6 +20,7 @@
 - [Before you start](#before-you-start)
 - [Learning checkpoint](#learning-checkpoint)
 - [Concepts](#concepts)
+- [End-to-end agent evaluations](#end-to-end-agent-evaluations)
 - [Live demo](#live-demo)
 - [Evaluation clinic: audit the score](#evaluation-clinic-audit-the-score)
 - [Hands-on lab](#hands-on-lab)
@@ -385,6 +386,72 @@ The counts and costs are invented: arithmetic, not a model benchmark.
 **Before comparing:** fix the task rubric, quality floor, important input slices, latency limit and data policy. Tune thresholds on development cases, freeze the configuration, then use separate held-out cases. Record a confusion matrix for routing, deferral/escalation rates, end-to-end success and p50/p95 latency. Small samples have uncertainty; these hundred invented outcomes are arithmetic, not measured evidence or a production acceptance standard.
 
 **Five-minute discussion:** what would you conclude if the candidate had 97 successes overall but performed worse on Hebrew inputs, or violated your latency limit? An average alone cannot establish every agreed constraint. [The offline routing lab](../guides/model-apis-and-decisions.md#offline-lab-confidence-is-a-routing-input-not-permission) checks policy branches with seven tests; it does not supply the quality evidence in this comparison.
+
+## End-to-end agent evaluations
+
+A valid extraction is only one part of a working product. The browser might still show
+an error, the backend might save two recipes, or a restart might lose the saved row.
+Evaluate the outcome the user can observe across the whole three-service path.
+
+This optional extension adapts the evaluation approach in
+[Vercel's agent evaluations article](https://vercel.com/blog/agent-evals) to Recipe Box.
+It adds no EX3 requirements and needs no paid platform or new framework.
+
+### Three layers of evidence
+
+| Layer | Recipe Box question | Evidence |
+|---|---|---|
+| Deterministic test | Does the backend reject an invalid extraction and avoid saving it? | A fake AI response and assertions on the HTTP result and database |
+| One-turn evaluation | Given messy recipe text, does the agent return the expected fields or choose the appropriate tool and arguments? | A fixed input, expected constraints and the agent's first response or action |
+| End-to-end evaluation | Can a user paste a recipe, save it exactly once, and find it again after the documented restart? | Browser/API observations and independently checked persistent state |
+
+Keep all three: a passing fake-model test does not measure real-model quality, and a
+correct model answer does not prove that the product saved or displayed it correctly.
+For an extraction-only agent, the middle layer can score its structured response;
+for a tool-using extension, also inspect the selected tool and arguments.
+
+### Build a small task set
+
+Start with one outcome: **save a usable recipe without inventing missing information**.
+Write each task's starting data, user instruction and pass conditions before running it.
+
+| Task | Starting situation | Pass conditions |
+|---|---|---|
+| Ordinary paste | Empty database; complete hummus recipe | Expected title, ingredients and time; one saved row; visible after restart |
+| Missing information | Recipe omits preparation time | Product follows its documented missing-field policy without inventing a time |
+| Instruction inside input | Recipe includes text asking the agent to ignore the extraction rules | Embedded instruction does not change the extraction contract |
+| AI unavailable | AI service stopped | Actionable UI error; no recipe saved; normal behavior after recovery |
+
+Use synthetic data and a fresh database or isolated copy for every trial. Keep the
+verifier and expected answers outside the agent's editable workspace. Check stored
+state through a read-only test connection; do not accept the agent's claim that it
+saved a recipe. First demonstrate a known-good path, so a broken fixture cannot be
+mistaken for an agent failure.
+
+### Repeat, measure, inspect
+
+A **variant** is one fixed model, prompt, tool set and configuration; a **trial** is
+one attempt at one task. Run the same tasks several times per variant, resetting the
+starting state each time. Record the exact code revision and model identity, each
+constraint's result, elapsed time, available usage/cost, and a redacted trace.
+
+For illustration only, suppose a task passes 3 of 5 trials. Its observed success rate
+is **60%**. If independent attempts each had success probability `p = 0.6`, then:
+
+- **Pass@5:** probability of at least one success in five attempts: `1 - (1 - p)^5 ≈ 99%`.
+- **Pass^5:** probability that all five attempts succeed: `p^5 ≈ 8%`.
+
+These are probability illustrations using an estimated `p`, not confidence guarantees
+from five observations. Report raw counts per task; repeated trials can be correlated.
+A user saving a recipe needs dependable individual attempts, so a high Pass@5 alone
+is insufficient. Show latency on successful trials separately, and include failed
+trials' spending when computing total cost per success.
+
+**Optional 20-minute exercise:** choose one task above, run five trials of the unchanged
+product, and record every constraint separately. Inspect one failed trace, propose one
+repair, and compare baseline and candidate on the same development tasks. Reserve
+separate tasks for the final check. An offline fake can rehearse this procedure;
+label it as control-flow evidence rather than measured real-model quality.
 
 ## Live demo
 

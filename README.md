@@ -54,6 +54,8 @@ Nineteen guides support the lectures. Student setup and the learning map are req
 
 **Want to see the complete reference running?** After Lecture 9, [reproduce the integrated reference](guides/system-walkthrough.md#reproduce-the-integrated-reference): assemble the printed code, run all three services, verify persistence and an AI outage, then trace the browser flow. It uses synthetic data and a deterministic model substitute, with no model account or GPU.
 
+**Agent evaluation practice:** [End-to-end agent evaluations](lectures/09-failures-evals-costs.md#end-to-end-agent-evaluations) extends Lecture 9 with a Recipe Box task set, independent outcome checks, and repeated-trial metrics, inspired by [Vercel's guide](https://vercel.com/blog/agent-evals). Optional; no new assignment requirements.
+
 ## Calendar and 13-meeting schedule
 
 Ten planned lectures come first, then three flexible meetings.
