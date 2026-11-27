@@ -122,7 +122,7 @@
           era: "3. Today's status & open gap",
           concept: "Speculative Encoding (Ramp Labs, Nov 2026)",
           broken: "Production swarms need near-native accuracy alongside fast cross-model handoffs.",
-          solution: "Trained a single 2.35B MoE translator integrated with vLLM to convert hidden states/KV across 7 model families.",
+          solution: "Trained one shared 2.35B MoE translator, served through vLLM, that turns hidden states into KV caches across 7 models from 4 families (all 42 directions).",
           milestone: "Reported 96.9% baseline retention, up to 7.5× prefill speedup, and up to 128× query compression.",
           status: "Open engineering checks: compounding 0.969^k multi-hop accuracy drift and strict multi-tenant KV isolation."
         }
@@ -204,7 +204,7 @@
           era: "2. Breakthrough",
           concept: "DeepSeek MLA/NSA/Open Stack & Kimi k1.5 / K2 MuonClip",
           broken: "Dense MoE all-to-all routing stalled GPUs, while long RL rollouts hit sync barriers and dropped hard tasks.",
-          solution: "DeepSeek paired compressed MLA + NSA/DSA block selection with FlashMLA, DeepEP, DeepGEMM, 3FS, and DualPipe; Moonshot added Kimi k1.5 partial rollouts and K2 MuonClip (QK-Clip).",
+          solution: "DeepSeek paired compressed MLA, NSA research, and V3.2's DSA top-2,048 token selection with FlashMLA, DeepEP, DeepGEMM, 3FS, and DualPipe; Moonshot added Kimi k1.5 partial rollouts and K2 MuonClip (QK-Clip).",
           milestone: "Kimi K2 trained 1T weights (32B active) on 15.5T tokens with zero loss spikes reported; DualPipe overlapped forward/backward passes.",
           status: "Mature architecture pillars across 2025-2026 open-weight reasoning and coding models."
         },
@@ -213,7 +213,7 @@
           concept: "Engram O(1) memory, Kimi Linear (KDA), & 100-agent swarms",
           broken: "Transformers still wasted MoE math memorizing static facts, linear models lagged on recall, and multi-agent swarms multiplied KV + sandbox demand.",
           solution: "DeepSeek Engram offloaded static N-gram lookups to host RAM; Kimi Linear (KDA) cut KV cache up to 75% reported; Kimi K2.5 scaled multimodal 100-agent swarms alongside cross-model KV transfer.",
-          milestone: "Reported 75% KV savings (KDA) and sub-linear long-context scaling alongside Plato's Key & Speculative Encoding.",
+          milestone: "Kimi Linear reported up to 75% less KV cache and up to 6× faster decoding at 1M tokens; Kimi K2.5 reported swarms of up to 100 sub-agents.",
           status: "Open frontier: exact numerical parity, swarm verifier trust boundaries, and multi-hop cross-model drift control."
         }
       ]

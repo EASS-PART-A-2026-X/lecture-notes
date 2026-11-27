@@ -49,6 +49,8 @@ test('progress tracks return valid concept/problem/status steps and reject bad i
   const frontier = getProgressStep('frontier-2026', 2);
   assert.match(frontier.concept, /Engram/);
   assert.match(frontier.concept, /Kimi Linear/);
+  assert.match(getProgressStep('cross-model', 2).solution, /7 models from 4 families/);
+  assert.match(getProgressStep('frontier-2026', 1).solution, /top-2,048/);
   assert.throws(() => getProgressStep('missing-track', 0), RangeError);
   assert.throws(() => getProgressStep('cross-model', -1), RangeError);
   assert.throws(() => getProgressStep('cross-model', 3), RangeError);
