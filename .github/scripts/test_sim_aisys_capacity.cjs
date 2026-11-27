@@ -38,7 +38,7 @@ test('speculative encoding speedup and compounding multi-hop retention follow sy
 });
 
 test('progress tracks return valid concept/problem/status steps and reject bad indices', () => {
-  assert.equal(PROGRESS_TRACKS.length, 5);
+  assert.equal(PROGRESS_TRACKS.length, 6);
   for (const track of PROGRESS_TRACKS) {
     assert.equal(track.steps.length, 3);
     for (let i = 0; i < 3; i++) {
@@ -46,6 +46,9 @@ test('progress tracks return valid concept/problem/status steps and reject bad i
       assert.ok(step.concept && step.broken && step.solution && step.status);
     }
   }
+  const frontier = getProgressStep('frontier-2026', 2);
+  assert.match(frontier.concept, /Engram/);
+  assert.match(frontier.concept, /Kimi Linear/);
   assert.throws(() => getProgressStep('missing-track', 0), RangeError);
   assert.throws(() => getProgressStep('cross-model', -1), RangeError);
   assert.throws(() => getProgressStep('cross-model', 3), RangeError);

@@ -34,6 +34,10 @@
 - **`UID` (User ID):** the numeric Linux user identity inside a container—running as a non-root `UID` blocks admin privileges.
 - **`TTFT` &amp; `MFU`:** *Time to First Token (`TTFT`)* is how long a user waits for the very first reply token; *Model FLOPs Utilization (`MFU`)* is what percentage of a GPU's peak math speed is doing useful work.
 - **Goodput &amp; `OOM`:** *Goodput* is useful, verified tasks finished per minute (ignoring wasted retries); *Out-of-Memory (`OOM`)* is a sandbox or GPU RAM crash—always an infrastructure failure, never a model mistake.
+- **Agent swarm (`Kimi K2.5`):** coordinating many specialized sub-agents in parallel (up to `100` in Kimi K2.5) to split complex workflows—making fast `CoW` sandbox forks and shared KV caches essential.
+- **Attention &amp; memory shortcuts (`MLA`, `NSA`, `DSA`, `KDA`, `Engram`, `MuonClip`):** Part 1's 2025–2026 DeepSeek and Kimi techniques for shrinking KV caches (`MLA`, `KDA`), skipping irrelevant tokens (`NSA`/`DSA`), offloading static facts (`Engram`), and preventing trillion-parameter training spikes (`MuonClip`).
+- **DeepSeek open stack (`FlashMLA`, `DeepEP`, `DeepGEMM`, `DualPipe`, `3FS`):** Part 1's open-source kernels, MoE all-to-all dispatch, FP8 GEMM, bidirectional pipeline scheduling, and fast distributed storage.
+- **Supervised Fine-Tuning (`SFT`), cross-entropy (`L_SFT`), clipping (`ε_clip`), &amp; partial rollouts:** Part 2's imitation tuning (`SFT` with loss `−ln(p)`), RL step-size guardrail (`[1 − ε_clip, 1 + ε_clip]`), and saving unfinished long rollouts across steps (`Kimi k1.5`).
 
 </details>
 
@@ -48,6 +52,7 @@
 - [Practical roadmap, experiments, and open challenges](#practical-roadmap-experiments-and-open-challenges)
 - [Python 3.14 lab: trajectory contract and multi-hop gate](#python-314-lab-trajectory-contract-and-multi-hop-gate)
 - [Quick quiz](#quick-quiz)
+- [One-page math cheat sheet (all 10 equations)](#one-page-math-cheat-sheet-all-10-equations)
 - [Finish line: trace a full AI system end to end](#finish-line-trace-a-full-ai-system-end-to-end)
 - [Curated bibliography and sources](#curated-bibliography-and-sources)
 
@@ -69,6 +74,7 @@ Traditional ML had two machine pools: training GPUs and inference GPUs. To let o
 
 1. **Standardized environment API:** [OpenEnv](https://github.com/openenv/OpenEnv) standardizes `reset(task, seed)`, `step(action)`, and `state()`. Adding proposed `snapshot()`, `restore(id)`, and `fork(id)` operations lets parallel reasoning branches share a pre-built repo without running `uv sync` or `npm install` from scratch every time.
 2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep sandbox throughput (`λ_environment`) fast enough that GPUs stay fed.
+3. **Why swarms multiply sandbox pressure ([Kimi K2.5](https://arxiv.org/abs/2602.02276)):** Modern agentic models split big tasks into dynamic sub-agent teams—*Kimi K2.5* coordinates up to `100` parallel agents per workflow. Without sub-second `CoW` forks and shared KV scratchpads (`Mooncake`, *Speculative Encoding*), `100` agents cold-booting `uv sync` would stall every inference GPU on earth.
 
 Step through how execution environments evolved to keep pace with GPU fleets:
 
@@ -411,6 +417,21 @@ Check compounding accuracy across chained hops (`0.969^k` in a simple model) and
 
 </details>
 
+## One-page math cheat sheet (all 10 equations)
+
+| # | Concept | Equation (plain text) | Concrete toy example |
+|---|---|---|---|
+| **1** | **Training compute** (Part 1) | `C ≈ 6 · N · D` | `10^6` weights × `10^7` tokens = `6 × 10^13` math ops |
+| **2** | **Serving roofline** (Part 1) | `P <= min(P_peak, B_memory × I)` | Decode waits for bytes/sec (`B_memory`), not raw math |
+| **3** | **KV memory vs. MLA / KDA** (Part 1) | `M_KV = 2·L·T·H_KV·d_h·s` vs `M_MLA = L·T·d_c·s` vs `O(1)` `KDA` | `MLA` shrinks per-token KV **16×**; `KDA` stays constant in `T` |
+| **4** | **Sparse attention** (Part 1) | `O(T^2)` dense → `O(T · k)` top-`k` (`NSA`/`DSA`) | At `T = 64k, k = 2,048`, attend to `3.2%` (**~31× fewer pairs**) |
+| **5** | **4-fleet goodput** (Part 1) | `goodput <= min(inference, sandboxes, graders, learner)` | `min(40, 15, 50, 35) = 15` solved tasks/min |
+| **6** | **Cross-model KV rotation** (Part 1) | `min_R ||A · R − B||_F` (`R^T·R = I`) &amp; `0.969^k` | `6` chained Speculative Encoding hops: `0.969^6 ≈ 82.8%` |
+| **7** | **Trillion-scale stability** (Part 1) | `MuonClip` (`QK-Clip`): scale `W_Q, W_K` by `√(τ / s_max)` | `Kimi K2` trained `1T` weights on `15.5T` tokens with zero loss spikes |
+| **8** | **Imitation (`SFT`)** (Part 2) | `L_SFT = −(1/N) · Σ ln π_θ(y_t | s_t)` | `p = 0.50` → loss `0.69`; `p = 0.90` → loss `0.11` |
+| **9** | **Group RL (`GRPO` &amp; clip)** (Part 2) | `A_i = (r_i − r̄) / (σ_r + ε)`, `clip(ρ_t, 1 − ε_clip, 1 + ε_clip)` | Rewards `[1, 0, 1, 0]` → `[+1.0, −1.0, +1.0, −1.0]` |
+| **10** | **Async policy lag** (Part 2) | `staleness ≈ sampler_lag + T_rollout / T_step` | `0 + 90s / 15s = 6` weight updates behind |
+
 ## Finish line: trace a full AI system end to end
 
 Suppose an instructor asks you in plain English: **"Walk me through how an AI coding agent reads a `64,000`-token repo, fixes a failing `pytest` bug, and gets smarter overnight."** Try tracing all five steps below before opening the answer key:
@@ -424,9 +445,9 @@ Suppose an instructor asks you in plain English: **"Walk me through how an AI co
 <details markdown="1">
 <summary>Check your complete end-to-end trace</summary>
 
-1. **Part 1:** Restoring only weights without the data-loader cursor repeats or skips batches. Long `64,000`-token prompts grow the `KV` scratchpad linearly with token count `T`; *Plato's Key* shows two models' hidden states align via a zero-training Procrustes rotation + scale, and *Speculative Encoding* trains a small `2.35B` MoE translator so Model B skips re-reading raw text (subject to multi-hop drift checks).
+1. **Part 1:** Restoring only weights without the data-loader cursor repeats or skips batches. Long `64,000`-token prompts grow the `KV` scratchpad linearly with token count `T` (shrunk by DeepSeek `MLA`/`NSA`/`DSA` or kept constant by `Kimi Linear`); *Plato's Key* shows two models' hidden states align via a zero-training Procrustes rotation + scale, and *Speculative Encoding* trains a small `2.35B` MoE translator so Model B skips re-reading raw text (subject to multi-hop drift checks).
 2. **Part 1 bottleneck:** Goodput stays pinned at `15`/min (`goodput <= min(inference, sandboxes, graders, learner)`). You must speed up sandboxes with warm pools or `CoW` snapshots first.
-3. **Part 2:** GRPO compares valid tries against the group average (`0.5`), giving `+1.0` to passes and `-1.0` to genuine test failures—while routing the `OOM` crash to `FAILED_INFRASTRUCTURE` so it is excluded and retried instead of receiving reward `0`. Meanwhile, async training bounds `policy_lag` and keeps KV state aligned with emitted `logprobs`.
+3. **Part 2:** GRPO compares valid tries against the group average (`0.5`), giving `+1.0` to passes and `-1.0` to genuine test failures—while routing the `OOM` crash to `FAILED_INFRASTRUCTURE` so it is excluded and retried instead of receiving reward `0`. Meanwhile, async training bounds `policy_lag` (or uses Kimi `k1.5` partial rollouts) and keeps KV state aligned with emitted `logprobs`.
 4. **Part 3:** Rewinding disk snapshot `E_t` restores `app.py`, **not** the external Slack webhook (external side effects need idempotency keys or mocks). Placing hidden tests outside the sandbox's writable disk stops test tampering.
 5. **Part 3 trajectory contract:** Log exact `token_ids`, `behavior_logprobs`, `token_policy_versions`, `action_mask` (`True` only for model-written tokens), and `verifier_version`, and trigger raw re-prefill if multi-hop KV translation drops below the safety floor.
 
@@ -440,7 +461,7 @@ Checked **27 November 2026** (tracking parameters removed; primary links verifie
 
 - **Foundational books:** [Google DeepMind — How to Scale Your Model](https://jax-ml.github.io/scaling-book/), [Chris Fregly — AI Systems Performance Engineering](https://github.com/cfregly/ai-performance-engineering), [Sutton &amp; Barto — Reinforcement Learning (2nd ed.)](http://incompleteideas.net/book/the-book-2nd.html), [Machine Learning Systems](https://mlsysbook.ai/), [Philip Kiely — Inference Engineering](https://www.baseten.co/inference-engineering/book/), [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/), [Systems Performance](https://www.brendangregg.com/systems-performance-2nd-edition-book.html).
 - **Courses:** [Stanford CS336](https://stanford-cs336.github.io/), [Harvard CS2680](https://cs2680.seas.harvard.edu/), [GPU MODE](https://github.com/gpu-mode/lectures).
-- **Core papers:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762), [Megatron-LM](https://arxiv.org/abs/1909.08053), [ZeRO](https://arxiv.org/abs/1910.02054), [Chinchilla](https://arxiv.org/abs/2203.15556), [DeepSeek-V3](https://arxiv.org/abs/2412.19437), [Orca](https://www.usenix.org/conference/osdi22/presentation/yu), [FlashAttention](https://arxiv.org/abs/2205.14135), [PagedAttention](https://arxiv.org/abs/2309.06180), [DistServe](https://arxiv.org/abs/2401.09670), [Mooncake](https://arxiv.org/abs/2407.00079), [PPO](https://arxiv.org/abs/1707.06347), [IMPALA](https://arxiv.org/abs/1802.01561), [DPO](https://arxiv.org/abs/2305.18290), [DeepSeek-R1](https://arxiv.org/abs/2501.12948), [HybridFlow](https://arxiv.org/abs/2409.19256), [AReaL](https://arxiv.org/abs/2505.24298), [Stanford Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), and [Ramp Labs Speculative Encoding](https://github.com/RampPublic/speculative-encoding).
-- **Core repositories:** [TorchTitan](https://github.com/pytorch/torchtitan), [Megatron-LM](https://github.com/NVIDIA/Megatron-LM), [Triton](https://github.com/triton-lang/triton), [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang), [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl), [Harbor](https://github.com/harbor-framework/harbor), and [OpenEnv](https://github.com/openenv/OpenEnv).
+- **Core papers:** [Attention Is All You Need](https://arxiv.org/abs/1706.03762), [Megatron-LM](https://arxiv.org/abs/1909.08053), [ZeRO](https://arxiv.org/abs/1910.02054), [Chinchilla](https://arxiv.org/abs/2203.15556), [DeepSeek-V3](https://arxiv.org/abs/2412.19437), [Native Sparse Attention](https://arxiv.org/abs/2502.11089), [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556), [DeepSeek Engram](https://arxiv.org/abs/2601.07372), [Kimi k1.5](https://arxiv.org/abs/2501.12599), [Kimi K2 &amp; MuonClip](https://arxiv.org/abs/2507.20534), [Kimi Linear](https://arxiv.org/abs/2510.26692), [Kimi K2.5](https://arxiv.org/abs/2602.02276), [Orca](https://www.usenix.org/conference/osdi22/presentation/yu), [FlashAttention](https://arxiv.org/abs/2205.14135), [PagedAttention](https://arxiv.org/abs/2309.06180), [DistServe](https://arxiv.org/abs/2401.09670), [Mooncake](https://arxiv.org/abs/2407.00079), [PPO](https://arxiv.org/abs/1707.06347), [IMPALA](https://arxiv.org/abs/1802.01561), [DPO](https://arxiv.org/abs/2305.18290), [DeepSeek-R1](https://arxiv.org/abs/2501.12948), [HybridFlow](https://arxiv.org/abs/2409.19256), [AReaL](https://arxiv.org/abs/2505.24298), [Stanford Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), and [Ramp Labs Speculative Encoding](https://github.com/RampPublic/speculative-encoding).
+- **Core repositories:** [TorchTitan](https://github.com/pytorch/torchtitan), [Megatron-LM](https://github.com/NVIDIA/Megatron-LM), [Triton](https://github.com/triton-lang/triton), [FlashMLA](https://github.com/deepseek-ai/FlashMLA), [DeepEP](https://github.com/deepseek-ai/DeepEP), [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM), [DualPipe](https://github.com/deepseek-ai/DualPipe), [3FS](https://github.com/deepseek-ai/3FS), [Engram](https://github.com/deepseek-ai/Engram), [Kimi Linear](https://github.com/MoonshotAI/Kimi-Linear), [Kimi K2.5](https://github.com/MoonshotAI/Kimi-K2.5), [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang), [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl), [Harbor](https://github.com/harbor-framework/harbor), and [OpenEnv](https://github.com/openenv/OpenEnv).
 
 <!-- {% endraw %} -->

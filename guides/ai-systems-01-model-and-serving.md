@@ -34,6 +34,12 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 - **`SFT` and `DPO`:** *Supervised Fine-Tuning (`SFT`)* teaches a model by copying expert examples; *Direct Preference Optimization (`DPO`)* teaches it by comparing a better answer against a worse answer.
 - **Linux `cgroups`:** built-in Linux kernel resource limits that cap how much CPU and RAM a single container can use.
 - **Procrustes rotation:** turning and scaling one coordinate map until its directions line up with another map—like rotating a tourist map until North points straight up.
+- **`MLA` (Multi-head Latent Attention):** DeepSeek's KV-compression trick that squeezes all attention keys and values into one tiny shared vector `c_KV` per token instead of storing full-size per-head notes.
+- **Sparse attention (`NSA` / `DSA`):** skipping irrelevant past tokens by having a small fast indexer select only the top-`k` most relevant memory blocks (`O(T^2)` → `O(T · k)`).
+- **Linear attention (`KDA` / `Kimi Linear`):** replacing a growing per-token KV list with a fixed-size recurrent matrix `S_t` so memory stays constant (`O(1)`) as prompts grow longer.
+- **Conditional memory (`Engram`):** DeepSeek's `O(1)` static fact lookup table (offloaded to cheap host CPU RAM) so expensive GPU MoE experts spend compute on reasoning instead of memorizing trivia.
+- **`MuonClip` (`QK-Clip`):** Moonshot AI's optimizer for Kimi K2 that rescales runaway attention matrices (`W_Q`, `W_K`) so trillion-parameter training never suffers loss spikes.
+- **DeepSeek open stack (`FlashMLA`, `DeepEP`, `DeepGEMM`, `3FS`, `DualPipe`):** open-source Hopper `MLA` decode kernels (`FlashMLA`), `MoE` `NVLink`/`RDMA` all-to-all dispatch (`DeepEP`), fine-grained 8-bit `FP8` matrix math (`DeepGEMM`), fast `RDMA` distributed storage (`3FS`), and bidirectional pipeline scheduling (`DualPipe`) that hides idle GPU bubbles.
 
 </details>
 
@@ -126,7 +132,7 @@ Real AI labs do not run these 13 stages strictly one-by-one; they run them in pa
 
 ## Explore how the field progressed
 
-Pick any of the five core themes below and step from the **early problem**, through the **breakthrough**, to **today's open gaps**.
+Pick any of the six core themes below and step from the **early problem**, through the **breakthrough**, to **today's open gaps**.
 
 <div class="sim" id="sim-aisys-progress" role="group" aria-label="How AI systems progressed explorer" markdown="1">
 
@@ -162,6 +168,16 @@ When serving a user, [Visual inference engineering](inference-engineering.md) sh
 
 > **Simpler is enough:** Keep prefill and decode on the same GPU workers when starting out. Only split them onto separate pools (disaggregation) when profiling proves long prompts are stalling live user typing enough to justify copying KV caches over the network.
 
+### Worked-by-hand: how DeepSeek and Kimi beat the O(T²) and KV-memory walls
+
+Four simple equations explain how 2025–2026 frontier models keep our `64,000`-token coding repo fast and stable:
+
+1. **The quadratic attention wall (`O(T^2)`):** Every token attends to every previous token (`T · (T + 1) / 2` pairs). At `T = 64,000`, one layer compares `~2.05 billion` pairs, while `M_KV = 2 · L · T · H_KV · d_h · s` grows linearly with `T`.
+2. **DeepSeek `MLA` (KV compression in V3 / V3.2):** Instead of saving huge per-head keys and values, `MLA` projects them into one small latent vector of width `d_c`: `M_MLA = L · T · d_c · s`. Plug in numbers: compressing `2 · H_KV · d_h = 8,192` down to `d_c = 512` shrinks KV memory **16×**.
+3. **DeepSeek `NSA` &amp; `DSA` (Sparse block selection):** [Native Sparse Attention (`NSA`)](https://arxiv.org/abs/2502.11089) and DeepSeek-V3.2's *DeepSeek Sparse Attention* (`DSA`) use a lightweight lightning indexer to pick only the top-`k` relevant memory blocks (`O(T · k)` instead of `O(T^2)`). At `T = 64,000` and `k = 2,048`, each token inspects only `3.2%` of the context (**~31× fewer pairs**).
+4. **Kimi Linear (`KDA`) &amp; DeepSeek `Engram` (Constant memory &amp; static lookup):** [Kimi Linear (`KDA`)](https://arxiv.org/abs/2510.26692) updates one fixed-size state matrix `S_t = A_t · S_{t-1} + k_t · v_t^T` (`O(1)` memory in `T`, cutting KV cache up to `75%` reported), while [DeepSeek `Engram`](https://arxiv.org/abs/2601.07372) offloads static fact lookup into an `O(1)` hashed `N`-gram table in host CPU RAM so GPU `MoE` experts focus on reasoning.
+5. **Trillion-scale stability (`Kimi K2 MuonClip`) &amp; Open Source Stack:** [Kimi K2](https://arxiv.org/abs/2507.20534) (`1T` total / `32B` active `MoE`) trained across `15.5T` tokens with zero loss spikes reported using `MuonClip` (`QK-Clip`: whenever max attention score `s_max > τ`, rescale query/key weights `W_Q`, `W_K` by `√(τ / s_max)`). Under the hood, DeepSeek's open-source stack—[`FlashMLA`](https://github.com/deepseek-ai/FlashMLA) (`L4`), [`DeepGEMM`](https://github.com/deepseek-ai/DeepGEMM) (`L4`), [`DeepEP`](https://github.com/deepseek-ai/DeepEP) (`L5`), [`3FS`](https://github.com/deepseek-ai/3FS) (`L6`), and [`DualPipe`](https://github.com/deepseek-ai/DualPipe) (`L8` bidirectional pipeline overlap)—eliminates idle GPU bubbles across the 16-layer stack.
+
 ## NVIDIA examples: from weights to running agents
 
 These projects give concrete examples of the five-node loop. Read the linked READMEs for architecture; installing this stack is optional.
@@ -182,7 +198,7 @@ In [Visual inference engineering](inference-engineering.md), **prefix caching** 
 Normally, Model B cannot read Model A's KV scratchpad at all—its hidden-state vectors point in different directions. So Model B has to re-read all `64,000` tokens from raw text. Two breakthroughs published on **25 November 2026** tackle this edge directly:
 
 1. **Plato's Key ([Stanford Hazy Research](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key)) — the geometric "why":**
-   Researchers tested 12 open models (8 families, 1.5B–27B) and discovered you can map Model A's hidden states straight into Model B's space using **one closed-form rotation and one global scale**—with *zero* gradient training! Across factual swaps, it hit `41%` median accuracy (vs. `55%` swapping a model's own state), retained `~99%` relative accuracy across `A → B → C` chains, and even unlocked "dark memories" stored inside weights.
+   Researchers tested 12 open models (8 families, 1.5B–27B) and discovered you can map Model A's hidden states straight into Model B's space by solving one exact closed-form Orthogonal Procrustes rotation `min_R ||A · R − B||_F` (keeping lengths and angles intact via `R^T · R = I`, plus one scalar scale `α`)—with *zero* gradient training! Across factual swaps, it hit `41%` median accuracy (vs. `55%` swapping a model's own state), retained `~99%` relative accuracy across `A → B → C` chains, and even unlocked "dark memories" stored inside weights.
 2. **Speculative Encoding ([Ramp Labs](https://github.com/RampPublic/speculative-encoding)) — the serving "how":**
    While a raw linear rotation proves geometry aligns, production serving wants near-native accuracy. Ramp Labs trained a single **2.35B MoE translator** plugged into vLLM that converts hidden states/KV directly across 7 model families—reporting **96.9% baseline accuracy**, **4×–7.5× faster prefill** on 32K–128K documents, and up to **128×** query-conditioned compression.
 
@@ -202,7 +218,7 @@ Row 1 (Raw text): Model A reads 64k tokens, sends text, and Model B reads all 64
 
 **Worked-by-hand catch (multi-hop drift):** Suppose one translation keeps `96.9%` (`0.969`) of native accuracy. Across `2` hops, `0.969 × 0.969 = 0.939` (`93.9%`). Across `6` chained hops without re-reading raw text, `0.969^6 ≈ 0.828` (`82.8%`). Fast prefill is a great win—as long as your grader checks the final answer!
 
-> **Checked:** Figures for *Plato's Key* and *Speculative Encoding* are author-reported results (25 November 2026), not independently benchmarked in this course.
+> **Checked:** Figures for DeepSeek (`V3`/`NSA`/`V3.2`/`Engram`), Moonshot AI (`Kimi K2`/`Kimi Linear`/`K2.5`), *Plato's Key*, and *Speculative Encoding* are author-reported paper and release results verified **27 November 2026**, not independently benchmarked on cluster hardware in this course.
 
 ## Lab: find the bottleneck and check multi-hop drift
 
@@ -246,6 +262,6 @@ No. By the steady-state capacity law, completed work cannot exceed `15`/min unti
 
 ## Sources
 
-Checked **27 November 2026**: [Stanford Hazy Research — Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), [Ramp Labs — Speculative Encoding](https://github.com/RampPublic/speculative-encoding), [TorchTitan](https://github.com/pytorch/torchtitan), [Megatron-LM](https://github.com/NVIDIA/Megatron-LM), [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang), [Dynamo](https://github.com/ai-dynamo/dynamo), [Mooncake](https://github.com/kvcache-ai/Mooncake), and [DataTrove](https://github.com/huggingface/datatrove).
+Checked **27 November 2026**: [DeepSeek-V3](https://arxiv.org/abs/2412.19437), [Native Sparse Attention](https://arxiv.org/abs/2502.11089), [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556), [DeepSeek Engram](https://arxiv.org/abs/2601.07372), [DeepSeek FlashMLA](https://github.com/deepseek-ai/FlashMLA), [DeepEP](https://github.com/deepseek-ai/DeepEP), [DeepGEMM](https://github.com/deepseek-ai/DeepGEMM), [DualPipe](https://github.com/deepseek-ai/DualPipe), [3FS](https://github.com/deepseek-ai/3FS), [Kimi K2 &amp; MuonClip](https://arxiv.org/abs/2507.20534), [Kimi Linear](https://arxiv.org/abs/2510.26692), [Stanford Hazy Research — Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), [Ramp Labs — Speculative Encoding](https://github.com/RampPublic/speculative-encoding), [TorchTitan](https://github.com/pytorch/torchtitan), [Megatron-LM](https://github.com/NVIDIA/Megatron-LM), [vLLM](https://github.com/vllm-project/vllm), [SGLang](https://github.com/sgl-project/sglang), [Dynamo](https://github.com/ai-dynamo/dynamo), [Mooncake](https://github.com/kvcache-ai/Mooncake), and [DataTrove](https://github.com/huggingface/datatrove).
 
 <!-- {% endraw %} -->

@@ -32,6 +32,9 @@
 - **`MoE` (Mixture of Experts):** a model split into specialist sub-networks so each token wakes up only a small fraction of the weights.
 - **`FSDP` vs. tensor parallelism:** two different ways clusters slice weights across GPUs—training typically shards parameters across GPUs (*Fully Sharded Data Parallel*, `FSDP`), while serving slices individual matrix multiplies across GPUs (tensor parallelism).
 - **`OOM` (Out-of-Memory):** a crash caused by a container or GPU running out of RAM—an infrastructure fault, never a model reasoning error.
+- **Cross-entropy loss (`L_SFT`):** measures how surprised a model is by the expert's true next token (`−ln(p)`): `0` when certain (`p = 1.0`), larger when guessing blindly.
+- **Clipping (`ε_clip`):** a safety guardrail (such as `[0.8, 1.2]`) capping how far `ρ_t` can move weights in a single update step so one lucky rollout cannot wreck training.
+- **Partial rollouts (`Kimi k1.5`):** pausing a slow multi-step rollout at the iteration step budget, saving its progress, and finishing it in the next batch instead of dropping hard tasks.
 
 </details>
 
@@ -40,6 +43,7 @@
 
 - [Stages 5–6: learning by trying instead of copying](#stages-56-learning-by-trying-instead-of-copying)
 - [Worked-by-hand: GRPO group scoring](#worked-by-hand-grpo-group-scoring)
+- [The four RL equations in plain English](#the-four-rl-equations-in-plain-english)
 - [Why rollouts wait and the three-exit safety gate](#why-rollouts-wait-and-the-three-exit-safety-gate)
 - [Sync vs. async RL and policy staleness](#sync-vs-async-rl-and-policy-staleness)
 - [Causal chain: weight updates, six KV policies, and logprob drift](#causal-chain-weight-updates-six-kv-policies-and-logprob-drift)
@@ -89,6 +93,15 @@ Before looking at any formula, grade four tries at the *same* coding prompt by h
 
 What if *all four* tries pass (`[1, 1, 1, 1]`) or *all four* fail (`[0, 0, 0, 0]`)? Then `σ_r = 0`: every advantage becomes `0.0`, and that group teaches the model nothing!
 
+### The four RL equations in plain English
+
+| Stage | Equation (plain text) | Plain-English meaning | Concrete toy example |
+|---|---|---|---|
+| **1. Imitation (`SFT`)** | `L_SFT = −(1/N) · Σ ln π_θ(y_t | s_t)` | Cross-entropy surprise on expert tokens | Assigning `p = 0.50` gives loss `0.69`; assigning `p = 0.90` drops loss to `0.11` |
+| **2. Group score (`GRPO`)** | `A_i = (r_i − r̄) / (σ_r + ε)` | Subtract group mean `r̄`, divide by spread `σ_r` | Rewards `[1, 0, 1, 0]` give advantages `[+1.0, −1.0, +1.0, −1.0]` |
+| **3. Clipped update (`PPO`/`GRPO`)** | `min(ρ_t · A_i, clip(ρ_t, 1 − ε_clip, 1 + ε_clip) · A_i)` | Cap how far `ρ_t = π_new / π_old` can move in one update | With `A_i = +1.0` and `ε_clip = 0.2`, `ρ_t = 1.8` is capped at `1.2` |
+| **4. Async staleness** | `staleness ≈ sampler_lag + T_rollout / T_step` | How many weight updates happened while a rollout ran | `0 + 90s / 15s = 6` policy versions behind |
+
 ## Why rollouts wait and the three-exit safety gate
 
 Unlike a single chat reply, an agent rollout moves through a durable state machine across inference GPUs, sandboxes, and graders:
@@ -122,6 +135,10 @@ Top (Sync barrier): Three parallel tries start together. Try 1 and Try 2 finish 
 The learner corrects for age using the **importance ratio** `ρ_t = π_new(a_t | s_t) / π_old(a_t | s_t)`, where `a_t` is the token the model chose at step `t` and `s_t` is the prompt plus tool outputs seen up to that point. If trajectories are too old (`staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`), `ρ_t` explodes or collapses and training destabilizes.
 
 > **Pitfall:** Never "fix" stragglers by silently dropping slow rollouts or only picking the fastest tasks first. As Microsoft's Rocket engineering report highlights, dropping slow tries biases the model away from hard, multi-step problems. **AReaL** keeps training stable with explicit staleness bounds and bounded off-policy clipping.
+
+Two frontier systems tackle the same straggler and scale trade-off directly:
+- **Partial rollouts ([Kimi k1.5](https://arxiv.org/abs/2501.12599)):** Instead of cancelling slow agent trajectories or stalling fast GPUs, pause unfinished trajectories at the token/step budget, save them into a replay buffer, and finish them cleanly in the next step—paired with *long2short* distillation so the model solves problems in fewer reasoning tokens.
+- **Scaled verifiable RL ([DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)):** Automated tool-use synthesis environments let engineers scale post-training RL compute above `10%` of pretraining budget while keeping strict verification boundaries.
 
 ## Causal chain: weight updates, six KV policies, and logprob drift
 
@@ -433,6 +450,6 @@ Save the exact behavior `logprobs` emitted at generation time (or recompute unde
 
 Environment architecture: [NeMo Gym README](https://github.com/NVIDIA-NeMo/Gym#readme). Related runtime: [TimeTravelContainer README](https://github.com/NVlabs/TimeTravelContainer#readme). Checked **27 November 2026**; no GPU experiment or combined-stack benchmark was run for this lesson.
 
-Checked **27 November 2026**: [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [slime](https://github.com/THUDM/slime), [Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl), [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), [Microsoft Rocket RL Infrastructure](https://microsoft.ai/news/rl-infrastructure-at-microsoft-ai/), [Stanford Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), and [Ramp Labs Speculative Encoding](https://github.com/RampPublic/speculative-encoding).
+Checked **27 November 2026**: [Kimi k1.5](https://arxiv.org/abs/2501.12599), [DeepSeek-R1](https://arxiv.org/abs/2501.12948), [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556), [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [slime](https://github.com/THUDM/slime), [Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl), [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), [Microsoft Rocket RL Infrastructure](https://microsoft.ai/news/rl-infrastructure-at-microsoft-ai/), [Stanford Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), and [Ramp Labs Speculative Encoding](https://github.com/RampPublic/speculative-encoding).
 
 <!-- {% endraw %} -->
