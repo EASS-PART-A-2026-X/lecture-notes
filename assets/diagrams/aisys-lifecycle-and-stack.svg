@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">The AI systems knowledge graph: five connected parts</title>
+  <desc id="d">A control plane schedules work across five connected stages: Clean Data trains Model Weights, which load into Fast Serving, which acts inside a Sandbox, which is checked by a Trusted Grader. The grader sends rewards and new traces back to Data and Weights over a shared hardware, network, Linux isolation, and storage base.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="500" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="23" font-weight="700">How an AI system connects end to end</text>
+    <text x="480" y="57" text-anchor="middle" font-size="16" fill="#535c6b">Goal: maximum useful, verified work per dollar, per second, and per joule.</text>
+
+    <!-- Control Plane -->
+    <rect x="36" y="76" width="888" height="58" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="480" y="102" text-anchor="middle" font-size="19" font-weight="700">Control Plane (orchestrator)</text>
+    <text x="480" y="124" text-anchor="middle" font-size="16" fill="#535c6b">Tracks schedules, budgets &amp; versions (never pushes raw weights)</text>
+
+    <!-- 4 Main Nodes -->
+    <rect x="36" y="170" width="196" height="114" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="134" y="200" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4e89">1. Clean Data</text>
+    <text x="134" y="228" text-anchor="middle" font-size="16">Filter &amp; shard</text>
+    <text x="134" y="256" text-anchor="middle" font-size="16" fill="#535c6b">EASS: Data &amp; DB</text>
+
+    <rect x="266" y="170" width="196" height="114" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="364" y="200" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4e89">2. Weights</text>
+    <text x="364" y="228" text-anchor="middle" font-size="16">Learn patterns</text>
+    <text x="364" y="256" text-anchor="middle" font-size="16" fill="#535c6b">Pretrain / SFT / RL</text>
+
+    <rect x="496" y="170" width="196" height="114" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="594" y="200" text-anchor="middle" font-size="18" font-weight="700" fill="#22616b">3. Serving</text>
+    <text x="594" y="228" text-anchor="middle" font-size="16">Read &amp; answer</text>
+    <text x="594" y="256" text-anchor="middle" font-size="16" fill="#535c6b">Local Inference</text>
+
+    <rect x="726" y="170" width="196" height="114" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="824" y="200" text-anchor="middle" font-size="18" font-weight="700" fill="#84540c">4. Sandbox</text>
+    <text x="824" y="228" text-anchor="middle" font-size="16">Run tools safely</text>
+    <text x="824" y="256" text-anchor="middle" font-size="16" fill="#535c6b">Agent Sandboxes</text>
+
+    <!-- Arrows from Control Plane -->
+    <path d="M134 134 V164" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M364 134 V164" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M594 134 V164" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M824 134 V164" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Horizontal Causal Arrows -->
+    <path d="M232 226 H260" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M462 226 H490" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M692 226 H720" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Node 5: Trusted Grader Feedback Loop -->
+    <rect x="266" y="318" width="426" height="78" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="479" y="348" text-anchor="middle" font-size="18" font-weight="700" fill="#2a6a47">5. Trusted Grader (Verification)</text>
+    <text x="479" y="376" text-anchor="middle" font-size="16">Checks outcome; sends rewards &amp; new traces back</text>
+
+    <path d="M824 284 V356 H698" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M266 356 H134 V290" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M364 318 V290" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Shared Base -->
+    <rect x="36" y="420" width="888" height="60" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="480" y="446" text-anchor="middle" font-size="17" font-weight="700">Shared Base (hardware, OS &amp; memory)</text>
+    <text x="480" y="469" text-anchor="middle" font-size="16" fill="#535c6b">GPUs · fast links · Linux isolation · checkpoints &amp; KV scratchpad</text>
+  </g>
+</svg>
