@@ -57,7 +57,7 @@ jobs:
         run: node --test .github/scripts/test_sim_factoryops.cjs
 
       - name: Test AI systems simulators and rendered fallbacks
-        run: node --test .github/scripts/test_sim_aisys_capacity.cjs .github/scripts/test_sim_aisys_rl.cjs
+        run: node --test .github/scripts/test_sim_aisys_capacity.cjs .github/scripts/test_sim_aisys_rl.cjs .github/scripts/test_sim_aisys_state.cjs
 
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:

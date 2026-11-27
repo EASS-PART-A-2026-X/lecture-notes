@@ -2,7 +2,13 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {readFileSync} = require('node:fs');
 const {join} = require('node:path');
-const {CASES, evaluateCapacity, evaluateSpeculativeEncoding} = require('../../assets/js/sim-aisys-capacity.js');
+const {
+  CASES,
+  PROGRESS_TRACKS,
+  evaluateCapacity,
+  evaluateSpeculativeEncoding,
+  getProgressStep,
+} = require('../../assets/js/sim-aisys-capacity.js');
 
 test('steady-state goodput equals the minimum fleet rate and adding GPUs cannot fix an env bottleneck', () => {
   const envBound = CASES.find(c => c.id === 'env-bound');
@@ -31,6 +37,20 @@ test('speculative encoding speedup and compounding multi-hop retention follow sy
   assert.ok(rDeep.effectiveAcc < 0.80, 'six hops compound 0.969^6 below 80%');
 });
 
+test('progress tracks return valid concept/problem/status steps and reject bad indices', () => {
+  assert.equal(PROGRESS_TRACKS.length, 5);
+  for (const track of PROGRESS_TRACKS) {
+    assert.equal(track.steps.length, 3);
+    for (let i = 0; i < 3; i++) {
+      const step = getProgressStep(track.id, i);
+      assert.ok(step.concept && step.broken && step.solution && step.status);
+    }
+  }
+  assert.throws(() => getProgressStep('missing-track', 0), RangeError);
+  assert.throws(() => getProgressStep('cross-model', -1), RangeError);
+  assert.throws(() => getProgressStep('cross-model', 3), RangeError);
+});
+
 test('invalid negative, zero, or non-integer inputs throw RangeError', () => {
   const base = CASES[0];
   assert.throws(() => evaluateCapacity({...base, inference: 0}), RangeError);
@@ -41,9 +61,10 @@ test('invalid negative, zero, or non-integer inputs throw RangeError', () => {
   assert.throws(() => evaluateSpeculativeEncoding({...base, hops: -1}), RangeError);
 });
 
-test('rendered Part 1 page keeps static fallback and loads only sim-aisys-capacity.js', () => {
+test('rendered Part 1 page keeps static fallbacks for both simulators and loads sim-aisys-capacity.js', () => {
   const site = process.env.SITE_DIR || '_site';
   const html = readFileSync(join(site, 'guides/ai-systems-01-model-and-serving.html'), 'utf8');
+  assert.match(html, /id="sim-aisys-progress"/);
   assert.match(html, /id="sim-aisys-capacity"/);
   assert.match(html, /class="sim-fallback"/);
   assert.match(html, /Worked example without JavaScript/);

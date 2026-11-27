@@ -60,6 +60,18 @@ Traditional ML had two machine pools: training GPUs and inference GPUs. Agentic 
 1. **Standardized environment API:** [OpenEnv](https://github.com/openenv/OpenEnv) standardizes `reset(task, seed)`, `step(action)`, and `state()`. Adding proposed `snapshot()`, `restore(id)`, and `fork(id)` operations lets parallel reasoning branches share a pre-built repo without running `uv sync` or `npm install` from scratch every time.
 2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep `λ_environment` fast enough that GPUs stay fed.
 
+Step through how execution environments evolved to keep pace with GPU fleets:
+
+<div class="stepper" markdown="1">
+
+1. **Plain containers.** Fast to start, but default mounts and network routes risk leaking host secrets or letting code alter your checkout.
+2. **Hardened containers.** Add `--network none`, `--read-only`, `--cap-drop ALL`, and non-root UIDs (like `sandbox_probe.py`) to block exfiltration.
+3. **MicroVMs &amp; user-space kernels.** Firecracker and gVisor isolate each sandbox's kernel boundary so hostile model code cannot exploit a shared host kernel.
+4. **Warm pools + CoW snapshots.** Pre-warmed base images and copy-on-write forks cut cold setup from minutes to sub-second branching.
+5. **Locked verifiers (Harbor, OpenEnv).** Hidden tests sit outside the agent's writable disk so agents cannot cheat or confuse crashes with bad answers.
+
+</div>
+
 ## Stage 8: task factory and independent verifiers
 
 A reproducible agent task bundles an immutable container image, an initial snapshot, network/resource rules, and a **trusted verifier**—the pattern used by [Harbor](https://github.com/harbor-framework/harbor), [Verifiers](https://github.com/PrimeIntellect-ai/verifiers), [SWE-bench](https://github.com/SWE-bench/SWE-bench), [Terminal-Bench](https://github.com/harbor-framework/terminal-bench), and [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai).
@@ -103,6 +115,17 @@ A dashed vertical Sandbox Wall splits two worlds. On the left (`Inside: CAN rewi
 ### Connecting `K_t` to Plato's Key and Speculative Encoding
 When two different models collaborate on one task, `K_t` is no longer locked to one model:
 - **Linear chaining vs. learned translation:** *Plato's Key* reports that chaining closed-form Procrustes rotations `A → B → C` keeps `~99%` of direct `A → C` transfer accuracy (and surfaces dormant "dark memories" without weight changes). *Speculative Encoding*'s 2.35B MoE translator delivers high single-hop serving accuracy (`96.9%` reported), yet multi-hop pipelines must enforce two safeguards: (1) check accuracy decay over chained hops (`0.969^k` in a simple model), and (2) enforce **tenant isolation** on `K_t` so one user's translated KV cache never leaks to another user.
+
+<div class="sim" id="sim-aisys-state" role="group" aria-label="Rewind Wall and verifier explorer" markdown="1">
+
+<p class="sim-title"><strong>Interactive explorer: The Rewind Wall, verifiers, and multi-hop KV</strong></p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example without JavaScript:** In scenario **File edit + Slack webhook sent**, simulating a disk rewind restores `app.py` (`E_t`) back to `t=0`, **but the HTTP POST to Slack is STILL PRESENT** in the outside world—snapshots cannot un-send external calls. In scenario **6-hop Speculative Encoding chain**, chained latent translations decay to `77.8%` synthetic accuracy (`< 85%` floor), triggering a forced raw-text re-prefill checkpoint before grading.
+
+</div>
+</div>
 
 ## Versioned trajectory contract, recovery, and tracing
 
@@ -298,6 +321,28 @@ if __name__ == "__main__":
 ```
 
 </figure>
+
+<details markdown="1">
+<summary>Show the expected demo and test output</summary>
+
+Captured with Python 3.14 (stdlib only, no GPU):
+
+```text
+$ python3 trajectory_verifier.py
+t1 -> (True, 'admitted')
+t2 -> (False, 're_prefill_required:0.778<0.850')
+t3 -> (False, 'excluded:infrastructure_failure')
+
+$ python3 -m unittest -v
+...
+Ran 8 tests in 0.000s
+
+OK
+```
+
+`t1` (2 latent hops, `88.3% >= 85%`) passes, `t2` (6 chained hops, `77.8% < 85%`) is caught before training so it re-prefills from `token_ids`, and `t3` (`infrastructure_failure`) is cleanly excluded.
+
+</details>
 
 **Break it on purpose:** Change `t2` in `trajectory_verifier.py` or pass `min_accuracy_floor=0.0` in `test_six_hop_speculative_encoding_triggers_reprefill_gate` to see what happens when the multi-hop drift gate is turned off. Restore it afterwards!
 

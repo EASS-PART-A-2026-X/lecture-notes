@@ -3396,8 +3396,10 @@ $ed-code-languages: (
 
 // The FactoryOps and AI Systems labs present one receipt, then ask for the next step.
 .main-content #sim-factoryops,
+.main-content #sim-aisys-progress,
 .main-content #sim-aisys-capacity,
-.main-content #sim-aisys-rl {
+.main-content #sim-aisys-rl,
+.main-content #sim-aisys-state {
   select {
     width: 100%;
     min-height: 2.75rem;
