@@ -557,7 +557,8 @@ a.skip-to-main:active {
     :has(> .nav-list-link[href$="/guides/student-setup.html"]),
     :has(> .nav-list-link[href$="/guides/reference-card.html"]),
     :has(> .nav-list-link[href$="/lectures/01-environment-git-docker-ai.html"]),
-    :has(> .nav-list-link[href$="/guides/agent-driven-development.html"])
+    :has(> .nav-list-link[href$="/guides/agent-driven-development.html"]),
+    :has(> .nav-list-link[href$="/guides/ai-systems-01-model-and-serving.html"])
   ) {
   margin-top: 0.4rem;
   border-top: 1px solid var(--ed-rule);
@@ -589,6 +590,10 @@ a.skip-to-main:active {
 
 .site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/agent-driven-development.html"])::before {
   content: "Optional depth";
+}
+
+.site-nav > .nav-list > .nav-list-item:has(> .nav-list-link[href$="/guides/ai-systems-01-model-and-serving.html"])::before {
+  content: "Beyond EASS: AI systems";
 }
 
 .site-footer {
@@ -3389,8 +3394,10 @@ $ed-code-languages: (
   .main-content .sim.is-live .sim-fallback { display: block !important; }
 }
 
-// The FactoryOps lab presents one evidence receipt, then asks for the next authorized step.
-.main-content #sim-factoryops {
+// The FactoryOps and AI Systems labs present one receipt, then ask for the next step.
+.main-content #sim-factoryops,
+.main-content #sim-aisys-capacity,
+.main-content #sim-aisys-rl {
   select {
     width: 100%;
     min-height: 2.75rem;
@@ -3403,7 +3410,8 @@ $ed-code-languages: (
     border: 1px solid var(--ed-rule-ui);
     border-radius: 2px;
   }
-  .factoryops-receipt {
+  .factoryops-receipt,
+  .aisys-receipt {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
     gap: 0;

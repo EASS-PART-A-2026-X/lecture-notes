@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="t d">
+  <title id="t">Four AI engines, the 13-stage lifecycle, and the 16-layer stack</title>
+  <desc id="d">A distributed control plane coordinates four engines: Training updates weights, Inference generates tokens and actions, Execution runs code and tools in sandboxes, and Verification grades outcomes. Below them sits the 16-layer stack from L0 accelerators to L15 applications, connecting the 13-stage lifecycle across data, training, serving, rollouts, and feedback.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="520" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="34" text-anchor="middle" font-size="24" font-weight="700">Four engines turn intelligence into verified work</text>
+    <text x="480" y="60" text-anchor="middle" font-size="16" fill="#535c6b">Goal: maximum useful, verified work per dollar, per second, and per joule.</text>
+
+    <!-- Control Plane -->
+    <rect x="40" y="82" width="880" height="62" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="480" y="109" text-anchor="middle" font-size="20" font-weight="700">Distributed Control Plane (L11–L14)</text>
+    <text x="480" y="132" text-anchor="middle" font-size="16" fill="#535c6b">Scheduling, budgets, policy versions, rollout state, and cost accounting (never pushes raw weights)</text>
+
+    <!-- 4 Engines -->
+    <rect x="40" y="182" width="205" height="132" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="142" y="212" text-anchor="middle" font-size="19" font-weight="700" fill="#1d4e89">1. Training</text>
+    <text x="142" y="238" text-anchor="middle" font-size="16">Updates weights</text>
+    <text x="142" y="264" text-anchor="middle" font-size="16" fill="#535c6b">Stages 1–7</text>
+    <text x="142" y="290" text-anchor="middle" font-size="16" fill="#535c6b">TorchTitan, Megatron</text>
+
+    <rect x="265" y="182" width="205" height="132" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="367" y="212" text-anchor="middle" font-size="19" font-weight="700" fill="#22616b">2. Inference</text>
+    <text x="367" y="238" text-anchor="middle" font-size="16">Generates tokens</text>
+    <text x="367" y="264" text-anchor="middle" font-size="16" fill="#535c6b">Stages 9–10</text>
+    <text x="367" y="290" text-anchor="middle" font-size="16" fill="#535c6b">vLLM, SGLang, Dynamo</text>
+
+    <rect x="490" y="182" width="205" height="132" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="592" y="212" text-anchor="middle" font-size="19" font-weight="700" fill="#84540c">3. Execution</text>
+    <text x="592" y="238" text-anchor="middle" font-size="16">Runs tools &amp; code</text>
+    <text x="592" y="264" text-anchor="middle" font-size="16" fill="#535c6b">Stage 11</text>
+    <text x="592" y="290" text-anchor="middle" font-size="16" fill="#535c6b">Sandboxes, OpenEnv</text>
+
+    <rect x="715" y="182" width="205" height="132" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="817" y="212" text-anchor="middle" font-size="19" font-weight="700" fill="#2a6a47">4. Verification</text>
+    <text x="817" y="238" text-anchor="middle" font-size="16">Grades &amp; rewards</text>
+    <text x="817" y="264" text-anchor="middle" font-size="16" fill="#535c6b">Stages 8 &amp; 12</text>
+    <text x="817" y="290" text-anchor="middle" font-size="16" fill="#535c6b">Tests, Harbor, Inspect</text>
+
+    <!-- Arrows from Control Plane -->
+    <path d="M142 144 V176" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M367 144 V176" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M592 144 V176" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M817 144 V176" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Cycle arrows between engines -->
+    <path d="M245 248 H260" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M470 248 H485" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M695 248 H710" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Shared Infrastructure L0-L7 -->
+    <rect x="40" y="346" width="880" height="148" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="480" y="376" text-anchor="middle" font-size="20" font-weight="700">Shared Compute, Memory &amp; Storage Layers (L0–L7)</text>
+    <text x="64" y="408" font-size="16"><tspan font-weight="700">L0–L3 Platform:</tspan> GPUs/CPUs, NVLink/RDMA, Linux/cgroups/eBPF, Kubernetes/Slurm/Ray</text>
+    <text x="64" y="436" font-size="16"><tspan font-weight="700">L4–L6 Kernels &amp; Scale:</tspan> FlashAttention/CUTLASS, Triton/TorchInductor, NCCL/FSDP/DTensor</text>
+    <text x="64" y="464" font-size="16"><tspan font-weight="700">L7 State &amp; Data:</tspan> S3/3FS, checkpoints, Mooncake/LMCache KV stores, versioned manifests</text>
+    <path d="M817 314 V340" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M142 346 V320" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+  </g>
+</svg>

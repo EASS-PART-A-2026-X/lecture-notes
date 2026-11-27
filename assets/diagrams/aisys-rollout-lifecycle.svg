@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">Durable Rollout State Machine and Sync versus Async RL</title>
+  <desc id="d">Top half shows the durable rollout state machine from CREATED through ADMITTED, ENVIRONMENT_READY, a SAMPLING and EXECUTING_TOOL loop, VERIFYING, COMPLETED, and ACCEPTED_FOR_TRAINING to CONSUMED, with separate side outcomes for FAILED_INFRASTRUCTURE and REJECTED_AS_STALE. Bottom half compares synchronous barrier RL, where training waits for the slowest trajectory, against asynchronous RL, where sampler and learner overlap under a bounded staleness threshold.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="460" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">Rollout State Machine and Policy Staleness</text>
+
+    <!-- Happy Path Row -->
+    <rect x="28" y="64" width="124" height="58" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="2"/>
+    <text x="90" y="90" text-anchor="middle" font-size="16" font-weight="700">CREATED</text>
+    <text x="90" y="110" text-anchor="middle" font-size="16" fill="#535c6b">ADMITTED</text>
+
+    <rect x="176" y="64" width="138" height="58" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="245" y="90" text-anchor="middle" font-size="16" font-weight="700">ENV_READY</text>
+    <text x="245" y="110" text-anchor="middle" font-size="16" fill="#535c6b">snapshot</text>
+
+    <rect x="338" y="64" width="166" height="58" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="421" y="90" text-anchor="middle" font-size="16" font-weight="700">SAMPLING ⇄ TOOL</text>
+    <text x="421" y="110" text-anchor="middle" font-size="16" fill="#535c6b">policy θ_v</text>
+
+    <rect x="528" y="64" width="130" height="58" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="593" y="90" text-anchor="middle" font-size="16" font-weight="700">VERIFYING</text>
+    <text x="593" y="110" text-anchor="middle" font-size="16" fill="#535c6b">COMPLETED</text>
+
+    <rect x="682" y="64" width="248" height="58" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="806" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="#2a6a47">ACCEPTED → CONSUMED</text>
+    <text x="806" y="110" text-anchor="middle" font-size="16" fill="#535c6b">learner update</text>
+
+    <path d="M152 93 H170" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M314 93 H332" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M504 93 H522" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M658 93 H676" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Failure & Staleness Branches -->
+    <rect x="338" y="168" width="278" height="64" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="477" y="196" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">FAILED_INFRASTRUCTURE</text>
+    <text x="477" y="218" text-anchor="middle" font-size="16">Retry or drop — never score as reward 0</text>
+
+    <rect x="650" y="168" width="280" height="64" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="790" y="196" text-anchor="middle" font-size="16" font-weight="700" fill="#84540c">REJECTED_AS_STALE</text>
+    <text x="790" y="218" text-anchor="middle" font-size="16">Lag &gt; threshold (or checkpoint/resume)</text>
+
+    <path d="M421 122 V162" fill="none" stroke="#9b2c2c" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M620 122 L700 164" fill="none" stroke="#84540c" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Sync vs Async RL comparison -->
+    <rect x="28" y="262" width="902" height="174" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
+    <text x="48" y="294" font-size="18" font-weight="700">Synchronous vs. Asynchronous RL</text>
+
+    <rect x="48" y="312" width="415" height="104" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+    <text x="66" y="340" font-size="17" font-weight="700" fill="#1d4e89">Synchronous (baseline)</text>
+    <text x="66" y="366" font-size="16">Wait for all GRPO stragglers → train → sync weights</text>
+    <text x="66" y="392" font-size="16" fill="#535c6b">Easy correctness; GPUs sit idle on barriers</text>
+
+    <rect x="495" y="312" width="415" height="104" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+    <text x="513" y="340" font-size="17" font-weight="700" fill="#22616b">Asynchronous (bounded off-policy)</text>
+    <text x="513" y="366" font-size="16">Sampler &amp; learner overlap; track ρ_t and lag</text>
+    <text x="513" y="392" font-size="16" fill="#535c6b">Higher GPU utilization; needs staleness bounds</text>
+  </g>
+</svg>

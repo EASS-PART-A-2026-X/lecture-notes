@@ -53,6 +53,9 @@ defaults:
   - { scope: { path: "guides/industry-studio.md" }, values: { title: "Industry engineering studio", nav_order: 28 } }
   - { scope: { path: "guides/systems-reasoning.md" }, values: { title: "Systems reasoning clinics", nav_order: 29 } }
   - { scope: { path: "guides/further-study.md" }, values: { title: "Further study", nav_order: 30 } }
+  - { scope: { path: "guides/ai-systems-01-model-and-serving.md" }, values: { title: "Part 1 · Building and serving models", nav_order: 31 } }
+  - { scope: { path: "guides/ai-systems-02-rl-and-rollouts.md" }, values: { title: "Part 2 · RL, rollouts and staleness", nav_order: 32 } }
+  - { scope: { path: "guides/ai-systems-03-environments-state-roadmap.md" }, values: { title: "Part 3 · Environments, state and roadmap", nav_order: 33 } }
 
 # Just the Docs
 color_scheme: eass # _sass/color_schemes/eass.scss: ink navy on white, warm paper; oxblood only for deadlines and failures

@@ -56,6 +56,9 @@ jobs:
       - name: Test FactoryOps delivery decisions and rendered fallback
         run: node --test .github/scripts/test_sim_factoryops.cjs
 
+      - name: Test AI systems simulators and rendered fallbacks
+        run: node --test .github/scripts/test_sim_aisys_capacity.cjs .github/scripts/test_sim_aisys_rl.cjs
+
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.13.1"
@@ -66,6 +69,9 @@ jobs:
 
       - name: Execute printed delivery failure lab
         run: uv run --no-project --python 3.14 python .github/scripts/check_reasoning_labs.py
+
+      - name: Execute printed AI systems Python labs
+        run: uv run --no-project --python 3.14 python .github/scripts/check_aisys_labs.py
 
       - name: Execute printed CLI interface lab
         run: uv run --no-project --python 3.14 python .github/scripts/check_cli_lab.py

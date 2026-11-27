@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="t d">
+  <title id="t">Three ways models share context: raw re-prefill, Plato's Key, and Speculative Encoding</title>
+  <desc id="d">Compares three ways heterogeneous models share a long document. Raw text re-prefill runs full O(N) prefill on every model. Stanford Plato's Key uses a closed-form Procrustes rotation plus global scale to prove latent states align geometrically without gradients. Ramp Labs Speculative Encoding uses a learned 2.35B MoE translator to convert hidden states directly, claiming up to 7.5x prefill speedup at 96.9% single-hop retention, while multi-hop chains still need verification.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="640" height="420" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="34" text-anchor="middle" font-size="22" font-weight="700">Sharing context across different models</text>
+    <text x="320" y="58" text-anchor="middle" font-size="16" fill="#535c6b">Same-model prefix cache fails when two agents run different model families.</text>
+
+    <!-- Row 1: Raw Re-prefill -->
+    <rect x="28" y="80" width="584" height="88" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="46" y="108" font-size="18" font-weight="700" fill="#9b2c2c">1. Raw text re-prefill (baseline)</text>
+    <text x="46" y="133" font-size="16">Model A reads doc → sends raw text → Model B re-prefills all tokens</text>
+    <text x="46" y="156" font-size="16" fill="#535c6b">100% native baseline accuracy · pays full N × prefill latency on swarms</text>
+
+    <!-- Row 2: Plato's Key -->
+    <rect x="28" y="186" width="584" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="46" y="214" font-size="18" font-weight="700" fill="#1d4e89">2. Plato's Key (Stanford Hazy Research, Nov 2026)</text>
+    <text x="46" y="239" font-size="16">Closed-form Procrustes rotation + 1 scale (zero gradient descent)</text>
+    <text x="46" y="264" font-size="16" fill="#535c6b">Proves spaces align: 41% median swap (vs 55% self), ~99% A→B→C chaining</text>
+
+    <!-- Row 3: Speculative Encoding -->
+    <rect x="28" y="300" width="584" height="98" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="46" y="328" font-size="18" font-weight="700" fill="#22616b">3. Speculative Encoding (Ramp Labs, Nov 2026)</text>
+    <text x="46" y="353" font-size="16">Model A hidden states → 2.35B MoE translator → Model B KV/states</text>
+    <text x="46" y="378" font-size="16" fill="#535c6b">Reported: 96.9% acc, up to 7.5× prefill speedup · watch 0.969^k hop drift</text>
+  </g>
+</svg>

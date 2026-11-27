@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" role="img" aria-labelledby="t d">
+  <title id="t">Unified Execution State and Verifier Trust Boundary</title>
+  <desc id="d">Shows unified execution state S_t consisting of policy version theta_v, KV cache K_t, token and observation history H_t, environment state E_t, pending tool calls Q_t, and metadata R_t. Local filesystem snapshots roll back local state E_t, but external APIs and databases require idempotency or outbox semantics. On the right, an isolated verifier separates agent outcomes from infrastructure or verifier failures.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="640" height="460" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Unified State S_t and Trusted Verification</text>
+    <text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">S_t = (θ_v, K_t, H_t, E_t, Q_t, R_t) across six system planes</text>
+
+    <!-- Left Box: Local Reversible State -->
+    <rect x="28" y="80" width="286" height="240" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="171" y="108" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4e89">Reversible Local State</text>
+    <text x="46" y="140" font-size="16"><tspan font-weight="700">θ_v:</tspan> pinned policy version</text>
+    <text x="46" y="168" font-size="16"><tspan font-weight="700">K_t:</tspan> KV cache (or translated latent)</text>
+    <text x="46" y="196" font-size="16"><tspan font-weight="700">H_t:</tspan> exact token_ids + logprobs</text>
+    <text x="46" y="224" font-size="16"><tspan font-weight="700">E_t:</tspan> CoW sandbox filesystem</text>
+    <text x="46" y="252" font-size="16"><tspan font-weight="700">Q_t, R_t:</tspan> pending tools, RNG seed</text>
+    <text x="46" y="294" font-size="16" fill="#535c6b">Can snapshot, fork, and replay</text>
+
+    <!-- Right Box: Trusted Verifier -->
+    <rect x="338" y="80" width="274" height="240" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="475" y="108" text-anchor="middle" font-size="18" font-weight="700" fill="#2a6a47">Trusted Verifier Boundary</text>
+    <text x="356" y="140" font-size="16">Hidden tests outside agent scope</text>
+    <text x="356" y="172" font-size="16" font-weight="700" fill="#2a6a47">Train on:</text>
+    <text x="356" y="196" font-size="16">Correct / Incorrect / Partial / Invalid</text>
+    <text x="356" y="232" font-size="16" font-weight="700" fill="#9b2c2c">Exclude &amp; investigate:</text>
+    <text x="356" y="256" font-size="16">Infra failure / Verifier failure</text>
+    <text x="356" y="294" font-size="16" fill="#535c6b">Pin verifier_version in Trajectory</text>
+
+    <path d="M314 196 H332" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Bottom Warning: External Side Effects -->
+    <rect x="28" y="344" width="584" height="92" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="46" y="374" font-size="18" font-weight="700" fill="#9b2c2c">Hard boundary: snapshots do not undo external effects</text>
+    <text x="46" y="400" font-size="16">Restoring E_t does not un-send an email or revert a remote database write.</text>
+    <text x="46" y="424" font-size="16" fill="#535c6b">External actions require idempotency keys, outboxes, or mocked boundaries.</text>
+  </g>
+</svg>
