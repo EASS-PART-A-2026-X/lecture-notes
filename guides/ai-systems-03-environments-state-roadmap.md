@@ -21,11 +21,19 @@
 <summary>Terms used on this page (plain English)</summary>
 
 - **Compute fleet:** a pool of machines specialized for one job (GPUs for training, GPUs for inference, CPUs/SSDs for sandboxes, isolated CPUs for grading).
-- **Copy-on-write (CoW) snapshot:** a fast frozen disk copy where two forked sandboxes share unchanged base files and only store the lines they modify.
+- **Copy-on-write (`CoW`) snapshot:** a fast frozen disk copy where two forked sandboxes share unchanged base files and only store the lines they modify.
 - **Fork:** branching a running environment into two independent trials that share setup work up to the split point.
 - **Trusted verifier:** a grading script sitting *outside* the agent's writable disk so the agent cannot edit its own tests.
 - **Side effect:** any change escaping the sandbox (network request, email, remote DB write) that disk rewind cannot undo.
 - **Action mask (`True`/`False`):** a per-token flag telling the trainer which tokens the *model* wrote (`True`) versus text pasted back by a tool (`False`).
+- **Idempotency key &amp; outbox:** an *idempotency key* is a unique receipt ID attached to an outbound API call so retrying never double-posts or double-charges; an *outbox* is a local log recording outbound actions reliably before sending them.
+- **`KV` cache (`K_t`) &amp; `Logprob`:** *KV cache* is the model's reading scratchpad; *logprob* is the exact probability score recorded for each token the model generated (Parts 1–2).
+- **`MoE` &amp; Procrustes rotation:** *MoE (Mixture of Experts)* activates specialist sub-networks per token; *Procrustes rotation* aligns two models' hidden coordinate maps using one closed-form rotation and scale (Part 1).
+- **`FSDP`, `ZeRO`, `Triton`, &amp; `PagedAttention`:** training weight sharding across GPUs (`FSDP` / `ZeRO`), a Python-like GPU kernel compiler (`Triton`), and virtual-memory paging for KV caches (`PagedAttention`).
+- **`PPO`, `DPO`, &amp; `GRPO`:** post-training reinforcement learning methods from Part 2 (*Proximal Policy Optimization*, *Direct Preference Optimization*, *Group Relative Policy Optimization*).
+- **`UID` (User ID):** the numeric Linux user identity inside a container—running as a non-root `UID` blocks admin privileges.
+- **`TTFT` &amp; `MFU`:** *Time to First Token (`TTFT`)* is how long a user waits for the very first reply token; *Model FLOPs Utilization (`MFU`)* is what percentage of a GPU's peak math speed is doing useful work.
+- **Goodput &amp; `OOM`:** *Goodput* is useful, verified tasks finished per minute (ignoring wasted retries); *Out-of-Memory (`OOM`)* is a sandbox or GPU RAM crash—always an infrastructure failure, never a model mistake.
 
 </details>
 
@@ -39,13 +47,14 @@
 - [Practical roadmap, experiments, and open challenges](#practical-roadmap-experiments-and-open-challenges)
 - [Python 3.14 lab: trajectory contract and multi-hop gate](#python-314-lab-trajectory-contract-and-multi-hop-gate)
 - [Quick quiz](#quick-quiz)
+- [Finish line: trace a full AI system end to end](#finish-line-trace-a-full-ai-system-end-to-end)
 - [Curated bibliography and sources](#curated-bibliography-and-sources)
 
 </details>
 
 ## Stages 11–12: four fleets and fast sandboxes
 
-Traditional ML had two machine pools: training GPUs and inference GPUs. Agentic AI adds two more pools plus a small control plane:
+Traditional ML had two machine pools: training GPUs and inference GPUs. To let our `64,000`-token coding agent actually edit files, run `pytest`, and get fairly graded, agentic AI adds two more pools plus a small control plane:
 
 | Pool | Typical hardware | Job | Main bottleneck &amp; fix |
 |---|---|---|---|
@@ -58,14 +67,14 @@ Traditional ML had two machine pools: training GPUs and inference GPUs. Agentic 
 [Agent sandboxes](agent-sandboxes.md) explains why ordinary containers need `--network none`, `--read-only`, and `--cap-drop ALL` (or microVMs like Firecracker / gVisor). At RL scale, two speedups connect directly back to Part 1's capacity law:
 
 1. **Standardized environment API:** [OpenEnv](https://github.com/openenv/OpenEnv) standardizes `reset(task, seed)`, `step(action)`, and `state()`. Adding proposed `snapshot()`, `restore(id)`, and `fork(id)` operations lets parallel reasoning branches share a pre-built repo without running `uv sync` or `npm install` from scratch every time.
-2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep `λ_environment` fast enough that GPUs stay fed.
+2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep sandbox throughput (`λ_environment`) fast enough that GPUs stay fed.
 
 Step through how execution environments evolved to keep pace with GPU fleets:
 
 <div class="stepper" markdown="1">
 
 1. **Plain containers.** Fast to start, but default mounts and network routes risk leaking host secrets or letting code alter your checkout.
-2. **Hardened containers.** Add `--network none`, `--read-only`, `--cap-drop ALL`, and non-root UIDs (like `sandbox_probe.py`) to block exfiltration.
+2. **Hardened containers.** Add `--network none`, `--read-only`, `--cap-drop ALL`, and non-root `UIDs` (User IDs, like `sandbox_probe.py`) to block exfiltration.
 3. **MicroVMs &amp; user-space kernels.** Firecracker and gVisor isolate each sandbox's kernel boundary so hostile model code cannot exploit a shared host kernel.
 4. **Warm pools + CoW snapshots.** Pre-warmed base images and copy-on-write forks cut cold setup from minutes to sub-second branching.
 5. **Locked verifiers (Harbor, OpenEnv).** Hidden tests sit outside the agent's writable disk so agents cannot cheat or confuse crashes with bad answers.
@@ -134,7 +143,7 @@ If you save only plain text from a rollout and re-tokenize it on the trainer, su
 `token_ids` · `behavior_logprobs` · `token_policy_versions` · `action_mask` (`True` for model tokens, `False` for tool outputs) · `verifier_version`
 
 - **Independent recovery:** Design for *at-least-once* delivery with unique attempt IDs and leases so a crashed inference replica or sandbox restarts cleanly without aborting the whole run.
-- **One end-to-end trace:** Connect every metric (`MFU`, `TTFT`, `policy_lag`, `snapshot_hit_rate`, `cost_per_success`) along one chain: `Experiment → Run → Policy → Task → Group → Trajectory → Inference → Tool → Sandbox → Verifier → Batch → Step`.
+- **One end-to-end trace:** Connect every metric (`MFU` = GPU utilization, `TTFT` = Time to First Token, `policy_lag`, `snapshot_hit_rate`, `cost_per_success`) along one chain: `Experiment → Run → Policy → Task → Group → Trajectory → Inference → Tool → Sandbox → Verifier → Batch → Step`.
 
 ## Practical roadmap, experiments, and open challenges
 
@@ -146,7 +155,7 @@ If you save only plain text from a rollout and re-tokenize it on the trainer, su
 
 ### Experimental matrix (speed only counts if quality holds!)
 Every infra speedup must be tested against **held-out task accuracy per dollar and per second**, never isolated latency alone:
-- Cold containers vs. prepared snapshots · Clean rebuilds vs. content-addressed build caches · Independent sandboxes vs. CoW forks · Raw `N×` text re-prefill vs. Speculative Encoding (auditing multi-hop accuracy!) · FIFO vs. staleness-aware scheduling · Restart-from-zero vs. checkpoint/resume.
+- Cold containers vs. prepared snapshots · Clean rebuilds vs. content-addressed build caches · Independent sandboxes vs. CoW forks · Raw `N×` text re-prefill vs. Speculative Encoding (auditing multi-hop accuracy!) · FIFO (first-in, first-out) vs. staleness-aware scheduling · Restart-from-zero vs. checkpoint/resume.
 
 ### Open frontiers &amp; optional 12-week study plan
 Unsolved challenges include consistent unified state across external tools, forkable reasoning trees, bias-free policy-aware scheduling, exact numerical parity, cheat-proof verifiers, secure multi-tenant KV caches, and energy per solved task.
@@ -373,6 +382,27 @@ Re-tokenizing text on the trainer can change token splits and boundaries, and mi
 <summary>Q3. Name two safeguards required when sharing translated KV state across swarms.</summary>
 
 Check compounding accuracy across chained hops (`0.969^k` in a simple model) and isolate caches strictly between different users or tenants.
+
+</details>
+
+## Finish line: trace a full AI system end to end
+
+Suppose an instructor asks you in plain English: **"Walk me through how an AI coding agent reads a `64,000`-token repo, fixes a failing `pytest` bug, and gets smarter overnight."** Try tracing all five steps below before opening the answer key:
+
+1. **Building &amp; serving (Part 1):** Why can't the trainer skip saving its data-loader cursor, why does a huge `64,000`-token codebase slow down serving, and how can two different models share that `64,000`-token reading work?
+2. **Cluster bottleneck (Part 1):** If GPUs serve `40` tries/min while sandboxes build `15` tries/min, what happens if you buy twice as many GPUs?
+3. **Practicing with RL (Part 2):** How does GRPO score `4` tries (`[1.0, 0.0, 1.0, 0.0]`), and what happens if Try 3 suffers an `OOM` sandbox crash?
+4. **Sandboxes &amp; The Rewind Wall (Part 3):** If the agent edits `app.py` and sends an HTTP webhook to Slack, what does rewinding the sandbox disk snapshot undo—and how do we stop the agent from editing `test_app.py` to cheat?
+5. **Closing the loop (Part 3):** Which exact fields must go into the training batch so weight updates stay mathematically valid?
+
+<details markdown="1">
+<summary>Check your complete end-to-end trace</summary>
+
+1. **Part 1:** Restoring only weights without the data-loader cursor repeats or skips batches. Long `64,000`-token prompts grow the `KV` scratchpad linearly with token count `T`; *Plato's Key* shows two models' hidden states align via a zero-training Procrustes rotation + scale, and *Speculative Encoding* trains a small `2.35B` MoE translator so Model B skips re-reading raw text (subject to multi-hop drift checks).
+2. **Part 1 bottleneck:** Goodput stays pinned at `15`/min (`goodput <= min(inference, sandboxes, graders, learner)`). You must speed up sandboxes with warm pools or `CoW` snapshots first.
+3. **Part 2:** GRPO compares valid tries against the group average (`0.5`), giving `+1.0` to passes and `-1.0` to genuine test failures—while routing the `OOM` crash to `FAILED_INFRASTRUCTURE` so it is excluded and retried instead of receiving reward `0`. Meanwhile, async training bounds `policy_lag` and keeps KV state aligned with emitted `logprobs`.
+4. **Part 3:** Rewinding disk snapshot `E_t` restores `app.py`, **not** the external Slack webhook (external side effects need idempotency keys or mocks). Placing hidden tests outside the sandbox's writable disk stops test tampering.
+5. **Part 3 trajectory contract:** Log exact `token_ids`, `behavior_logprobs`, `token_policy_versions`, `action_mask` (`True` only for model-written tokens), and `verifier_version`, and trigger raw re-prefill if multi-hop KV translation drops below the safety floor.
 
 </details>
 
