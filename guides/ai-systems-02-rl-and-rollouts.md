@@ -59,6 +59,18 @@ In Part 1, SFT (Stage 4) taught the model by copying expert answers. In **Stage 
 | **Agentic RL** | Loop over thinking, editing files, running tools, and grading | Learns multi-turn debugging; **problem:** long variable times &amp; irreversible actions | Durable state machine + snapshots (**Active frontier**) |
 | **On-policy distillation** | Small student generates tries; smart teacher grades or guides them live | Better than static teacher essays; **problem:** needs teacher compute during training | Run alongside verifiable graders (**Growing efficiency method**) |
 
+Step through how post-training evolved from copying static answers to bounded async RL:
+
+<div class="stepper" markdown="1">
+
+1. **SFT (Imitation only).** The model copies expert answers line by line—great for format, weak at recovering when a tool fails.
+2. **DPO (Preference pairs).** Compare chosen vs. rejected answers without a critic model, though fixed datasets drift as the model changes.
+3. **PPO (Online RL with a critic).** Let the model generate its own tries and score them live, at the cost of holding a second critic model in GPU memory.
+4. **GRPO + RLVR (Group scoring + unit tests).** Drop the critic and compare `k` tries on the same task against deterministic tests—creating sync waiting barriers.
+5. **Bounded Async RL (AReaL, Prime-RL, slime).** Keep GPUs and sandboxes busy concurrently while tracking policy staleness, `FAILED_INFRASTRUCTURE`, and KV consistency.
+
+</div>
+
 ## Worked-by-hand: GRPO group scoring
 
 Before looking at any formula, grade four tries at the *same* coding prompt by hand. Suppose the unit tests return rewards `[1.0, 0.0, 1.0, 0.0]`:
@@ -340,6 +352,27 @@ if __name__ == "__main__":
 ```
 
 </figure>
+
+<details markdown="1">
+<summary>Show the expected demo and test output</summary>
+
+Captured with Python 3.14 (stdlib only, no GPU):
+
+```text
+$ python3 rollout_fsm.py
+Admitted statuses: ['ACCEPTED_FOR_TRAINING', 'ACCEPTED_FOR_TRAINING', 'FAILED_INFRASTRUCTURE']
+GRPO advantages (crash excluded): [1.0, -1.0]
+
+$ python3 -m unittest -v
+...
+Ran 8 tests in 0.000s
+
+OK
+```
+
+Notice why `GRPO advantages` prints `[1.0, -1.0]` (two values, not three): `try-3` crashed in `FAILED_INFRASTRUCTURE`, so it was excluded before computing the group mean (`0.5`) and spread (`0.5`).
+
+</details>
 
 **Break it on purpose:** In `rollout_fsm.py`, temporarily change the `grpo_advantages` filter to include `"FAILED_INFRASTRUCTURE"` alongside `"ACCEPTED_FOR_TRAINING"`, then rerun `python3 rollout_fsm.py` and `python3 -m unittest -v`. Restore it afterwards!
 

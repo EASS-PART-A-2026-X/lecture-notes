@@ -1,4 +1,5 @@
-// Synthetic teaching model for 4-fleet pipeline capacity and cross-model KV sharing.
+// Synthetic teaching model for 4-fleet pipeline capacity, cross-model KV sharing,
+// and the interactive Field Progress & Concept Explorer in Part 1.
 // No real cluster, GPU, or model endpoint runs here.
 (() => {
   "use strict";
@@ -36,6 +37,159 @@
     }
   ];
 
+  const PROGRESS_TRACKS = [
+    {
+      id: "training-scale",
+      title: "1. Training scale (Data -> 6D parallelism -> MoE)",
+      steps: [
+        {
+          era: "1. Early problem",
+          concept: "Single-GPU training & raw web dumps",
+          broken: "Models grew larger than one GPU's memory, and crashed runs forgot which training rows had already been seen.",
+          solution: "Split weights and optimizer state across GPUs (FSDP/ZeRO) and added content-hashed manifests + checkpointable data loaders.",
+          milestone: "TorchTitan & Megatron-LM train multi-billion-weight models cleanly across clusters.",
+          status: "Dense scaling is mature; silent GPU math errors and MoE expert imbalance remain active engineering areas."
+        },
+        {
+          era: "2. Breakthrough",
+          concept: "6D parallelism & Mixture of Experts (MoE)",
+          broken: "Sharding every layer identically hit network bottlenecks, while dense models multiplied every weight for every token.",
+          solution: "Combined Data, Tensor, Pipeline, Expert, Context, and FSDP parallelism with sparse MoE routing (waking only selected experts).",
+          milestone: "Frontier models (like DeepSeek-V3) co-designed model architecture alongside communication collectives.",
+          status: "Standard for frontier pretraining; FP8/FP4 mixed precision and long-context scaling are actively refined."
+        },
+        {
+          era: "3. Today's status & open gap",
+          concept: "Unified training & generation code",
+          broken: "Using separate codebases for training and serving caused subtle tokenization and weight-layout bugs.",
+          solution: "Unified model definitions (e.g., TorchTitan + TitanRL) and automated numerical parity checks.",
+          status: "Active frontier: fault-tolerant elastic clusters that keep training when GPUs drop mid-run.",
+          milestone: "Reproducible data + weights + parity checks across training and serving."
+        }
+      ]
+    },
+    {
+      id: "fast-serving",
+      title: "2. Fast serving (Static batch -> PagedAttention -> Disaggregation)",
+      steps: [
+        {
+          era: "1. Early problem",
+          concept: "Static batching & contiguous KV buffers",
+          broken: "Short replies waited idle behind long replies, and pre-allocating huge KV scratchpads wasted most GPU memory.",
+          solution: "Orca introduced continuous iteration-level batching; FlashAttention cut memory traffic.",
+          milestone: "Every finished request slot immediately admits the next waiting user.",
+          status: "Continuous batching is now baseline in every production inference engine."
+        },
+        {
+          era: "2. Breakthrough",
+          concept: "PagedAttention & radix prefix caching",
+          broken: "Each user still wasted memory on unused prompt padding or re-computed identical system prompts from zero.",
+          solution: "vLLM paged KV caches into fixed blocks like OS virtual memory; SGLang added radix prefix reuse and chunked prefill.",
+          milestone: "Higher concurrent batch sizes and instant reuse of shared instructions across requests.",
+          status: "Mature single-model serving; Mooncake and LMCache extend KV tiers across RAM and RDMA."
+        },
+        {
+          era: "3. Today's status & open gap",
+          concept: "Prefill/decode disaggregation & orchestration",
+          broken: "A single 64k-token prompt still stalls live token streaming for every other user on the same GPU.",
+          solution: "DistServe, Splitwise, and Dynamo separate prefill workers from decode workers when transfer overhead pays off.",
+          milestone: "Datacenter inference routers (Dynamo, llm-d) schedule around KV cache locality.",
+          status: "Open trade-off: disaggregation only wins when saved stall time exceeds KV network transfer cost."
+        }
+      ]
+    },
+    {
+      id: "cross-model",
+      title: "3. Cross-model context (Raw N× text -> Plato's Key -> Speculative Encoding)",
+      steps: [
+        {
+          era: "1. Early problem",
+          concept: "Same-model prefix lock-in",
+          broken: "Prefix caching fails whenever two agents use different model families—Model B must re-read all 64k raw tokens.",
+          solution: "Recognized that the bottleneck in multi-model swarms is repeated prefill compute.",
+          milestone: "Baseline: 100% native accuracy, but N× full prefill latency and cost.",
+          status: "Still the safe default whenever accuracy cannot tolerate any approximation."
+        },
+        {
+          era: "2. Breakthrough",
+          concept: "Plato's Key (Stanford Hazy Research, Nov 2026)",
+          broken: "Researchers doubted one LLM could directly read another LLM's internal hidden states without retraining.",
+          solution: "Closed-form orthogonal Procrustes rotation + 1 global scale mapped hidden states across 12 LLMs (8 families) with zero gradient descent.",
+          milestone: "41% median factual transfer (vs. 55% self-swap) and ~99% relative A->B->C chaining accuracy.",
+          status: "Established the geometric foundation, though linear maps still trail native prefill on absolute accuracy."
+        },
+        {
+          era: "3. Today's status & open gap",
+          concept: "Speculative Encoding (Ramp Labs, Nov 2026)",
+          broken: "Production swarms need near-native accuracy alongside fast cross-model handoffs.",
+          solution: "Trained a single 2.35B MoE translator integrated with vLLM to convert hidden states/KV across 7 model families.",
+          milestone: "Reported 96.9% baseline retention, up to 7.5× prefill speedup, and up to 128× query compression.",
+          status: "Open engineering checks: compounding 0.969^k multi-hop accuracy drift and strict multi-tenant KV isolation."
+        }
+      ]
+    },
+    {
+      id: "rl-learning",
+      title: "4. Learning from action (SFT -> GRPO -> Bounded Async RL)",
+      steps: [
+        {
+          era: "1. Early problem",
+          concept: "Imitation-only training (SFT)",
+          broken: "Models copied expert demonstrations well, but could not explore new strategies or recover when tools failed.",
+          solution: "Introduced reinforcement learning (PPO, DPO) and verifiable graders (RLVR) so models learn from outcomes.",
+          milestone: "DeepSeekMath and DeepSeek-R1 popularized critic-free GRPO group scoring.",
+          status: "GRPO + RLVR are standard for code, math, and reasoning post-training."
+        },
+        {
+          era: "2. Breakthrough",
+          concept: "Asynchronous rollouts & durable state machines",
+          broken: "Synchronous GRPO barriers left fast GPUs sitting idle behind one slow sandbox build; crashes became bogus 0 rewards.",
+          solution: "Decoupled samplers, sandboxes, and learners with durable Rollout FSMs, staleness bounds (AReaL), and FAILED_INFRASTRUCTURE isolation.",
+          milestone: "Higher GPU utilization without letting off-policy staleness destabilize gradients.",
+          status: "Open challenge: balancing staleness, scheduler selection bias, and KV consistency across weight updates."
+        },
+        {
+          era: "3. Today's status & open gap",
+          concept: "Agentic RL & unified trajectory parity",
+          broken: "Reconstructing rollouts from text or mismatched logprobs silently broke importance ratio ρ_t.",
+          solution: "Strict Versioned Trajectory contracts storing exact token_ids, behavior_logprobs, policy versions, and action masks.",
+          milestone: "Frameworks like verl, slime, Prime-RL, and AReaL standardize multi-turn RL pipelines.",
+          status: "Active research: numerical bit-for-bit parity between training and inference kernels."
+        }
+      ]
+    },
+    {
+      id: "safe-exec",
+      title: "5. Safe execution & grading (Plain Docker -> CoW MicroVMs -> Locked Verifiers)",
+      steps: [
+        {
+          era: "1. Early problem",
+          concept: "Unsafe plain containers & slow cold starts",
+          broken: "Mounting host folders or Docker sockets risked container escapes, while fresh npm/cargo installs made sandboxes bottleneck GPUs.",
+          solution: "Hardened boundaries (non-root, --network none, Firecracker/gVisor) plus warm pools and prepared CoW snapshots.",
+          milestone: "Sub-second forked workspaces via copy-on-write filesystems and build caches.",
+          status: "MicroVM + CoW isolation is now best practice for untrusted agent execution."
+        },
+        {
+          era: "2. Breakthrough",
+          concept: "Independent trusted verifiers (Harbor & OpenEnv)",
+          broken: "Agents that could edit test files or trigger reward bugs cheated graders; host crashes looked like agent mistakes.",
+          solution: "Moved hidden tests outside the agent's writable disk and sorted outcomes into 6 buckets (separating agent errors from infra/verifier faults).",
+          milestone: "Standardized reset/step/state contracts and reproducible task manifests.",
+          status: "Active frontier: building cheat-proof verifiers and automated curricula."
+        },
+        {
+          era: "3. Today's status & open gap",
+          concept: "The Rewind Wall (unified state S_t)",
+          broken: "Disk snapshots rewind local files cleanly, yet cannot undo emails, payments, or external API calls.",
+          solution: "Explicit trust boundaries combining local CoW forks with idempotency keys, outboxes, and mocked external endpoints.",
+          milestone: "Forkable reasoning trees paired with verified receipts for every reward.",
+          status: "Open research: end-to-end transactional consistency across external side effects."
+        }
+      ]
+    }
+  ];
+
   function evaluateCapacity(rates) {
     const keys = ["inference", "environments", "verification", "learner"];
     for (const k of keys) {
@@ -69,19 +223,85 @@
     };
   }
 
+  function getProgressStep(trackId, eraIndex) {
+    const track = PROGRESS_TRACKS.find(t => t.id === trackId);
+    if (!track) throw new RangeError(`Unknown progress track: ${trackId}`);
+    if (!Number.isInteger(eraIndex) || eraIndex < 0 || eraIndex >= track.steps.length) {
+      throw new RangeError(`Invalid era index ${eraIndex} for track ${trackId}`);
+    }
+    return { trackTitle: track.title, eraIndex, ...track.steps[eraIndex] };
+  }
+
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { CASES, evaluateCapacity, evaluateSpeculativeEncoding };
+    module.exports = { CASES, PROGRESS_TRACKS, evaluateCapacity, evaluateSpeculativeEncoding, getProgressStep };
   }
   if (typeof document === "undefined") return;
-
-  const root = document.getElementById("sim-aisys-capacity");
-  if (!root) return;
 
   const el = (tag, props = {}, ...kids) => {
     const node = Object.assign(document.createElement(tag), props);
     node.append(...kids);
     return node;
   };
+
+  // --- Mount 1: #sim-aisys-progress (Field Progress & Concept Explorer) ---
+  const progRoot = document.getElementById("sim-aisys-progress");
+  if (progRoot) {
+    const select = el("select", { id: "aisys-prog-track" });
+    select.append(...PROGRESS_TRACKS.map(t => el("option", { value: t.id, textContent: t.title })));
+    const fields = el("div", { className: "sim-fields" },
+      el("label", { htmlFor: select.id }, "Choose an AI systems topic to trace over time", select)
+    );
+    const receipt = el("dl", { className: "aisys-receipt" });
+    const controls = el("div", { className: "sim-controls" });
+    const status = el("p", { className: "sim-status" });
+    const live = el("div", {}, status);
+    live.setAttribute("role", "status");
+    live.setAttribute("aria-atomic", "true");
+
+    let trackId = PROGRESS_TRACKS[0].id;
+    let eraIndex = 0;
+
+    const eraButtons = [
+      ["1. Early problem", () => { eraIndex = 0; }],
+      ["2. Breakthrough", () => { eraIndex = 1; }],
+      ["3. Today's status", () => { eraIndex = 2; }],
+      ["Next era ->", () => { eraIndex = (eraIndex + 1) % 3; }]
+    ];
+
+    function renderProgress() {
+      const step = getProgressStep(trackId, eraIndex);
+      const facts = [
+        ["Core concept / term", step.concept],
+        ["What broke", step.broken],
+        ["How the field solved it", step.solution],
+        ["Milestone / result", step.milestone],
+        ["Current status & open gap", step.status]
+      ];
+      receipt.replaceChildren(...facts.map(([k, v]) => el("div", {}, el("dt", { textContent: k }), el("dd", { textContent: v }))));
+      status.textContent = `${step.trackTitle} — ${step.era}: ${step.concept}.`;
+    }
+
+    for (const [label, fn] of eraButtons) {
+      const btn = el("button", { type: "button", className: "sim-button", textContent: label });
+      btn.addEventListener("click", () => { fn(); renderProgress(); });
+      controls.append(btn);
+    }
+    select.addEventListener("change", () => {
+      trackId = select.value;
+      eraIndex = 0;
+      renderProgress();
+    });
+
+    progRoot.querySelector(".sim-fallback").before(
+      el("div", { className: "sim-app" }, fields, controls, receipt, live)
+    );
+    progRoot.classList.add("is-live");
+    renderProgress();
+  }
+
+  // --- Mount 2: #sim-aisys-capacity (Fleet Bottleneck & Speculative Encoding) ---
+  const root = document.getElementById("sim-aisys-capacity");
+  if (!root) return;
 
   const select = el("select", { id: "aisys-cap-case" });
   select.append(...CASES.map(c => el("option", { value: c.id, textContent: c.title })));

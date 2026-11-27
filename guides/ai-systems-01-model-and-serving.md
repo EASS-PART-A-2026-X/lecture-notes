@@ -37,6 +37,7 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 - [The knowledge graph: five connected parts](#the-knowledge-graph-five-connected-parts)
 - [How Recipe Box maps to a frontier AI system](#how-recipe-box-maps-to-a-frontier-ai-system)
 - [All 13 lifecycle stages in four simple phases](#all-13-lifecycle-stages-in-four-simple-phases)
+- [Explore how the field progressed](#explore-how-the-field-progressed)
 - [How the 16-layer stack fits underneath](#how-the-16-layer-stack-fits-underneath)
 - [Deep dive: building vs. serving a model](#deep-dive-building-vs-serving-a-model)
 - [Sharing reading work across different models](#sharing-reading-work-across-different-models)
@@ -113,6 +114,21 @@ Real AI labs do not run these 13 stages strictly one-by-one; they run them in pa
 
 - **Stage 5 (Preference tuning / DPO)** &amp; **Stage 6 (RL &amp; rollouts):** model tries problems itself and learns from graded rewards (**Part 2**).
 - **Stage 11 (Agentic execution)** &amp; **Stage 8 (Evaluation)** &amp; **Stage 12 (Feedback):** sandboxes run untrusted code safely, hidden graders separate broken sandboxes from wrong answers, and verified traces feed future training (**Part 3**).
+
+## Explore how the field progressed
+
+Pick any of the five core themes below and step from the **early problem**, through the **breakthrough**, to **today's open gaps**.
+
+<div class="sim" id="sim-aisys-progress" role="group" aria-label="How AI systems progressed explorer" markdown="1">
+
+<p class="sim-title"><strong>Interactive explorer: concepts, problems, and field progress</strong></p>
+
+<div class="sim-fallback" markdown="1">
+
+**Worked example without JavaScript:** On **Cross-model context**, prefix caching breaks whenever two agents use different model families, forcing Model B to re-read all 64k raw tokens (`1. Early problem`). **Plato's Key** solved the geometry question using a zero-training Procrustes rotation + scale (`2. Breakthrough`: `~99%` relative chaining), and **Speculative Encoding** pushed serving speed with a 2.35B MoE translator (`3. Today's status`: reported `96.9%` retention and up to `7.5×` prefill speedup, while leaving multi-hop drift and tenant isolation as open engineering checks).
+
+</div>
+</div>
 
 ## How the 16-layer stack fits underneath
 
