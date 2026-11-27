@@ -22,11 +22,17 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 
 - **Weights:** the millions or billions of saved numbers inside a trained model—like its permanent recipe book.
 - **Token:** one chunk of text (roughly three-quarters of an English word) that a model reads or writes.
+- **Goodput:** useful, verified work finished per minute—counting real progress, not wasted retries or crashed runs.
 - **Prefill and decode:** *prefill* is reading your prompt once to prepare a scratchpad; *decode* is writing the reply one token at a time.
 - **KV cache (scratchpad):** temporary attention notes a model builds while reading a prompt so it does not re-read the whole prompt on every output word.
 - **Hidden state:** the internal list of numbers representing what the model "understands" at a given token.
 - **Inference:** running an already-trained model to get an answer (weights stay frozen).
 - **MoE (Mixture of Experts):** a model split into specialist sub-networks so each token wakes up only a small fraction of the weights.
+- **Sharding (`FSDP` / `ZeRO`):** splitting a giant model's weights and training memory across multiple GPUs so it fits without crashing (*Fully Sharded Data Parallel* / *Zero Redundancy Optimizer*).
+- **Fast links &amp; collectives (`NVLink`, `RDMA`, `NCCL`):** ultra-fast cables connecting GPUs inside one server (`NVLink`) or across servers (`RDMA`), plus the software library (`NCCL`) that coordinates data transfers between them.
+- **Quantization (`FP4`) &amp; GPU kernels (`CUTLASS`, `Triton`):** shrinking each weight from 16 bits down to 4-bit floating-point numbers (`FP4`) to save memory, and writing fast low-level GPU math routines (`CUTLASS` C++ templates or `Triton` Python-like GPU compiler).
+- **`SFT` and `DPO`:** *Supervised Fine-Tuning (`SFT`)* teaches a model by copying expert examples; *Direct Preference Optimization (`DPO`)* teaches it by comparing a better answer against a worse answer.
+- **Linux `cgroups`:** built-in Linux kernel resource limits that cap how much CPU and RAM a single container can use.
 - **Procrustes rotation:** turning and scaling one coordinate map until its directions line up with another map—like rotating a tourist map until North points straight up.
 
 </details>
@@ -50,6 +56,8 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 ## The knowledge graph: five connected parts
 
 Modern AI infrastructure has evolved through three waves: first systems that **learn** intelligence (distributed training), second systems that **serve** intelligence quickly (distributed inference), and now systems that **experiment and verify** on their own (autonomous execution).
+
+**One running story across all three parts:** Imagine building an AI coding agent to **fix a failing `pytest` bug inside a `64,000`-token Python repository**. In **Part 1**, we build the model's weights, serve `64,000`-token prompts quickly without blowing GPU memory, and share reading work between two models. In **Part 2**, the agent practices `4` candidate patches in parallel and learns from real `pytest` outcomes. In **Part 3**, we lock down the sandbox, respect the Rewind Wall, verify fairly, and log exact training receipts.
 
 Instead of memorizing forty buzzwords, picture one **five-node loop** controlled by an orchestrator (`Control Plane`):
 
@@ -98,21 +106,21 @@ Real AI labs do not run these 13 stages strictly one-by-one; they run them in pa
 |---|---|---|---|
 | **0. Infrastructure** | Wire GPUs, CPUs, fast links, and disks | Topology-aware clusters; **problem:** idle GPUs waiting on slow network | Managed via Ray, Slurm, Kubernetes + NVLink/RDMA (**Mature core**) |
 | **1. Data engineering** | Crawl, clean, remove duplicates, filter privacy, convert to token files | Content-hashed manifests (DataTrove, Dolma); **problem:** crashed runs lose track of which rows were read | Checkpointable data loaders save exact file + row cursor (**Standard; synthetic curation active**) |
-| **2. Pretraining** | Predict the next token on billions of examples | Splitting one giant model across many GPUs (6D parallelism + mixed precision); **problem:** out-of-memory crashes &amp; silent math errors | Shard parameters/optimizer state (FSDP/ZeRO) + periodic parity checks (**Mature dense; MoE active**) |
+| **2. Pretraining** | Predict the next token on billions of examples | Splitting one giant model across many GPUs (6D parallelism — splitting data, layers, and matrices across GPUs + mixed precision); **problem:** out-of-memory crashes &amp; silent math errors | Shard parameters/optimizer state (FSDP/ZeRO) + periodic parity checks (**Mature dense; MoE active**) |
 | **3. Mid-training** | Continue training on math, code, long docs, and tool formats | Context parallelism for huge inputs; **problem:** forgetting earlier skills | Mix replay data with domain curricula (**Standard practice**) |
-| **4. SFT (imitation)** | Show input → expert tool call → expert answer examples | Loss masking so gradients only score assistant turns, not user/tool text; **problem:** model only imitates | Pair SFT with RL exploration in Part 2 (**Standard: TRL, TorchTune, TorchTitan**) |
+| **4. SFT (Supervised Fine-Tuning / imitation)** | Show input → expert tool call → expert answer examples | Loss masking so gradients only score assistant turns, not user/tool text; **problem:** model only imitates | Pair SFT with Reinforcement Learning (RL) exploration in Part 2 (**Standard: TRL, TorchTune, TorchTitan**) |
 | **7. Distillation** | Teach a small fast model from a large smart teacher | *On-policy* distillation grades the student's own answers; **problem:** student drifts on multi-step tasks | Teacher grades student rollouts rather than static essays (**Widely used for efficiency**) |
 
 ### Phase B · Serve it fast (Stages 9–10)
 
 | Stage | Simple core steps | Key innovation &amp; main problem | How it was addressed &amp; status |
 |---|---|---|---|
-| **9. Deployment opt.** | Shrink weight precision (16-bit → 8/4-bit) &amp; compile GPU kernels | Kernel fusion &amp; quantization; **problem:** shrinking numbers can break accuracy | Re-run held-out quality tests on every quantized build (**Mature; FP4 active**) |
+| **9. Deployment opt.** | Shrink weight precision (16-bit → 8/4-bit) &amp; compile GPU kernels | Kernel fusion &amp; quantization; **problem:** shrinking numbers can break accuracy | Re-run held-out quality tests on every quantized build (**Mature; 4-bit FP4 active**) |
 | **10. Inference** | Read prompt once (prefill), then emit 1 token per step (decode) | Paged KV memory (vLLM), continuous batching (Orca), prefix reuse (SGLang); **problem:** KV scratchpad fills GPU memory | Virtualized KV blocks + optional prefill/decode splitting (**Mature single-model; cross-model new**) |
 
 ### Phase C &amp; D · Practice, grade, and improve (Stages 5, 6, 8, 11, 12 — covered in Parts 2 &amp; 3)
 
-- **Stage 5 (Preference tuning / DPO)** &amp; **Stage 6 (RL &amp; rollouts):** model tries problems itself and learns from graded rewards (**Part 2**).
+- **Stage 5 (Direct Preference Optimization, DPO)** &amp; **Stage 6 (Reinforcement Learning, RL &amp; rollouts):** model tries problems itself and learns from graded rewards (**Part 2**).
 - **Stage 11 (Agentic execution)** &amp; **Stage 8 (Evaluation)** &amp; **Stage 12 (Feedback):** sandboxes run untrusted code safely, hidden graders separate broken sandboxes from wrong answers, and verified traces feed future training (**Part 3**).
 
 ## Explore how the field progressed
@@ -149,7 +157,7 @@ Try a tiny toy example on paper: `N = 1,000,000` weights (`10^6`) trained on `D 
 - Now scale `N` to `70B` and `D` to `15T`—that is why pretraining needs thousands of GPUs, **checkpointable data loaders** (saving both weights *and* exact dataset position so a crash never re-trains on the same rows), and corruption detectors for faulty GPUs.
 
 ### Worked-by-hand: why serving slows down as conversations grow
-When serving a user, [Visual inference engineering](inference-engineering.md) shows that **prefill** is compute-limited while **decode** is limited by how fast bytes move out of GPU memory (`P <= min(P_peak, B_memory × I)`). Each user keeps a KV scratchpad of size `M_KV = 2 · L · T · H_KV · d_h · s`. Double the prompt length `T` and your scratchpad memory doubles too!
+When serving a user, [Visual inference engineering](inference-engineering.md) shows that **prefill** is compute-limited while **decode** is limited by how fast bytes move out of GPU memory: `P <= min(P_peak, B_memory × I)` (where `P_peak` is the GPU's peak math speed, `B_memory` is memory bandwidth in bytes/second, and `I` is math operations done per byte loaded). Each user also keeps a KV scratchpad of size `M_KV = 2 · L · T · H_KV · d_h · s` (the `2` is for storing both *key* and *value* notes, `L` is the number of model layers, `T` is the number of tokens in the conversation, `H_KV` is the number of attention heads, `d_h` is the size of each head, and `s` is bytes per number). Double `T` from `1,000` to `2,000` tokens, and `M_KV` immediately doubles!
 
 > **Simpler is enough:** Keep prefill and decode on the same GPU workers when starting out. Only split them onto separate pools (disaggregation) when profiling proves long prompts are stalling live user typing enough to justify copying KV caches over the network.
 
@@ -219,6 +227,8 @@ If you restore only the weights, the training job loses track of which batches i
 No. By the steady-state capacity law, completed work cannot exceed `15`/min until you speed up sandboxes (for example with warm pools or snapshots in Part 3).
 
 </details>
+
+**Next step in the story:** Now that our model can read a `64,000`-token Python repository quickly (and even hand off KV notes across models), [Part 2](ai-systems-02-rl-and-rollouts.md) follows the agent as it tries `4` candidate bug fixes in parallel and learns from real `pytest` passes and crashes.
 
 ## Sources
 

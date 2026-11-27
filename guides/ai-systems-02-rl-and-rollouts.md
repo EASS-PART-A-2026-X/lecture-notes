@@ -27,6 +27,11 @@
 - **Policy staleness:** how many weight updates happened between when a rollout started and when it reached the trainer.
 - **Logprob (`π`):** the model's exact probability score for each token it chose during a rollout.
 - **Importance ratio (`ρ_t`):** `new_prob / old_prob`—measures how much the current model differs from the older version that generated the rollout.
+- **`SFT`, `DPO`, `PPO`, `GRPO`, and `RLVR`:** five post-training methods—copying expert examples (*Supervised Fine-Tuning*, `SFT`), learning from better/worse pairs (*Direct Preference Optimization*, `DPO`), trial-and-error with a separate value critic (*Proximal Policy Optimization*, `PPO`), critic-free group scoring (*Group Relative Policy Optimization*, `GRPO`), and grading with deterministic code/math checks (*Reinforcement Learning with Verifiable Rewards*, `RLVR`).
+- **`KV` cache (scratchpad):** temporary attention notes built while reading a prompt so the model does not re-read everything on each generated token (from Part 1).
+- **`MoE` (Mixture of Experts):** a model split into specialist sub-networks so each token wakes up only a small fraction of the weights.
+- **`FSDP` vs. tensor parallelism:** two different ways clusters slice weights across GPUs—training typically shards parameters across GPUs (*Fully Sharded Data Parallel*, `FSDP`), while serving slices individual matrix multiplies across GPUs (tensor parallelism).
+- **`OOM` (Out-of-Memory):** a crash caused by a container or GPU running out of RAM—an infrastructure fault, never a model reasoning error.
 
 </details>
 
@@ -48,7 +53,7 @@
 
 ## Stages 5–6: learning by trying instead of copying
 
-In Part 1, SFT (Stage 4) taught the model by copying expert answers. In **Stage 5 (Preference optimization)** and **Stage 6 (Reinforcement learning)**, the model generates its own answers and learns from what actually worked:
+In Part 1, SFT (Stage 4) gave our `64,000`-token coding agent weights that copy expert patches. Now, in **Stage 5 (Preference optimization)** and **Stage 6 (Reinforcement learning)**, the agent launches `4` candidate bug-fix patches in parallel, runs `pytest` inside sandboxes, and updates its weights from real test passes and failures:
 
 | Method | Simple core steps | Key innovation &amp; main problem | How addressed &amp; status |
 |---|---|---|---|
@@ -77,7 +82,7 @@ Before looking at any formula, grade four tries at the *same* coding prompt by h
 
 1. **Group average (`r̄`):** `(1 + 0 + 1 + 0) / 4 = 0.5`.
 2. **Group spread (`σ_r`):** each try is `0.5` away from the average (`σ_r = 0.5`).
-3. **Relative advantage (`A_i = (r_i − r̄) / (σ_r + ε)`):**
+3. **Relative advantage (`A_i = (r_i − r̄) / (σ_r + ε)`):** here `ε` (`1e-8`) is just a tiny safety number so we never divide by zero when `σ_r = 0`.
    - Passing tries (`1.0`): `(1.0 − 0.5) / 0.5 = +1.0` (reinforce!).
    - Failing tries (`0.0`): `(0.0 − 0.5) / 0.5 = -1.0` (discourage!).
 
@@ -113,7 +118,7 @@ Top (Sync barrier): Three parallel tries start together. Try 1 and Try 2 finish 
 - **Synchronous RL:** Wait for all tries in a batch → grade → train → copy new weights → repeat. Easy to debug, zero staleness, but GPUs sit idle at barriers.
 - **Asynchronous RL:** Inference samplers keep generating while the learner keeps training and pushing new weights `θ_v → θ_{v+1}`. GPUs stay busy, **but** finished trajectories come from older weight versions.
 
-The learner corrects for age using the **importance ratio** `ρ_t = π_new(a_t | s_t) / π_old(a_t | s_t)`. If trajectories are too old (`staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`), `ρ_t` explodes or collapses and training destabilizes.
+The learner corrects for age using the **importance ratio** `ρ_t = π_new(a_t | s_t) / π_old(a_t | s_t)`, where `a_t` is the token the model chose at step `t` and `s_t` is the prompt plus tool outputs seen up to that point. If trajectories are too old (`staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`), `ρ_t` explodes or collapses and training destabilizes.
 
 > **Pitfall:** Never "fix" stragglers by silently dropping slow rollouts or only picking the fastest tasks first. As Microsoft's Rocket engineering report highlights, dropping slow tries biases the model away from hard, multi-step problems. **AReaL** keeps training stable with explicit staleness bounds and bounded off-policy clipping.
 
@@ -393,7 +398,7 @@ Slow trajectories are often harder multi-turn problems. Dropping them teaches th
 </details>
 
 <details markdown="1">
-<summary>Q2. What happens if a sandbox OOM is logged as reward 0 instead of FAILED_INFRASTRUCTURE?</summary>
+<summary>Q2. What happens if a sandbox OOM (Out-of-Memory) is logged as reward 0 instead of FAILED_INFRASTRUCTURE?</summary>
 
 The optimizer punishes the model's reasoning for an infrastructure crash and skews GRPO group scores.
 
@@ -405,6 +410,8 @@ The optimizer punishes the model's reasoning for an infrastructure crash and ske
 Save the exact behavior `logprobs` emitted at generation time (or recompute under native weights) so approximate KV translation never silently corrupts `ρ_t`.
 
 </details>
+
+**Next step in the story:** Now that you know how GRPO and staleness bounds steer learning, [Part 3](ai-systems-03-environments-state-roadmap.md) zooms inside the `pytest` sandbox to show what snapshots can and cannot rewind ("The Rewind Wall"), how hidden verifiers stop cheating, and how every trajectory is logged for training.
 
 ## Sources
 
