@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">The Versioned Trajectory contract and multi-hop KV safety gate</title>
+  <desc id="d">Top band aligns six example tokens across token_ids, behavior_logprobs, token_policy_versions, and action_mask, showing model-written tokens enabled for RL updates and tool-pasted tokens masked out. Bottom band charts accuracy decay 0.969 to the k across hops against an 85 percent safety floor that forces raw re-prefill at 6 hops, alongside the four trajectory validation rules.</desc>
+  <rect width="960" height="470" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">The Versioned Trajectory contract and multi-hop KV gate</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">Store aligned arrays instead of plain text, mask out tool outputs, and catch drift before training.</text>
+
+    <!-- Band 1: Aligned Token Tape -->
+    <rect x="24" y="76" width="912" height="206" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="42" y="100" font-size="16" font-weight="700" fill="#1d4e89">1. Aligned arrays for every rollout (equal lengths required)</text>
+
+    <!-- Row Header Column (x=40..226) -->
+    <g font-size="13" font-weight="700" fill="#3b4453">
+      <text x="44" y="132">Token text</text>
+      <text x="44" y="160">token_ids</text>
+      <text x="44" y="188">behavior_logprobs</text>
+      <text x="44" y="216">policy_versions</text>
+      <text x="44" y="244">action_mask</text>
+    </g>
+
+    <!-- Column Backgrounds: cols 1,2,5,6 green (model), cols 3,4 gray (tool) -->
+    <g stroke="#ddd7ca" stroke-width="1">
+      <rect x="228" y="112" width="112" height="142" rx="4" fill="#f1f7f3"/>
+      <rect x="344" y="112" width="112" height="142" rx="4" fill="#f1f7f3"/>
+      <rect x="460" y="112" width="112" height="142" rx="4" fill="#eef1f4"/>
+      <rect x="576" y="112" width="112" height="142" rx="4" fill="#eef1f4"/>
+      <rect x="692" y="112" width="112" height="142" rx="4" fill="#f1f7f3"/>
+      <rect x="808" y="112" width="112" height="142" rx="4" fill="#f1f7f3"/>
+    </g>
+
+    <!-- Token Tape Cells -->
+    <g text-anchor="middle" font-size="13">
+      <!-- Token strings -->
+      <g font-weight="700">
+        <text x="284" y="132">"Fix"</text><text x="400" y="132">"bug"</text>
+        <text x="516" y="132" fill="#535c6b">"pytest:"</text><text x="632" y="132" fill="#535c6b">"FAIL"</text>
+        <text x="748" y="132">"return"</text><text x="864" y="132">"x+1"</text>
+      </g>
+      <!-- IDs -->
+      <text x="284" y="160">412</text><text x="400" y="160">889</text><text x="516" y="160">9201</text><text x="632" y="160">4402</text><text x="748" y="160">1093</text><text x="864" y="160">773</text>
+      <!-- Logprobs -->
+      <text x="284" y="188">-0.2</text><text x="400" y="188">-0.4</text><text x="516" y="188" fill="#535c6b">0.0</text><text x="632" y="188" fill="#535c6b">0.0</text><text x="748" y="188">-0.1</text><text x="864" y="188">-0.3</text>
+      <!-- Policy versions -->
+      <text x="284" y="216">v7</text><text x="400" y="216">v7</text><text x="516" y="216" fill="#535c6b">v7</text><text x="632" y="216" fill="#535c6b">v7</text><text x="748" y="216" fill="#84540c">v8</text><text x="864" y="216" fill="#84540c">v8</text>
+      <!-- Action mask -->
+      <g font-weight="700">
+        <text x="284" y="244" fill="#2a6a47">True</text><text x="400" y="244" fill="#2a6a47">True</text>
+        <text x="516" y="244" fill="#535c6b">False</text><text x="632" y="244" fill="#535c6b">False</text>
+        <text x="748" y="244" fill="#2a6a47">True</text><text x="864" y="244" fill="#2a6a47">True</text>
+      </g>
+    </g>
+
+    <!-- Bottom Legend -->
+    <text x="342" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="#2a6a47">Model wrote &#x2192; apply gradient</text>
+    <text x="572" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="#535c6b">Tool pasted &#x2192; mask out (0 grad)</text>
+    <text x="804" y="272" text-anchor="middle" font-size="12" font-weight="700" fill="#2a6a47">Model wrote (on v8) &#x2192; apply</text>
+
+    <!-- Band 2: Multi-Hop Drift Chart & Rules -->
+    <rect x="24" y="298" width="912" height="150" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="42" y="322" font-size="16" font-weight="700" fill="#22616b">2. Multi-hop KV translation drift check (0.969^k vs. 85% floor)</text>
+
+    <!-- Plot Frame (x=90..536, y=334..432) -->
+    <rect x="90" y="334" width="446" height="98" rx="4" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <!-- Floor Line 85%: top 96% y=342, 85% y=386, 75% y=422 -->
+    <line x1="90" y1="386" x2="536" y2="386" stroke="#9b2c2c" stroke-width="1.6" stroke-dasharray="5,4"/>
+    <text x="84" y="350" text-anchor="end" font-size="11" fill="#535c6b">94%</text>
+    <text x="84" y="390" text-anchor="end" font-size="11" font-weight="700" fill="#9b2c2c">85%</text>
+    <text x="84" y="426" text-anchor="end" font-size="11" fill="#535c6b">75%</text>
+
+    <!-- Decay Polyline: k=0(118,348), k=2(252,368), k=4(386,389), k=6(508,406) -->
+    <polyline points="118,348 252,368 386,389 508,406" fill="none" stroke="#1d4e89" stroke-width="2.5"/>
+    <circle cx="118" cy="348" r="4.5" fill="#1d4e89"/>
+    <circle cx="252" cy="368" r="5.5" fill="#2a6a47"/>
+    <text x="262" y="362" font-size="12" font-weight="700" fill="#2a6a47">t1: 2 hops (88.3%) &#x2192; admit</text>
+    <circle cx="508" cy="406" r="5.5" fill="#9b2c2c"/>
+    <text x="518" y="424" text-anchor="end" font-size="12" font-weight="700" fill="#9b2c2c">t2: 6 hops (77.8%) &#x2192; re-prefill</text>
+
+    <!-- Checklist Box -->
+    <rect x="556" y="334" width="360" height="98" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+    <text x="572" y="356" font-size="13" font-weight="700" fill="#2a6a47">&#x2713; Equal array lengths &amp; &#x2265; 1 model token</text>
+    <text x="572" y="378" font-size="13" font-weight="700" fill="#2a6a47">&#x2713; Exact verifier_version == "v1.2"</text>
+    <text x="572" y="400" font-size="13" font-weight="700" fill="#84540c">&#x2713; Exclude infra &amp; verifier crashes cleanly</text>
+    <text x="572" y="422" font-size="13" font-weight="700" fill="#9b2c2c">&#x2713; Force raw re-prefill from token_ids if &lt; 85%</text>
+  </g>
+</svg>

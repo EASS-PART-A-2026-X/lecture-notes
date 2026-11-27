@@ -102,6 +102,20 @@ What if *all four* tries pass (`[1, 1, 1, 1]`) or *all four* fail (`[0, 0, 0, 0]
 | **3. Clipped update (`PPO`/`GRPO`)** | `min(ρ_t · A_i, clip(ρ_t, 1 − ε_clip, 1 + ε_clip) · A_i)` | Cap how far `ρ_t = π_new / π_old` can move in one update | With `A_i = +1.0` and `ε_clip = 0.2`, `ρ_t = 1.8` is capped at `1.2` |
 | **4. Async staleness** | `staleness ≈ sampler_lag + T_rollout / T_step` | How many weight updates happened while a rollout ran | `0 + 90s / 15s = 6` policy versions behind |
 
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="GRPO group scoring and clipped policy ratio diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-grpo-and-clipping.svg" alt="Left panel graphs four parallel tries scored against their group mean 0.5, yielding +1.0 and -1.0 advantages and noting identical outcomes yield zero learning. Right panel plots unclipped versus clipped probability ratio rho_t capped at 1.2 inside the safe trust band." width="960" height="460">
+  </div>
+  <figcaption><strong>Zero-critic scoring plus safe update steps.</strong> Comparing parallel tries cancels the need for a value critic model, while clipping stops one outlier rollout from overtaking weights. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-grpo-and-clipping.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Left (`1. GRPO group scoring`): four parallel tries on one prompt yield rewards `[1.0, 0.0, 1.0, 0.0]` around group mean `r̄ = 0.5`; passes get `+1.0` and failures get `-1.0`, whereas `[1,1,1,1]` or `[0,0,0,0]` produces spread `σ_r = 0` and zero gradient. Right (`2. Clipped ratio`): inside trust band `[0.8, 1.2]` the update scales linearly with `ρ_t = π_new / π_old`, then flattens at `1.2` so `ρ_t = 1.8` is capped instead of overshooting along the unclipped dashed line.
+
+</details>
+
 ## Why rollouts wait and the three-exit safety gate
 
 Unlike a single chat reply, an agent rollout moves through a durable state machine across inference GPUs, sandboxes, and graders:
@@ -139,6 +153,20 @@ The learner corrects for age using the **importance ratio** `ρ_t = π_new(a_t |
 Two frontier systems tackle the same straggler and scale trade-off directly:
 - **Partial rollouts ([Kimi k1.5](https://arxiv.org/abs/2501.12599)):** Instead of cancelling slow agent trajectories or stalling fast GPUs, pause unfinished trajectories at the token/step budget, save them into a replay buffer, and finish them cleanly in the next step—paired with *long2short* distillation so the model solves problems in fewer reasoning tokens.
 - **Scaled verifiable RL ([DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)):** Automated tool-use synthesis environments let engineers scale post-training RL compute above `10%` of pretraining budget while keeping strict verification boundaries.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Async RL staleness, Kimi k1.5 partial rollouts, and KV mismatch diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-staleness-and-kv-policies.svg" alt="Top band shows learner weights stepping every 15s from theta_10 to theta_16 while one 90s continuous rollout lags 6 updates behind, contrasted with Kimi k1.5 partial rollouts saving segment 1 into a replay buffer. Bottom band shows KV_10 mismatching theta_11 and the six explicit KV consistency policies." width="960" height="480">
+  </div>
+  <figcaption><strong>Managing policy lag and KV state together.</strong> Faster learner steps make slow coding rollouts staler unless you bound staleness, use partial rollouts, and pick an explicit KV consistency rule whenever weights update. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-staleness-and-kv-policies.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Top (`1. Staleness and partial rollouts`): learner weights step every `15s` (`θ_10` to `θ_16`), putting a `90s` continuous rollout `6` updates behind (`stale`). Below it, a `Kimi k1.5` partial rollout pauses at `45s`, saves progress in a replay buffer, and finishes cleanly in the next round without dropping hard tasks. Bottom (`2. Weight sync and KV hazard`): `θ_10` builds `KV_10`, then the learner pushes `θ_11`, shifting `π_old` unless the engine picks one of six explicit rules: `1. Flush KV`, `2. Pin to θ_10`, `3. Recompute KV`, `4. Multi-version`, `5. Retain KV`, or `6. Translate KV + log exact π_old`.
+
+</details>
 
 ## Causal chain: weight updates, six KV policies, and logprob drift
 
