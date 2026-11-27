@@ -76,6 +76,20 @@ Traditional ML had two machine pools: training GPUs and inference GPUs. To let o
 2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep sandbox throughput (`λ_environment`) fast enough that GPUs stay fed.
 3. **Why swarms multiply sandbox pressure ([Kimi K2.5](https://arxiv.org/abs/2602.02276)):** Kimi K2.5's *Agent Swarm* splits one big task across up to `100` sub-agents and about `1,500` tool calls (reported). Toy arithmetic: if every sub-agent cold-starts a sandbox with a `60`-second `uv sync`, one task burns `100 × 60 = 6,000` sandbox-seconds before any real work. Forking one prepared `CoW` snapshot at about `1` second per branch cuts that to about `100` sandbox-seconds. Warm pools, forks, and shared KV caches (`Mooncake`, *Speculative Encoding*) decide whether swarms are affordable.
 
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Copy-on-Write sandbox forks and 4 plus 1 fleets diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-cow-fork-and-swarms.svg" alt="Left panel compares 100 cold sandbox boots burning 6,000 sandbox-seconds against Copy-on-Write forks branching from one prepared base image in about 100 sandbox-seconds. Right panel stacks the Control Plane above Training GPUs, Inference GPUs, Sandbox CPUs/SSDs, and Isolated Verifier CPUs under the bottleneck goodput law." width="960" height="470">
+  </div>
+  <figcaption><strong>Sub-second branching across specialized pools.</strong> Copy-on-Write snapshots turn repeated <code>60s</code> environment builds into tiny per-branch file diffs, preventing Sandboxes from starving GPUs. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-cow-fork-and-swarms.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Left (`1. Cold starts vs. CoW fork`): cold-booting OS plus `uv sync` across `100` sub-agents burns `6,000` sandbox-seconds, whereas branching from one shared read-only base image creates lightweight file diffs at `~1s` per branch (`~100` sandbox-seconds total, while model KV remains tracked per branch). Right (`2. The 4+1 fleets`): the Control Plane coordinates `1. Training GPUs`, `2. Inference GPUs`, `3. Sandbox CPUs/SSDs` (marked as the swarm bottleneck when cold), and `4. Verifier CPUs` under `goodput <= min(Training, Inference, Sandboxes, Verifiers)`.
+
+</details>
+
 Step through how execution environments evolved to keep pace with GPU fleets:
 
 <div class="stepper" markdown="1">
@@ -176,6 +190,20 @@ If you save only plain text from a rollout and re-tokenize it on the trainer, su
 
 - **Independent recovery:** Design for *at-least-once* delivery with unique attempt IDs and leases so a crashed inference replica or sandbox restarts cleanly without aborting the whole run.
 - **One end-to-end trace:** Connect every metric (`MFU` = GPU utilization, `TTFT` = Time to First Token, `policy_lag`, `snapshot_hit_rate`, `cost_per_success`) along one chain: `Experiment → Run → Policy → Task → Group → Trajectory → Inference → Tool → Sandbox → Verifier → Batch → Step`.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Versioned Trajectory aligned token arrays and multi-hop KV drift gate diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-trajectory-contract.svg" alt="Top band aligns six example tokens across token_ids, behavior_logprobs, policy_versions, and action_mask, showing model tokens True getting RL gradients and tool tokens False masked out. Bottom band charts 0.969 to the k accuracy across hops where 2 hops at 88.3% admits and 6 hops at 77.8% triggers raw re-prefill below the 85% floor." width="960" height="470">
+  </div>
+  <figcaption><strong>Aligned token receipts plus a multi-hop drift guardrail.</strong> Recording exact token IDs, generation probabilities, policy versions, and action masks keeps RL gradients valid, while the <code>85%</code> floor triggers raw re-prefill before drift hurts training. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-trajectory-contract.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Top (`1. Aligned arrays`): six example tokens (`"Fix"`, `"bug"`, `"pytest:"`, `"FAIL"`, `"return"`, `"x+1"`) align across `token_ids`, `behavior_logprobs`, `policy_versions` (`v7` switching to `v8`), and `action_mask`. Columns with `action_mask = True` get RL gradients; tool output columns (`"pytest:"`, `"FAIL"`, `action_mask = False`) receive zero gradient. Bottom (`2. Multi-hop KV drift check`): `t1` (`2` hops, `88.3%`) stays above the `85%` floor and admits, whereas `t2` (`6` hops, `77.8%`) falls below `85%` and triggers raw re-prefill from `token_ids`, alongside the four contract validation checks.
+
+</details>
 
 ## Practical roadmap, experiments, and open challenges
 

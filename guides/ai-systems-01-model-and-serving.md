@@ -178,8 +178,37 @@ Eight short ideas explain how 2025–2026 open models keep our `64,000`-token re
 4. **Sparse attention: read only what matters.** [Native Sparse Attention (`NSA`)](https://arxiv.org/abs/2502.11089) (research, February 2025) mixes three cheap views of the past: compressed block summaries, a few selected full-detail blocks, and a sliding local window. [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)'s *DeepSeek Sparse Attention* (`DSA`) uses a tiny FP8 "lightning indexer" to score past tokens, then runs full attention on only the top `k = 2,048`. At `T = 64,000`, the last token reads `2,048 / 64,000 = 3.2%` of the prompt, and total core-attention pairs drop from `≈ 2.05 billion` to `≈ 0.13 billion` (`≈ 16×` fewer; the saving grows as prompts get longer). The indexer still glances at every past token, but with far cheaper math.
 5. **Kimi Linear (`KDA`): a fixed-size memory.** Instead of a KV list that grows with `T`, a [`KDA`](https://arxiv.org/abs/2510.26692) layer keeps one fixed-size matrix `S_t` and updates it every token with a gated *delta rule*: `S_t = (I − β_t · k_t · k_tᵀ) · Diag(α_t) · S_{t−1} + β_t · k_t · v_tᵀ`. Read it right to left: fade old memory channel by channel (`α_t`, each between `0` and `1`), erase whatever conflicts with the new key (`I − β_t · k_t · k_tᵀ`), then write the new key–value pair (`β_t · k_t · v_tᵀ`, where `β_t` is a step size). Kimi Linear interleaves `3` KDA layers with `1` full-attention `MLA` layer, so KV memory drops by up to `75%` (not to zero), with up to `6×` faster decoding at `1M` tokens reported.
 6. **DeepSeek `Engram`: look facts up instead of recomputing them.** [Engram](https://arxiv.org/abs/2601.07372) adds an `O(1)` hashed `N`-gram memory table that can live in cheap host CPU RAM, so GPU experts spend their compute on reasoning instead of memorized phrases.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Four ways modern models beat O(T squared) attention and KV-memory walls diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-attention-memory-walls.svg" alt="Four panels compare dense O(T squared) attention with 32,768 KV numbers against DeepSeek MLA compressing to 576 numbers (57x smaller), NSA and DSA top-2,048 sparse attention (16x fewer pairs), and Kimi Linear KDA fixed-size matrix plus DeepSeek Engram CPU lookup." width="960" height="520">
+  </div>
+  <figcaption><strong>Shrinking attention compute and scratchpad bytes.</strong> Four architectural choices cut long-context cost from quadratic dense scans down to compressed latents, selected blocks, fixed matrices, or static table lookups. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-attention-memory-walls.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Panel 1 shows Full Attention filling the entire lower-triangular `O(T^2)` grid (`≈ 2.05B` pairs at `64k` tokens) and storing `32,768` KV numbers per token per layer. Panel 2 shows DeepSeek `MLA` compressing raw keys and values down to `576` latent numbers (`c_KV = 512` + `k_R = 64`), roughly `57×` smaller. Panel 3 shows `NSA` and DeepSeek-V3.2 `DSA` using an FP8 indexer to keep only the top `2,048` relevant tokens (`≈ 0.13B` pairs, `≈ 16×` fewer at `64k`). Panel 4 shows Kimi Linear (`KDA`) maintaining a constant-size recurrent state `S_t` in a `3:1` KDA:MLA hybrid (up to `75%` less KV, up to `6×` decode at `1M` reported) alongside DeepSeek `Engram` offloading static `N`-gram lookups to host CPU RAM.
+
+</details>
+
 7. **Kimi K2 `MuonClip`: stop training blow-ups.** Attention scores (logits) can explode and spike the loss. After each step, `QK-Clip` checks every head's largest score `S_max`. If it exceeds `τ = 100`, it computes `γ = τ / S_max` and multiplies that head's query and key weights (`W_Q`, `W_K`) by `√γ`, so their product shrinks by exactly `γ`. Toy example: `S_max = 400` → `γ = 0.25` → both weights × `0.5` → the score returns to `100`. [Kimi K2](https://arxiv.org/abs/2507.20534) reports training `1T` weights on `15.5T` tokens with zero loss spikes.
 8. **The open-source plumbing.** DeepSeek also released the systems code behind these models: [`FlashMLA`](https://github.com/deepseek-ai/FlashMLA) (MLA decode kernels), [`DeepGEMM`](https://github.com/deepseek-ai/DeepGEMM) (`FP8` matrix math), [`DeepEP`](https://github.com/deepseek-ai/DeepEP) (MoE all-to-all over `NVLink`/`RDMA`), [`3FS`](https://github.com/deepseek-ai/3FS) (distributed storage), and [`DualPipe`](https://github.com/deepseek-ai/DualPipe) (overlapping forward and backward passes to hide idle pipeline bubbles). They live in layers `L4`–`L8` of the stack above.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Sparse MoE routing and MuonClip QK-Clip stability diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-moe-and-muonclip.svg" alt="Left panel shows a token router activating 2 out of 8 experts and compares Dense 671B compute bars against 18x smaller DeepSeek-V3 and Kimi K2 bars. Right panel plots MuonClip capping attention logits at ceiling tau equals 100 instead of spiking to 400." width="960" height="450">
+  </div>
+  <figcaption><strong>Compute savings plus trillion-weight stability.</strong> Sparse <code>MoE</code> wakes only active experts per token, while <code>QK-Clip</code> rescales high-logit attention heads so trillion-parameter runs finish without loss spikes. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-moe-and-muonclip.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Left (`1. Sparse MoE`): a router sends one token to only two active experts (`E2` and `E7`) out of eight. Horizontal bars compare dense `671B` pretraining cost (`≈ 6.0 × 10^25` ops) against DeepSeek-V3 (`37B` active, `≈ 3.3 × 10^24` ops, `18×` less) and Kimi K2 (`32B` active out of `1T` total, `≈ 3.0 × 10^24` ops). Right (`2. MuonClip / QK-Clip`): an unclipped attention head score climbs to `S_max = 400` and triggers a loss spike, whereas `QK-Clip` detects `S_max > τ = 100` and multiplies `W_Q` and `W_K` by `√γ = 0.5`, holding logits flat at `100` across `15.5T` tokens with zero loss spikes reported.
+
+</details>
 
 ## NVIDIA examples: from weights to running agents
 

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">Copy-on-Write sandbox forks and 4 plus 1 fleets at 100-agent swarm scale</title>
+  <desc id="d">Left panel contrasts 100 cold sandbox starts taking 6,000 sandbox-seconds against Copy-on-Write forks sharing one read-only base snapshot so 100 branches start in about 100 sandbox-seconds. Right panel shows the 4 plus 1 machine fleets coordinated by the Control Plane and governed by the bottleneck capacity law.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="470" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">Copy-on-Write (CoW) forks and 4+1 fleets at swarm scale</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">Why Kimi K2.5 swarms (up to 100 sub-agents) need sub-second forks instead of 60s cold rebuilds.</text>
+
+    <!-- Left Panel: Cold vs CoW Fork -->
+    <rect x="24" y="76" width="458" height="370" rx="8" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
+    <text x="253" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#84540c">1. Cold starts vs. CoW fork (100 sub-agents)</text>
+
+    <!-- Top Half: Cold Start -->
+    <rect x="42" y="118" width="422" height="122" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="1.5"/>
+    <text x="253" y="139" text-anchor="middle" font-size="13" font-weight="700" fill="#9b2c2c">Cold boot each branch: 100 &#xD7; 60s = 6,000 sandbox-s</text>
+    <g text-anchor="middle" font-size="12">
+      <rect x="56" y="150" width="122" height="50" rx="4" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.2"/>
+      <text x="117" y="170" font-weight="700">Agent 1 (60s)</text><text x="117" y="188" fill="#535c6b">OS + uv sync</text>
+      <rect x="192" y="150" width="122" height="50" rx="4" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.2"/>
+      <text x="253" y="170" font-weight="700">Agent 2 (60s)</text><text x="253" y="188" fill="#535c6b">OS + uv sync</text>
+      <rect x="328" y="150" width="122" height="50" rx="4" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.2"/>
+      <text x="389" y="170" font-weight="700">Agent 100 (60s)</text><text x="389" y="188" fill="#535c6b">OS + uv sync</text>
+    </g>
+    <text x="253" y="226" text-anchor="middle" font-size="12" fill="#9b2c2c">Repeats identical dependency installs 100 times before any coding begins</text>
+
+    <!-- Bottom Half: CoW Fork -->
+    <rect x="42" y="254" width="422" height="176" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="1.5"/>
+    <text x="253" y="275" text-anchor="middle" font-size="13" font-weight="700" fill="#2a6a47">CoW snapshot fork: &#x2248; 1s/branch &#x2192; &#x2248; 100 sandbox-s</text>
+    <!-- Shared Base Snapshot -->
+    <rect x="86" y="286" width="334" height="36" rx="5" fill="#22616b"/>
+    <text x="253" y="309" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">1 Shared Base Image (OS + repo + uv sync)</text>
+    <!-- Fork Arrows -->
+    <path d="M170 322 L117 350" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M253 322 V350" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M336 322 L389 350" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow)"/>
+    <!-- Thin Diff Layers -->
+    <g text-anchor="middle" font-size="12">
+      <rect x="56" y="356" width="122" height="40" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+      <text x="117" y="375" font-weight="700" fill="#2a6a47">Branch 1 diff</text><text x="117" y="390" font-size="11" fill="#535c6b">app.py patch (~1s)</text>
+      <rect x="192" y="356" width="122" height="40" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+      <text x="253" y="375" font-weight="700" fill="#2a6a47">Branch 2 diff</text><text x="253" y="390" font-size="11" fill="#535c6b">app.py patch (~1s)</text>
+      <rect x="328" y="356" width="122" height="40" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+      <text x="389" y="375" font-weight="700" fill="#2a6a47">Branch 100 diff</text><text x="389" y="390" font-size="11" fill="#535c6b">app.py patch (~1s)</text>
+    </g>
+    <text x="253" y="418" text-anchor="middle" font-size="12" fill="#2a6a47">Only modified file blocks are written; model KV still tracked per branch.</text>
+
+    <!-- Right Panel: 4+1 Fleets -->
+    <rect x="502" y="76" width="434" height="370" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="719" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#1d4e89">2. The 4+1 machine fleets under load</text>
+
+    <!-- Control Plane -->
+    <rect x="522" y="120" width="394" height="44" rx="6" fill="#f7f5ef" stroke="#3b4453" stroke-width="1.5"/>
+    <text x="719" y="140" text-anchor="middle" font-size="14" font-weight="700">Control Plane (+1)</text>
+    <text x="719" y="157" text-anchor="middle" font-size="12" fill="#535c6b">Postgres leases, job IDs &amp; budgets (never raw weights)</text>
+
+    <!-- 4 Pools -->
+    <rect x="522" y="180" width="394" height="46" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+    <text x="536" y="201" font-size="14" font-weight="700" fill="#1d4e89">1. Training GPUs</text>
+    <text x="536" y="218" font-size="12" fill="#535c6b">FSDP + DualPipe weight updates</text>
+
+    <rect x="522" y="236" width="394" height="46" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+    <text x="536" y="257" font-size="14" font-weight="700" fill="#22616b">2. Inference GPUs</text>
+    <text x="536" y="274" font-size="12" fill="#535c6b">PagedAttention / MLA / Speculative Encoding</text>
+
+    <rect x="522" y="292" width="394" height="46" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="536" y="313" font-size="14" font-weight="700" fill="#9b2c2c">3. Sandbox CPUs/SSDs</text>
+    <text x="536" y="330" font-size="12" fill="#9b2c2c">Warm CoW pool &#x2190; swarm bottleneck if cold</text>
+
+    <rect x="522" y="348" width="394" height="46" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+    <text x="536" y="369" font-size="14" font-weight="700" fill="#2a6a47">4. Verifier CPUs</text>
+    <text x="536" y="386" font-size="12" fill="#535c6b">Locked hidden tests outside sandbox write scope</text>
+
+    <!-- Capacity Law Badge -->
+    <rect x="522" y="404" width="394" height="28" rx="6" fill="#1d4e89"/>
+    <text x="719" y="423" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">goodput &#x2264; min(Training, Inference, Sandboxes, Verifiers)</text>
+  </g>
+</svg>

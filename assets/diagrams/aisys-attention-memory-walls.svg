@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="t d">
+  <title id="t">Four ways modern models beat the O(T squared) and KV-memory walls</title>
+  <desc id="d">Four side-by-side panels compare full causal attention against DeepSeek MLA (about 57x smaller KV cache), DeepSeek NSA and DSA sparse attention (top-2,048 tokens for about 16x fewer pairs at 64k), and Kimi Linear KDA with DeepSeek Engram (fixed-size state matrix and CPU RAM static lookup for up to 75 percent less KV).</desc>
+  <rect width="960" height="520" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">Four ways modern models beat the O(T&#xB2;) and KV-memory walls</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">How DeepSeek and Kimi shrink long-context compute and scratchpad bytes on a 64,000-token repo.</text>
+
+    <!-- Panel 1: Full Causal Attention -->
+    <rect x="24" y="76" width="216" height="388" rx="8" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="132" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">1. Full Attention</text>
+    <text x="132" y="122" text-anchor="middle" font-size="13" fill="#535c6b">Dense baseline</text>
+    <!-- 6x6 Lower Triangular Heatmap (x=66..198, y=136..268, step=22) -->
+    <rect x="66" y="136" width="132" height="132" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <g fill="#9b2c2c" opacity="0.82">
+      <rect x="68" y="138" width="18" height="18" rx="2"/>
+      <rect x="68" y="160" width="18" height="18" rx="2"/><rect x="90" y="160" width="18" height="18" rx="2"/>
+      <rect x="68" y="182" width="18" height="18" rx="2"/><rect x="90" y="182" width="18" height="18" rx="2"/><rect x="112" y="182" width="18" height="18" rx="2"/>
+      <rect x="68" y="204" width="18" height="18" rx="2"/><rect x="90" y="204" width="18" height="18" rx="2"/><rect x="112" y="204" width="18" height="18" rx="2"/><rect x="134" y="204" width="18" height="18" rx="2"/>
+      <rect x="68" y="226" width="18" height="18" rx="2"/><rect x="90" y="226" width="18" height="18" rx="2"/><rect x="112" y="226" width="18" height="18" rx="2"/><rect x="134" y="226" width="18" height="18" rx="2"/><rect x="156" y="226" width="18" height="18" rx="2"/>
+      <rect x="68" y="248" width="18" height="18" rx="2"/><rect x="90" y="248" width="18" height="18" rx="2"/><rect x="112" y="248" width="18" height="18" rx="2"/><rect x="134" y="248" width="18" height="18" rx="2"/><rect x="156" y="248" width="18" height="18" rx="2"/><rect x="178" y="248" width="18" height="18" rx="2"/>
+    </g>
+    <!-- KV Bar -->
+    <text x="132" y="294" text-anchor="middle" font-size="13" font-weight="700" fill="#9b2c2c">KV bar per token/layer</text>
+    <rect x="44" y="304" width="176" height="24" rx="4" fill="#9b2c2c"/>
+    <text x="132" y="320" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">32,768 numbers</text>
+    <!-- Stats -->
+    <rect x="40" y="344" width="184" height="104" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="132" y="368" text-anchor="middle" font-size="13" font-weight="700">O(T&#xB2;) attention pairs</text>
+    <text x="132" y="392" text-anchor="middle" font-size="13" fill="#535c6b">&#x2248; 2.05B pairs at 64k</text>
+    <text x="132" y="416" text-anchor="middle" font-size="13" fill="#535c6b">KV memory grows linearly</text>
+    <text x="132" y="438" text-anchor="middle" font-size="12" fill="#9b2c2c">Slow &amp; memory heavy</text>
+
+    <!-- Panel 2: DeepSeek MLA -->
+    <rect x="256" y="76" width="216" height="388" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="364" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#22616b">2. DeepSeek MLA</text>
+    <text x="364" y="122" text-anchor="middle" font-size="13" fill="#535c6b">Compress KV notes</text>
+    <!-- Funnel Compression Diagram -->
+    <rect x="278" y="138" width="172" height="28" rx="4" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.5"/>
+    <text x="364" y="157" text-anchor="middle" font-size="13" fill="#9b2c2c">Raw K + V (32,768)</text>
+    <polygon points="288,172 440,172 390,224 338,224" fill="#22616b" opacity="0.22" stroke="#22616b" stroke-width="1.5"/>
+    <text x="364" y="203" text-anchor="middle" font-size="13" font-weight="700" fill="#22616b">project down</text>
+    <rect x="316" y="230" width="96" height="28" rx="4" fill="#22616b"/>
+    <text x="364" y="249" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">576 nums</text>
+    <!-- Big Badge -->
+    <rect x="284" y="276" width="160" height="34" rx="17" fill="#22616b"/>
+    <text x="364" y="298" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">&#x2248; 57&#xD7; smaller KV</text>
+    <!-- Stats -->
+    <rect x="272" y="344" width="184" height="104" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="364" y="368" text-anchor="middle" font-size="13" font-weight="700">c_KV (512) + k_R (64)</text>
+    <text x="364" y="392" text-anchor="middle" font-size="13" fill="#535c6b">Real V3: H=128, d_h=128</text>
+    <text x="364" y="416" text-anchor="middle" font-size="13" fill="#535c6b">Cache fits much more</text>
+    <text x="364" y="438" text-anchor="middle" font-size="12" fill="#22616b">Core in DeepSeek V3 &amp; V3.2</text>
+
+    <!-- Panel 3: DeepSeek NSA / DSA -->
+    <rect x="488" y="76" width="216" height="388" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="596" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#1d4e89">3. NSA &amp; V3.2 DSA</text>
+    <text x="596" y="122" text-anchor="middle" font-size="13" fill="#535c6b">Read only key tokens</text>
+    <!-- Pill -->
+    <rect x="508" y="132" width="176" height="24" rx="12" fill="#1d4e89"/>
+    <text x="596" y="149" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">FP8 indexer &#x2192; top-2,048</text>
+    <!-- Sparse 6x6 Lower Triangular Grid (y=166..298, x=530..662) -->
+    <rect x="530" y="166" width="132" height="132" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <g fill="#e5e9f0">
+      <rect x="532" y="168" width="18" height="18" rx="2"/>
+      <rect x="532" y="190" width="18" height="18" rx="2"/><rect x="554" y="190" width="18" height="18" rx="2"/>
+      <rect x="532" y="212" width="18" height="18" rx="2"/><rect x="554" y="212" width="18" height="18" rx="2"/><rect x="576" y="212" width="18" height="18" rx="2"/>
+      <rect x="532" y="234" width="18" height="18" rx="2"/><rect x="554" y="234" width="18" height="18" rx="2"/><rect x="576" y="234" width="18" height="18" rx="2"/><rect x="598" y="234" width="18" height="18" rx="2"/>
+      <rect x="532" y="256" width="18" height="18" rx="2"/><rect x="554" y="256" width="18" height="18" rx="2"/><rect x="576" y="256" width="18" height="18" rx="2"/><rect x="598" y="256" width="18" height="18" rx="2"/><rect x="620" y="256" width="18" height="18" rx="2"/>
+      <rect x="532" y="278" width="18" height="18" rx="2"/><rect x="554" y="278" width="18" height="18" rx="2"/><rect x="576" y="278" width="18" height="18" rx="2"/><rect x="598" y="278" width="18" height="18" rx="2"/><rect x="620" y="278" width="18" height="18" rx="2"/><rect x="642" y="278" width="18" height="18" rx="2"/>
+    </g>
+    <!-- Active sparse cells (local band + selected keys) -->
+    <g fill="#1d4e89">
+      <rect x="532" y="168" width="18" height="18" rx="2"/>
+      <rect x="554" y="190" width="18" height="18" rx="2"/>
+      <rect x="532" y="212" width="18" height="18" rx="2"/><rect x="576" y="212" width="18" height="18" rx="2"/>
+      <rect x="576" y="234" width="18" height="18" rx="2"/><rect x="598" y="234" width="18" height="18" rx="2"/>
+      <rect x="532" y="256" width="18" height="18" rx="2"/><rect x="598" y="256" width="18" height="18" rx="2"/><rect x="620" y="256" width="18" height="18" rx="2"/>
+      <rect x="576" y="278" width="18" height="18" rx="2"/><rect x="620" y="278" width="18" height="18" rx="2"/><rect x="642" y="278" width="18" height="18" rx="2"/>
+    </g>
+    <text x="596" y="322" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e89">&#x2248; 16&#xD7; fewer pairs at 64k</text>
+    <!-- Stats -->
+    <rect x="504" y="344" width="184" height="104" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="596" y="368" text-anchor="middle" font-size="13" font-weight="700">O(T &#xB7; k) core attention</text>
+    <text x="596" y="392" text-anchor="middle" font-size="13" fill="#535c6b">&#x2248; 0.13B vs 2.05B pairs</text>
+    <text x="596" y="416" text-anchor="middle" font-size="13" fill="#535c6b">Last tok reads 3.2%</text>
+    <text x="596" y="438" text-anchor="middle" font-size="12" fill="#1d4e89">NSA: blocks + window</text>
+
+    <!-- Panel 4: Kimi Linear KDA & Engram -->
+    <rect x="720" y="76" width="216" height="388" rx="8" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="828" y="102" text-anchor="middle" font-size="16" font-weight="700" fill="#2a6a47">4. KDA &amp; Engram</text>
+    <text x="828" y="122" text-anchor="middle" font-size="13" fill="#535c6b">Fixed matrix + O(1) facts</text>
+    <!-- Fixed S_t Matrix -->
+    <rect x="774" y="136" width="108" height="58" rx="6" fill="#2a6a47"/>
+    <text x="828" y="161" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">State S_t</text>
+    <text x="828" y="182" text-anchor="middle" font-size="12" fill="#f1f7f3">Constant size O(1)</text>
+    <!-- 3 Delta Rule Step Pills -->
+    <rect x="734" y="204" width="58" height="24" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.2"/>
+    <text x="763" y="220" text-anchor="middle" font-size="11" font-weight="700">fade &#x3B1;</text>
+    <rect x="798" y="204" width="60" height="24" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.2"/>
+    <text x="828" y="220" text-anchor="middle" font-size="11" font-weight="700">erase k</text>
+    <rect x="864" y="204" width="58" height="24" rx="4" fill="#ffffff" stroke="#2a6a47" stroke-width="1.2"/>
+    <text x="893" y="220" text-anchor="middle" font-size="11" font-weight="700">write v</text>
+    <!-- 3:1 Hybrid Bar -->
+    <text x="828" y="248" text-anchor="middle" font-size="12" font-weight="700" fill="#2a6a47">3 : 1 KDA : MLA hybrid</text>
+    <rect x="738" y="256" width="42" height="20" rx="3" fill="#2a6a47"/><text x="759" y="270" text-anchor="middle" font-size="11" fill="#ffffff">KDA</text>
+    <rect x="784" y="256" width="42" height="20" rx="3" fill="#2a6a47"/><text x="805" y="270" text-anchor="middle" font-size="11" fill="#ffffff">KDA</text>
+    <rect x="830" y="256" width="42" height="20" rx="3" fill="#2a6a47"/><text x="851" y="270" text-anchor="middle" font-size="11" fill="#ffffff">KDA</text>
+    <rect x="876" y="256" width="42" height="20" rx="3" fill="#22616b"/><text x="897" y="270" text-anchor="middle" font-size="11" fill="#ffffff">MLA</text>
+    <!-- Engram CPU RAM Box -->
+    <rect x="738" y="288" width="180" height="36" rx="5" fill="#f7f5ef" stroke="#84540c" stroke-width="1.5"/>
+    <text x="828" y="310" text-anchor="middle" font-size="12" font-weight="700" fill="#84540c">Engram: CPU N-gram O(1)</text>
+    <!-- Stats -->
+    <rect x="736" y="344" width="184" height="104" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="828" y="368" text-anchor="middle" font-size="13" font-weight="700">Up to 75% less KV</text>
+    <text x="828" y="392" text-anchor="middle" font-size="13" fill="#535c6b">Up to 6&#xD7; decode at 1M</text>
+    <text x="828" y="416" text-anchor="middle" font-size="13" fill="#535c6b">Static facts offloaded</text>
+    <text x="828" y="438" text-anchor="middle" font-size="12" fill="#2a6a47">Reported KDA &amp; Engram</text>
+
+    <!-- Bottom Takeaway Bar -->
+    <rect x="24" y="476" width="912" height="32" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="1.5"/>
+    <text x="480" y="497" text-anchor="middle" font-size="14" font-weight="700">Combined effect: shrink bytes per token (MLA / KDA), skip irrelevant history (NSA / DSA), and look up static facts (Engram).</text>
+  </g>
+</svg>

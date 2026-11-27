@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 450" role="img" aria-labelledby="t d">
+  <title id="t">Training at trillion-weight scale: sparse MoE and MuonClip stability</title>
+  <desc id="d">Left panel shows Mixture-of-Experts routing one token to only 2 active experts out of 8 and compares compute bars: Dense 671B at about 6.0e25 ops versus DeepSeek-V3 37B active at 3.3e24 ops (18x less) and Kimi K2 32B active at 3.0e24 ops. Right panel charts MuonClip QK-Clip capping attention head logit S_max at threshold tau equals 100 so 1T training avoids loss spikes.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="450" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">Training at trillion-weight scale: sparse MoE + MuonClip stability</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">Cut compute 18&#xD7; by waking only active experts, and cap runaway attention logits before loss spikes.</text>
+
+    <!-- Left Panel: Sparse MoE Routing -->
+    <rect x="24" y="76" width="444" height="352" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="246" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#22616b">1. Sparse MoE: pay only for active experts</text>
+
+    <!-- Routing Diagram -->
+    <rect x="42" y="138" width="76" height="38" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+    <text x="80" y="162" text-anchor="middle" font-size="14" font-weight="700">1 token</text>
+    <path d="M118 157 H142" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="148" y="136" width="78" height="42" rx="21" fill="#1d4e89"/>
+    <text x="187" y="162" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Router</text>
+
+    <!-- Routes cleanly to E2 and E7 without crossing E1/E5 -->
+    <path d="M214 136 Q 260 106 322 114" fill="none" stroke="#2a6a47" stroke-width="2.2" marker-end="url(#arrow)"/>
+    <path d="M214 178 Q 270 218 364 198" fill="none" stroke="#2a6a47" stroke-width="2.2" marker-end="url(#arrow)"/>
+
+    <!-- 2x4 Expert Grid (x=248..452, y=116..196) -->
+    <g font-size="12" font-weight="700" text-anchor="middle">
+      <rect x="248" y="116" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="270" y="136" fill="#535c6b">E1</text>
+      <rect x="300" y="116" width="44" height="32" rx="5" fill="#2a6a47"/><text x="322" y="136" fill="#ffffff">E2 &#x2713;</text>
+      <rect x="352" y="116" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="374" y="136" fill="#535c6b">E3</text>
+      <rect x="404" y="116" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="426" y="136" fill="#535c6b">E4</text>
+
+      <rect x="248" y="160" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="270" y="180" fill="#535c6b">E5</text>
+      <rect x="300" y="160" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="322" y="180" fill="#535c6b">E6</text>
+      <rect x="352" y="160" width="44" height="32" rx="5" fill="#2a6a47"/><text x="374" y="180" fill="#ffffff">E7 &#x2713;</text>
+      <rect x="404" y="160" width="44" height="32" rx="5" fill="#eef1f4" stroke="#9aa3b2" stroke-width="1.2"/><text x="426" y="180" fill="#535c6b">E8</text>
+    </g>
+    <text x="246" y="222" text-anchor="middle" font-size="13" font-weight="700" fill="#22616b">Only active weights compute: C &#x2248; 6 &#xB7; N_active &#xB7; D</text>
+
+    <!-- Compute Comparison Bars -->
+    <rect x="42" y="236" width="408" height="174" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="58" y="260" font-size="13" font-weight="700">Dense 671B on 14.8T tokens: &#x2248; 6.0 &#xD7; 10&#xB2;&#x2075; ops</text>
+    <rect x="58" y="268" width="372" height="16" rx="4" fill="#9b2c2c"/>
+
+    <text x="58" y="308" font-size="13" font-weight="700" fill="#22616b">DeepSeek-V3 (37B active / 671B): &#x2248; 3.3 &#xD7; 10&#xB2;&#x2074; (18&#xD7; less)</text>
+    <rect x="58" y="316" width="40" height="16" rx="4" fill="#22616b"/>
+
+    <text x="58" y="356" font-size="13" font-weight="700" fill="#2a6a47">Kimi K2 (32B active / 1T, 15.5T toks): &#x2248; 3.0 &#xD7; 10&#xB2;&#x2074;</text>
+    <rect x="58" y="364" width="36" height="16" rx="4" fill="#2a6a47"/>
+    <text x="246" y="400" text-anchor="middle" font-size="12" fill="#535c6b">Note: all 671B / 1T weights still sit in memory across GPUs.</text>
+
+    <!-- Right Panel: MuonClip / QK-Clip -->
+    <rect x="492" y="76" width="444" height="352" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="714" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#1d4e89">2. Kimi K2 MuonClip (QK-Clip): stop spikes</text>
+
+    <!-- Plot Frame -->
+    <rect x="556" y="124" width="356" height="194" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <!-- Axes -->
+    <line x1="556" y1="318" x2="912" y2="318" stroke="#3b4453" stroke-width="1.5"/>
+    <line x1="556" y1="124" x2="556" y2="318" stroke="#3b4453" stroke-width="1.5"/>
+    <!-- Y Labels -->
+    <text x="548" y="318" text-anchor="end" font-size="12" fill="#535c6b">0</text>
+    <text x="548" y="274" text-anchor="end" font-size="12" font-weight="700" fill="#84540c">100</text>
+    <text x="548" y="150" text-anchor="end" font-size="12" font-weight="700" fill="#9b2c2c">400</text>
+    <text x="514" y="224" text-anchor="middle" font-size="12" font-weight="700" fill="#3b4453" transform="rotate(-90 514 224)">Max logit S_max</text>
+    <!-- X Label -->
+    <text x="734" y="338" text-anchor="middle" font-size="12" fill="#535c6b">Pretraining progress &#x2192; 15.5T tokens</text>
+
+    <!-- Threshold line tau = 100 at y=270 -->
+    <line x1="556" y1="270" x2="912" y2="270" stroke="#84540c" stroke-width="1.8" stroke-dasharray="6,4"/>
+    <text x="904" y="263" text-anchor="end" font-size="12" font-weight="700" fill="#84540c">Ceiling &#x3C4; = 100</text>
+
+    <!-- Unclipped exploding curve -->
+    <path d="M566 294 C 620 290, 660 278, 704 146" fill="none" stroke="#9b2c2c" stroke-width="2.4" stroke-dasharray="6,4"/>
+    <circle cx="704" cy="146" r="5.5" fill="#9b2c2c"/>
+    <text x="716" y="150" font-size="13" font-weight="700" fill="#9b2c2c">S_max = 400 (loss spike!)</text>
+
+    <!-- Clipped stable curve -->
+    <path d="M566 296 C 618 292, 650 272, 680 270 L 896 270" fill="none" stroke="#2a6a47" stroke-width="3"/>
+    <circle cx="704" cy="270" r="5.5" fill="#2a6a47"/>
+    <path d="M704 156 V258" fill="none" stroke="#1d4e89" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="714" y="210" font-size="12" font-weight="700" fill="#1d4e89">QK-Clip rescales head</text>
+    <text x="896" y="294" text-anchor="end" font-size="13" font-weight="700" fill="#2a6a47">0 spikes across 15.5T tokens</text>
+
+    <!-- Formula Box -->
+    <rect x="514" y="352" width="400" height="58" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+    <text x="714" y="376" text-anchor="middle" font-size="13" font-weight="700">&#x3B3; = min(1, &#x3C4; / S_max) &#xB7; multiply W_Q and W_K by &#x221A;&#x3B3;</text>
+    <text x="714" y="398" text-anchor="middle" font-size="13" fill="#535c6b">Toy: S_max=400 &#x2192; &#x3B3;=0.25 &#x2192; weights &#xD7; 0.5 &#x2192; score returns to 100</text>
+  </g>
+</svg>
