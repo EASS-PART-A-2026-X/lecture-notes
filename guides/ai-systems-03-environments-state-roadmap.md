@@ -41,6 +41,7 @@
 <summary>On this page</summary>
 
 - [Stages 11–12: four fleets and fast sandboxes](#stages-1112-four-fleets-and-fast-sandboxes)
+- [Case study: TimeTravelContainer and OpenShell](#case-study-timetravelcontainer-and-openshell)
 - [Stage 8: task factory and independent verifiers](#stage-8-task-factory-and-independent-verifiers)
 - [The Rewind Wall: unified state and cross-model K_t](#the-rewind-wall-unified-state-and-cross-model-k_t)
 - [Versioned trajectory contract, recovery, and tracing](#versioned-trajectory-contract-recovery-and-tracing)
@@ -80,6 +81,31 @@ Step through how execution environments evolved to keep pace with GPU fleets:
 5. **Locked verifiers (Harbor, OpenEnv).** Hidden tests sit outside the agent's writable disk so agents cannot cheat or confuse crashes with bad answers.
 
 </div>
+
+## Case study: TimeTravelContainer and OpenShell
+
+[TimeTravelContainer (TTC)](https://github.com/NVlabs/TimeTravelContainer) is a rootless container runtime built on gVisor. Its **live fork** branches running processes, filesystem state, and supported OS resources, including internal network sockets. Memory and writable storage use copy-on-write: branches share unchanged data until a write. This extends our disk-snapshot example to a running environment.
+
+**Optional command walkthrough:** With matching `ttc`/`ttcd` release binaries installed and the daemon started, the README's branch workflow can be reduced to:
+
+```bash
+ttc run -dit --name agent --network=ttc --nat ubuntu:26.04 bash
+ttc exec agent@main sh -lc 'apt-get update && apt-get install -y git'
+ttc fork agent@main approach-a approach-b
+ttc ls --tree
+```
+
+Both branches inherit the prepared setup and then evolve separately. These are upstream usage examples, not commands executed by this course's automated labs. Read the README's installation instructions and [current limitations](https://github.com/NVlabs/TimeTravelContainer/blob/master/g3doc/user_guide/ttc_limitations.md) before experimenting; GPU resources have their own fork semantics. TTC has not yet received the security review needed for hostile multi-tenant production isolation.
+
+**OpenShell supplies a different layer:** [OpenShell](https://github.com/ai-openshell/openshell), originally under NVIDIA and now hosted at `ai-openshell`, enforces policies for filesystem, process, and network access. TTC's README describes running within a guardrail such as OpenShell or beneath an environment orchestrator such as NeMo Gym. Treat that as a layering model whose compatibility and configuration you must validate for your deployment.
+
+### What a sandbox fork does not promise
+
+- **Model state:** Forking the execution environment does not automatically fork a remote inference server's KV cache, policy weights, or token history. The harness must coordinate these with each branch.
+- **External effects:** A preserved internal socket does not rewind a remote service. A webhook sent before or after the fork remains sent; mock outbound services or use idempotency and compensation.
+- **Trusted grading:** Keep hidden tests and grading authority outside the agent's writable state. A fork remains subject to the same verifier trust boundary.
+
+**Reading exercise, no installation needed:** Our agent prepares one repository and explores two patches. Name the setup work shared at the fork, the model-state references recorded for each branch, and the outbound calls that must be mocked. Then compare cold starts against forks using setup time, memory, and verified tasks per second; measure rather than assume a speedup.
 
 ## Stage 8: task factory and independent verifiers
 
@@ -409,6 +435,8 @@ Suppose an instructor asks you in plain English: **"Walk me through how an AI co
 ## Curated bibliography and sources
 
 Checked **27 November 2026** (tracking parameters removed; primary links verified):
+
+- **NVIDIA-related systems across the three parts:** [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) (training), [Dynamo](https://github.com/ai-dynamo/dynamo) (distributed serving), [NeMo Gym](https://github.com/NVIDIA-NeMo/Gym) (environments and evaluation), [TimeTravelContainer README](https://github.com/NVlabs/TimeTravelContainer#readme) (live sandbox branches), and [OpenShell README](https://github.com/ai-openshell/openshell#readme) (access policy). These links explain separate responsibilities; this course has not benchmarked them as one integrated stack.
 
 - **Foundational books:** [Google DeepMind — How to Scale Your Model](https://jax-ml.github.io/scaling-book/), [Chris Fregly — AI Systems Performance Engineering](https://github.com/cfregly/ai-performance-engineering), [Sutton &amp; Barto — Reinforcement Learning (2nd ed.)](http://incompleteideas.net/book/the-book-2nd.html), [Machine Learning Systems](https://mlsysbook.ai/), [Philip Kiely — Inference Engineering](https://www.baseten.co/inference-engineering/book/), [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/), [Systems Performance](https://www.brendangregg.com/systems-performance-2nd-edition-book.html).
 - **Courses:** [Stanford CS336](https://stanford-cs336.github.io/), [Harvard CS2680](https://cs2680.seas.harvard.edu/), [GPU MODE](https://github.com/gpu-mode/lectures).

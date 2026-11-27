@@ -44,6 +44,7 @@
 - [Sync vs. async RL and policy staleness](#sync-vs-async-rl-and-policy-staleness)
 - [Causal chain: weight updates, six KV policies, and logprob drift](#causal-chain-weight-updates-six-kv-policies-and-logprob-drift)
 - [Leading RL frameworks](#leading-rl-frameworks)
+- [NeMo Gym: where rollouts meet environments](#nemo-gym-where-rollouts-meet-environments)
 - [Lab: diagnose rollout receipts](#lab-diagnose-rollout-receipts)
 - [Python 3.14 lab: rollout state machine and GRPO](#python-314-lab-rollout-state-machine-and-grpo)
 - [Quick quiz](#quick-quiz)
@@ -143,6 +144,21 @@ Notice how three parts of the knowledge graph connect in a chain:
 - **[slime](https://github.com/THUDM/slime):** Tight Megatron-LM + SGLang integration with fast weight sync and explicit KV policies.
 - **[Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl):** Clean three-way split (inference server, orchestrator, trainer) with small multi-GPU starters.
 - **[TorchTitan](https://github.com/pytorch/torchtitan) / [TRL](https://github.com/huggingface/trl):** Unified PyTorch model definitions (`TitanRL`) and approachable post-training experimentation.
+
+## NeMo Gym: where rollouts meet environments
+
+[NeMo Gym](https://github.com/NVIDIA-NeMo/Gym) provides environments for evaluating and improving models and agents. Its environment combines **tasks, an agent harness, a verifier, and per-task state**. It supports running evaluation and training interactions at scale with an RL framework of your choice.
+
+For our four-patch story, map the responsibilities like this:
+
+1. The environment supplies the bug-fix task and its starting state.
+2. The harness runs each model's edit → tool → observation loop.
+3. The verifier scores task completion.
+4. The learner uses admitted trajectories to update weights.
+
+Use this as an architecture reading exercise: identify who owns each responsibility and where failures are recorded. Our course contract still requires exact token IDs, behavior logprobs, policy versions, action masks, and verifier versions; check the chosen integration before assuming it supplies every field or enforces our staleness rules.
+
+[Part 3's TimeTravelContainer case study](ai-systems-03-environments-state-roadmap.md#case-study-timetravelcontainer-and-openshell) shows a runtime primitive that could share sandbox preparation across attempts. The combination is an architectural possibility to validate, not a ready-made integration demonstrated by this course. Forking one prepared environment also does not guarantee four independent samples: record the shared prefix and each branch's sampling configuration.
 
 ## Lab: diagnose rollout receipts
 
@@ -414,6 +430,8 @@ Save the exact behavior `logprobs` emitted at generation time (or recompute unde
 **Next step in the story:** Now that you know how GRPO and staleness bounds steer learning, [Part 3](ai-systems-03-environments-state-roadmap.md) zooms inside the `pytest` sandbox to show what snapshots can and cannot rewind ("The Rewind Wall"), how hidden verifiers stop cheating, and how every trajectory is logged for training.
 
 ## Sources
+
+Environment architecture: [NeMo Gym README](https://github.com/NVIDIA-NeMo/Gym#readme). Related runtime: [TimeTravelContainer README](https://github.com/NVlabs/TimeTravelContainer#readme). Checked **27 November 2026**; no GPU experiment or combined-stack benchmark was run for this lesson.
 
 Checked **27 November 2026**: [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [slime](https://github.com/THUDM/slime), [Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl), [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/), [Microsoft Rocket RL Infrastructure](https://microsoft.ai/news/rl-infrastructure-at-microsoft-ai/), [Stanford Plato's Key](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key), and [Ramp Labs Speculative Encoding](https://github.com/RampPublic/speculative-encoding).
 

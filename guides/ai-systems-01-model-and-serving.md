@@ -46,6 +46,7 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 - [Explore how the field progressed](#explore-how-the-field-progressed)
 - [How the 16-layer stack fits underneath](#how-the-16-layer-stack-fits-underneath)
 - [Deep dive: building vs. serving a model](#deep-dive-building-vs-serving-a-model)
+- [NVIDIA examples: from weights to running agents](#nvidia-examples-from-weights-to-running-agents)
 - [Sharing reading work across different models](#sharing-reading-work-across-different-models)
 - [Lab: find the bottleneck and check multi-hop drift](#lab-find-the-bottleneck-and-check-multi-hop-drift)
 - [Quick quiz](#quick-quiz)
@@ -160,6 +161,19 @@ Try a tiny toy example on paper: `N = 1,000,000` weights (`10^6`) trained on `D 
 When serving a user, [Visual inference engineering](inference-engineering.md) shows that **prefill** is compute-limited while **decode** is limited by how fast bytes move out of GPU memory: `P <= min(P_peak, B_memory × I)` (where `P_peak` is the GPU's peak math speed, `B_memory` is memory bandwidth in bytes/second, and `I` is math operations done per byte loaded). Each user also keeps a KV scratchpad of size `M_KV = 2 · L · T · H_KV · d_h · s` (the `2` is for storing both *key* and *value* notes, `L` is the number of model layers, `T` is the number of tokens in the conversation, `H_KV` is the number of attention heads, `d_h` is the size of each head, and `s` is bytes per number). Double `T` from `1,000` to `2,000` tokens, and `M_KV` immediately doubles!
 
 > **Simpler is enough:** Keep prefill and decode on the same GPU workers when starting out. Only split them onto separate pools (disaggregation) when profiling proves long prompts are stalling live user typing enough to justify copying KV caches over the network.
+
+## NVIDIA examples: from weights to running agents
+
+These projects give concrete examples of the five-node loop. Read the linked READMEs for architecture; installing this stack is optional.
+
+| Project | Place in the loop | What to look for |
+|---|---|---|
+| [Megatron-LM](https://github.com/NVIDIA/Megatron-LM) | Build **weights** | How tensor, pipeline, data, context, and expert parallelism divide training work across GPUs |
+| [Dynamo](https://github.com/ai-dynamo/dynamo) | Coordinate **serving** | Routing requests toward workers with reusable KV state, and scaling prefill and decode pools independently above engines such as vLLM or SGLang |
+| [NeMo Gym](https://github.com/NVIDIA-NeMo/Gym) | Run **environments and grading** | [Part 2](ai-systems-02-rl-and-rollouts.md#nemo-gym-where-rollouts-meet-environments) connects tasks, agent interactions, and verifiers |
+| [TimeTravelContainer](https://github.com/NVlabs/TimeTravelContainer) and [OpenShell](https://github.com/ai-openshell/openshell) | Branch **execution state** and enforce **access policy** | [Part 3](ai-systems-03-environments-state-roadmap.md#case-study-timetravelcontainer-and-openshell) separates live forks from security controls |
+
+**Apply the bottleneck rule:** Megatron-LM changes training capacity; Dynamo changes serving capacity. If sandboxes still complete only `15` attempts/min, faster serving alone cannot raise verified throughput above `15`/min. Dynamo's KV-aware routing also does not make caches interchangeable between different models; that is the separate question below.
 
 ## Sharing reading work across different models
 
