@@ -1,167 +1,182 @@
-# Part 1 · Building and serving models: from data to cross-model context
+# Part 1 · Building and serving models: the big picture
 
 <!-- {% raw %} -->
 
 [Course home](../README.md) · [Learning map](learning-map.md) · [Local inference](local-inference.md) · [Visual inference engineering](inference-engineering.md) · [Part 2 · RL and rollouts](ai-systems-02-rl-and-rollouts.md)
 
-> **Optional; not graded:** This three-part mini-series sits **outside** the EASS Class X syllabus. It adds zero deadlines, assignments, GPUs, or paid accounts. Finish your Recipe Box milestones first, then use these three lessons to see how modern AI systems combine training, serving, reinforcement learning, sandboxes, and verification at scale.
+> **Optional; not graded:** This three-part mini-series sits **outside** the EASS Class X syllabus. It adds zero deadlines, assignments, GPUs, or paid accounts. Finish your Recipe Box milestones first, then read these three sessions as a simple map of how real-world AI systems work from end to end.
 
-**You will be able to:** trace the 13-stage AI lifecycle and 16-layer stack, explain how data pipelines, pretraining, SFT, and inference solve their core bottlenecks, apply the steady-state pipeline capacity law, and compare raw text re-prefill against *Plato's Key* and *Speculative Encoding* for sharing context across models.
+**You will be able to:** trace the five-node knowledge graph that connects data, weights, serving, sandboxes, and grading; explain all 13 lifecycle stages without jargon; compute a tiny toy training budget by hand; spot why adding GPUs fails when sandboxes are slow; and see how *Plato's Key* and *Speculative Encoding* let different models share reading work.
 
-**Predict first:** Suppose an AI agent cluster spends too much time waiting for slow tool sandboxes (`15` rollouts/min) while its GPU inference fleet handles `40` rollouts/min. If you double the number of inference GPUs to `80` rollouts/min, how much faster do completed RL rollouts arrive?
+**Predict first:** Imagine your Recipe Box backend can save `15` recipes per minute, while your fast frontend can click `40` times per minute. If you add a second identical frontend server (`80` clicks/min), how many more recipes get saved per minute?
 
 <details markdown="1">
 <summary>Check your prediction</summary>
 
-Zero percent faster: goodput stays stuck at `15` rollouts/min. In a steady-state multi-fleet pipeline, total throughput cannot exceed the slowest stage: `λ_rollouts <= min(λ_inference, λ_environment, λ_verification, λ_learner)`. Adding GPUs without unblocking environments or verifiers just creates idle hardware or larger queues.
+Zero more: you still save `15` recipes per minute. The system as a whole can never move faster than its slowest link. In AI systems, the exact same rule holds across four machine pools: `goodput <= min(inference, sandboxes, graders, learner)`. Adding inference GPUs while sandboxes are the bottleneck leaves GPUs sitting idle.
+
+</details>
+
+<details markdown="1">
+<summary>Terms used on this page (plain English)</summary>
+
+- **Weights:** the millions or billions of saved numbers inside a trained model—like its permanent recipe book.
+- **Token:** one chunk of text (roughly three-quarters of an English word) that a model reads or writes.
+- **Prefill and decode:** *prefill* is reading your prompt once to prepare a scratchpad; *decode* is writing the reply one token at a time.
+- **KV cache (scratchpad):** temporary attention notes a model builds while reading a prompt so it does not re-read the whole prompt on every output word.
+- **Hidden state:** the internal list of numbers representing what the model "understands" at a given token.
+- **Inference:** running an already-trained model to get an answer (weights stay frozen).
+- **MoE (Mixture of Experts):** a model split into specialist sub-networks so each token wakes up only a small fraction of the weights.
+- **Procrustes rotation:** turning and scaling one coordinate map until its directions line up with another map—like rotating a tourist map until North points straight up.
 
 </details>
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 
-- [The three generations and four engines](#the-three-generations-and-four-engines)
-- [The 13-stage AI lifecycle](#the-13-stage-ai-lifecycle)
-- [The 16-layer composable stack](#the-16-layer-composable-stack)
-- [Stages 0–4 and 7: building the model](#stages-04-and-7-building-the-model)
-- [Stages 9–10: serving the model](#stages-910-serving-the-model)
-- [Cross-model context sharing: Plato's Key and Speculative Encoding](#cross-model-context-sharing-platos-key-and-speculative-encoding)
-- [Lab: steady-state capacity and cross-model prefill](#lab-steady-state-capacity-and-cross-model-prefill)
+- [The knowledge graph: five connected parts](#the-knowledge-graph-five-connected-parts)
+- [How Recipe Box maps to a frontier AI system](#how-recipe-box-maps-to-a-frontier-ai-system)
+- [All 13 lifecycle stages in four simple phases](#all-13-lifecycle-stages-in-four-simple-phases)
+- [How the 16-layer stack fits underneath](#how-the-16-layer-stack-fits-underneath)
+- [Deep dive: building vs. serving a model](#deep-dive-building-vs-serving-a-model)
+- [Sharing reading work across different models](#sharing-reading-work-across-different-models)
+- [Lab: find the bottleneck and check multi-hop drift](#lab-find-the-bottleneck-and-check-multi-hop-drift)
 - [Quick quiz](#quick-quiz)
 - [Sources](#sources)
 
 </details>
 
-## The three generations and four engines
+## The knowledge graph: five connected parts
 
-AI infrastructure has evolved through three generations, each building on the one before it:
+Modern AI infrastructure has evolved through three waves: first systems that **learn** intelligence (distributed training), second systems that **serve** intelligence quickly (distributed inference), and now systems that **experiment and verify** on their own (autonomous execution).
 
-1. **Distributed training:** systems built to *learn* intelligence from static datasets (`L0`–`L8`).
-2. **Distributed inference:** systems built to *serve* intelligence under latency, memory, and cost budgets (`L9`).
-3. **Distributed autonomous experimentation:** systems built so intelligence can *reason, act, experiment, verify, and improve* continuously (`L10`–`L15`).
+Instead of memorizing forty buzzwords, picture one **five-node loop** controlled by an orchestrator (`Control Plane`):
 
-The third generation requires four engines working together beneath one distributed control plane:
+1. **Clean Data** trains **Model Weights**.
+2. **Model Weights** load into **Fast Serving** so the model can read and propose actions.
+3. **Fast Serving** sends code or tool calls into a **Sandbox** to try them safely.
+4. A **Trusted Grader** checks whether the sandbox work actually passed hidden tests.
+5. Passing traces and rewards flow back to improve **Clean Data** and **Model Weights**.
 
-- **Training engine:** updates model parameters.
-- **Inference engine:** generates tokens, reasoning, and tool proposals.
-- **Execution engine:** runs code, browsers, shells, and simulations inside isolated environments.
-- **Verification engine:** checks outcomes, assigns grounded rewards, and separates agent errors from infrastructure failures.
-
-The real engineering objective is not raw GPU utilization or tokens per second. It is **maximum useful, verified work per dollar, per second, and per joule**.
+Every engineering goal across all three sessions aims at one metric: **maximum useful, verified work per dollar, per second, and per unit of energy**.
 
 <figure class="course-diagram course-diagram--wide">
-  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Four AI engines and 16-layer stack diagram, scroll horizontally">
-    <img src="../assets/diagrams/aisys-lifecycle-and-stack.svg" alt="A control plane coordinates Training, Inference, Execution, and Verification engines over shared L0-L7 compute, memory, and storage layers." width="960" height="520">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="AI systems knowledge graph diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-lifecycle-and-stack.svg" alt="Control plane over a five-node loop: Clean Data to Weights to Serving to Sandbox to Trusted Grader and back, over shared GPUs, links, Linux isolation, and storage." width="960" height="500">
   </div>
-  <figcaption><strong>Four engines, one control plane, shared foundations.</strong> The control plane exchanges lightweight leases and policy versions; heavy weights, KV tensors, and snapshots stay on dedicated data and state planes. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-lifecycle-and-stack.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>One connected knowledge graph.</strong> Every box depends on the box before it; the Control Plane passes small job IDs and rules, never huge model weight files. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-lifecycle-and-stack.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
 <summary>Text version of the diagram</summary>
 
-A distributed control plane (`L11`–`L14`) tracks schedules, budgets, policy versions, and rollout state. Below it sit four engines: Training (Stages 1–7, TorchTitan/Megatron), Inference (Stages 9–10, vLLM/SGLang/Dynamo), Execution (Stage 11, sandboxes/OpenEnv), and Verification (Stages 8 and 12, test suites/Harbor/Inspect AI). Underneath all four sit shared physical, kernel, collective, and storage layers (`L0`–`L7`).
+The Control Plane coordinates five connected nodes over a shared base (GPUs, fast network links, Linux isolation, and storage for checkpoints and KV scratchpads): `1. Clean Data` trains `2. Weights`, which load into `3. Serving`, which runs tool calls in `4. Sandbox`, which is checked by `5. Trusted Grader`, which feeds rewards and new traces back to Data and Weights.
 
 </details>
 
-## The 13-stage AI lifecycle
+## How Recipe Box maps to a frontier AI system
 
-Modern AI labs do not run these 13 stages strictly one after another. Training, evaluation, serving, agent execution, and trace curation often run concurrently in a continuous loop. Notice how every stage has a simple core flow, a defining problem, and a practical engineering fix.
+You already built the small-scale version of this graph in EASS:
 
-| Stage | Core steps | Key innovation | Main problem &amp; fix | Status &amp; session |
-|---|---|---|---|---|
-| **0. Infrastructure** | Provision GPUs, CPUs, NVLink/RDMA, disks | Topology-aware clusters &amp; cloud-native schedulers | Hardware stalls &amp; heterogeneous fleets → Ray, Slurm, Kubernetes | Mature core; multi-fleet elasticity active (**Part 1**) |
-| **1. Data engineering** | Acquire, parse, filter, deduplicate, tokenize, shard | Reproducible content-addressed manifests &amp; Ray/DataTrove | Contamination, duplicates, lost resume state → checkpointable loaders | Mature pipelines; synthetic-data curation active (**Part 1**) |
-| **2. Pretraining** | Forward/backward pass over token batches (`C ≈ 6ND`) | 6D parallelism + mixed precision + FlashAttention | OOM, collective stalls, silent NaNs → FSDP/ZeRO, topology placement, corruption checks | Mature dense; MoE load balance &amp; FP8/FP4 active (**Part 1**) |
-| **3. Mid-training** | Continue training on math, code, long context, tool traces | Long-context &amp; domain curriculum mixing | Context degradation &amp; forgetting → context parallelism + replay mixes | Standard frontier practice (**Part 1**) |
-| **4. SFT** | Imitate expert multi-turn &amp; tool demonstrations | Token-level loss masks over user/tool turns | Imitation stops at known demonstrations → pair with RL exploration | Standard; TRL, TorchTune, TorchTitan (**Part 1**) |
-| **5. Preference opt.** | Rank chosen vs. rejected responses (DPO / reward model) | Direct optimization without an online critic | Off-policy distribution drift → iterative DPO / online RL | Standard lightweight alignment (**Part 2**) |
-| **6. RL &amp; rollouts** | Sample trajectories, run tools, verify, update policy | GRPO, RLVR, async bounded off-policy rollouts | Stragglers, policy staleness, KV drift → async queues, staleness bounds, weight sync | Rapidly evolving frontier (**Part 2**) |
-| **7. Distillation** | Transfer teacher logits or trajectories to smaller student | On-policy student rollouts graded by teacher | Student–teacher mismatch on multi-step errors → on-policy distillation | Widely used for serving efficiency (**Part 1 &amp; 2**) |
-| **8. Evaluation** | Run held-out benchmarks, slices, and trusted verifiers | Isolated graders + repeated trials + leakage guards | Reward hacking &amp; flaky infra → signed receipts + outcome taxonomy | Active standardization (**Part 3**) |
-| **9. Deployment opt.** | Quantize, compile, and shard validated checkpoints | PTQ/QAT, CUDA graphs, kernel fusion | Accuracy regressions under low precision → re-eval every quantized artifact | Mature tooling; FP4/MoE kernels active (**Part 1**) |
-| **10. Inference** | Prefill prompt KV state, then decode tokens iteratively | PagedAttention, continuous batching, disaggregation | KV memory blow-up &amp; decode bandwidth limits → vLLM, SGLang, Dynamo, Mooncake | Mature single-model; cross-model KV emerging (**Part 1**) |
-| **11. Agentic exec.** | Model emits tool calls; sandboxes execute and return obs | Warm microVMs, CoW snapshots, OpenEnv/Harbor | Slow cold starts, security escape, side effects → Firecracker/gVisor, outboxes | Active frontier (**Part 3**) |
-| **12. Feedback** | Capture verified traces, failures, and human reviews | Failure-driven curricula &amp; regression eval suites | Selection bias &amp; tainted infra traces → strict provenance &amp; schema parity | Core frontier loop (**Part 3**) |
+| Everyday Recipe Box idea | Frontier AI systems equivalent | Why the edge exists |
+|---|---|---|
+| Your SQLite database + seed data | **Clean Data &amp; Shards** (Stage 1) | Bad or duplicate input teaches bad habits |
+| `AI_MODEL` in `.env` | **Model Weights** (Stages 2–7) | Saved knowledge; frozen while serving users |
+| `ai-service` calling Ollama | **Fast Serving** (Stages 9–10) | Turns prompts + scratchpad into tokens fast |
+| `sandbox_probe.py` container | **Sandbox Execution** (Stage 11) | Runs untrusted generated code safely |
+| FastAPI Pydantic check + `pytest` | **Trusted Grader** (Stage 8) | Never trust the model's claim of "done" |
+| Docker Compose + CI | **Control Plane** (`L11` Orchestrator) | Starts, stops, budgets, and records versions |
 
-## The 16-layer composable stack
+## All 13 lifecycle stages in four simple phases
 
-Rather than building one monolithic AI platform, production teams compose layers (`L0`–`L15`) so each concern can scale or fail independently:
+Real AI labs do not run these 13 stages strictly one-by-one; they run them in parallel loops. Notice that every stage follows the same story: **what it does → why it broke → how engineers fixed it → where it stands today**.
 
-| Band | Layers | Leading technologies | Where EASS connects |
+### Phase A · Build the model (Stages 0–4 and 7)
+
+| Stage | Simple core steps | Key innovation &amp; main problem | How it was addressed &amp; status |
 |---|---|---|---|
-| **Hardware &amp; OS** | `L0` Physical · `L1` Interconnect · `L2` OS · `L3` Cluster | GPUs/TPUs, NVLink/RDMA, Linux/cgroups/eBPF, K8s/Slurm/Ray | [Agent sandboxes](agent-sandboxes.md) (`cgroups`, namespaces) |
-| **Kernels &amp; Scale** | `L4` Kernels · `L5` Compilers · `L6` Collectives · `L7` Storage | FlashAttention, CUTLASS, Triton, NCCL, FSDP, S3/3FS, Mooncake | [Visual inference engineering](inference-engineering.md) (roofline, fusion) |
-| **Execution Runtimes** | `L8` Training · `L9` Inference · `L10` Sandboxes | TorchTitan, Megatron-LM, vLLM, SGLang, Dynamo, Firecracker, gVisor | [Local inference](local-inference.md) &amp; [Docker Compose](../lectures/08-docker-compose.md) |
-| **Control &amp; Learning** | `L11` Orchestration · `L12` RL · `L13` Envs · `L14` Evals · `L15` Apps | Ray, Monarch, AReaL, verl, slime, Prime-RL, Harbor, OpenEnv, Inspect AI | [FactoryOps](factoryops-metamachine.md) &amp; [Systems reasoning](systems-reasoning.md) |
+| **0. Infrastructure** | Wire GPUs, CPUs, fast links, and disks | Topology-aware clusters; **problem:** idle GPUs waiting on slow network | Managed via Ray, Slurm, Kubernetes + NVLink/RDMA (**Mature core**) |
+| **1. Data engineering** | Crawl, clean, remove duplicates, filter privacy, convert to token files | Content-hashed manifests (DataTrove, Dolma); **problem:** crashed runs lose track of which rows were read | Checkpointable data loaders save exact file + row cursor (**Standard; synthetic curation active**) |
+| **2. Pretraining** | Predict the next token on billions of examples | Splitting one giant model across many GPUs (6D parallelism + mixed precision); **problem:** out-of-memory crashes &amp; silent math errors | Shard parameters/optimizer state (FSDP/ZeRO) + periodic parity checks (**Mature dense; MoE active**) |
+| **3. Mid-training** | Continue training on math, code, long docs, and tool formats | Context parallelism for huge inputs; **problem:** forgetting earlier skills | Mix replay data with domain curricula (**Standard practice**) |
+| **4. SFT (imitation)** | Show input → expert tool call → expert answer examples | Loss masking so gradients only score assistant turns, not user/tool text; **problem:** model only imitates | Pair SFT with RL exploration in Part 2 (**Standard: TRL, TorchTune, TorchTitan**) |
+| **7. Distillation** | Teach a small fast model from a large smart teacher | *On-policy* distillation grades the student's own answers; **problem:** student drifts on multi-step tasks | Teacher grades student rollouts rather than static essays (**Widely used for efficiency**) |
 
-## Stages 0–4 and 7: building the model
+### Phase B · Serve it fast (Stages 9–10)
 
-### Stage 1: Data engineering
-- **Core steps:** Raw crawl or code → parse → normalize → quality filter → deduplicate → privacy/safety filter → tokenize → mix domains → write Parquet/Arrow/binary token shards → stream via checkpointable loaders.
-- **Innovation &amp; main challenge:** Versioned dataset manifests with content hashes (DataTrove, Dolma, Ray Data). The subtle failure is **resume drift**: if a training run crashes at step 40,000, restoring weights alone is wrong unless the data loader also restores the exact shard and offset consumed—otherwise the model over-trains on repeated batches or skips unseen data.
-- **Current status:** Reproducible sharding and decontamination pipelines are standard; active work focuses on dynamic curriculum mixing and filtering agent-generated traces.
-
-### Stage 2: Pretraining
-- **Core steps:** Load token batch → forward pass → cross-entropy loss (`L(θ) = -Σ log p_θ(x_t | x_<t)`) → backward pass → synchronize gradients → optimizer step → checkpoint periodically. Dense compute scales roughly as `C ≈ 6 · N · D` (`N` parameters, `D` tokens).
-- **Innovations:** **6D parallelism** splits work along orthogonal axes: *Data* (examples), *Tensor* (matrix slices inside layers), *Pipeline* (consecutive layers), *Expert* (Mixture-of-Experts subnetworks), *Context* (long sequence chunks), and *FSDP/ZeRO* (sharding parameters, gradients, and optimizer states across GPUs).
-- **Problems &amp; fixes:** Memory OOMs are fixed via FSDP + activation recomputation + mixed precision; network stalls are reduced by topology-aware placement and overlapping collectives with compute; **silent numerical corruption** (a faulty GPU producing subtle NaNs or wrong reductions) is caught by periodic deterministic validation checks and automatic elastic node replacement.
-- **Current status:** Native PyTorch + **TorchTitan** is the cleanest starting point (especially because TitanRL reuses the exact model definitions for RL); **Megatron-LM** remains standard for specialized mega-scale configs.
-
-### Stages 3, 4, and 7: Mid-training, SFT, and distillation
-- **Core steps:** Mid-training extends the base model on high-signal math, code, long contexts, and tool schemas. Supervised fine-tuning (SFT, e.g., TRL or TorchTune) masks loss on prompt/tool-observation tokens so gradients only train assistant actions. Distillation transfers capability from a larger teacher to a smaller student, increasingly *on-policy* (grading student rollouts rather than static teacher text).
-- **Key limit:** SFT teaches the model to *imitate* known demonstrations. To explore new solution paths and optimize against real execution outcomes, you need reinforcement learning (**Part 2**).
-
-## Stages 9–10: serving the model
-
-As covered in [Local inference](local-inference.md) and [Visual inference engineering](inference-engineering.md), inference is a **dynamic scheduling and memory-bandwidth problem**, not a single forward pass:
-
-- **Prefill vs. decode:** Prefill computes attention over the prompt and builds the KV cache (usually compute-bound); decode emits one token per step while streaming weights and KV state from HBM (usually memory-bandwidth-bound at small batch sizes, bounded by the roofline `P <= min(P_peak, B_memory × I)`).
-- **KV cache growth:** For a grouped-query-attention (GQA) transformer with `L` layers, sequence length `T`, `H_KV` KV heads, head dim `d_h`, and `s` bytes per element, KV memory per sequence is `M_KV = 2 · L · T · H_KV · d_h · s`.
-- **Key serving innovations:** **Orca** introduced iteration-level (continuous) batching; **FlashAttention** cut HBM round-trips; **vLLM / PagedAttention** stopped KV fragmentation via virtual memory blocks; **SGLang** added radix prefix reuse; **Sarathi-Serve** introduced chunked prefill; **DistServe / Splitwise / Dynamo / Mooncake / LMCache** separated prefill and decode pools and tiered KV across GPU/RAM/RDMA storage.
-
-> **Simpler is enough:** Co-locate prefill and decode on the same workers first. Only disaggregate prefill and decode (and pay the KV network transfer cost) after profiling proves that interference between long prefills and decode tail latency outweighs transfer overhead.
-
-## Cross-model context sharing: Plato's Key and Speculative Encoding
-
-Exact prefix caching in vLLM or SGLang works only when two requests share the **same model, weights, and tokenizer**. What happens in a multi-agent swarm where Model A (say, a 7B reader) reads a 64,000-token repository and hands off to Model B (say, a different 32B reasoner)?
-
-Historically, every downstream model had to **re-prefill the raw text from scratch**—paying `N ×` prefill cost. Two complementary breakthroughs published on **25 November 2026** tackle this problem from opposite ends:
-
-| Approach | Core mechanism | Headline claims (vendor / research) | Limits &amp; systems trade-offs |
+| Stage | Simple core steps | Key innovation &amp; main problem | How it was addressed &amp; status |
 |---|---|---|---|
-| **Raw text re-prefill** | Send raw text; target runs full prefill | 100% native model baseline accuracy | Pays full `N ×` prefill compute &amp; TTFT on long documents |
-| **Plato's Key** ([Stanford Hazy Research](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key)) | Zero-gradient closed-form **orthogonal Procrustes rotation + 1 global scale** mapping donor hidden states into recipient space | Across 12 base LLMs / 8 families (1.5B–27B): `41%` median factual transfer (vs. `55%` self-swap); `A → B → C` chaining retains `~99%` of direct `A → C`; top-256 PCs retain `~74%`; unlocks "dark memories" | Proves linear geometric alignment exists without training, yet raw closed-form transfer still trails native inference accuracy |
-| **Speculative Encoding** ([Ramp Labs](https://github.com/RampPublic/speculative-encoding)) | A learned **2.35B MoE encoder-decoder** translates internal hidden states / KV caches directly across heterogeneous models (e.g., Llama, Gemma, Qwen) with vLLM integration | Reported across 7 models: **96.9%** of native baseline accuracy (`~3.1%` gap), **4×–7.5×** prefill speedup on 32K–128K docs, and up to **128×** query-conditioned compression | Approximate representation: multi-hop chains compound accuracy gaps (`0.969^k` in a synthetic independence model), and cross-tenant translated caches need strict isolation |
+| **9. Deployment opt.** | Shrink weight precision (16-bit → 8/4-bit) &amp; compile GPU kernels | Kernel fusion &amp; quantization; **problem:** shrinking numbers can break accuracy | Re-run held-out quality tests on every quantized build (**Mature; FP4 active**) |
+| **10. Inference** | Read prompt once (prefill), then emit 1 token per step (decode) | Paged KV memory (vLLM), continuous batching (Orca), prefix reuse (SGLang); **problem:** KV scratchpad fills GPU memory | Virtualized KV blocks + optional prefill/decode splitting (**Mature single-model; cross-model new**) |
+
+### Phase C &amp; D · Practice, grade, and improve (Stages 5, 6, 8, 11, 12 — covered in Parts 2 &amp; 3)
+
+- **Stage 5 (Preference tuning / DPO)** &amp; **Stage 6 (RL &amp; rollouts):** model tries problems itself and learns from graded rewards (**Part 2**).
+- **Stage 11 (Agentic execution)** &amp; **Stage 8 (Evaluation)** &amp; **Stage 12 (Feedback):** sandboxes run untrusted code safely, hidden graders separate broken sandboxes from wrong answers, and verified traces feed future training (**Part 3**).
+
+## How the 16-layer stack fits underneath
+
+Engineers split the stack into layers (`L0`–`L15`) so you can upgrade one layer (like swapping vLLM for SGLang) without rewriting everything else:
+
+- **`L0`–`L3` (Machines &amp; OS):** GPUs/CPUs, fast links (NVLink, RDMA), Linux containers/sandboxes (`cgroups`), and cluster schedulers (Ray, Kubernetes, Slurm).
+- **`L4`–`L7` (Speed &amp; Storage):** fast GPU math kernels (FlashAttention, CUTLASS), compilers (Triton), multi-GPU communication (NCCL, FSDP), and storage for datasets, checkpoints, and KV caches (S3, Mooncake, LMCache).
+- **`L8`–`L10` (Three Runtimes):** Training (TorchTitan, Megatron-LM), Inference (vLLM, SGLang, Dynamo), and Sandboxes (Firecracker, gVisor).
+- **`L11`–`L15` (Brains &amp; Grading):** Orchestrators (Ray, Monarch), RL engines (verl, AReaL, Prime-RL, slime), Environments (Harbor, OpenEnv), Graders (Inspect AI), and user apps.
+
+## Deep dive: building vs. serving a model
+
+### Worked-by-hand: how much math does pretraining do?
+For a standard dense model, total training math operations follow a simple rule of thumb: `C ≈ 6 · N · D` (`N` = number of weights, `D` = number of training tokens; forward pass is `~2ND`, backward pass is `~4ND`).
+
+Try a tiny toy example on paper: `N = 1,000,000` weights (`10^6`) trained on `D = 10,000,000` tokens (`10^7`).
+- `C ≈ 6 × 10^6 × 10^7 = 6 × 10^13` operations.
+- Now scale `N` to `70B` and `D` to `15T`—that is why pretraining needs thousands of GPUs, **checkpointable data loaders** (saving both weights *and* exact dataset position so a crash never re-trains on the same rows), and corruption detectors for faulty GPUs.
+
+### Worked-by-hand: why serving slows down as conversations grow
+When serving a user, [Visual inference engineering](inference-engineering.md) shows that **prefill** is compute-limited while **decode** is limited by how fast bytes move out of GPU memory (`P <= min(P_peak, B_memory × I)`). Each user keeps a KV scratchpad of size `M_KV = 2 · L · T · H_KV · d_h · s`. Double the prompt length `T` and your scratchpad memory doubles too!
+
+> **Simpler is enough:** Keep prefill and decode on the same GPU workers when starting out. Only split them onto separate pools (disaggregation) when profiling proves long prompts are stalling live user typing enough to justify copying KV caches over the network.
+
+## Sharing reading work across different models
+
+In [Visual inference engineering](inference-engineering.md), **prefix caching** saves work when two prompts start identically on the *same* model. What if an agent team uses *two different models*—say, Model A (a fast reader) reads a `64,000`-token codebase and hands off to Model B (a deeper coder)?
+
+Normally, Model B cannot read Model A's KV scratchpad at all—its hidden-state vectors point in different directions. So Model B has to re-read all `64,000` tokens from raw text. Two breakthroughs published on **25 November 2026** tackle this edge directly:
+
+1. **Plato's Key ([Stanford Hazy Research](https://hazyresearch.stanford.edu/blog/2026-11-25-platos-key)) — the geometric "why":**
+   Researchers tested 12 open models (8 families, 1.5B–27B) and discovered you can map Model A's hidden states straight into Model B's space using **one closed-form rotation and one global scale**—with *zero* gradient training! Across factual swaps, it hit `41%` median accuracy (vs. `55%` swapping a model's own state), retained `~99%` relative accuracy across `A → B → C` chains, and even unlocked "dark memories" stored inside weights.
+2. **Speculative Encoding ([Ramp Labs](https://github.com/RampPublic/speculative-encoding)) — the serving "how":**
+   While a raw linear rotation proves geometry aligns, production serving wants near-native accuracy. Ramp Labs trained a single **2.35B MoE translator** plugged into vLLM that converts hidden states/KV directly across 7 model families—reporting **96.9% baseline accuracy**, **4×–7.5× faster prefill** on 32K–128K documents, and up to **128×** query-conditioned compression.
 
 <figure class="course-diagram">
-  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Three ways models share context diagram, scroll horizontally">
-    <img src="../assets/diagrams/aisys-cross-model-kv.svg" alt="Compares raw N-times text re-prefill, Plato's Key closed-form Procrustes rotation, and Ramp Labs Speculative Encoding 2.35B MoE translator." width="640" height="420">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Three ways different models share context diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-cross-model-kv.svg" alt="Row 1 shows Model A and Model B both reading 64k tokens. Row 2 shows Plato's Key rotating Model A's tilted axes to match Model B. Row 3 shows Speculative Encoding's 2.35B MoE translator skipping Model B's re-read." width="640" height="500">
   </div>
-  <figcaption><strong>Theory meets serving systems.</strong> <em>Plato's Key</em> shows cross-model latent spaces share a rotated low-dimensional geometry; <em>Speculative Encoding</em> turns that insight into a learned 2.35B MoE bridge inside serving engines. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-cross-model-kv.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>From geometry to fast serving.</strong> <em>Plato's Key</em> proves different models share rotated maps; <em>Speculative Encoding</em> trains a small translator to skip re-reading long text. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-cross-model-kv.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
 <summary>Text version of the diagram</summary>
 
-1. **Raw text re-prefill:** Model A reads the document and passes text to Model B, which re-prefills every token (`100%` baseline accuracy, `N×` prefill latency).
-2. **Plato's Key:** Closed-form orthogonal Procrustes rotation plus global scale aligns donor and recipient hidden states with zero training, demonstrating geometric interchangeability across 12 LLMs.
-3. **Speculative Encoding:** A trained 2.35B MoE translator converts Model A's hidden states into Model B's KV/hidden state directly, trading a reported ~3.1% single-hop accuracy gap for up to 7.5× prefill speedup on long documents.
+Row 1 (Raw text): Model A reads 64k tokens, sends text, and Model B reads all 64k tokens again (100% baseline accuracy, double reading work). Row 2 (Plato's Key): a tilted coordinate frame in Model A rotates and scales with zero training into Model B's upright frame (~99% relative A→B→C chaining). Row 3 (Speculative Encoding): Model A reads once, passes hidden states through a 2.35B MoE translator, and Model B starts almost immediately (up to 7.5× prefill speedup reported, ~3.1% per-hop accuracy gap).
 
 </details>
 
-> **Checked:** The figures for *Plato's Key* and *Speculative Encoding* are reported by their respective authors on 25 November 2026 (not independently benchmarked here). In Part 2 and Part 3 we examine what this ~3.1% approximation costs inside RL importance ratios (`ρ_t`) and multi-hop verifier gates.
+**Worked-by-hand catch (multi-hop drift):** Suppose one translation keeps `96.9%` (`0.969`) of native accuracy. Across `2` hops, `0.969 × 0.969 = 0.939` (`93.9%`). Across `6` chained hops without re-reading raw text, `0.969^6 ≈ 0.828` (`82.8%`). Fast prefill is a great win—as long as your grader checks the final answer!
 
-## Lab: steady-state capacity and cross-model prefill
+> **Checked:** Figures for *Plato's Key* and *Speculative Encoding* are author-reported results (25 November 2026), not independently benchmarked in this course.
 
-In any multi-fleet system, steady-state throughput obeys `λ_rollouts <= min(λ_inference, λ_environment, λ_verification, λ_learner)`. Use the interactive lab below to see why adding GPUs fails when sandboxes or verifiers are the bottleneck, and how multi-hop latent translation trades latency for compounding accuracy drift.
+## Lab: find the bottleneck and check multi-hop drift
+
+Remember the pipeline law: `goodput <= min(inference, sandboxes, graders, learner)`. Use the visual bars below to see which pool caps the cluster, and test what happens when you scale the wrong pool or chain too many cross-model hops.
 
 <div class="sim" id="sim-aisys-capacity" role="group" aria-label="Synthetic capacity and cross-model prefill explorer" markdown="1">
 
-<p class="sim-title"><strong>Synthetic cluster capacity &amp; cross-model prefill explorer</strong></p>
+<p class="sim-title"><strong>Visual cluster bottleneck &amp; cross-model prefill explorer</strong></p>
 
 <div class="sim-fallback" markdown="1">
 
-**Worked example without JavaScript:** An RL cluster runs `40`/min inference, `15`/min sandboxes, `50`/min verifiers, and `35`/min learner steps. Goodput is capped at **`15`/min** (bottleneck: **environments**). Adding `+20`/min inference GPUs leaves goodput unchanged at `15`/min; adding `+20`/min sandboxes raises goodput to **`35`/min**. Separately, in a 5-model `64k`-token swarm (`94%` native accuracy), Speculative Encoding cuts synthetic prefill time from `5,760 ms` to `823 ms` (`7.0×` faster) with `88.3%` 2-hop accuracy (`0.969^2 × 94%`), whereas `6` chained hops decay to `77.8%` (`0.969^6 × 94%`), triggering a verification alert.
+**Worked example without JavaScript:** An RL cluster runs `40`/min inference GPUs, `15`/min sandboxes, `50`/min trusted graders, and `35`/min learner updates. Steady-state goodput is **`15`/min** (bottleneck: **sandboxes**). Adding `+20`/min GPUs leaves goodput stuck at `15`/min; adding `+20`/min sandboxes raises goodput to **`35`/min**. Separately, on a `64k`-token doc across `5` models (`94%` native accuracy), Speculative Encoding cuts synthetic prefill time from `5,760 ms` to `823 ms` (`7.0×` faster) with `88.3%` 2-hop accuracy (`0.969^2 × 94%`), whereas `6` chained hops decay to `77.8%`, triggering a drift warning.
 
 </div>
 </div>
@@ -169,23 +184,23 @@ In any multi-fleet system, steady-state throughput obeys `λ_rollouts <= min(λ_
 ## Quick quiz
 
 <details markdown="1">
-<summary>Q1. Why must a pretraining checkpoint restore the exact data-loader offset alongside model weights?</summary>
+<summary>Q1. Why must a crashed pretraining job restore its data-loader cursor alongside its weights?</summary>
 
-Without the data-loader offset, a restarted run either repeats recent batches (overfitting and wasting compute) or skips shards entirely, breaking reproducibility and biasing the learned distribution.
-
-</details>
-
-<details markdown="1">
-<summary>Q2. How do Plato's Key and Speculative Encoding relate to each other?</summary>
-
-*Plato's Key* establishes the geometric foundation—different LLMs' hidden spaces align closely enough that a closed-form Procrustes rotation + scale transfers facts without gradients. *Speculative Encoding* builds a learned 2.35B MoE translator to achieve higher serving accuracy (96.9% reported) and long-document prefill speedups inside vLLM.
+If you restore only the weights, the training job loses track of which batches it already read—re-reading old examples or skipping new ones silently.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. When you add more inference GPUs to an environment-bound RL cluster, what improves?</summary>
+<summary>Q2. In plain words, how do Plato's Key and Speculative Encoding complement each other?</summary>
 
-Only idle inference slack grows; completed rollouts per minute stay flat because `λ_rollouts <= min(λ_inf, λ_env, λ_ver, λ_learn)`. Scale the bottleneck fleet (`λ_env`) first.
+*Plato's Key* shows the geometry works (different models' spaces line up via a closed-form rotation + scale with zero training). *Speculative Encoding* trains a small 2.35B MoE translator to make that cross-model transfer accurate and fast enough for real serving engines.
+
+</details>
+
+<details markdown="1">
+<summary>Q3. Your sandboxes finish 15 tasks/min and GPUs finish 40/min. Should you buy more GPUs?</summary>
+
+No. By the steady-state capacity law, completed work cannot exceed `15`/min until you speed up sandboxes (for example with warm pools or snapshots in Part 3).
 
 </details>
 

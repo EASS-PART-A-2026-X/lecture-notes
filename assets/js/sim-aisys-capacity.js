@@ -6,31 +6,31 @@
   const CASES = [
     {
       id: "env-bound",
-      title: "1. Environment-bound RL cluster (40 inf / 15 env / 50 ver / 35 learn)",
+      title: "1. Slow sandboxes bottleneck (40 GPUs / 15 sandboxes / 50 graders / 35 learner)",
       inference: 40, environments: 15, verification: 50, learner: 35,
       contextK: 32, swarmSize: 3, baseAcc: 0.94, hops: 1
     },
     {
       id: "learner-bound",
-      title: "2. Learner-bound queue (60 inf / 50 env / 55 ver / 15 learn)",
+      title: "2. Slow learner queue (60 GPUs / 50 sandboxes / 55 graders / 15 learner)",
       inference: 60, environments: 50, verification: 55, learner: 15,
       contextK: 32, swarmSize: 3, baseAcc: 0.94, hops: 1
     },
     {
       id: "verifier-bound",
-      title: "3. Verifier-bound backlog (45 inf / 40 env / 18 ver / 35 learn)",
+      title: "3. Slow grader backlog (45 GPUs / 40 sandboxes / 18 graders / 35 learner)",
       inference: 45, environments: 40, verification: 18, learner: 35,
       contextK: 64, swarmSize: 4, baseAcc: 0.94, hops: 2
     },
     {
       id: "swarm-sweet-spot",
-      title: "4. Long-doc swarm (64k tokens, 5 models, 2 translation hops)",
+      title: "4. Multi-model team on 64k doc (5 models, 2 translation hops)",
       inference: 45, environments: 45, verification: 45, learner: 40,
       contextK: 64, swarmSize: 5, baseAcc: 0.94, hops: 2
     },
     {
       id: "multihop-drift",
-      title: "5. Deep multi-hop swarm (64k tokens, 6 models, 6 hops — drift risk)",
+      title: "5. Long 6-hop chain on 64k doc (drift warning)",
       inference: 50, environments: 50, verification: 50, learner: 40,
       contextK: 64, swarmSize: 6, baseAcc: 0.94, hops: 6
     }
@@ -89,6 +89,7 @@
   const fields = el("div", { className: "sim-fields" },
     el("label", { htmlFor: select.id }, "Choose a synthetic cluster scenario", select)
   );
+  const fleetBars = el("div", { className: "aisys-bars" });
   const receipt = el("dl", { className: "aisys-receipt" });
   const controls = el("div", { className: "sim-controls" });
   const status = el("p", { className: "sim-status" });
@@ -101,27 +102,64 @@
 
   const actions = [
     ["Add +20/min Inference GPUs", () => { state.inference += 20; return "Added +20/min inference capacity."; }],
-    ["Add +20/min Sandboxes", () => { state.environments += 20; return "Added +20/min environment sandbox capacity."; }],
-    ["Add +20/min Verifiers", () => { state.verification += 20; return "Added +20/min verifier capacity."; }],
+    ["Add +20/min Sandboxes", () => { state.environments += 20; return "Added +20/min sandbox capacity."; }],
+    ["Add +20/min Verifiers", () => { state.verification += 20; return "Added +20/min grader capacity."; }],
     ["Reset scenario", () => { state = { ...CASES.find(c => c.id === select.value) }; return "Reset scenario to baseline."; }]
   ];
+
+  function barRow(label, valueText, pct, fillClass) {
+    return el("div", { className: "aisys-bar-row" },
+      el("div", { className: "aisys-bar-head" },
+        el("span", { textContent: label }),
+        el("strong", { textContent: valueText })
+      ),
+      el("div", { className: "aisys-bar-track" },
+        el("div", { className: `aisys-bar-fill ${fillClass}`.trim(), style: `width:${Math.max(4, Math.min(100, pct))}%` })
+      )
+    );
+  }
 
   function render(actionMsg) {
     const cap = evaluateCapacity(state);
     const se = evaluateSpeculativeEncoding(state);
+    const maxRate = Math.max(state.inference, state.environments, state.verification, state.learner, 80);
+    const fleets = [
+      ["inference", "1. Inference GPUs"],
+      ["environments", "2. Sandboxes"],
+      ["verification", "3. Trusted Graders"],
+      ["learner", "4. Training Learner"]
+    ];
+    const rows = fleets.map(([k, title]) => {
+      const isBottle = cap.bottlenecks.includes(k);
+      const val = state[k];
+      return barRow(
+        isBottle ? `${title} — BOTTLENECK` : title,
+        `${val}/min`,
+        (val / maxRate) * 100,
+        isBottle ? "aisys-bar-fill--bottle" : ""
+      );
+    });
+    rows.push(
+      barRow("Raw N× text reading", `${se.rawTotalMs} ms`, 100, "aisys-bar-fill--bottle"),
+      barRow(
+        `Speculative Encoding (${state.hops}-hop, ${(se.effectiveAcc * 100).toFixed(1)}% acc)`,
+        `${se.translatedMs} ms (${se.speedup}× faster)`,
+        (se.translatedMs / se.rawTotalMs) * 100,
+        se.effectiveAcc < 0.85 ? "aisys-bar-fill--bottle" : "aisys-bar-fill--spec"
+      )
+    );
+    fleetBars.replaceChildren(...rows);
+
     const facts = [
-      ["Inference / Envs", `${state.inference}/min · ${state.environments}/min`],
-      ["Verifiers / Learner", `${state.verification}/min · ${state.learner}/min`],
       ["Steady-state goodput", `${cap.goodput}/min (bottleneck: ${cap.bottlenecks.join(", ")})`],
-      ["Raw N× prefill (synthetic)", `${se.rawTotalMs} ms (${state.swarmSize} models × ${state.contextK}k tok)`],
-      ["Speculative Encoding", `${se.translatedMs} ms (${se.speedup}× faster; ${state.hops}-hop)`],
+      ["Cross-model speedup", `${se.speedup}× faster (${se.rawTotalMs} ms → ${se.translatedMs} ms)`],
       ["Synthetic accuracy", `${(se.effectiveAcc * 100).toFixed(1)}% (0.969^${state.hops} × ${(state.baseAcc * 100).toFixed(0)}%)`]
     ];
     receipt.replaceChildren(...facts.map(([k, v]) => el("div", {}, el("dt", { textContent: k }), el("dd", { textContent: v }))));
     status.textContent = `${actionMsg} Goodput is ${cap.goodput}/min (${cap.bottlenecks.join(", ")}).`;
     status.classList.toggle("sim-error", se.effectiveAcc < 0.85);
     note.textContent = se.effectiveAcc < 0.85
-      ? `Warning: ${state.hops} chained latent translations drop synthetic accuracy to ${(se.effectiveAcc * 100).toFixed(1)}%; re-prefill a checkpoint or verify before committing.`
+      ? `Warning: ${state.hops} chained latent translations drop synthetic accuracy to ${(se.effectiveAcc * 100).toFixed(1)}%; re-read raw text at a checkpoint before grading.`
       : `Synthetic model only (not a hardware benchmark): steady-state rollouts cannot exceed the slowest fleet (${cap.bottlenecks.join(", ")}).`;
   }
 
@@ -137,7 +175,7 @@
   });
 
   root.querySelector(".sim-fallback").before(
-    el("div", { className: "sim-app" }, fields, receipt,
+    el("div", { className: "sim-app" }, fields, fleetBars, receipt,
       el("p", { className: "sim-box-title", textContent: "Test an infrastructure change" }),
       controls, live)
   );

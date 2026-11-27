@@ -50,5 +50,7 @@ test('rendered Part 1 page keeps static fallback and loads only sim-aisys-capaci
   assert.match(html, /assets\/js\/sim-aisys-capacity\.js\?v=\d+/);
   assert.doesNotMatch(html, /sim-aisys-rl\.js/);
   assert.doesNotMatch(readFileSync(join(site, 'index.html'), 'utf8'), /sim-aisys-capacity\.js/);
-  assert.equal(readFileSync(join(site, 'assets/js/sim-aisys-capacity.js'), 'utf8'), readFileSync('assets/js/sim-aisys-capacity.js', 'utf8'));
+  const jsText = readFileSync('assets/js/sim-aisys-capacity.js', 'utf8');
+  assert.equal(readFileSync(join(site, 'assets/js/sim-aisys-capacity.js'), 'utf8'), jsText);
+  assert.match(jsText, /aisys-bars/);
 });

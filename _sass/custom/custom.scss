@@ -3425,6 +3425,34 @@ $ed-code-languages: (
     dt { margin: 0 0 0.2rem; text-align: left; font-size: var(--fs-14); font-weight: 600; color: var(--ed-muted); }
     dd { margin: 0; overflow-wrap: anywhere; color: var(--ed-ink); }
   }
+  .aisys-bars {
+    margin: 0.75rem 0 1rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--ed-paper);
+    border: 1px solid var(--ed-rule);
+    border-radius: 3px;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-14);
+  }
+  .aisys-bar-row { margin: 0.45rem 0; }
+  .aisys-bar-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.2rem;
+    color: var(--ed-ink);
+  }
+  .aisys-bar-track {
+    height: 0.65rem;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-strong);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .aisys-bar-fill { height: 100%; background: var(--ed-navy); }
+  .aisys-bar-fill--bottle { background: var(--ed-red); }
+  .aisys-bar-fill--spec { background: var(--ed-teal); }
+  .aisys-bar-fill--ok { background: var(--ed-green); }
 }
 
 @media print {

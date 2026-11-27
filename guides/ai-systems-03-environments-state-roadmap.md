@@ -4,123 +4,150 @@
 
 [Course home](../README.md) · [Part 2 · RL and rollouts](ai-systems-02-rl-and-rollouts.md) · [Agent sandboxes](agent-sandboxes.md) · [Systems reasoning](systems-reasoning.md) · [Further study](further-study.md)
 
-> **Optional; not graded:** This final bonus lesson sits outside the EASS Class X syllabus and adds zero deadlines or hardware requirements. It completes the 13-stage AI systems arc—covering execution fleets, trusted verifiers, unified trajectory state, build roadmaps, and curated references.
+> **Optional; not graded:** This final bonus lesson sits outside the EASS Class X syllabus and adds zero deadlines or hardware requirements. It completes the knowledge graph—connecting sandboxes, trusted graders, unified state, reliability, and a practical build roadmap.
 
-**You will be able to:** separate the 4+1 compute fleets, apply the 6-outcome verifier taxonomy, distinguish reversible local snapshots from irreversible external side effects in `S_t`, evaluate multi-hop cross-model KV drift, enforce the Versioned Trajectory contract in Python 3.14, and navigate the 14-phase build roadmap and primary literature.
+**You will be able to:** separate the 4+1 machine pools, explain what a filesystem snapshot *can* and *cannot* rewind ("The Rewind Wall"), keep hidden tests outside the agent's write scope, apply the Versioned Trajectory data contract in Python 3.14, and navigate the 4-milestone build roadmap and primary literature.
 
-**Predict first:** An agent edits a file inside a copy-on-write sandbox *and* calls a payment API over an allowed egress route. If you restore the sandbox filesystem snapshot `E_t` back to `t = 0`, does the payment disappear too?
+**Predict first:** An agent inside a sandbox edits `app.py` and sends an HTTP webhook to Slack. You then rewind the sandbox disk snapshot back to `t = 0`. Did the Slack message disappear?
 
 <details markdown="1">
 <summary>Check your prediction</summary>
 
-No! Restoring a local disk snapshot rolls back `E_t`, not external databases, queued webhooks, or sent emails. As [Systems reasoning](systems-reasoning.md) demonstrates with its SQLite outbox lab, external effects require idempotency keys, mocked boundaries, or explicit compensation.
+**No!** Rewinding a local filesystem snapshot restores files inside the sandbox, not emails, Slack messages, payments, or remote database rows. Just like the SQLite outbox lab in [Systems reasoning](systems-reasoning.md), external effects need idempotency keys, mocked test endpoints, or compensation.
+
+</details>
+
+<details markdown="1">
+<summary>Terms used on this page (plain English)</summary>
+
+- **Compute fleet:** a pool of machines specialized for one job (GPUs for training, GPUs for inference, CPUs/SSDs for sandboxes, isolated CPUs for grading).
+- **Copy-on-write (CoW) snapshot:** a fast frozen disk copy where two forked sandboxes share unchanged base files and only store the lines they modify.
+- **Fork:** branching a running environment into two independent trials that share setup work up to the split point.
+- **Trusted verifier:** a grading script sitting *outside* the agent's writable disk so the agent cannot edit its own tests.
+- **Side effect:** any change escaping the sandbox (network request, email, remote DB write) that disk rewind cannot undo.
+- **Action mask (`True`/`False`):** a per-token flag telling the trainer which tokens the *model* wrote (`True`) versus text pasted back by a tool (`False`).
 
 </details>
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 
-- [Stages 11–12: environment fleets and sandboxes](#stages-1112-environment-fleets-and-sandboxes)
+- [Stages 11–12: four fleets and fast sandboxes](#stages-1112-four-fleets-and-fast-sandboxes)
 - [Stage 8: task factory and independent verifiers](#stage-8-task-factory-and-independent-verifiers)
-- [Six planes, unified state, and cross-model K_t](#six-planes-unified-state-and-cross-model-k_t)
+- [The Rewind Wall: unified state and cross-model K_t](#the-rewind-wall-unified-state-and-cross-model-k_t)
 - [Versioned trajectory contract, recovery, and tracing](#versioned-trajectory-contract-recovery-and-tracing)
-- [Build roadmap, experimental matrix, and open research](#build-roadmap-experimental-matrix-and-open-research)
-- [Python 3.14 lab: trajectory parity and multi-hop verifier](#python-314-lab-trajectory-parity-and-multi-hop-verifier)
+- [Practical roadmap, experiments, and open challenges](#practical-roadmap-experiments-and-open-challenges)
+- [Python 3.14 lab: trajectory contract and multi-hop gate](#python-314-lab-trajectory-contract-and-multi-hop-gate)
 - [Quick quiz](#quick-quiz)
 - [Curated bibliography and sources](#curated-bibliography-and-sources)
 
 </details>
 
-## Stages 11–12: environment fleets and sandboxes
+## Stages 11–12: four fleets and fast sandboxes
 
-Agentic AI adds two dedicated compute fleets alongside training and inference:
+Traditional ML had two machine pools: training GPUs and inference GPUs. Agentic AI adds two more pools plus a small control plane:
 
-| Fleet | Primary hardware | Workload | Key bottleneck &amp; fix |
+| Pool | Typical hardware | Job | Main bottleneck &amp; fix |
 |---|---|---|---|
-| **Training** | GPUs + NVLink/RDMA | Forward/backward + optimizer | Memory &amp; collectives → FSDP, 6D parallelism |
-| **Inference** | GPUs + high HBM bandwidth | Prefill &amp; decode loops | KV cache &amp; decode bandwidth → PagedAttention, Dynamo |
-| **Environments** | CPUs, RAM, fast SSDs | Compilers, shells, browsers, sims | Cold starts → warm pools, CoW snapshots, build cache |
-| **Verification** | Isolated CPUs/GPUs + storage | Hidden tests, graders, probes | Reward hacking &amp; flakiness → separate trust boundary |
-| **Control plane** | CPUs + PostgreSQL / event log | Scheduling, leases, cost accounting | Overloading control plane → pass refs, never weights/KV |
+| **1. Training** | GPUs + fast links | Update model weights | Memory &amp; sync → sharding (`FSDP`) |
+| **2. Inference** | GPUs + high memory bandwidth | Generate tokens &amp; tool calls | KV memory &amp; decode → `PagedAttention` |
+| **3. Environments** | CPUs, RAM, fast SSDs | Compilers, shells, browsers | Cold start → warm pools, CoW snapshots, build cache |
+| **4. Verifiers** | Isolated CPUs/GPUs | Hidden tests &amp; graders | Reward hacking &amp; flakiness → separate trust boundary |
+| **Control plane** | CPUs + Postgres / event log | Leases, budgets, state tracking | Slow controller → send IDs/refs, never large weights |
 
-[Agent sandboxes](agent-sandboxes.md) explains the isolation baseline (`--network none`, `--read-only`, `--cap-drop ALL`, Firecracker, gVisor). At RL scale, two extensions matter most:
+[Agent sandboxes](agent-sandboxes.md) explains why ordinary containers need `--network none`, `--read-only`, and `--cap-drop ALL` (or microVMs like Firecracker / gVisor). At RL scale, two speedups connect directly back to Part 1's capacity law:
 
-1. **Standardized environment contracts:** [OpenEnv](https://github.com/openenv/OpenEnv) defines `reset(task, seed)`, `step(action)`, and `state()`. Adding `snapshot()`, `restore(snapshot_id)`, and `fork(snapshot_id)` lets multiple reasoning branches share prepared repository and dependency state via copy-on-write filesystems without paying repeated setup costs.
-2. **Build &amp; dependency acceleration:** Prepared base images, lazy image loading, incremental compilation, and content-addressed artifact caches keep `λ_environment` above `λ_inference` so GPUs do not wait on `npm install` or `cargo build`.
+1. **Standardized environment API:** [OpenEnv](https://github.com/openenv/OpenEnv) standardizes `reset(task, seed)`, `step(action)`, and `state()`. Adding proposed `snapshot()`, `restore(id)`, and `fork(id)` operations lets parallel reasoning branches share a pre-built repo without running `uv sync` or `npm install` from scratch every time.
+2. **Build &amp; artifact caching:** Prepared base images, copy-on-write filesystems, and content-addressed build caches keep `λ_environment` fast enough that GPUs stay fed.
 
 ## Stage 8: task factory and independent verifiers
 
-A benchmark or RL task is a reproducible experiment containing an immutable base image, initial snapshot, resource/network policy, and a **trusted verifier**. Frameworks such as [Harbor](https://github.com/harbor-framework/harbor), [Verifiers](https://github.com/PrimeIntellect-ai/verifiers), [SWE-bench](https://github.com/SWE-bench/SWE-bench), [Terminal-Bench](https://github.com/harbor-framework/terminal-bench), and [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) automate parallel task runs and grading.
+A reproducible agent task bundles an immutable container image, an initial snapshot, network/resource rules, and a **trusted verifier**—the pattern used by [Harbor](https://github.com/harbor-framework/harbor), [Verifiers](https://github.com/PrimeIntellect-ai/verifiers), [SWE-bench](https://github.com/SWE-bench/SWE-bench), [Terminal-Bench](https://github.com/harbor-framework/terminal-bench), and [Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai).
 
-> **Simpler is enough:** Do not invent an incompatible custom task format if an established one fits. Harbor's `task.toml` + `environment/` + `tests/` pattern already separates agent workspace from verification scripts.
+> **Simpler is enough:** Reuse an existing task layout (like Harbor's `task.toml`, `environment/`, and `tests/`) instead of inventing an incompatible custom format.
 
-An independent verifier runs *outside* the agent's writable filesystem and distinguishes **six outcomes**:
+Just like your Recipe Box FastAPI backend never trusts raw frontend data, a **trusted verifier runs outside the agent's writable disk** and sorts every attempt into six clean buckets:
 
-| Outcome | Meaning | Action for learner &amp; ops |
+| Verifier outcome | What happened | Action for learner |
 |---|---|---|
-| `correct` | Solution passes trusted checks | Positive learning signal |
-| `incorrect` | Valid run, failed specification | Negative learning signal |
-| `partial` | Graded milestone or property score | Shaped / intermediate reward |
-| `invalid_action` | Malformed tool call or policy denial | Policy/format penalty |
-| `infrastructure_failure` | Host crash, OOM, image pull failure | **Exclude from RL update**; retry in healthy sandbox |
-| `verification_failure` | Broken grader or inconsistent test | **Exclude from RL update**; alert maintainer |
+| `correct` | Passed hidden tests | Positive reward |
+| `incorrect` | Ran cleanly, failed tests | Negative reward |
+| `partial` | Passed some milestones | Partial reward |
+| `invalid_action` | Bad tool syntax or denied access | Format/policy penalty |
+| `infrastructure_failure` | Host crashed or image pull failed | **Exclude &amp; retry** (never train on it!) |
+| `verification_failure` | Buggy test suite or broken grader | **Exclude &amp; alert engineer** |
 
-## Six planes, unified state, and cross-model K_t
+## The Rewind Wall: unified state and cross-model K_t
 
-Separating a distributed AI operating system into six planes—**Control**, **Compute**, **Data**, **State**, **Trust**, and **Observability**—keeps lightweight leases and status in PostgreSQL/NATS while heavy weights, KV blocks, and snapshots flow over dedicated object/memory transports.
-
-A running trajectory is a six-part versioned tuple:
+Think of a concrete bug-fix story: an agent inside a sandbox edits `app.py` (local disk), builds a KV scratchpad while reading logs, and sends an external HTTP webhook. Every piece of that running rollout fits in a six-part tuple:
 
 `S_t = (θ_v, K_t, H_t, E_t, Q_t, R_t)`
 
-where `θ_v` is policy version, `K_t` is KV state, `H_t` is exact token/observation history, `E_t` is environment state, `Q_t` is pending tool operations, and `R_t` is RNG and runtime metadata.
+- `θ_v` = policy weight version · `K_t` = KV scratchpad · `H_t` = exact token/observation history
+- `E_t` = sandbox filesystem · `Q_t` = pending tool calls · `R_t` = random seed &amp; metadata
 
 <figure class="course-diagram">
-  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Unified state S_t and trusted verifier diagram, scroll horizontally">
-    <img src="../assets/diagrams/aisys-unified-state.svg" alt="Shows reversible local state theta_v, K_t, H_t, E_t, Q_t, R_t on the left, trusted verifier boundary on the right, and irreversible external side effects at the bottom." width="640" height="460">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="The Rewind Wall diagram separating local state from external side effects, scroll horizontally">
+    <img src="../assets/diagrams/aisys-unified-state.svg" alt="Left box shows reversible local state E_t, K_t, H_t, theta_v inside the sandbox. Right box shows irreversible external effects: email sent, remote DB row, payment call. Bottom box shows the locked verifier boundary outside the agent disk." width="640" height="480">
   </div>
-  <figcaption><strong>Reversible state vs. external world.</strong> Only local state (<code>E_t</code>, <code>K_t</code>) can be cleanly forked or rolled back. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-unified-state.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>The Rewind Wall.</strong> Only local state on the left (<code>E_t</code>, <code>K_t</code>) can be cleanly snapshotted or forked. External side effects require idempotency keys or mocked boundaries. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-unified-state.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
 <summary>Text version of the diagram</summary>
 
-Local reversible state holds `θ_v` (policy version), `K_t` (KV cache or translated latent state), `H_t` (exact token IDs and logprobs), `E_t` (CoW sandbox disk), and `Q_t`/`R_t` (pending tools and RNG metadata). An isolated verifier checks outputs outside the agent's writable scope, separating agent outcomes from infrastructure/verifier faults. At the bottom, a hard boundary warns that restoring `E_t` never reverses external API or remote database mutations.
+A dashed vertical Sandbox Wall splits two worlds. On the left (`Inside: CAN rewind`), `E_t` (local sandbox files), `K_t` (KV scratchpad), `H_t` (exact token IDs), `θ_v` (pinned policy version), and `Q_t`/`R_t` (queue and RNG seed) can be snapshotted and forked safely. On the right (`Outside: CANNOT rewind`), sent emails, remote database rows, and payment or webhook API calls cannot be undone by disk rewind and require idempotency keys. Below both, a Locked Verifier Boundary sits outside the agent's writable disk to separate wrong answers from broken sandboxes.
 
 </details>
 
-### What happens when `K_t` crosses models?
-In multi-agent swarms, *Plato's Key* and *Speculative Encoding* turn `K_t` from a single-model artifact into a **translatable latent state**:
-
-- **Linear chaining vs. learned translation:** *Plato's Key* reports that chaining closed-form Procrustes rotations `A → B → C` retains `~99%` of direct `A → C` transfer accuracy (and can surface stored "dark memories" without weight updates). *Speculative Encoding*'s 2.35B MoE translator pushes absolute single-hop accuracy far higher (`96.9%` reported), yet multi-hop chains must verify against compounding loss (`0.969^k` in a simple independence model) and enforce strict **multi-tenant cache isolation** so one user's translated `K_t` never leaks into another's context.
+### Connecting `K_t` to Plato's Key and Speculative Encoding
+When two different models collaborate on one task, `K_t` is no longer locked to one model:
+- **Linear chaining vs. learned translation:** *Plato's Key* reports that chaining closed-form Procrustes rotations `A → B → C` keeps `~99%` of direct `A → C` transfer accuracy (and surfaces dormant "dark memories" without weight changes). *Speculative Encoding*'s 2.35B MoE translator delivers high single-hop serving accuracy (`96.9%` reported), yet multi-hop pipelines must enforce two safeguards: (1) check accuracy decay over chained hops (`0.969^k` in a simple model), and (2) enforce **tenant isolation** on `K_t` so one user's translated KV cache never leaks to another user.
 
 ## Versioned trajectory contract, recovery, and tracing
 
-Reconstructing RL batches from plain text introduces silent tokenization and probability errors. Every trajectory sent from the rollout engine to the learner must store exact integer `token_ids`, `behavior_logprobs`, `token_policy_versions`, `action_mask` (separating model tokens from tool observations), `environment_snapshot_id`, and `verifier_version`.
+If you save only plain text from a rollout and re-tokenize it on the trainer, subtle whitespace or tokenizer differences break token alignment and `logprobs`. Every completed trajectory must pass **five exact fields**:
 
-- **Failure recovery:** Design for at-least-once delivery with idempotent attempts, lease IDs, and independent recovery—replacing a crashed inference replica or restoring a sandbox snapshot without aborting the entire training run.
-- **Observability chain:** Link every metric (`MFU`, `TTFT`, `TPOT`, `policy_lag`, `snapshot_hit_rate`, `cost_per_success`) across one trace ID: `Experiment → Run → Policy → Task → Group → Trajectory → Inference → Tool → Sandbox → Verifier → Batch → Step`.
+`token_ids` · `behavior_logprobs` · `token_policy_versions` · `action_mask` (`True` for model tokens, `False` for tool outputs) · `verifier_version`
 
-## Build roadmap, experimental matrix, and open research
+- **Independent recovery:** Design for *at-least-once* delivery with unique attempt IDs and leases so a crashed inference replica or sandbox restarts cleanly without aborting the whole run.
+- **One end-to-end trace:** Connect every metric (`MFU`, `TTFT`, `policy_lag`, `snapshot_hit_rate`, `cost_per_success`) along one chain: `Experiment → Run → Policy → Task → Group → Trajectory → Inference → Tool → Sandbox → Verifier → Batch → Step`.
 
-### Practical 4-milestone build path (14 phases distilled)
-1. **Numerical foundation (Phases 0–2):** One-command local dev env, tiny PyTorch training + checkpoint restore, inference server parity check (same tokens and logits).
-2. **Environments before agents (Phases 3–5):** Isolated sandbox runner, Harbor task + trusted verifier, full multi-turn trajectory recorder.
-3. **Synchronous then async RL (Phases 6–8):** Baseline synchronous GRPO (`Prime-RL`, `verl`, or `TRL`), then bounded async queues, staleness limits, and atomic weight publication.
-4. **Forkable state &amp; resilience (Phases 9–14):** Prepared snapshots, CoW forks, fault injection, independent fleet scaling, and cost-per-success telemetry.
+## Practical roadmap, experiments, and open challenges
 
-### Core experimental matrix (measure learning quality, not speed alone)
-An infrastructure speedup only counts if it reaches equivalent or better **held-out evaluation scores with fewer dollars, seconds, or joules**:
-- Cold provisioning vs. prepared snapshots · Clean rebuilds vs. content-addressed build cache · Independent sandboxes vs. CoW forks · Raw `N×` re-prefill vs. Speculative Encoding (checking multi-hop accuracy floor!) · FIFO vs. staleness-aware scheduling · Restart-from-zero vs. checkpoint/resume.
+### Four-milestone build path (14 phases simplified)
+1. **Numerical foundation (Phases 0–2):** One-command local setup, small PyTorch training + checkpoint restore, and token/logit parity check with vLLM/SGLang.
+2. **Environments before agents (Phases 3–5):** Isolated sandbox runner, Harbor task + trusted verifier, and exact multi-turn trajectory recording.
+3. **Sync then async RL (Phases 6–8):** Baseline synchronous GRPO (`Prime-RL`, `verl`, or `TRL`), then bounded async queues, staleness caps, and atomic weight sync.
+4. **Forkable state &amp; resilience (Phases 9–14):** Prepared snapshots, CoW forks, fault injection, independent fleet scaling, and end-to-end cost-per-success tracking.
 
-### Open research frontiers &amp; optional 12-week study path
-Key unsolved problems include **consistent unified state**, **forkable reasoning trees**, **policy-aware scheduling without selection bias**, **exact numerical parity**, **cheat-proof verifiers**, **continual learning**, **secure multi-tenant KV caching**, and **useful intelligence per joule**.
+### Experimental matrix (speed only counts if quality holds!)
+Every infra speedup must be tested against **held-out task accuracy per dollar and per second**, never isolated latency alone:
+- Cold containers vs. prepared snapshots · Clean rebuilds vs. content-addressed build caches · Independent sandboxes vs. CoW forks · Raw `N×` text re-prefill vs. Speculative Encoding (auditing multi-hop accuracy!) · FIFO vs. staleness-aware scheduling · Restart-from-zero vs. checkpoint/resume.
 
-If you want a post-course self-study arc: **Weeks 1–3** performance math, GPU kernels, and TorchTitan; **Weeks 4–5** minimal inference engine with paged KV; **Weeks 6–7** sync GRPO → async staleness; **Weeks 8–10** Harbor/OpenEnv, CoW snapshots, and fault injection; **Weeks 11–12** policy-aware scheduling and end-to-end cost-vs-quality evaluation.
+### Open frontiers &amp; optional 12-week study plan
+Unsolved challenges include consistent unified state across external tools, forkable reasoning trees, bias-free policy-aware scheduling, exact numerical parity, cheat-proof verifiers, secure multi-tenant KV caches, and energy per solved task.
 
-## Python 3.14 lab: trajectory parity and multi-hop verifier
+For self-study after EASS: **Weeks 1–3** performance math, GPU kernels, TorchTitan; **Weeks 4–5** minimal paged-KV inference engine; **Weeks 6–7** sync GRPO → async staleness; **Weeks 8–10** Harbor/OpenEnv, CoW snapshots, fault injection; **Weeks 11–12** policy-aware scheduling and full cost-vs-quality benchmarks.
 
-Save both files below into a scratch folder and run `python3 -m unittest -v` (Python 3.14 stdlib only). It enforces the Versioned Trajectory data contract, verifier pinning, infra-failure exclusion, and a multi-hop Speculative Encoding accuracy gate.
+## Python 3.14 lab: trajectory contract and multi-hop gate
+
+Read the plain-English rules before the code:
+1. `token_ids`, `behavior_logprobs`, `token_policy_versions`, and `action_mask` must all have the **exact same length** (otherwise training updates align the wrong probability with the wrong word!).
+2. At least one token must have `action_mask = True` (the model actually wrote something).
+3. `verifier_version` must match the trainer's expected grader version.
+4. `infrastructure_failure` and `verification_failure` are cleanly excluded (`False`) instead of raising a crash or training on bad data.
+5. Multi-hop translated KV (`kv_hops > 0`) is rejected for re-prefill if `base_accuracy × 0.969^kv_hops` drops below `min_accuracy_floor`.
+
+<details markdown="1">
+<summary>New Python syntax used here</summary>
+
+- `@dataclass(frozen=True)`: creates an immutable data record whose fields cannot be accidentally modified after grading.
+- `tuple[bool, str]`: returns both a True/False decision and a human-readable reason string.
+
+</details>
+
+Save both files in a new folder and run `python3 trajectory_verifier.py` first to see the decision trace, then `python3 -m unittest -v` for all eight checks.
 
 <figure class="file-example file-example--long" markdown="1">
 <figcaption><span class="file-example-action">File example</span> <span class="file-example-path">trajectory_verifier.py</span></figcaption>
@@ -147,6 +174,7 @@ class Trajectory:
     token_ids: list[int]
     behavior_logprobs: list[float]
     token_policy_versions: list[int]
+    # True = token generated by the model; False = token pasted by a tool/environment
     action_mask: list[bool]
     outcome: str
     reward: float | None
@@ -186,6 +214,16 @@ def admit_for_training(
     if traj.kv_hops > 0 and estimated_acc < min_accuracy_floor:
         return False, f"re_prefill_required:{estimated_acc:.3f}<{min_accuracy_floor:.3f}"
     return True, "admitted"
+
+
+if __name__ == "__main__":
+    samples = [
+        Trajectory("t1", "task-1", "v1.2", [10, 11, 12], [-0.2, -0.4, -0.1], [7, 7, 7], [True, False, True], "correct", 1.0, kv_hops=2),
+        Trajectory("t2", "task-1", "v1.2", [10, 11, 12], [-0.2, -0.4, -0.1], [7, 7, 7], [True, False, True], "correct", 1.0, kv_hops=6),
+        Trajectory("t3", "task-1", "v1.2", [10, 11], [-0.2, -0.4], [7, 7], [True, False], "infrastructure_failure", None, kv_hops=0),
+    ]
+    for item in samples:
+        print(item.trajectory_id, "->", admit_for_training(item, "v1.2"))
 ```
 
 </figure>
@@ -261,32 +299,41 @@ if __name__ == "__main__":
 
 </figure>
 
+**Break it on purpose:** Change `t2` in `trajectory_verifier.py` or pass `min_accuracy_floor=0.0` in `test_six_hop_speculative_encoding_triggers_reprefill_gate` to see what happens when the multi-hop drift gate is turned off. Restore it afterwards!
+
+<details markdown="1">
+<summary>Show what breaks</summary>
+
+Turning off the floor (`min_accuracy_floor=0.0`) lets a 6-hop chain (`~77.8%` synthetic accuracy) slip into the training batch without re-prefilling, causing `test_six_hop_speculative_encoding_triggers_reprefill_gate` to fail because `ok` becomes `True`.
+
+</details>
+
 ## Quick quiz
 
 <details markdown="1">
 <summary>Q1. Why must hidden verifier tests sit outside the agent's writable sandbox scope?</summary>
 
-If an agent can edit the test script or read hidden test fixtures, it can pass verification by modifying the grader instead of solving the task.
+If an agent can edit or read hidden test fixtures, it can pass verification by weakening the grader instead of solving the task.
 
 </details>
 
 <details markdown="1">
-<summary>Q2. Why does the Trajectory contract store token IDs and behavior_logprobs rather than plain text?</summary>
+<summary>Q2. Why store token_ids and behavior_logprobs instead of plain text?</summary>
 
-Re-tokenizing text on the learner can split tokens differently and alter sequence boundaries, while missing behavior logprobs make importance ratios `ρ_t` impossible to compute accurately.
+Re-tokenizing text on the trainer can change token splits and boundaries, and missing behavior probabilities break importance ratios `ρ_t`.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. What two risks appear when sharing translated KV state across multi-agent or multi-tenant swarms?</summary>
+<summary>Q3. Name two safeguards required when sharing translated KV state across swarms.</summary>
 
-Compounding accuracy drift across chained translations (`0.969^k` in a simple model) and cross-tenant information leakage if latent `K_t` blocks are reused without strict isolation boundaries.
+Check compounding accuracy across chained hops (`0.969^k` in a simple model) and isolate caches strictly between different users or tenants.
 
 </details>
 
 ## Curated bibliography and sources
 
-Checked **27 November 2026** (all tracking parameters removed; links verified against primary sources):
+Checked **27 November 2026** (tracking parameters removed; primary links verified):
 
 - **Foundational books:** [Google DeepMind — How to Scale Your Model](https://jax-ml.github.io/scaling-book/), [Chris Fregly — AI Systems Performance Engineering](https://github.com/cfregly/ai-performance-engineering), [Sutton &amp; Barto — Reinforcement Learning (2nd ed.)](http://incompleteideas.net/book/the-book-2nd.html), [Machine Learning Systems](https://mlsysbook.ai/), [Philip Kiely — Inference Engineering](https://www.baseten.co/inference-engineering/book/), [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/), [Systems Performance](https://www.brendangregg.com/systems-performance-2nd-edition-book.html).
 - **Courses:** [Stanford CS336](https://stanford-cs336.github.io/), [Harvard CS2680](https://cs2680.seas.harvard.edu/), [GPU MODE](https://github.com/gpu-mode/lectures).

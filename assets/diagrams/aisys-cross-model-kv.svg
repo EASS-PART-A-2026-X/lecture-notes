@@ -1,30 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="t d">
-  <title id="t">Three ways models share context: raw re-prefill, Plato's Key, and Speculative Encoding</title>
-  <desc id="d">Compares three ways heterogeneous models share a long document. Raw text re-prefill runs full O(N) prefill on every model. Stanford Plato's Key uses a closed-form Procrustes rotation plus global scale to prove latent states align geometrically without gradients. Ramp Labs Speculative Encoding uses a learned 2.35B MoE translator to convert hidden states directly, claiming up to 7.5x prefill speedup at 96.9% single-hop retention, while multi-hop chains still need verification.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500" role="img" aria-labelledby="t d">
+  <title id="t">Three ways different models share long-document context</title>
+  <desc id="d">Row 1 shows raw text re-prefill where Model A and Model B both spend full reading work on 64k tokens. Row 2 shows Stanford Plato's Key rotating and scaling tilted axes from Model A to upright axes in Model B with no training. Row 3 shows Ramp Labs Speculative Encoding using a 2.35B MoE translator so Model B starts almost immediately without re-reading raw text.</desc>
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
   </defs>
-  <rect width="640" height="420" fill="#ffffff"/>
+  <rect width="640" height="500" fill="#ffffff"/>
   <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
-    <text x="320" y="34" text-anchor="middle" font-size="22" font-weight="700">Sharing context across different models</text>
-    <text x="320" y="58" text-anchor="middle" font-size="16" fill="#535c6b">Same-model prefix cache fails when two agents run different model families.</text>
+    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">Sharing context across different models</text>
+    <text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">Same-model cache fails when two agents use different models.</text>
 
     <!-- Row 1: Raw Re-prefill -->
-    <rect x="28" y="80" width="584" height="88" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
-    <text x="46" y="108" font-size="18" font-weight="700" fill="#9b2c2c">1. Raw text re-prefill (baseline)</text>
-    <text x="46" y="133" font-size="16">Model A reads doc → sends raw text → Model B re-prefills all tokens</text>
-    <text x="46" y="156" font-size="16" fill="#535c6b">100% native baseline accuracy · pays full N × prefill latency on swarms</text>
+    <rect x="28" y="74" width="584" height="114" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
+    <text x="46" y="102" font-size="18" font-weight="700" fill="#9b2c2c">1. Raw text re-prefill (slow baseline)</text>
+    <rect x="46" y="116" width="212" height="36" rx="6" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.5"/>
+    <text x="152" y="140" text-anchor="middle" font-size="16">Model A reads 64k</text>
+    <path d="M258 134 H322" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="290" y="124" text-anchor="middle" font-size="16">text</text>
+    <rect x="328" y="116" width="212" height="36" rx="6" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.5"/>
+    <text x="434" y="140" text-anchor="middle" font-size="16">Model B reads 64k</text>
+    <text x="46" y="176" font-size="16" fill="#535c6b">100% baseline accuracy · pays full reading time twice</text>
 
-    <!-- Row 2: Plato's Key -->
-    <rect x="28" y="186" width="584" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
-    <text x="46" y="214" font-size="18" font-weight="700" fill="#1d4e89">2. Plato's Key (Stanford Hazy Research, Nov 2026)</text>
-    <text x="46" y="239" font-size="16">Closed-form Procrustes rotation + 1 scale (zero gradient descent)</text>
-    <text x="46" y="264" font-size="16" fill="#535c6b">Proves spaces align: 41% median swap (vs 55% self), ~99% A→B→C chaining</text>
+    <!-- Row 2: Plato's Key Geometry -->
+    <rect x="28" y="204" width="584" height="136" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="46" y="232" font-size="18" font-weight="700" fill="#1d4e89">2. Plato's Key (why sharing works)</text>
+    <!-- Tilted Axis A -->
+    <line x1="88" y1="304" x2="146" y2="288" stroke="#1d4e89" stroke-width="2"/>
+    <line x1="88" y1="304" x2="104" y2="250" stroke="#1d4e89" stroke-width="2"/>
+    <circle cx="132" cy="270" r="5" fill="#1d4e89"/>
+    <text x="115" y="324" text-anchor="middle" font-size="16" fill="#535c6b">Model A</text>
+    <!-- Rotate Arrow -->
+    <path d="M156 276 Q 214 246 272 276" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="214" y="256" text-anchor="middle" font-size="16">rotate</text>
+    <!-- Upright Axis B -->
+    <line x1="292" y1="304" x2="354" y2="304" stroke="#1d4e89" stroke-width="2"/>
+    <line x1="292" y1="304" x2="292" y2="246" stroke="#1d4e89" stroke-width="2"/>
+    <circle cx="336" cy="264" r="5" fill="#1d4e89"/>
+    <text x="322" y="324" text-anchor="middle" font-size="16" fill="#535c6b">Model B</text>
+    <!-- Explanation -->
+    <text x="394" y="268" font-size="16" font-weight="700">Closed-form alignment</text>
+    <text x="394" y="294" font-size="16">Zero training needed</text>
+    <text x="394" y="320" font-size="16" fill="#535c6b">~99% A→B→C chaining</text>
 
     <!-- Row 3: Speculative Encoding -->
-    <rect x="28" y="300" width="584" height="98" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
-    <text x="46" y="328" font-size="18" font-weight="700" fill="#22616b">3. Speculative Encoding (Ramp Labs, Nov 2026)</text>
-    <text x="46" y="353" font-size="16">Model A hidden states → 2.35B MoE translator → Model B KV/states</text>
-    <text x="46" y="378" font-size="16" fill="#535c6b">Reported: 96.9% acc, up to 7.5× prefill speedup · watch 0.969^k hop drift</text>
+    <rect x="28" y="356" width="584" height="122" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="46" y="384" font-size="18" font-weight="700" fill="#22616b">3. Speculative Encoding (fast serving)</text>
+    <rect x="46" y="400" width="184" height="36" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+    <text x="138" y="424" text-anchor="middle" font-size="16">A reads once</text>
+    <path d="M230 418 H258" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="264" y="400" width="144" height="36" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+    <text x="336" y="424" text-anchor="middle" font-size="16">2.35B MoE</text>
+    <path d="M408 418 H436" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="442" y="400" width="148" height="36" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+    <text x="516" y="424" text-anchor="middle" font-size="16" fill="#2a6a47">B ready fast</text>
+    <text x="46" y="462" font-size="16" fill="#535c6b">Up to 7.5× faster · check accuracy over hops</text>
   </g>
 </svg>

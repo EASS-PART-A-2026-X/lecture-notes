@@ -37,6 +37,20 @@ def run_lab(guide_rel: str, filenames: tuple[str, str], expected_tests: int) -> 
                 raise ValueError(f"{guide_rel}: expected exactly one complete {filename}, found {len(matches)}")
             ast.parse(matches[0], filename=filename)
             (Path(directory) / filename).write_text(matches[0], encoding="utf-8")
+        # Run the beginner demo entrypoint first
+        demo = subprocess.run(
+            [sys.executable, filenames[0]],
+            cwd=directory,
+            check=False,
+            text=True,
+            capture_output=True,
+            timeout=60,
+        )
+        print(demo.stdout, end="")
+        demo.check_returncode()
+        if not demo.stdout.strip():
+            raise RuntimeError(f"{guide_rel}: expected non-empty demo stdout from {filenames[0]}")
+        # Run the unittest suite
         result = subprocess.run(
             [sys.executable, "-m", "unittest", "-v"],
             cwd=directory,
@@ -57,7 +71,7 @@ def main() -> None:
     for guide_rel, filenames, expected_tests in LABS:
         run_lab(guide_rel, filenames, expected_tests)
         total += expected_tests
-    print(f"PASS: {total} printed AI-systems lab checks (stdlib only; no GPU or model)")
+    print(f"PASS: {total} printed AI-systems lab checks + demos (stdlib only; no GPU or model)")
 
 
 if __name__ == "__main__":

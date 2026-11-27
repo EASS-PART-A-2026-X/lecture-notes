@@ -4,117 +4,132 @@
 
 [Course home](../README.md) · [Part 1 · Building and serving models](ai-systems-01-model-and-serving.md) · [Part 3 · Environments, state and roadmap](ai-systems-03-environments-state-roadmap.md)
 
-> **Optional; not graded:** This bonus lesson sits outside the EASS Class X syllabus and requires zero GPUs, cloud clusters, or paid accounts. Its interactive decision lab and Python 3.14 state-machine exercises run purely on synthetic receipts on your own machine.
+> **Optional; not graded:** This bonus lesson sits outside the EASS Class X syllabus and requires zero GPUs, cloud clusters, or paid accounts. Every interactive lab and Python 3.14 exercise runs locally on your own computer.
 
-**You will be able to:** contrast preference optimization with online RL (PPO, GRPO, RLVR), trace a multi-turn rollout through its durable state machine, explain why faster learner updates or extra inference GPUs can *increase* policy staleness, compare 6 KV-cache consistency policies across weight updates, and run an offline Python rollout-FSM verifier.
+**You will be able to:** compute GRPO group scores by hand, trace an agent rollout through its safety state machine, explain why faster learner updates can make training trajectories *staler*, compare 6 KV-cache rules across weight updates, and run and break a zero-GPU Python rollout state machine.
 
-**Predict first:** A team adds extra learner GPUs so optimizer steps finish twice as fast, while each multi-turn coding rollout still takes `90` seconds in a test sandbox. Does policy staleness go down or up?
+**Predict first:** Suppose your learner updates the model's weights every `30` seconds, while each coding agent takes `90` seconds to edit files and run `pytest`. If you double your training GPUs so the learner updates every `15` seconds, do finished rollouts arrive fresher or *more stale*?
 
 <details markdown="1">
 <summary>Check your prediction</summary>
 
-Staleness goes **up**! An approximate measure is `staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`. Halving `T_learner_step` doubles the number of policy versions that elapse while that single `90`-second rollout is still running, making the completed trajectory *more* off-policy when it reaches the learner.
+**More stale!** Think of it like cooking while the recipe book is rewritten on the wall: `staleness ≈ lag + rollout_time / learner_step_time`. While one `90`-second rollout is still running tests, a `30`-second learner changes the weights `3` times—but a `15`-second learner changes them `6` times!
+
+</details>
+
+<details markdown="1">
+<summary>Terms used on this page (plain English)</summary>
+
+- **Policy (`θ_v`):** the current version `v` of the model's weights making decisions.
+- **Rollout:** one complete multi-step attempt at a task (think → call tool → read test output → repeat → grade).
+- **Reward:** the grader's final score on a rollout (for example, `1.0` if tests pass, `0.0` if they fail).
+- **Advantage:** how much *better or worse* one try did compared to other tries on the same problem.
+- **Policy staleness:** how many weight updates happened between when a rollout started and when it reached the trainer.
+- **Logprob (`π`):** the model's exact probability score for each token it chose during a rollout.
+- **Importance ratio (`ρ_t`):** `new_prob / old_prob`—measures how much the current model differs from the older version that generated the rollout.
 
 </details>
 
 <details markdown="1" class="lecture-toc">
 <summary>On this page</summary>
 
-- [Stages 5–6: from imitation to verifiable exploration](#stages-56-from-imitation-to-verifiable-exploration)
-- [The durable rollout state machine](#the-durable-rollout-state-machine)
-- [Synchronous versus asynchronous RL and staleness](#synchronous-versus-asynchronous-rl-and-staleness)
-- [Weight synchronization and six KV-cache policies](#weight-synchronization-and-six-kv-cache-policies)
-- [Leading RL infrastructure projects](#leading-rl-infrastructure-projects)
-- [Lab: diagnose rollout receipts and staleness](#lab-diagnose-rollout-receipts-and-staleness)
-- [Python 3.14 lab: rollout state machine and GRPO group rules](#python-314-lab-rollout-state-machine-and-grpo-group-rules)
+- [Stages 5–6: learning by trying instead of copying](#stages-56-learning-by-trying-instead-of-copying)
+- [Worked-by-hand: GRPO group scoring](#worked-by-hand-grpo-group-scoring)
+- [Why rollouts wait and the three-exit safety gate](#why-rollouts-wait-and-the-three-exit-safety-gate)
+- [Sync vs. async RL and policy staleness](#sync-vs-async-rl-and-policy-staleness)
+- [Causal chain: weight updates, six KV policies, and logprob drift](#causal-chain-weight-updates-six-kv-policies-and-logprob-drift)
+- [Leading RL frameworks](#leading-rl-frameworks)
+- [Lab: diagnose rollout receipts](#lab-diagnose-rollout-receipts)
+- [Python 3.14 lab: rollout state machine and GRPO](#python-314-lab-rollout-state-machine-and-grpo)
 - [Quick quiz](#quick-quiz)
 - [Sources](#sources)
 
 </details>
 
-## Stages 5–6: from imitation to verifiable exploration
+## Stages 5–6: learning by trying instead of copying
 
-Supervised fine-tuning (Stage 4) trains a model to imitate static answers. Reinforcement learning (Stage 6) lets the model generate its *own* experience trajectories `τ ~ π_θ` and optimize expected return `J(θ) = E[R(τ)]`.
+In Part 1, SFT (Stage 4) taught the model by copying expert answers. In **Stage 5 (Preference optimization)** and **Stage 6 (Reinforcement learning)**, the model generates its own answers and learns from what actually worked:
 
-| Method | Core steps &amp; innovation | Main problem &amp; how addressed | Current status |
+| Method | Simple core steps | Key innovation &amp; main problem | How addressed &amp; status |
 |---|---|---|---|
-| **DPO (Stage 5)** | Optimize directly on `(chosen, rejected)` pairs without a separate online RL loop | Off-policy drift as the policy moves away from the preference dataset → iterative or online variants | Mature, lightweight alignment baseline |
-| **PPO** | Sample responses, score with critic + KL penalty, clip policy updates | High critic memory cost at LLM scale → group baselines or value-free estimators | Widely used; often heavier than GRPO for verifiable tasks |
-| **GRPO** | Generate a group of candidates per prompt; compute relative advantage `A_i = (r_i − r̄) / (σ_r + ε)` | Straggler barriers wait for the slowest candidate; zero variance (`σ_r = 0`) yields zero signal | Core workhorse for reasoning &amp; math RL |
-| **RLVR** | Replace noisy learned reward models with deterministic unit tests, proofs, or exact checkers | Reward hacking &amp; slow verification sandboxes → isolated trusted verifiers | Standard for coding, math, and formal tasks |
-| **Agentic RL** | Multi-turn loop: sample tokens → invoke tool → observe sandbox → repeat → verify | Variable tool latency, environment crashes, side effects → durable FSM + snapshots | Active frontier (`verl`, `AReaL`, `Prime-RL`) |
-| **On-policy distillation** | Student generates rollouts; teacher grades or guides student trajectories on-policy | High cost of teacher rollouts alone → combine compact student exploration with teacher supervision | Growing alternative to pure SFT distillation |
+| **DPO (Stage 5)** | Show pairs `(better_answer, worse_answer)` and push probability toward the better one | Skips training a separate critic model; **problem:** fixed dataset drifts off-policy | Use iterative/online DPO when answers shift (**Standard lightweight alignment**) |
+| **PPO** | Generate answers, score with reward + value critic, clip big updates | Stable updates; **problem:** value critic uses as much GPU memory as the main model | Replace critic with group averages (**Mature; heavier than GRPO**) |
+| **GRPO** | Generate `k` tries per problem and compare each try against the group's own average | Cuts memory in half (no critic); **problem:** fast tries sit idle waiting for slow ones | Bounded async queues &amp; group-aware scheduling (**Core reasoning RL method**) |
+| **RLVR** | Grade answers with deterministic checks (unit tests, math solvers, proofs) | Hard to trick compared to LLM judges; **problem:** sandbox crashes mimic wrong answers | Separate `FAILED_INFRASTRUCTURE` from reward `0` (**Standard for code &amp; math**) |
+| **Agentic RL** | Loop over thinking, editing files, running tools, and grading | Learns multi-turn debugging; **problem:** long variable times &amp; irreversible actions | Durable state machine + snapshots (**Active frontier**) |
+| **On-policy distillation** | Small student generates tries; smart teacher grades or guides them live | Better than static teacher essays; **problem:** needs teacher compute during training | Run alongside verifiable graders (**Growing efficiency method**) |
 
-## The durable rollout state machine
+## Worked-by-hand: GRPO group scoring
 
-In agentic RL, a rollout is not a single completion—it is a long-running distributed workflow spanning inference servers, tool sandboxes, and verifiers. Production systems persist explicit state transitions so crashes never corrupt rewards:
+Before looking at any formula, grade four tries at the *same* coding prompt by hand. Suppose the unit tests return rewards `[1.0, 0.0, 1.0, 0.0]`:
+
+1. **Group average (`r̄`):** `(1 + 0 + 1 + 0) / 4 = 0.5`.
+2. **Group spread (`σ_r`):** each try is `0.5` away from the average (`σ_r = 0.5`).
+3. **Relative advantage (`A_i = (r_i − r̄) / (σ_r + ε)`):**
+   - Passing tries (`1.0`): `(1.0 − 0.5) / 0.5 = +1.0` (reinforce!).
+   - Failing tries (`0.0`): `(0.0 − 0.5) / 0.5 = -1.0` (discourage!).
+
+What if *all four* tries pass (`[1, 1, 1, 1]`) or *all four* fail (`[0, 0, 0, 0]`)? Then `σ_r = 0`: every advantage becomes `0.0`, and that group teaches the model nothing!
+
+## Why rollouts wait and the three-exit safety gate
+
+Unlike a single chat reply, an agent rollout moves through a durable state machine across inference GPUs, sandboxes, and graders:
 
 `CREATED → ADMITTED → ENVIRONMENT_READY → SAMPLING ⇄ EXECUTING_TOOL → VERIFYING → COMPLETED → ACCEPTED_FOR_TRAINING → CONSUMED`
 
-Recoverable and terminal side states are equally essential: `FAILED_INFRASTRUCTURE`, `CANCELLED`, `TIMED_OUT`, `PAUSED`, `CHECKPOINTED`, `RESUMING`, and `REJECTED_AS_STALE`.
+Three critical side exits prevent corrupted training data:
+- **`FAILED_INFRASTRUCTURE`:** Docker or disk crashed. **Never** pass this to GRPO with reward `0.0`—retry it in a healthy sandbox.
+- **`REJECTED_AS_STALE`:** Too many weight updates happened while the rollout was running.
+- **`CHECKPOINTED` / `RESUMING`:** Save the sandbox state mid-run so an older rollout can switch cleanly to newer weights.
 
 <figure class="course-diagram course-diagram--wide">
-  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Rollout state machine and sync versus async RL diagram, scroll horizontally">
-    <img src="../assets/diagrams/aisys-rollout-lifecycle.svg" alt="Top shows rollout transitions from CREATED to CONSUMED with separate branches for FAILED_INFRASTRUCTURE and REJECTED_AS_STALE; bottom compares sync barriers vs async overlap." width="960" height="460">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="GRPO sync barrier and three-exit rollout gate diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-rollout-lifecycle.svg" alt="Top timeline bars show Try 1 and Try 2 sitting idle waiting for Try 3 at a sync barrier. Bottom gate routes finished tries to Fresh (train), Too Old (drop or checkpoint), or Sandbox Crashed (retry, never reward 0)." width="960" height="500">
   </div>
-  <figcaption><strong>Separate agent failure from infrastructure failure.</strong> A crashed sandbox must route to <code>FAILED_INFRASTRUCTURE</code> and retry—never into the learner buffer with reward 0. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-rollout-lifecycle.svg">Open the diagram at full size</a>.</figcaption>
+  <figcaption><strong>Two core ideas in one picture.</strong> Top: why synchronous groups waste GPU time waiting on the slowest try. Bottom: why a crashed sandbox must never become a negative training example. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-rollout-lifecycle.svg">Open the diagram at full size</a>.</figcaption>
 </figure>
 
 <details markdown="1">
 <summary>Text version of the diagram</summary>
 
-Happy path: `CREATED` / `ADMITTED` → `ENVIRONMENT_READY` → `SAMPLING ⇄ EXECUTING_TOOL` under policy `θ_v` → `VERIFYING` / `COMPLETED` → `ACCEPTED_FOR_TRAINING` → `CONSUMED`. Side exits catch `FAILED_INFRASTRUCTURE` (retried, never scored as reward 0) and `REJECTED_AS_STALE` (or checkpointed/resumed). Below, synchronous RL blocks on the slowest GRPO straggler; asynchronous RL overlaps sampling and learning under bounded staleness.
+Top (Sync barrier): Three parallel tries start together. Try 1 and Try 2 finish thinking and testing quickly, then sit idle waiting for Try 3's slow code compile and test before the group can move past the sync barrier. Bottom (Safety gate): Every finished try checks age and health and routes to one of three exits—green `Fresh & graded` admits into the training batch, ochre `Too old (stale)` drops or checkpoints and resumes, and red `Sandbox crashed` retries cleanly without assigning reward `0`.
 
 </details>
 
-Four rollout challenges show up immediately in practice:
-1. **GRPO group barriers:** fast completions sit idle waiting for the slowest multi-turn candidate in the same prompt group.
-2. **Infrastructure vs. agent failure:** if a container times out because of host disk pressure, scoring the agent `0` teaches the wrong lesson.
-3. **Cache invalidation:** updating sampler weights invalidates KV prefixes from earlier steps unless managed explicitly.
-4. **Reward corruption &amp; nondeterminism:** mismatched tokenizers or logprobs between sampler and learner silently bias policy gradients.
+## Sync vs. async RL and policy staleness
 
-## Synchronous versus asynchronous RL and staleness
+- **Synchronous RL:** Wait for all tries in a batch → grade → train → copy new weights → repeat. Easy to debug, zero staleness, but GPUs sit idle at barriers.
+- **Asynchronous RL:** Inference samplers keep generating while the learner keeps training and pushing new weights `θ_v → θ_{v+1}`. GPUs stay busy, **but** finished trajectories come from older weight versions.
 
-- **Synchronous RL:** generate an entire batch → wait for every straggler → verify → update weights → broadcast weights → repeat. Simple and exact, but GPUs sit idle during tool calls and tail latencies.
-- **Asynchronous RL:** samplers continuously stream trajectories into a bounded queue while the learner continuously updates and publishes new policy versions `θ_v → θ_{v+1}`. Higher utilization, but trajectories become **off-policy**, governed by the importance ratio:
+The learner corrects for age using the **importance ratio** `ρ_t = π_new(a_t | s_t) / π_old(a_t | s_t)`. If trajectories are too old (`staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`), `ρ_t` explodes or collapses and training destabilizes.
 
-`ρ_t = π_θ(a_t | s_t) / π_behavior(a_t | s_t)`
+> **Pitfall:** Never "fix" stragglers by silently dropping slow rollouts or only picking the fastest tasks first. As Microsoft's Rocket engineering report highlights, dropping slow tries biases the model away from hard, multi-step problems. **AReaL** keeps training stable with explicit staleness bounds and bounded off-policy clipping.
 
-When `ρ_t` diverges too far, gradient updates destabilize. **AReaL** addresses this with bounded off-policy clipping and explicit staleness limits; **Microsoft Rocket** highlights two subtle operational truths:
+## Causal chain: weight updates, six KV policies, and logprob drift
 
-1. **Counterintuitive staleness:** adding inference GPUs or speeding up learner steps without shortening individual tool trajectories can *increase* policy lag (`staleness ≈ sampler_lag + T_sample_to_train / T_learner_step`).
-2. **Scheduler selection bias:** blindly dropping slow or failed rollouts—or always scheduling shortest-first—skews the training distribution toward easy, short answers. Healthy schedulers balance age, group completion, and cache locality without silently censoring hard tasks.
+Notice how three parts of the knowledge graph connect in a chain:
 
-## Weight synchronization and six KV-cache policies
+1. **Weight sync (`θ_v → θ_{v+1}`):** Training shards weights one way (for example FSDP); inference shards them another way (tensor parallelism). Moving weights requires resharding and integrity checks—and as Thinking Machines showed in *Defeating Nondeterminism in LLM Inference*, even changing batch sizes slightly shifts floating-point outputs.
+2. **KV scratchpad mismatch:** A KV cache built under old weights `θ_v` does not match `θ_{v+1}`. You must pick one explicit consistency rule:
+   - **Flush** KV on every update (cleanest parity, extra prefill cost).
+   - **Pin** active rollouts to `θ_v` until they finish (clean inside one try, raises lag).
+   - **Recompute** KV under `θ_{v+1}` (exact parity, extra compute).
+   - **Multi-version pool** serving `θ_v` and `θ_{v+1}` briefly (uses more GPU memory).
+   - **Retain deliberately** across tiny updates (e.g., `slime` option; faster, approximate).
+   - **Cross-model / cross-version translation** (*Plato's Key* linear baseline vs. *Speculative Encoding* 2.35B MoE): skips re-prefill across heterogeneous samplers, **but** its ~3.1% single-hop gap shifts `π_old` unless you record exact emitted logprobs or recompute before training!
+3. **Importance ratio `ρ_t` drift:** If KV state or floating-point precision differs between sampler and learner without logging exact behavior `logprobs`, `ρ_t` becomes inaccurate.
 
-When the learner finishes an optimizer step, weights must move from training layout (for example, FSDP) to inference layout (tensor/expert parallelism), pass integrity checks, and activate atomically. Even with identical weights, differing batch shapes or kernels can change floating-point outputs (documented in Thinking Machines' *Defeating Nondeterminism in LLM Inference*).
+## Leading RL frameworks
 
-Worse, KV state `K_t` built under `θ_v` does not strictly match `θ_{v+1}`. Every system must choose an explicit **KV-cache consistency policy**:
+- **[AReaL](https://github.com/areal-project/AReaL):** Asynchronous RL built around explicit staleness bounds and off-policy safety.
+- **[verl](https://github.com/verl-project/verl):** Modular HybridFlow dataflows for PPO, GRPO, and multi-turn agents.
+- **[slime](https://github.com/THUDM/slime):** Tight Megatron-LM + SGLang integration with fast weight sync and explicit KV policies.
+- **[Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl):** Clean three-way split (inference server, orchestrator, trainer) with small multi-GPU starters.
+- **[TorchTitan](https://github.com/pytorch/torchtitan) / [TRL](https://github.com/huggingface/trl):** Unified PyTorch model definitions (`TitanRL`) and approachable post-training experimentation.
 
-| Policy | Mechanism | Trade-off |
-|---|---|---|
-| **1. Flush on update** | Drop KV caches whenever weights advance | Cleanest parity; highest prefill recomputation |
-| **2. Pin trajectory** | Finish active trajectory on its starting `θ_v` | Consistent within episode; increases policy lag |
-| **3. Recompute KV** | Re-prefill prompt + history under `θ_{v+1}` | Exact parity; extra prefill compute |
-| **4. Multi-version pool** | Serve multiple active `θ_v` replicas briefly | Smooth transitions; multiplies HBM demand |
-| **5. Retain deliberately** | Keep prior KV across small steps (e.g., `slime` option) | High throughput; approximate semantics |
-| **6. Cross-model / cross-version translation** | Translate hidden states/KV across heterogeneous models (e.g., *Plato's Key* linear baseline vs. *Speculative Encoding* 2.35B MoE) | Cuts multi-model swarm prefill up to 7.5×, **but** a ~3.1% accuracy gap shifts `π_behavior` and `ρ_t` unless exact behavior logprobs are recorded or recomputed |
+## Lab: diagnose rollout receipts
 
-> **Pitfall:** Never mix translated KV states into an off-policy RL batch while pretending `π_behavior` came from the native target weights. Record the exact behavior logprobs emitted during sampling and treat any latent translation as an explicit approximate-KV policy.
-
-## Leading RL infrastructure projects
-
-| Project | Core architectural strength | When to study it |
-|---|---|---|
-| **[AReaL](https://github.com/areal-project/AReaL)** | Asynchronous RL with bounded off-policy loss &amp; multi-version trajectories | Studying staleness limits &amp; decoupled sampling |
-| **[verl](https://github.com/verl-project/verl)** | HybridFlow controller–worker RL dataflows | Composing flexible PPO/GRPO pipelines |
-| **[slime](https://github.com/THUDM/slime)** | Tight Megatron-LM + SGLang integration | High-throughput weight sync &amp; deliberate KV retention |
-| **[Prime-RL](https://github.com/PrimeIntellect-ai/prime-rl)** | Clean 3-way split: inference, orchestrator, trainer | Minimal multi-GPU async &amp; environment-centric RL |
-| **[TorchTitan](https://github.com/pytorch/torchtitan) / [TRL](https://github.com/huggingface/trl)** | Unified model definitions (`TitanRL`) &amp; fast prototyping | Avoiding training–inference architecture drift |
-
-## Lab: diagnose rollout receipts and staleness
-
-Use this fixed-receipt decision lab to practice separating infrastructure failures, KV parity violations, active checkpoints, staleness rejections, and GRPO straggler barriers.
+Pick the safe scheduler decision for each synthetic rollout receipt. Remember the priority order: **exclude cluster crashes first → check active checkpoints → check KV parity → check staleness limit → check GRPO group**.
 
 <div class="sim" id="sim-aisys-rl" role="group" aria-label="RL rollout receipt decision lab" markdown="1">
 
@@ -122,14 +137,29 @@ Use this fixed-receipt decision lab to practice separating infrastructure failur
 
 <div class="sim-fallback" markdown="1">
 
-**Worked example without JavaScript:** A completed trajectory shows `outcome = "infra_failure"` (`status = "failed_infra"`) with `policyLag = 1 <= 2`. **Exclude infra failure &amp; retry** next—never admit a container crash into GRPO with reward `0`, because that penalizes the policy for a cluster fault. Similarly, when `kvConsistent = false` (after a weight update or unverified cross-model translation), **flush KV or recompute logits** before relying on `ρ_t`.
+**Worked example without JavaScript:** A rollout reports `status = "failed_infra"`, `outcome = "infra_failure"`, and `policyLag = 1 <= 2`. **Exclude infra failure &amp; retry** next—never assign reward `0`, because a Docker or disk crash is not a model mistake. When `kvConsistent = false` (after a weight update or unverified cross-model translation), **flush KV or recompute logits** so `ρ_t` stays accurate.
 
 </div>
 </div>
 
-## Python 3.14 lab: rollout state machine and GRPO group rules
+## Python 3.14 lab: rollout state machine and GRPO
 
-Save both files below into a scratch folder and run `python3 -m unittest -v` (zero external packages, zero GPUs). Notice how `rollout_fsm.py` enforces legal transitions, blocks stale trajectories, isolates `FAILED_INFRASTRUCTURE` from reward averages, and handles zero-variance GRPO groups cleanly.
+Read the plain-English rules before the code:
+1. A rollout starts in `CREATED` and can only move along valid edges (`ALLOWED_TRANSITIONS`).
+2. Once a rollout reaches a terminal state (`CONSUMED`, `FAILED_INFRASTRUCTURE`, `REJECTED_AS_STALE`, etc.), it cannot re-enter training.
+3. Completed rollouts older than `max_staleness` become `REJECTED_AS_STALE`.
+4. `grpo_advantages` scores *only* `ACCEPTED_FOR_TRAINING` rollouts (never crashed sandboxes) and returns `0.0` when every passing/failing score is identical (`std == 0`).
+
+<details markdown="1">
+<summary>New Python syntax used here</summary>
+
+- `@dataclass`: automatically writes `__init__` for a plain data-holding class.
+- `float | None`: type hint meaning "either a decimal number or `None`".
+- `unittest.TestCase`: Python's built-in test runner (`python3 -m unittest -v`), zero `pip install` needed.
+
+</details>
+
+Save both files in a new folder and run `python3 rollout_fsm.py` first to see the live story, then `python3 -m unittest -v` to run all eight checks.
 
 <figure class="file-example file-example--long" markdown="1">
 <figcaption><span class="file-example-action">File example</span> <span class="file-example-path">rollout_fsm.py</span></figcaption>
@@ -140,6 +170,7 @@ Save both files below into a scratch folder and run `python3 -m unittest -v` (ze
 
 from dataclasses import dataclass, field
 
+# Valid next steps from each state (prevents skipped verification or zombie retries)
 ALLOWED_TRANSITIONS = {
     "CREATED": {"ADMITTED", "CANCELLED"},
     "ADMITTED": {"ENVIRONMENT_READY", "FAILED_INFRASTRUCTURE", "CANCELLED"},
@@ -170,7 +201,7 @@ class RolloutRecord:
 
     def transition(self, next_state: str) -> None:
         if next_state == self.status:
-            return
+            return  # Safe retry if the same network message arrives twice
         if self.status in TERMINAL_STATES:
             raise InvalidTransitionError(f"Cannot leave terminal state {self.status}")
         if next_state not in ALLOWED_TRANSITIONS.get(self.status, set()):
@@ -193,6 +224,7 @@ def admit_completed_rollout(record: RolloutRecord, current_policy: int, max_stal
 
 
 def grpo_advantages(records: list[RolloutRecord], eps: float = 1e-8) -> list[float]:
+    # Only train on verified, non-stale attempts — never crashed sandboxes
     trainable = [r for r in records if r.status == "ACCEPTED_FOR_TRAINING" and r.reward is not None]
     if not trainable:
         return []
@@ -202,6 +234,22 @@ def grpo_advantages(records: list[RolloutRecord], eps: float = 1e-8) -> list[flo
     if std == 0.0:
         return [0.0 for _ in trainable]
     return [(r.reward - mean) / (std + eps) for r in trainable]
+
+
+if __name__ == "__main__":
+    # Worked story: 2 valid tries (1 pass, 1 fail) + 1 crashed sandbox
+    pass_try = RolloutRecord("try-1", policy_version=10, reward=1.0)
+    fail_try = RolloutRecord("try-2", policy_version=10, reward=0.0)
+    crash_try = RolloutRecord("try-3", policy_version=10, reward=0.0)
+    for rec in (pass_try, fail_try):
+        for s in ("ADMITTED", "ENVIRONMENT_READY", "SAMPLING", "VERIFYING", "COMPLETED"):
+            rec.transition(s)
+        admit_completed_rollout(rec, current_policy=11, max_staleness=2)
+    crash_try.transition("ADMITTED")
+    crash_try.transition("FAILED_INFRASTRUCTURE")
+    scores = grpo_advantages([pass_try, fail_try, crash_try])
+    print("Admitted statuses:", [pass_try.status, fail_try.status, crash_try.status])
+    print("GRPO advantages (crash excluded):", [round(x, 3) for x in scores])
 ```
 
 </figure>
@@ -293,26 +341,35 @@ if __name__ == "__main__":
 
 </figure>
 
+**Break it on purpose:** In `rollout_fsm.py`, temporarily change the `grpo_advantages` filter to include `"FAILED_INFRASTRUCTURE"` alongside `"ACCEPTED_FOR_TRAINING"`, then rerun `python3 rollout_fsm.py` and `python3 -m unittest -v`. Restore it afterwards!
+
+<details markdown="1">
+<summary>Show what breaks</summary>
+
+With `crashed` (`reward=0.0`) included, the group rewards become `[1.0, 0.0, 0.0]` instead of `[1.0, 0.0]`: `mean` drops from `0.5` to `0.333`, shifting the valid failing try's penalty and teaching the model about a cluster crash. `test_infra_failure_excluded_from_grpo_advantages` immediately fails (`3 != 2`).
+
+</details>
+
 ## Quick quiz
 
 <details markdown="1">
-<summary>Q1. Why is dropping slow trajectories dangerous in asynchronous RL?</summary>
+<summary>Q1. Why is silently dropping slow trajectories harmful in async RL?</summary>
 
-Slow trajectories often correspond to harder or multi-step reasoning tasks. Silently censoring them biases the training distribution toward short, easy problems and degrades performance on complex tasks.
-
-</details>
-
-<details markdown="1">
-<summary>Q2. What happens if a sandbox OOM is recorded as reward 0 instead of FAILED_INFRASTRUCTURE?</summary>
-
-The optimizer treats a cluster infrastructure fault as a bad model action, penalizing valid reasoning and corrupting GRPO group baselines.
+Slow trajectories are often harder multi-turn problems. Dropping them teaches the model only on short, easy tasks.
 
 </details>
 
 <details markdown="1">
-<summary>Q3. What extra bookkeeping does Speculative Encoding require if used inside an RL rollout engine?</summary>
+<summary>Q2. What happens if a sandbox OOM is logged as reward 0 instead of FAILED_INFRASTRUCTURE?</summary>
 
-Because translated KV/hidden states are approximate (reported 96.9% single-hop retention), the sampler must record exact emitted behavior logprobs (or recompute under native weights) so importance ratios `ρ_t` stay accurate.
+The optimizer punishes the model's reasoning for an infrastructure crash and skews GRPO group scores.
+
+</details>
+
+<details markdown="1">
+<summary>Q3. What extra rule applies if you reuse Speculative Encoding across RL rollouts?</summary>
+
+Save the exact behavior `logprobs` emitted at generation time (or recompute under native weights) so approximate KV translation never silently corrupts `ρ_t`.
 
 </details>
 
