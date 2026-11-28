@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">How training builds weights versus why serving hits the Roofline wall</title>
+  <desc id="d">Left panel shows the four-step training cycle totaling roughly 6 N D math operations and contrasts Chinchilla 20 N compute-optimal training against modern serving-optimized over-training. Right panel shows the Serving Roofline separating memory-bandwidth-bound decode from compute-bound prefill, plus contiguous wasted KV memory versus packed PagedAttention blocks.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="460" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">How training builds weights vs. why serving hits the Roofline wall</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">Training loops through forward and backward passes (6&#xB7;N&#xB7;D); serving splits into compute-bound prefill and memory-bound decode.</text>
+
+    <!-- Left Panel: One Training Step (C ~ 6ND) -->
+    <rect x="24" y="76" width="444" height="362" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="246" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#1d4e89">1. One training step: C &#x2248; 6 &#xB7; N &#xB7; D ops</text>
+
+    <!-- 2x2 Cycle Boxes -->
+    <g text-anchor="middle">
+      <rect x="44" y="124" width="184" height="62" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+      <text x="136" y="148" font-size="13" font-weight="700" fill="#1d4e89">1. Forward pass (~2ND)</text>
+      <text x="136" y="170" font-size="12" fill="#535c6b">Predict next token scores</text>
+
+      <rect x="264" y="124" width="184" height="62" rx="6" fill="#ffffff" stroke="#84540c" stroke-width="1.5"/>
+      <text x="356" y="148" font-size="13" font-weight="700" fill="#84540c">2. Loss check</text>
+      <text x="356" y="170" font-size="12" fill="#535c6b">Compare guess vs. truth</text>
+
+      <rect x="264" y="216" width="184" height="62" rx="6" fill="#ffffff" stroke="#9b2c2c" stroke-width="1.5"/>
+      <text x="356" y="240" font-size="13" font-weight="700" fill="#9b2c2c">3. Backward (~4ND)</text>
+      <text x="356" y="262" font-size="12" fill="#535c6b">Compute weight gradients</text>
+
+      <rect x="44" y="216" width="184" height="62" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+      <text x="136" y="240" font-size="13" font-weight="700" fill="#2a6a47">4. Optimizer update</text>
+      <text x="136" y="262" font-size="12" fill="#535c6b">Nudge weights + checkpoint</text>
+    </g>
+
+    <!-- Cycle Arrows -->
+    <path d="M228 155 H258" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M356 186 V210" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M264 247 H234" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M136 216 V192" fill="none" stroke="#2a6a47" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+    <!-- Chinchilla vs Over-training Box -->
+    <rect x="44" y="294" width="404" height="126" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1.5"/>
+    <text x="246" y="318" text-anchor="middle" font-size="14" font-weight="700">Chinchilla rule vs. serving target (example N = 70B)</text>
+
+    <text x="58" y="344" font-size="12" font-weight="700" fill="#1d4e89">Chinchilla (D &#x2248; 20 &#xB7; N): 1.4T toks</text>
+    <rect x="58" y="352" width="48" height="12" rx="3" fill="#1d4e89"/>
+    <text x="114" y="362" font-size="11" fill="#535c6b">Cheapest training cost</text>
+
+    <text x="58" y="384" font-size="12" font-weight="700" fill="#22616b">Over-trained (D &#x226B; 20 &#xB7; N): 15T+ toks</text>
+    <rect x="58" y="392" width="220" height="12" rx="3" fill="#22616b"/>
+    <text x="286" y="402" font-size="11" fill="#535c6b">Smaller, cheaper model to serve</text>
+
+    <!-- Right Panel: Roofline + PagedAttention -->
+    <rect x="492" y="76" width="444" height="362" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="2"/>
+    <text x="714" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#22616b">2. Serving Roofline &amp; Paged KV memory</text>
+
+    <!-- Roofline Plot Frame -->
+    <rect x="544" y="118" width="372" height="186" rx="4" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <line x1="554" y1="286" x2="900" y2="286" stroke="#3b4453" stroke-width="1.5"/>
+    <line x1="554" y1="128" x2="554" y2="286" stroke="#3b4453" stroke-width="1.5"/>
+    <text x="520" y="208" text-anchor="middle" font-size="12" font-weight="700" fill="#3b4453" transform="rotate(-90 520 208)">Speed P (ops/s)</text>
+    <text x="728" y="300" text-anchor="middle" font-size="12" fill="#535c6b">Arithmetic intensity I (ops per byte read)</text>
+
+    <!-- Roofline Ramp + Ceiling: starts (564,274), knee (700,152), flat to (890,152) -->
+    <polyline points="564,274 700,152 890,152" fill="none" stroke="#1d4e89" stroke-width="3"/>
+    <text x="614" y="196" font-size="11" font-weight="700" fill="#9b2c2c" transform="rotate(-41 614 196)">B_memory &#xD7; I</text>
+    <text x="802" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#2a6a47">Compute ceiling P_peak</text>
+
+    <!-- Decode vs Prefill dots -->
+    <circle cx="628" cy="217" r="6" fill="#9b2c2c"/>
+    <text x="640" y="228" font-size="12" font-weight="700" fill="#9b2c2c">Decode (1 tok/step)</text>
+    <text x="640" y="244" font-size="11" fill="#535c6b">Waits on memory bytes</text>
+
+    <circle cx="812" cy="152" r="6" fill="#2a6a47"/>
+    <text x="812" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#2a6a47">Prefill (read 64k)</text>
+    <text x="812" y="192" text-anchor="middle" font-size="11" fill="#535c6b">Saturates GPU math</text>
+
+    <!-- Bottom Strip: Contiguous vs PagedAttention -->
+    <rect x="512" y="318" width="404" height="102" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1.5"/>
+    <text x="714" y="338" text-anchor="middle" font-size="13" font-weight="700">Why PagedAttention frees GPU RAM for bigger batches</text>
+
+    <text x="526" y="362" font-size="12" font-weight="700" fill="#9b2c2c">Contiguous KV:</text>
+    <rect x="634" y="350" width="96" height="16" rx="2" fill="#9b2c2c"/>
+    <rect x="732" y="350" width="166" height="16" rx="2" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="815" y="362" text-anchor="middle" font-size="11" fill="#9b2c2c">wasted reserved gap</text>
+
+    <text x="526" y="394" font-size="12" font-weight="700" fill="#22616b">PagedAttention:</text>
+    <g fill="#22616b">
+      <rect x="634" y="382" width="34" height="16" rx="2"/><rect x="672" y="382" width="34" height="16" rx="2"/>
+      <rect x="710" y="382" width="34" height="16" rx="2"/><rect x="748" y="382" width="34" height="16" rx="2"/>
+    </g>
+    <text x="792" y="394" font-size="11" font-weight="700" fill="#2a6a47">Packed virtual blocks</text>
+  </g>
+</svg>

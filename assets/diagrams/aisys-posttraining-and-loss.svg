@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
+  <title id="t">From copying answers to learning by trial: 5 post-training stages and cross-entropy surprise loss</title>
+  <desc id="d">Top band shows five post-training stages from SFT imitation through DPO preference pairs, PPO critic RL, critic-free GRPO plus verifiable RLVR, to Agentic RL in sandboxes. Bottom band plots the cross-entropy surprise curve minus natural log of p showing probability 0.05 yields loss 3.00, 0.50 yields 0.69, 0.90 yields 0.11, and 1.00 yields 0, alongside why RLVR outperforms pure copying on multi-turn agents.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#3b4453"/></marker>
+  </defs>
+  <rect width="960" height="470" fill="#ffffff"/>
+  <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
+    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">From copying answers to learning by trial: 5 stages &amp; surprise loss</text>
+    <text x="480" y="56" text-anchor="middle" font-size="15" fill="#535c6b">How post-training evolves from SFT imitation to agentic RL&#x2014;and what L_SFT = &#x2212;ln(p) measures.</text>
+
+    <!-- Band 1: 5 Post-Training Stages -->
+    <rect x="24" y="76" width="912" height="154" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
+    <text x="42" y="100" font-size="16" font-weight="700" fill="#1d4e89">1. Post-training progression (imitation &#x2192; preference pairs &#x2192; verified RL)</text>
+
+    <!-- 5 Cards (w=158, gap=22: x=42, 222, 402, 582, 762) -->
+    <g text-anchor="middle">
+      <rect x="42" y="114" width="158" height="98" rx="6" fill="#ffffff" stroke="#1d4e89" stroke-width="1.5"/>
+      <text x="121" y="136" font-size="14" font-weight="700" fill="#1d4e89">1. SFT</text>
+      <text x="121" y="158" font-size="12" font-weight="700">1 model only</text>
+      <text x="121" y="178" font-size="12" fill="#535c6b">Copy expert text</text>
+      <text x="121" y="198" font-size="11" fill="#535c6b">Loss: &#x2212;ln(p)</text>
+
+      <rect x="222" y="114" width="158" height="98" rx="6" fill="#ffffff" stroke="#22616b" stroke-width="1.5"/>
+      <text x="301" y="136" font-size="14" font-weight="700" fill="#22616b">2. DPO</text>
+      <text x="301" y="158" font-size="12" font-weight="700">Policy + Ref</text>
+      <text x="301" y="178" font-size="12" fill="#535c6b">Better vs. worse</text>
+      <text x="301" y="198" font-size="11" fill="#84540c">Fixed pairs drift</text>
+
+      <rect x="402" y="114" width="158" height="98" rx="6" fill="#ffffff" stroke="#84540c" stroke-width="1.5"/>
+      <text x="481" y="136" font-size="14" font-weight="700" fill="#84540c">3. PPO</text>
+      <text x="481" y="158" font-size="12" font-weight="700">Policy + Critic</text>
+      <text x="481" y="178" font-size="12" fill="#535c6b">Own live rollouts</text>
+      <text x="481" y="198" font-size="11" fill="#9b2c2c">2&#xD7; GPU memory</text>
+
+      <rect x="582" y="114" width="158" height="98" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+      <text x="661" y="136" font-size="14" font-weight="700" fill="#2a6a47">4. GRPO + RLVR</text>
+      <text x="661" y="158" font-size="12" font-weight="700">No critic (~&#xBD; RAM)</text>
+      <text x="661" y="178" font-size="12" fill="#535c6b">Group vs. pytest</text>
+      <text x="661" y="198" font-size="11" fill="#2a6a47">Core reasoning RL</text>
+
+      <rect x="762" y="114" width="158" height="98" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+      <text x="841" y="136" font-size="14" font-weight="700" fill="#2a6a47">5. Agentic RL</text>
+      <text x="841" y="158" font-size="12" font-weight="700">Async + Sandboxes</text>
+      <text x="841" y="178" font-size="12" fill="#535c6b">Multi-turn tools</text>
+      <text x="841" y="198" font-size="11" fill="#1d4e89">Bounded lag &amp; KV</text>
+    </g>
+
+    <!-- Arrows between stages -->
+    <path d="M200 163 H216" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M380 163 H396" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M560 163 H576" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M740 163 H756" fill="none" stroke="#3b4453" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- Band 2: Cross-Entropy Surprise Loss Curve -->
+    <rect x="24" y="248" width="912" height="202" rx="8" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
+    <text x="42" y="272" font-size="16" font-weight="700" fill="#2a6a47">2. What cross-entropy loss L_SFT = &#x2212;ln(p) measures (surprise on true token)</text>
+
+    <!-- Plot Box (x=90..540, y=284..424): p in [0, 1] maps x=106..514 (span 408); loss in [0, 3.2] maps y=408..296 (scale 35px per 1.0) -->
+    <rect x="90" y="284" width="450" height="150" rx="6" fill="#ffffff" stroke="#ddd7ca" stroke-width="1"/>
+    <line x1="106" y1="408" x2="524" y2="408" stroke="#3b4453" stroke-width="1.5"/>
+    <line x1="106" y1="292" x2="106" y2="408" stroke="#3b4453" stroke-width="1.5"/>
+
+    <!-- Y Ticks -->
+    <text x="98" y="412" text-anchor="end" font-size="11" fill="#535c6b">0</text>
+    <text x="98" y="376" text-anchor="end" font-size="11" fill="#535c6b">1.0</text>
+    <text x="98" y="340" text-anchor="end" font-size="11" fill="#535c6b">2.0</text>
+    <text x="98" y="305" text-anchor="end" font-size="11" font-weight="700" fill="#9b2c2c">3.0</text>
+    <text x="58" y="354" text-anchor="middle" font-size="12" font-weight="700" fill="#3b4453" transform="rotate(-90 58 354)">Loss &#x2212;ln(p)</text>
+
+    <!-- X Ticks -->
+    <text x="126" y="424" text-anchor="middle" font-size="11" font-weight="700" fill="#9b2c2c">0.05</text>
+    <text x="310" y="424" text-anchor="middle" font-size="11" font-weight="700" fill="#84540c">0.50</text>
+    <text x="473" y="424" text-anchor="middle" font-size="11" font-weight="700" fill="#22616b">0.90</text>
+    <text x="514" y="424" text-anchor="middle" font-size="11" font-weight="700" fill="#2a6a47">1.0</text>
+
+    <!-- Smooth curve points for -ln(p): p=0.05(126,303), 0.15(167,341), 0.30(228,366), 0.50(310,384), 0.70(392,395), 0.90(473,404), 1.00(514,408) -->
+    <polyline points="126,303 167,341 228,366 310,384 392,395 473,404 514,408" fill="none" stroke="#1d4e89" stroke-width="2.8"/>
+
+    <!-- Annotated Points -->
+    <circle cx="126" cy="303" r="5.5" fill="#9b2c2c"/>
+    <text x="140" y="307" font-size="12" font-weight="700" fill="#9b2c2c">p=0.05 &#x2192; 3.00 (confidently wrong!)</text>
+
+    <circle cx="310" cy="384" r="5.5" fill="#84540c"/>
+    <text x="310" y="370" text-anchor="middle" font-size="12" font-weight="700" fill="#84540c">p=0.50 &#x2192; 0.69</text>
+
+    <circle cx="473" cy="404" r="5.5" fill="#22616b"/>
+    <text x="456" y="382" text-anchor="middle" font-size="12" font-weight="700" fill="#22616b">p=0.90 &#x2192; 0.11</text>
+
+    <circle cx="514" cy="408" r="5.5" fill="#2a6a47"/>
+
+    <!-- Right Takeaway Box -->
+    <rect x="560" y="284" width="360" height="150" rx="6" fill="#ffffff" stroke="#2a6a47" stroke-width="1.5"/>
+    <text x="740" y="308" text-anchor="middle" font-size="14" font-weight="700" fill="#2a6a47">Why RLVR complements SFT on code agents</text>
+    <text x="576" y="336" font-size="12" font-weight="700" fill="#1d4e89">SFT (Stage 4): Imitate expert text</text>
+    <text x="576" y="356" font-size="12" fill="#535c6b">Great for tool syntax; penalizes valid alternatives</text>
+    <line x1="576" y1="372" x2="904" y2="372" stroke="#ddd7ca" stroke-width="1"/>
+    <text x="576" y="394" font-size="12" font-weight="700" fill="#2a6a47">GRPO + RLVR (Stage 6): Reward outcome</text>
+    <text x="576" y="414" font-size="12" fill="#535c6b">Any patch passing hidden pytest wins reward 1.0</text>
+  </g>
+</svg>

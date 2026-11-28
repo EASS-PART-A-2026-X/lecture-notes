@@ -40,6 +40,15 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 - **Conditional memory (`Engram`):** DeepSeek's `O(1)` static fact lookup table (offloaded to cheap host CPU RAM) so expensive GPU MoE experts spend compute on reasoning instead of memorizing trivia.
 - **`MuonClip` (`QK-Clip`):** Moonshot AI's optimizer for Kimi K2 that rescales runaway attention matrices (`W_Q`, `W_K`) so trillion-parameter training never suffers loss spikes.
 - **DeepSeek open stack (`FlashMLA`, `DeepEP`, `DeepGEMM`, `3FS`, `DualPipe`):** open-source Hopper `MLA` decode kernels (`FlashMLA`), `MoE` `NVLink`/`RDMA` all-to-all dispatch (`DeepEP`), fine-grained 8-bit `FP8` matrix math (`DeepGEMM`), fast `RDMA` distributed storage (`3FS`), and bidirectional pipeline scheduling (`DualPipe`) that hides idle GPU bubbles.
+- **Forward pass, backward pass, &amp; gradient:** in training, the *forward pass* predicts the next token, the *backward pass* calculates how wrong each weight was, and the *gradient* is the nudge telling each weight which way to move.
+- **Logit / logits:** raw unnormalized scores a model outputs for every candidate token (or attention pair) before converting them into probabilities.
+- **Checkpoint &amp; mixed precision:** a *checkpoint* saves model weights, optimizer state, and exact data-loader position so crashed runs resume cleanly; *mixed precision* runs fast math in 8/16-bit while storing master weights in higher precision.
+- **Loss masking, curricula, distillation, &amp; on-policy:** *loss masking* grades only the assistant's own replies (not pasted user/tool text); *curricula* order training data from simpler to harder topics; *distillation* teaches a small student model from a larger teacher—*on-policy* means grading the student's *own* live answers.
+- **Prefix caching, continuous batching, disaggregation, &amp; roofline:** *prefix caching* reuses KV notes for identical prompt starts; *continuous batching* inserts waiting requests as soon as any reply finishes; *disaggregation* runs prefill and decode on separate GPU pools; and the *roofline* (`P <= min(P_peak, B_memory × I)`) caps serving speed by either raw math speed or memory bytes per second.
+- **Speculative decoding &amp; draft model:** speeding up single-model *writing* by letting a tiny fast *draft model* propose several tokens and verifying them in one exact pass of the main model (different from *Speculative Encoding*, which translates KV across models).
+- **Context &amp; expert parallelism:** splitting very long prompts across GPUs (*context parallelism*) and placing different `MoE` experts on different GPUs (*expert parallelism*).
+- **Orthogonal (`R^T · R = I`), recurrent / delta rule, &amp; Chinchilla:** an *orthogonal* matrix rotates vectors without stretching or skewing them; a *recurrent* layer updates one fixed state per token using the *delta rule* (erase conflicts, then write new values); *Chinchilla* (`D ≈ 20 · N`) is the classic compute-optimal ratio of training tokens to weights.
+- **Sandboxes (`Firecracker` / `gVisor`) &amp; tenants:** isolated microVMs/user-space kernels that run untrusted code safely, keeping separate customers (*tenants*) strictly isolated.
 
 </details>
 
@@ -167,6 +176,20 @@ Try a tiny toy example on paper: `N = 1,000,000` weights (`10^6`) trained on `D 
 When serving a user, [Visual inference engineering](inference-engineering.md) shows that **prefill** is compute-limited while **decode** is limited by how fast bytes move out of GPU memory: `P <= min(P_peak, B_memory × I)` (where `P_peak` is the GPU's peak math speed, `B_memory` is memory bandwidth in bytes/second, and `I` is math operations done per byte loaded). Each user also keeps a KV scratchpad of size `M_KV = 2 · L · T · H_KV · d_h · s` (the `2` is for storing both *key* and *value* notes, `L` is the number of model layers, `T` is the number of tokens in the conversation, `H_KV` is the number of attention heads, `d_h` is the size of each head, and `s` is bytes per number). Double `T` from `1,000` to `2,000` tokens, and `M_KV` immediately doubles!
 
 > **Simpler is enough:** Keep prefill and decode on the same GPU workers when starting out. Only split them onto separate pools (disaggregation) when profiling proves long prompts are stalling live user typing enough to justify copying KV caches over the network.
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="How training builds weights versus why serving hits the Roofline wall diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-training-and-roofline.svg" alt="Left panel diagrams the 4-step training cycle totaling roughly 6 N D ops and compares Chinchilla 1.4T token training against 15T+ serving-optimized training. Right panel plots the Serving Roofline separating memory-bound decode from compute-bound prefill, plus contiguous wasted KV memory versus packed PagedAttention blocks." width="960" height="460">
+  </div>
+  <figcaption><strong>Building weights vs. serving them fast.</strong> Training loops through forward and backward passes (<code>6 · N · D</code>); serving splits into compute-bound prefill, memory-bound decode, and paged KV blocks. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-training-and-roofline.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Left (`1. One training step`): predicts next token scores (`~2·N·D`), checks loss against truth, computes weight gradients (`~4·N·D`), and steps the optimizer with checkpoints (`C ≈ 6·N·D` total). Below it, Chinchilla's `D ≈ 20·N` (`1.4T` tokens for `70B`) optimizes training compute alone, whereas over-training (`15T+` tokens) yields a smaller model that is cheaper to serve. Right (`2. Serving Roofline & Paged KV`): speed hits a slanted memory bandwidth ceiling (`B_memory × I`) during 1-token-at-a-time decode and hits peak compute (`P_peak`) during prefill; `PagedAttention` packs KV blocks without wasted gaps so larger batches fit in GPU RAM.
+
+</details>
 
 ### Worked-by-hand: how DeepSeek and Kimi beat the compute, memory, and stability walls
 

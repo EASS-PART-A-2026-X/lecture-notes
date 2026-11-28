@@ -38,6 +38,11 @@
 - **Attention &amp; memory shortcuts (`MLA`, `NSA`, `DSA`, `KDA`, `Engram`, `MuonClip`):** Part 1's 2025–2026 DeepSeek and Kimi techniques for shrinking KV caches (`MLA`, `KDA`), skipping irrelevant tokens (`NSA`/`DSA`), offloading static facts (`Engram`), and preventing trillion-parameter training spikes (`MuonClip`).
 - **DeepSeek open stack (`FlashMLA`, `DeepEP`, `DeepGEMM`, `DualPipe`, `3FS`):** Part 1's open-source kernels, MoE all-to-all dispatch, FP8 GEMM, bidirectional pipeline scheduling, and fast distributed storage.
 - **Supervised Fine-Tuning (`SFT`), cross-entropy (`L_SFT`), clipping (`ε_clip`), &amp; partial rollouts:** Part 2's imitation tuning (`SFT` with loss `−ln(p)`), RL step-size guardrail (`[1 − ε_clip, 1 + ε_clip]`), and saving unfinished long rollouts across steps (`Kimi k1.5`).
+- **Roofline, bandwidth, latent, &amp; sparse:** the *roofline* caps serving speed by compute or memory *bandwidth* (bytes/sec); *latent* means compressed internal vectors; *sparse* means reading only selected tokens/experts.
+- **Gradient, logit, tokenizer, `RNG`, &amp; Chinchilla:** *gradient* updates weights; *logit* is a raw pre-probability score; a *tokenizer* splits text into integer `token_ids`; an *RNG* (Random Number Generator) seed makes sampling reproducible; *Chinchilla* (`D ≈ 20 · N`) is the classic compute-optimal token-to-weight ratio.
+- **Rootless microVMs (`Firecracker`, `gVisor`), `socket`, &amp; harness:** *rootless* sandboxes run without admin privileges; `Firecracker`/`gVisor` isolate the OS kernel; a *socket* is a network connection endpoint; a *harness* drives the agent's tool loop.
+- **Immutable, content-addressed, checkpoint, lease, &amp; at-least-once:** *immutable* images never mutate in place; *content-addressed* caches key artifacts by hash; a *checkpoint* saves progress; a *lease* gives a worker temporary ownership so crashed jobs retry safely under *at-least-once* delivery.
+- **Reward hacking, flakiness, exfiltration, fault injection, multi-tenant, &amp; compounding:** *reward hacking* is gaming a weak grader; *flakiness* is nondeterministic test failure; *exfiltration* is stealing secrets out of a sandbox; *fault injection* deliberately triggers crashes during testing; *multi-tenant* keeps separate *tenant* users isolated on shared hardware; *compounding* means small per-hop errors multiplying over chained steps (`0.969^k`).
 
 </details>
 
@@ -143,6 +148,20 @@ Just like your Recipe Box FastAPI backend never trusts raw frontend data, a **tr
 | `invalid_action` | Bad tool syntax or denied access | Format/policy penalty |
 | `infrastructure_failure` | Host crashed or image pull failed | **Exclude &amp; retry** (never train on it!) |
 | `verification_failure` | Buggy test suite or broken grader | **Exclude &amp; alert engineer** |
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Trusted verifier 6-bucket routing and 12-link observability chain diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-verifier-and-full-loop.svg" alt="Top band separates Sandbox Output across a Trust boundary into four trainable buckets (correct, partial, incorrect, invalid_action) admitted to RL versus two excluded fault buckets (infrastructure_failure and verification_failure). Bottom band shows the 12-link trace chain from Experiment to Step and the 4 build milestones." width="960" height="470">
+  </div>
+  <figcaption><strong>Separating bad answers from broken machines—and tracing every link.</strong> Only the four top buckets behind the locked verifier boundary teach the learner; host crashes and broken graders are excluded cleanly, and every attempt traces all <code>12</code> links from experiment to weight step. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-verifier-and-full-loop.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Top (`1. Locked trusted verifier`): behind a dashed trust boundary outside the agent's writable disk, `correct`, `partial`, `incorrect`, and `invalid_action` flow into `Admit to RL`, whereas `infrastructure_failure` (host `OOM` or disk crash) and `verification_failure` (buggy grader) route to `Exclude cleanly` without ever assigning reward `0`. Bottom (`2. Full 12-link trace chain`): connects `1. Experiment` → `2. Run` → `3. Policy` → `4. Task` → `5. GRPO Group` → `6. Trajectory` → `7. Inference` → `8. Tool Call` → `9. Sandbox` → `10. Verifier` → `11. Batch` → `12. Step`, alongside the four build milestones and key metrics (`MFU`, `TTFT`, lag, `$/success`).
+
+</details>
 
 ## The Rewind Wall: unified state and cross-model K_t
 
