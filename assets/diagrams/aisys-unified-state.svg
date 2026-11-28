@@ -1,37 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="t d">
   <title id="t">The rewind wall: local sandbox state versus external world</title>
   <desc id="d">A dashed vertical sandbox wall separates local state on the left that can be rewound or forked (files E_t, KV scratchpad K_t, token log H_t, and policy version theta_v) from external side effects on the right that cannot be undone by disk snapshots (sent emails, remote database rows, payment API calls). At the bottom, a locked verifier sits outside the agent disk to separate wrong answers from broken sandboxes.</desc>
+  <defs>
+    <filter id="card-shadow" x="-4%" y="-6%" width="108%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f1e3a" flood-opacity="0.07"/>
+    </filter>
+  </defs>
   <rect width="640" height="480" fill="#ffffff"/>
   <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
-    <text x="320" y="32" text-anchor="middle" font-size="22" font-weight="700">The Rewind Wall: what snapshots can undo</text>
-    <text x="320" y="56" text-anchor="middle" font-size="16" fill="#535c6b">State S_t = (θ_v, K_t, H_t, E_t, Q_t, R_t)</text>
+    <text x="320" y="30" text-anchor="middle" font-size="22" font-weight="700">The Rewind Wall: what snapshots can undo</text>
+    <text x="320" y="54" text-anchor="middle" font-size="15" fill="#535c6b">State S_t = (&#x3B8;_v, K_t, H_t, E_t, Q_t, R_t)</text>
 
     <!-- Left Box: CAN Rewind -->
-    <rect x="24" y="76" width="276" height="254" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
-    <text x="162" y="106" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4e89">Inside: CAN rewind</text>
-    <text x="42" y="142" font-size="16"><tspan font-weight="700">E_t:</tspan> local sandbox files</text>
-    <text x="42" y="174" font-size="16"><tspan font-weight="700">K_t:</tspan> KV scratchpad</text>
-    <text x="42" y="206" font-size="16"><tspan font-weight="700">H_t:</tspan> exact token IDs</text>
-    <text x="42" y="238" font-size="16"><tspan font-weight="700">θ_v:</tspan> pinned policy version</text>
-    <text x="42" y="270" font-size="16"><tspan font-weight="700">Q_t, R_t:</tspan> queue &amp; RNG seed</text>
-    <text x="162" y="310" text-anchor="middle" font-size="16" fill="#535c6b">Snapshot &amp; fork safely</text>
+    <rect x="24" y="74" width="274" height="256" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="1.8" filter="url(#card-shadow)"/>
+    <circle cx="50" cy="99" r="11" fill="#1d4e89"/>
+    <text x="50" y="103" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">1</text>
+    <text x="69" y="104" font-size="17" font-weight="700" fill="#1d4e89">Inside: CAN rewind</text>
+    <line x1="40" y1="120" x2="282" y2="120" stroke="#c9d7ea" stroke-width="1"/>
+    <text x="42" y="146" font-size="15.5"><tspan font-weight="700">E_t:</tspan> local sandbox files</text>
+    <text x="42" y="177" font-size="15.5"><tspan font-weight="700">K_t:</tspan> KV scratchpad</text>
+    <text x="42" y="208" font-size="15.5"><tspan font-weight="700">H_t:</tspan> exact token IDs</text>
+    <text x="42" y="239" font-size="15.5"><tspan font-weight="700">&#x3B8;_v:</tspan> pinned policy version</text>
+    <text x="42" y="270" font-size="15.5"><tspan font-weight="700">Q_t, R_t:</tspan> queue &amp; RNG seed</text>
+    <rect x="44" y="288" width="234" height="28" rx="6" fill="#ffffff" stroke="#c9d7ea" stroke-width="1.2"/>
+    <text x="161" y="307" text-anchor="middle" font-size="14" font-weight="600" fill="#1d4e89">Snapshot &amp; fork safely</text>
 
     <!-- Vertical Dashed Wall -->
-    <line x1="320" y1="76" x2="320" y2="334" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <line x1="320" y1="74" x2="320" y2="334" stroke="#3b4453" stroke-width="2.5" stroke-dasharray="6 4"/>
 
     <!-- Right Box: CANNOT Rewind -->
-    <rect x="340" y="76" width="276" height="254" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
-    <text x="478" y="106" text-anchor="middle" font-size="18" font-weight="700" fill="#9b2c2c">Outside: CANNOT rewind</text>
-    <text x="358" y="146" font-size="16">• Email already sent</text>
-    <text x="358" y="182" font-size="16">• Remote database row</text>
-    <text x="358" y="218" font-size="16">• Payment or webhook</text>
-    <text x="358" y="264" font-size="16" fill="#535c6b">Needs idempotency keys</text>
-    <text x="478" y="310" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">Disk rewind fails here</text>
+    <rect x="342" y="74" width="274" height="256" rx="8" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="1.8" filter="url(#card-shadow)"/>
+    <circle cx="368" cy="99" r="11" fill="#9b2c2c"/>
+    <text x="368" y="103" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">2</text>
+    <text x="387" y="104" font-size="17" font-weight="700" fill="#9b2c2c">Outside: CANNOT rewind</text>
+    <line x1="358" y1="120" x2="600" y2="120" stroke="#e9c8c6" stroke-width="1"/>
+    <text x="360" y="148" font-size="15.5">&#x2022; Email already sent</text>
+    <text x="360" y="182" font-size="15.5">&#x2022; Remote database row</text>
+    <text x="360" y="216" font-size="15.5">&#x2022; Payment or webhook</text>
+    <text x="360" y="264" font-size="14.5" fill="#535c6b">Needs idempotency keys</text>
+    <rect x="362" y="288" width="234" height="28" rx="6" fill="#ffffff" stroke="#e9c8c6" stroke-width="1.2"/>
+    <text x="479" y="307" text-anchor="middle" font-size="14" font-weight="700" fill="#9b2c2c">Disk rewind fails here</text>
 
     <!-- Bottom Locked Verifier -->
-    <rect x="24" y="354" width="592" height="102" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
-    <text x="320" y="384" text-anchor="middle" font-size="18" font-weight="700" fill="#2a6a47">Locked Verifier Boundary (outside agent disk)</text>
-    <text x="320" y="414" text-anchor="middle" font-size="16">Hidden tests run here — agent code cannot edit them</text>
-    <text x="320" y="440" text-anchor="middle" font-size="16" fill="#535c6b">Separates wrong answers from broken sandboxes</text>
+    <rect x="24" y="352" width="592" height="106" rx="8" fill="#f1f7f3" stroke="#2a6a47" stroke-width="1.8" filter="url(#card-shadow)"/>
+    <circle cx="104" cy="379" r="11" fill="#2a6a47"/>
+    <text x="104" y="383" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">3</text>
+    <text x="124" y="384" font-size="17" font-weight="700" fill="#2a6a47">Locked Verifier Boundary (outside agent disk)</text>
+    <text x="320" y="414" text-anchor="middle" font-size="15.5">Hidden tests run here &#x2014; agent code cannot edit them</text>
+    <text x="320" y="440" text-anchor="middle" font-size="14.5" fill="#535c6b">Separates wrong answers from broken sandboxes</text>
   </g>
 </svg>
