@@ -35,6 +35,10 @@
 - **Cross-entropy loss (`L_SFT`):** measures how surprised a model is by the expert's true next token (`−ln(p)`): `0` when certain (`p = 1.0`), larger when guessing blindly.
 - **Clipping (`ε_clip`):** a safety guardrail (such as `[0.8, 1.2]`) capping how far `ρ_t` can move weights in a single update step so one lucky rollout cannot wreck training.
 - **Partial rollouts (`Kimi k1.5`):** pausing a slow multi-step rollout at the iteration step budget, saving its progress, and finishing it in the next batch instead of dropping hard tasks.
+- **Gradient, optimizer, &amp; logits:** the *gradient* tells each weight how to change, the *optimizer* applies those updates cleanly, and *logits* are the raw scores before converting to probabilities.
+- **On-policy vs. off-policy &amp; replay buffer:** *on-policy* trains strictly on fresh rollouts from the *current* weights; *off-policy* reuses slightly older trajectories stored in a *replay buffer*.
+- **Straggler, resharding, &amp; nondeterminism:** a *straggler* is one slow rollout holding up a group; *resharding* rearranges weights when moving from training GPUs (`FSDP`) to serving GPUs (tensor parallelism); *nondeterminism* means tiny floating-point rounding differences across batch sizes.
+- **Checkpoint, distillation (`long2short`), &amp; harness:** a *checkpoint* saves rollout or sandbox state mid-run; *distillation* (`long2short`) transfers long reasoning gains into shorter answers; a *harness* is the loop connecting model turns, tools, and environment state.
 
 </details>
 
@@ -80,6 +84,20 @@ Step through how post-training evolved from copying static answers to bounded as
 5. **Bounded Async RL (AReaL, Prime-RL, slime).** Keep GPUs and sandboxes busy concurrently while tracking policy staleness, `FAILED_INFRASTRUCTURE`, and KV consistency.
 
 </div>
+
+<figure class="course-diagram course-diagram--wide">
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Five post-training stages and cross-entropy surprise curve diagram, scroll horizontally">
+    <img src="../assets/diagrams/aisys-posttraining-and-loss.svg" alt="Top band traces five post-training stages from SFT imitation through DPO, PPO, GRPO plus RLVR, to Agentic RL. Bottom band plots the cross-entropy curve minus ln(p) from p equals 0.05 (loss 3.00) down to p equals 1.0 (loss 0) and contrasts copying fixed scripts against rewarding verified test passes." width="960" height="470">
+  </div>
+  <figcaption><strong>Post-training stages and what surprise loss measures.</strong> Moving from <code>SFT</code> imitation to verified <code>GRPO + RLVR</code> halves critic memory while rewarding any multi-turn patch that passes hidden tests. <span class="screen-only">On a narrow screen, scroll sideways.</span> <a href="../assets/diagrams/aisys-posttraining-and-loss.svg">Open the diagram at full size</a>.</figcaption>
+</figure>
+
+<details markdown="1">
+<summary>Text version of the diagram</summary>
+
+Top (`1. Post-training progression`): moves from `1. SFT` (single model, `-ln(p)` loss), to `2. DPO` (policy + reference pairs), to `3. PPO` (policy + critic, `2×` GPU RAM), to `4. GRPO + RLVR` (critic-free group scoring with `pytest`), to `5. Agentic RL` (multi-turn sandboxes with bounded lag and KV rules). Bottom (`2. Cross-entropy curve`): `L_SFT = -ln(p)` jumps to `3.00` when the model assigns only `p = 0.05` to the true token, drops to `0.69` at `0.50`, `0.11` at `0.90`, and `0` at `1.00`.
+
+</details>
 
 ## Worked-by-hand: GRPO group scoring
 
