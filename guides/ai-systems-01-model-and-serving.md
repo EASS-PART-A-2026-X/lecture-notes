@@ -4,6 +4,18 @@
 
 [Course home](../README.md) · [Learning map](learning-map.md) · [Local inference](local-inference.md) · [Visual inference engineering](inference-engineering.md) · [Part 2 · RL and rollouts](ai-systems-02-rl-and-rollouts.md)
 
+<nav class="aisys-hero" aria-label="AI Systems 3-part series">
+  <div class="aisys-hero-eyebrow">
+    <span class="aisys-pill aisys-pill--navy">Beyond EASS · Optional Track</span>
+    <span class="aisys-hero-meta">5 Diagrams · 2 Live Simulators · Zero GPUs</span>
+  </div>
+  <ol class="aisys-hero-steps">
+    <li class="aisys-hero-step is-active" aria-current="page"><span class="aisys-step-num">1</span><span class="aisys-step-text"><strong>Build &amp; Serve</strong><small>Data, Weights, MoE &amp; KV</small></span></li>
+    <li class="aisys-hero-step"><a href="ai-systems-02-rl-and-rollouts.html"><span class="aisys-step-num">2</span><span class="aisys-step-text"><strong>RL &amp; Rollouts</strong><small>GRPO, Lag &amp; Parity</small></span></a></li>
+    <li class="aisys-hero-step"><a href="ai-systems-03-environments-state-roadmap.html"><span class="aisys-step-num">3</span><span class="aisys-step-text"><strong>Sandboxes &amp; State</strong><small>CoW, Rewind Wall &amp; Finish Line</small></span></a></li>
+  </ol>
+</nav>
+
 > **Optional; not graded:** This three-part mini-series sits **outside** the EASS Class X syllabus. It adds zero deadlines, assignments, GPUs, or paid accounts. Finish your Recipe Box milestones first, then read these three sessions as a simple map of how real-world AI systems work from end to end.
 
 **You will be able to:** trace the five-node knowledge graph that connects data, weights, serving, sandboxes, and grading; explain all 13 lifecycle stages without jargon; compute a tiny toy training budget by hand; explain with tiny numbers how DeepSeek and Kimi cut compute (MoE), memory (MLA, sparse and linear attention), and training risk (MuonClip); spot why adding GPUs fails when sandboxes are slow; and see how *Plato's Key* and *Speculative Encoding* let different models share reading work.
@@ -73,7 +85,12 @@ Zero more: you still save `15` recipes per minute. The system as a whole can nev
 
 Modern AI infrastructure has evolved through three waves: first systems that **learn** intelligence (distributed training), second systems that **serve** intelligence quickly (distributed inference), and now systems that **experiment and verify** on their own (autonomous execution).
 
+<aside class="aisys-story" aria-label="Running 64k pytest case study" markdown="1">
+<div class="aisys-story-head"><span class="aisys-pill aisys-pill--teal">Running Case Study · Part 1 of 3</span></div>
+
 **One running story across all three parts:** Imagine building an AI coding agent to **fix a failing `pytest` bug inside a `64,000`-token Python repository**. In **Part 1**, we build the model's weights, serve `64,000`-token prompts quickly without blowing GPU memory, and share reading work between two models. In **Part 2**, the agent practices `4` candidate patches in parallel and learns from real `pytest` outcomes. In **Part 3**, we lock down the sandbox, respect the Rewind Wall, verify fairly, and log exact training receipts.
+
+</aside>
 
 Instead of memorizing forty buzzwords, picture one **five-node loop** controlled by an orchestrator (`Control Plane`):
 
@@ -143,7 +160,7 @@ Real AI labs do not run these 13 stages strictly one-by-one; they run them in pa
 
 Pick any of the six core themes below and step from the **early problem**, through the **breakthrough**, to **today's open gaps**.
 
-<div class="sim" id="sim-aisys-progress" role="group" aria-label="How AI systems progressed explorer" markdown="1">
+<div class="sim aisys-sim" id="sim-aisys-progress" role="group" aria-label="How AI systems progressed explorer" markdown="1">
 
 <p class="sim-title"><strong>Interactive explorer: concepts, problems, and field progress</strong></p>
 
@@ -281,7 +298,7 @@ Row 1 (Raw text): Model A reads 64k tokens, sends text, and Model B reads all 64
 
 Remember the pipeline law: `goodput <= min(inference, sandboxes, graders, learner)`. Use the visual bars below to see which pool caps the cluster, and test what happens when you scale the wrong pool or chain too many cross-model hops.
 
-<div class="sim" id="sim-aisys-capacity" role="group" aria-label="Synthetic capacity and cross-model prefill explorer" markdown="1">
+<div class="sim aisys-sim" id="sim-aisys-capacity" role="group" aria-label="Synthetic capacity and cross-model prefill explorer" markdown="1">
 
 <p class="sim-title"><strong>Visual cluster bottleneck &amp; cross-model prefill explorer</strong></p>
 

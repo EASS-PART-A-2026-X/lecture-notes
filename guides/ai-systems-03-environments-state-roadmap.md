@@ -4,6 +4,18 @@
 
 [Course home](../README.md) · [Part 2 · RL and rollouts](ai-systems-02-rl-and-rollouts.md) · [Agent sandboxes](agent-sandboxes.md) · [Systems reasoning](systems-reasoning.md) · [Further study](further-study.md)
 
+<nav class="aisys-hero" aria-label="AI Systems 3-part series">
+  <div class="aisys-hero-eyebrow">
+    <span class="aisys-pill aisys-pill--navy">Beyond EASS · Optional Track</span>
+    <span class="aisys-hero-meta">4 Diagrams · 2 Live Labs · 10-Equation Cheat Sheet</span>
+  </div>
+  <ol class="aisys-hero-steps">
+    <li class="aisys-hero-step is-done"><a href="ai-systems-01-model-and-serving.html"><span class="aisys-step-num">1</span><span class="aisys-step-text"><strong>Build &amp; Serve</strong><small>Data, Weights, MoE &amp; KV</small></span></a></li>
+    <li class="aisys-hero-step is-done"><a href="ai-systems-02-rl-and-rollouts.html"><span class="aisys-step-num">2</span><span class="aisys-step-text"><strong>RL &amp; Rollouts</strong><small>GRPO, Lag &amp; Parity</small></span></a></li>
+    <li class="aisys-hero-step is-active" aria-current="page"><span class="aisys-step-num">3</span><span class="aisys-step-text"><strong>Sandboxes &amp; State</strong><small>CoW, Rewind Wall &amp; Finish Line</small></span></li>
+  </ol>
+</nav>
+
 > **Optional; not graded:** This final bonus lesson sits outside the EASS Class X syllabus and adds zero deadlines or hardware requirements. It completes the knowledge graph—connecting sandboxes, trusted graders, unified state, reliability, and a practical build roadmap.
 
 **You will be able to:** separate the 4+1 machine pools, explain what a filesystem snapshot *can* and *cannot* rewind ("The Rewind Wall"), keep hidden tests outside the agent's write scope, apply the Versioned Trajectory data contract in Python 3.14, and navigate the 4-milestone build roadmap and primary literature.
@@ -64,6 +76,13 @@
 </details>
 
 ## Stages 11–12: four fleets and fast sandboxes
+
+<aside class="aisys-story" aria-label="Running 64k pytest case study" markdown="1">
+<div class="aisys-story-head"><span class="aisys-pill aisys-pill--teal">Running Case Study · Part 3 of 3</span></div>
+
+In Parts 1–2, our coding agent built weights, served `64,000`-token repos fast, and practiced parallel patches with `GRPO`. Now we put those candidate runs inside fast copy-on-write sandboxes, draw the Rewind Wall around external side effects, lock the hidden `pytest` verifier, and log an exact replayable receipt to cross the finish line.
+
+</aside>
 
 Traditional ML had two machine pools: training GPUs and inference GPUs. To let our `64,000`-token coding agent actually edit files, run `pytest`, and get fairly graded, agentic AI adds two more pools plus a small control plane:
 
@@ -190,7 +209,7 @@ A dashed vertical Sandbox Wall splits two worlds. On the left (`Inside: CAN rewi
 When two different models collaborate on one task, `K_t` is no longer locked to one model:
 - **Linear chaining vs. learned translation:** *Plato's Key* reports that chaining closed-form Procrustes rotations `A → B → C` keeps `~99%` of direct `A → C` transfer accuracy (and surfaces dormant "dark memories" without weight changes). *Speculative Encoding*'s 2.35B MoE translator delivers high single-hop serving accuracy (`96.9%` reported), yet multi-hop pipelines must enforce two safeguards: (1) check accuracy decay over chained hops (`0.969^k` in a simple model), and (2) enforce **tenant isolation** on `K_t` so one user's translated KV cache never leaks to another user.
 
-<div class="sim" id="sim-aisys-state" role="group" aria-label="Rewind Wall and verifier explorer" markdown="1">
+<div class="sim aisys-sim" id="sim-aisys-state" role="group" aria-label="Rewind Wall and verifier explorer" markdown="1">
 
 <p class="sim-title"><strong>Interactive explorer: The Rewind Wall, verifiers, and multi-hop KV</strong></p>
 
@@ -223,6 +242,15 @@ If you save only plain text from a rollout and re-tokenize it on the trainer, su
 Top (`1. Aligned arrays`): six example tokens (`"Fix"`, `"bug"`, `"pytest:"`, `"FAIL"`, `"return"`, `"x+1"`) align across `token_ids`, `behavior_logprobs`, `policy_versions` (`v7` switching to `v8`), and `action_mask`. Columns with `action_mask = True` get RL gradients; tool output columns (`"pytest:"`, `"FAIL"`, `action_mask = False`) receive zero gradient. Bottom (`2. Multi-hop KV drift check`): `t1` (`2` hops, `88.3%`) stays above the `85%` floor and admits, whereas `t2` (`6` hops, `77.8%`) falls below `85%` and triggers raw re-prefill from `token_ids`, alongside the four contract validation checks.
 
 </details>
+
+<div class="sim aisys-sim" id="sim-aisys-tape" role="group" aria-label="Interactive versioned trajectory tape and action mask explorer" markdown="1">
+<h3 class="sim-title">Interactive lab: inspect token action masks and logprob parity</h3>
+<div class="sim-fallback" markdown="1">
+
+**Worked example without JavaScript:** In our `pytest` bug-fix rollout, the `10`-chunk token tape combines the pasted user prompt (`action_mask = False`), the model's generated Python patch (`action_mask = True`), pasted `pytest` terminal output (`action_mask = False`), and the model's final confirmation (`action_mask = True`). Only tokens with `action_mask = True` (`5` of `10` chunks) receive gradient updates, and keeping `policy_lag <= max_staleness` preserves importance-ratio (`ρ_t`) parity between behavior and learner policies.
+
+</div>
+</div>
 
 ## Practical roadmap, experiments, and open challenges
 

@@ -2,62 +2,72 @@
   <title id="t">GRPO waiting barrier and three-exit rollout gate</title>
   <desc id="d">Top timeline bars show three parallel attempts in one group: Try 1 and Try 2 finish thinking and testing early and sit idle waiting for Try 3's slow build at the sync barrier. Bottom safety gate routes each finished attempt to one of three exits: green fresh and graded adds to training batch, ochre too old drops or checkpoints, and red sandbox crashed retries without assigning reward zero.</desc>
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L9 5 L1 9 Z" fill="#3b4453"/></marker>
+    <filter id="card-shadow" x="-4%" y="-6%" width="108%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f1e3a" flood-opacity="0.07"/>
+    </filter>
+    <marker id="arrow-green" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#2a6a47"/></marker>
+    <marker id="arrow-ochre" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#7d4f0b"/></marker>
+    <marker id="arrow-red" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L8 4.5 L1 8 Z" fill="#9b2c2c"/></marker>
   </defs>
   <rect width="960" height="500" fill="#ffffff"/>
   <g font-family="Helvetica, Arial, 'Liberation Sans', sans-serif" fill="#0f1e3a">
-    <text x="480" y="32" text-anchor="middle" font-size="22" font-weight="700">Why rollouts wait — and where each finished try goes</text>
+    <text x="480" y="31" text-anchor="middle" font-size="22" font-weight="700">Why rollouts wait &#x2014; and where each finished try goes</text>
 
     <!-- Top Timeline Panel -->
-    <rect x="28" y="54" width="904" height="216" rx="6" fill="#f7f5ef" stroke="#ddd7ca" stroke-width="2"/>
-    <text x="46" y="84" font-size="18" font-weight="700">1. Sync barrier: fast tries wait for the slowest try</text>
+    <rect x="28" y="50" width="904" height="218" rx="8" fill="#f7f5ef" stroke="#b9b1a1" stroke-width="1.8" filter="url(#card-shadow)"/>
+    <circle cx="54" cy="77" r="12" fill="#0f1e3a"/>
+    <text x="54" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">1</text>
+    <text x="74" y="83" font-size="17.5" font-weight="700">Sync barrier: fast tries wait for the slowest try</text>
 
     <!-- Try 1 -->
-    <text x="46" y="128" font-size="16" font-weight="700">Try 1</text>
-    <rect x="112" y="104" width="110" height="36" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
-    <text x="167" y="128" text-anchor="middle" font-size="16">think</text>
-    <rect x="230" y="104" width="110" height="36" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="1.5"/>
-    <text x="285" y="128" text-anchor="middle" font-size="16">test</text>
-    <rect x="348" y="104" width="440" height="36" rx="6" fill="#ffffff" stroke="#b9b1a1" stroke-dasharray="4 3" stroke-width="1.5"/>
-    <text x="568" y="128" text-anchor="middle" font-size="16" fill="#535c6b">GPU sits idle waiting</text>
+    <text x="46" y="126" font-size="15.5" font-weight="700">Try 1</text>
+    <rect x="112" y="102" width="110" height="36" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
+    <text x="167" y="125" text-anchor="middle" font-size="15" font-weight="600" fill="#22616b">think</text>
+    <rect x="230" y="102" width="110" height="36" rx="8" fill="#fbf6ec" stroke="#7d4f0b" stroke-width="1.5"/>
+    <text x="285" y="125" text-anchor="middle" font-size="15" font-weight="600" fill="#7d4f0b">test</text>
+    <rect x="348" y="102" width="438" height="36" rx="8" fill="#ffffff" stroke="#b9b1a1" stroke-dasharray="5 3" stroke-width="1.5"/>
+    <text x="567" y="125" text-anchor="middle" font-size="15" fill="#535c6b">GPU sits idle waiting</text>
 
     <!-- Try 2 -->
-    <text x="46" y="178" font-size="16" font-weight="700">Try 2</text>
-    <rect x="112" y="154" width="110" height="36" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
-    <text x="167" y="178" text-anchor="middle" font-size="16">think</text>
-    <rect x="230" y="154" width="110" height="36" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="1.5"/>
-    <text x="285" y="178" text-anchor="middle" font-size="16">test</text>
-    <rect x="348" y="154" width="440" height="36" rx="6" fill="#ffffff" stroke="#b9b1a1" stroke-dasharray="4 3" stroke-width="1.5"/>
-    <text x="568" y="178" text-anchor="middle" font-size="16" fill="#535c6b">GPU sits idle waiting</text>
+    <text x="46" y="176" font-size="15.5" font-weight="700">Try 2</text>
+    <rect x="112" y="152" width="110" height="36" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
+    <text x="167" y="175" text-anchor="middle" font-size="15" font-weight="600" fill="#22616b">think</text>
+    <rect x="230" y="152" width="110" height="36" rx="8" fill="#fbf6ec" stroke="#7d4f0b" stroke-width="1.5"/>
+    <text x="285" y="175" text-anchor="middle" font-size="15" font-weight="600" fill="#7d4f0b">test</text>
+    <rect x="348" y="152" width="438" height="36" rx="8" fill="#ffffff" stroke="#b9b1a1" stroke-dasharray="5 3" stroke-width="1.5"/>
+    <text x="567" y="175" text-anchor="middle" font-size="15" fill="#535c6b">GPU sits idle waiting</text>
 
     <!-- Try 3 -->
-    <text x="46" y="228" font-size="16" font-weight="700">Try 3</text>
-    <rect x="112" y="204" width="110" height="36" rx="6" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
-    <text x="167" y="228" text-anchor="middle" font-size="16">think</text>
-    <rect x="230" y="204" width="558" height="36" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="1.5"/>
-    <text x="509" y="228" text-anchor="middle" font-size="16">slow code compile &amp; test</text>
+    <text x="46" y="226" font-size="15.5" font-weight="700">Try 3</text>
+    <rect x="112" y="202" width="110" height="36" rx="8" fill="#eff6f6" stroke="#22616b" stroke-width="1.5"/>
+    <text x="167" y="225" text-anchor="middle" font-size="15" font-weight="600" fill="#22616b">think</text>
+    <rect x="230" y="202" width="556" height="36" rx="8" fill="#fbf6ec" stroke="#7d4f0b" stroke-width="1.5"/>
+    <text x="508" y="225" text-anchor="middle" font-size="15" font-weight="600" fill="#7d4f0b">slow code compile &amp; test</text>
 
     <!-- Barrier Line -->
-    <line x1="802" y1="98" x2="802" y2="252" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="5 3"/>
-    <text x="866" y="168" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">Sync</text>
-    <text x="866" y="190" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">barrier</text>
+    <line x1="800" y1="96" x2="800" y2="250" stroke="#9b2c2c" stroke-width="2.5" stroke-dasharray="5 3"/>
+    <text x="864" y="166" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">Sync</text>
+    <text x="864" y="188" text-anchor="middle" font-size="16" font-weight="700" fill="#9b2c2c">barrier</text>
 
     <!-- Bottom 3-Exit Safety Gate -->
-    <rect x="28" y="346" width="212" height="96" rx="6" fill="#f3f6fa" stroke="#1d4e89" stroke-width="2"/>
-    <text x="134" y="384" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4e89">2. Finished Try</text>
-    <text x="134" y="412" text-anchor="middle" font-size="16" fill="#535c6b">Check age &amp; health</text>
+    <rect x="28" y="344" width="214" height="98" rx="8" fill="#f3f6fa" stroke="#1d4e89" stroke-width="1.8" filter="url(#card-shadow)"/>
+    <circle cx="54" cy="374" r="12" fill="#1d4e89"/>
+    <text x="54" y="379" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">2</text>
+    <text x="74" y="380" font-size="17.5" font-weight="700" fill="#1d4e89">Finished Try</text>
+    <text x="135" y="414" text-anchor="middle" font-size="15" fill="#535c6b">Check age &amp; health</text>
 
-    <path d="M240 374 L322 320" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M240 394 H322" fill="none" stroke="#84540c" stroke-width="2" marker-end="url(#arrow)"/>
-    <path d="M240 414 L322 454" fill="none" stroke="#9b2c2c" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M242 374 C 284 374, 286 315, 322 315" fill="none" stroke="#2a6a47" stroke-width="2" marker-end="url(#arrow-green)"/>
+    <path d="M242 393 H322" fill="none" stroke="#7d4f0b" stroke-width="2" marker-end="url(#arrow-ochre)"/>
+    <path d="M242 412 C 284 412, 286 459, 322 459" fill="none" stroke="#9b2c2c" stroke-width="2" marker-end="url(#arrow-red)"/>
 
-    <rect x="330" y="290" width="602" height="54" rx="6" fill="#f1f7f3" stroke="#2a6a47" stroke-width="2"/>
-    <text x="350" y="323" font-size="16"><tspan font-weight="700" fill="#2a6a47">Fresh &amp; graded:</tspan> admit into training batch</text>
+    <g filter="url(#card-shadow)">
+      <rect x="330" y="288" width="602" height="54" rx="8" fill="#f1f7f3" stroke="#2a6a47" stroke-width="1.8"/>
+      <rect x="330" y="360" width="602" height="54" rx="8" fill="#fbf6ec" stroke="#7d4f0b" stroke-width="1.8"/>
+      <rect x="330" y="432" width="602" height="54" rx="8" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="1.8"/>
+    </g>
 
-    <rect x="330" y="362" width="602" height="54" rx="6" fill="#fbf6ec" stroke="#84540c" stroke-width="2"/>
-    <text x="350" y="395" font-size="16"><tspan font-weight="700" fill="#84540c">Too old (stale):</tspan> drop or checkpoint &amp; resume</text>
-
-    <rect x="330" y="432" width="602" height="54" rx="6" fill="#fbf3f2" stroke="#9b2c2c" stroke-width="2"/>
-    <text x="350" y="465" font-size="16"><tspan font-weight="700" fill="#9b2c2c">Sandbox crashed:</tspan> retry cleanly (never give reward 0)</text>
+    <text x="352" y="320" font-size="16"><tspan font-weight="700" fill="#2a6a47">Fresh &amp; graded:</tspan> admit into training batch</text>
+    <text x="352" y="392" font-size="16"><tspan font-weight="700" fill="#7d4f0b">Too old (stale):</tspan> drop or checkpoint &amp; resume</text>
+    <text x="352" y="464" font-size="16"><tspan font-weight="700" fill="#9b2c2c">Sandbox crashed:</tspan> retry cleanly (never give reward 0)</text>
   </g>
 </svg>

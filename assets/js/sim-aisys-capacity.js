@@ -262,173 +262,798 @@
     return { trackTitle: track.title, eraIndex, ...track.steps[eraIndex] };
   }
 
+  function buildDecayCurvePoints(baseAcc, maxHops = 8) {
+    if (!Number.isFinite(baseAcc) || baseAcc <= 0 || baseAcc > 1) {
+      throw new RangeError("baseAcc must be a positive finite number <= 1.");
+    }
+    if (!Number.isInteger(maxHops) || maxHops < 0 || maxHops > 16) {
+      throw new RangeError("maxHops must be an integer between 0 and 16.");
+    }
+    const points = [];
+    for (let hops = 0; hops <= maxHops; hops += 1) {
+      const acc = Number((baseAcc * Math.pow(0.969, hops)).toFixed(4));
+      points.push({ hops, acc, safe: acc >= 0.85 });
+    }
+    return points;
+  }
+
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { CASES, PROGRESS_TRACKS, evaluateCapacity, evaluateSpeculativeEncoding, getProgressStep };
+    module.exports = {
+      CASES,
+      PROGRESS_TRACKS,
+      evaluateCapacity,
+      evaluateSpeculativeEncoding,
+      getProgressStep,
+      buildDecayCurvePoints
+    };
   }
   if (typeof document === "undefined") return;
 
-  const el = (tag, props = {}, ...kids) => {
-    const node = Object.assign(document.createElement(tag), props);
+  if (document.body) {
+    document.body.classList.add("aisys-page");
+  }
+
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  function el(tag, props = {}, ...kids) {
+    const node = document.createElement(tag);
+    for (const [key, val] of Object.entries(props)) {
+      if (val === undefined || val === null) continue;
+      if (key.startsWith("aria-") || key.startsWith("data-") || key === "role" || key === "for") {
+        node.setAttribute(key, String(val));
+      } else {
+        node[key] = val;
+      }
+    }
     node.append(...kids);
     return node;
-  };
+  }
 
-  // --- Mount 1: #sim-aisys-progress (Field Progress & Concept Explorer) ---
-  const progRoot = document.getElementById("sim-aisys-progress");
-  if (progRoot) {
-    const select = el("select", { id: "aisys-prog-track" });
+  function svgEl(tag, attrs = {}, ...kids) {
+    const node = document.createElementNS(SVG_NS, tag);
+    for (const [key, val] of Object.entries(attrs)) {
+      if (val !== undefined && val !== null) {
+        node.setAttribute(key, String(val));
+      }
+    }
+    node.append(...kids);
+    return node;
+  }
+
+  // --- Shared UX 1: Live Glossary Filter ---
+  function initGlossaryFilter() {
+    const details = Array.from(document.querySelectorAll("details"))
+      .find(d => d.querySelector("summary")?.textContent?.includes("Terms used on this page"));
+    if (!details) return;
+    const list = details.querySelector("ul");
+    if (!list) return;
+
+    list.classList.add("aisys-glossary-list");
+    const items = Array.from(list.children);
+    const input = el("input", {
+      type: "search",
+      className: "aisys-glossary-input",
+      placeholder: "Filter glossary terms (e.g. MLA, MoE, kv)...",
+      "aria-label": "Filter glossary terms"
+    });
+    const count = el("span", {
+      className: "aisys-glossary-count",
+      "aria-live": "polite",
+      textContent: `${items.length} terms`
+    });
+    const clearBtn = el("button", {
+      type: "button",
+      className: "sim-button sim-quiet aisys-glossary-clear",
+      textContent: "Clear",
+      disabled: true,
+      "aria-disabled": "true"
+    });
+    const emptyNote = el("p", {
+      className: "aisys-glossary-empty sim-note",
+      textContent: "No glossary terms match that filter.",
+      hidden: true
+    });
+    const bar = el("div", { className: "aisys-glossary-bar" }, input, count, clearBtn);
+
+    function applyFilter() {
+      const q = input.value.trim().toLowerCase();
+      if (q) details.open = true;
+      let visible = 0;
+      for (const li of items) {
+        const match = !q || li.textContent.toLowerCase().includes(q);
+        li.classList.toggle("is-hidden", !match);
+        if (match) visible += 1;
+      }
+      count.textContent = q ? `${visible} of ${items.length} shown` : `${items.length} terms`;
+      emptyNote.hidden = visible > 0;
+      const hasQuery = input.value.length > 0;
+      clearBtn.disabled = !hasQuery;
+      clearBtn.setAttribute("aria-disabled", String(!hasQuery));
+    }
+
+    input.addEventListener("input", applyFilter);
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      applyFilter();
+      input.focus();
+    });
+
+    list.before(bar);
+    list.after(emptyNote);
+  }
+
+  // --- Shared UX 2: Native <dialog> Diagram Lightbox ---
+  function extractCaptionText(caption, fallbackAlt) {
+    if (!caption) return fallbackAlt || "";
+    const clone = caption.cloneNode(true);
+    for (const junk of clone.querySelectorAll(".screen-only, a[href$='.svg']")) {
+      junk.remove();
+    }
+    return clone.textContent.replace(/\s+/g, " ").trim().replace(/\.\s*\./g, ".").replace(/\s+\.$/, ".") || fallbackAlt || "";
+  }
+
+  function initDiagramLightbox() {
+    const entries = Array.from(document.querySelectorAll(".course-diagram"))
+      .map(fig => {
+        const img = fig.querySelector(".diagram-scroll img");
+        if (!img) return null;
+        const caption = fig.querySelector("figcaption");
+        const rawLink = fig.querySelector("figcaption a[href$='.svg']");
+        return {
+          fig,
+          img,
+          src: rawLink ? rawLink.getAttribute("href") : img.getAttribute("src"),
+          alt: img.getAttribute("alt") || "",
+          captionText: extractCaptionText(caption, img.getAttribute("alt"))
+        };
+      })
+      .filter(Boolean);
+    if (entries.length === 0) return;
+
+    let dialog = document.getElementById("aisys-lightbox");
+    if (!dialog) {
+      const countEl = el("span", { className: "aisys-lb-count aisys-pill aisys-pill--muted" });
+      const prevBtn = el("button", {
+        type: "button",
+        className: "aisys-lb-prev",
+        textContent: "← Previous",
+        "aria-label": "Previous diagram"
+      });
+      const nextBtn = el("button", {
+        type: "button",
+        className: "aisys-lb-next",
+        textContent: "Next →",
+        "aria-label": "Next diagram"
+      });
+      const zoomBtn = el("button", {
+        type: "button",
+        className: "aisys-lb-zoom",
+        textContent: "Zoom 140%",
+        "aria-pressed": "false"
+      });
+      const closeBtn = el("button", {
+        type: "button",
+        className: "aisys-lb-close",
+        textContent: "Close (Esc)",
+        "aria-label": "Close diagram viewer"
+      });
+      const stageImg = el("img", { className: "aisys-lb-img", alt: "" });
+      const stage = el("div", { className: "aisys-lb-stage" }, stageImg);
+      const captionTextEl = el("span", { className: "aisys-lb-caption-text" });
+      const rawLink = el("a", {
+        className: "aisys-lb-raw",
+        target: "_blank",
+        rel: "noopener",
+        textContent: "Open raw SVG ↗"
+      });
+      const captionEl = el("div", { className: "aisys-lb-caption" }, captionTextEl, rawLink);
+
+      const bar = el("div", { className: "aisys-lb-bar" },
+        el("div", { className: "aisys-badge-row" },
+          el("span", { className: "aisys-pill aisys-pill--navy", textContent: "Diagram Inspector" }),
+          countEl
+        ),
+        el("div", { className: "aisys-badge-row" }, prevBtn, nextBtn, zoomBtn, closeBtn)
+      );
+
+      dialog = el("dialog", {
+        className: "aisys-lightbox",
+        id: "aisys-lightbox",
+        "aria-label": "Diagram viewer"
+      }, bar, stage, captionEl);
+      document.body.append(dialog);
+
+      let currentIndex = 0;
+      let zoomed = false;
+      let lastTrigger = null;
+
+      function syncView(idx) {
+        currentIndex = (idx + entries.length) % entries.length;
+        const item = entries[currentIndex];
+        stageImg.src = item.img.currentSrc || item.src;
+        stageImg.alt = item.alt;
+        countEl.textContent = `${currentIndex + 1} / ${entries.length}`;
+        captionTextEl.textContent = item.captionText;
+        rawLink.href = item.src;
+        stage.classList.toggle("is-zoomed", zoomed);
+        zoomBtn.setAttribute("aria-pressed", String(zoomed));
+        zoomBtn.textContent = zoomed ? "Reset 100%" : "Zoom 140%";
+        stage.scrollTop = 0;
+        stage.scrollLeft = 0;
+      }
+
+      function openAt(idx, trigger) {
+        lastTrigger = trigger || document.activeElement;
+        zoomed = false;
+        syncView(idx);
+        if (typeof dialog.showModal === "function") {
+          if (!dialog.open) dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+        closeBtn.focus();
+      }
+
+      function closeModal() {
+        if (typeof dialog.close === "function" && dialog.open) {
+          dialog.close();
+        } else {
+          dialog.removeAttribute("open");
+          if (lastTrigger && typeof lastTrigger.focus === "function") lastTrigger.focus();
+        }
+      }
+
+      prevBtn.addEventListener("click", () => syncView(currentIndex - 1));
+      nextBtn.addEventListener("click", () => syncView(currentIndex + 1));
+      zoomBtn.addEventListener("click", () => {
+        zoomed = !zoomed;
+        syncView(currentIndex);
+      });
+      closeBtn.addEventListener("click", closeModal);
+      dialog.addEventListener("click", evt => {
+        if (evt.target === dialog) closeModal();
+      });
+      dialog.addEventListener("close", () => {
+        if (lastTrigger && typeof lastTrigger.focus === "function") {
+          lastTrigger.focus();
+        }
+      });
+      dialog.addEventListener("keydown", evt => {
+        if (evt.key === "ArrowLeft") {
+          evt.preventDefault();
+          syncView(currentIndex - 1);
+        } else if (evt.key === "ArrowRight") {
+          evt.preventDefault();
+          syncView(currentIndex + 1);
+        }
+      });
+
+      entries.forEach((entry, idx) => {
+        const inspectBtn = el("button", {
+          type: "button",
+          className: "aisys-zoom-btn",
+          textContent: "Inspect ⤢",
+          "aria-label": `Inspect diagram ${idx + 1} in full view`
+        });
+        inspectBtn.addEventListener("click", () => openAt(idx, inspectBtn));
+        entry.img.addEventListener("click", () => openAt(idx, inspectBtn));
+        entry.fig.prepend(inspectBtn);
+      });
+    }
+  }
+
+  // --- Mount 1: #sim-aisys-progress (Visual Era Explorer & Semantic Bento Grid) ---
+  function mountProgressExplorer() {
+    const progRoot = document.getElementById("sim-aisys-progress");
+    if (!progRoot) return;
+    const fallback = progRoot.querySelector(".sim-fallback");
+    if (!fallback) return;
+
+    const SHORT_TOPICS = {
+      "training-scale": "1. Training scale",
+      "fast-serving": "2. Fast serving",
+      "cross-model": "3. Cross-model KV",
+      "rl-learning": "4. Learning from action",
+      "safe-exec": "5. Safe execution",
+      "frontier-2026": "6. DeepSeek & Kimi"
+    };
+
+    const select = el("select", { id: "aisys-prog-track", className: "sr-only" });
     select.append(...PROGRESS_TRACKS.map(t => el("option", { value: t.id, textContent: t.title })));
-    const fields = el("div", { className: "sim-fields" },
-      el("label", { htmlFor: select.id }, "Choose an AI systems topic to trace over time", select)
+    const srLabel = el("label", { htmlFor: select.id, className: "sr-only", textContent: "Choose an AI systems topic to trace over time" });
+
+    const eraBadge = el("span", { className: "aisys-pill aisys-pill--teal" });
+    const head = el("div", { className: "aisys-sim-head" },
+      el("span", { className: "aisys-pill aisys-pill--navy", textContent: "Field Evolution Explorer" }),
+      eraBadge
     );
-    const receipt = el("dl", { className: "aisys-receipt" });
+
+    const pillsWrap = el("div", { className: "aisys-pills", role: "group", "aria-label": "AI systems topics" });
+    const pillButtons = new Map();
+    const timelineWrap = el("div", { className: "aisys-timeline", role: "group", "aria-label": "Evolution stages" });
+    const timelineNodes = [];
+    const bento = el("div", { className: "aisys-bento" });
     const controls = el("div", { className: "sim-controls" });
     const status = el("p", { className: "sim-status" });
-    const live = el("div", {}, status);
-    live.setAttribute("role", "status");
-    live.setAttribute("aria-atomic", "true");
+    const live = el("div", { role: "status", "aria-atomic": "true" }, status);
 
     let trackId = PROGRESS_TRACKS[0].id;
     let eraIndex = 0;
 
-    const eraButtons = [
-      ["1. Early problem", () => { eraIndex = 0; }],
-      ["2. Breakthrough", () => { eraIndex = 1; }],
-      ["3. Today's status", () => { eraIndex = 2; }],
-      ["Next era ->", () => { eraIndex = (eraIndex + 1) % 3; }]
-    ];
+    function bentoCard(modClass, label, body) {
+      return el("article", { className: `aisys-card ${modClass}` },
+        el("h4", { className: "aisys-card-label", textContent: label }),
+        el("p", { className: "aisys-card-body", textContent: body })
+      );
+    }
 
     function renderProgress() {
       const step = getProgressStep(trackId, eraIndex);
-      const facts = [
-        ["Core concept / term", step.concept],
-        ["What broke", step.broken],
-        ["How the field solved it", step.solution],
-        ["Milestone / result", step.milestone],
-        ["Current status & open gap", step.status]
-      ];
-      receipt.replaceChildren(...facts.map(([k, v]) => el("div", {}, el("dt", { textContent: k }), el("dd", { textContent: v }))));
+      select.value = trackId;
+      eraBadge.textContent = step.era;
+
+      for (const [id, btn] of pillButtons.entries()) {
+        btn.setAttribute("aria-pressed", String(id === trackId));
+      }
+
+      timelineNodes.forEach((node, idx) => {
+        const active = idx === eraIndex;
+        const done = idx < eraIndex;
+        node.classList.toggle("is-active", active);
+        node.classList.toggle("is-done", done);
+        node.setAttribute("aria-pressed", String(active));
+        if (active) node.setAttribute("aria-current", "step");
+        else node.removeAttribute("aria-current");
+      });
+
+      bento.replaceChildren(
+        bentoCard("aisys-card--hero", "Core concept / term", step.concept),
+        bentoCard("aisys-card--red", "What broke", step.broken),
+        bentoCard("aisys-card--green", "How the field solved it", step.solution),
+        bentoCard("aisys-card--teal", "Milestone / result", step.milestone),
+        bentoCard("aisys-card--ochre", "Today's status & open gap", step.status)
+      );
       status.textContent = `${step.trackTitle} — ${step.era}: ${step.concept}.`;
     }
 
-    for (const [label, fn] of eraButtons) {
-      const btn = el("button", { type: "button", className: "sim-button", textContent: label });
-      btn.addEventListener("click", () => { fn(); renderProgress(); });
-      controls.append(btn);
+    for (const track of PROGRESS_TRACKS) {
+      const btn = el("button", {
+        type: "button",
+        className: "aisys-pill-btn",
+        textContent: SHORT_TOPICS[track.id] || track.title,
+        title: track.title,
+        "aria-pressed": String(track.id === trackId)
+      });
+      btn.addEventListener("click", () => {
+        trackId = track.id;
+        eraIndex = 0;
+        renderProgress();
+      });
+      pillButtons.set(track.id, btn);
+      pillsWrap.append(btn);
     }
+
+    const eraLabels = ["1. Early problem", "2. Breakthrough", "3. Today's status"];
+    eraLabels.forEach((label, idx) => {
+      const stepBtn = el("button", {
+        type: "button",
+        className: "aisys-timeline-step",
+        "aria-pressed": String(idx === eraIndex)
+      },
+        el("span", { className: "aisys-timeline-dot", "aria-hidden": "true", textContent: String(idx + 1) }),
+        el("span", { className: "aisys-timeline-label", textContent: label })
+      );
+      stepBtn.addEventListener("click", () => {
+        eraIndex = idx;
+        renderProgress();
+      });
+      timelineNodes.push(stepBtn);
+      timelineWrap.append(stepBtn);
+    });
+
+    const prevEraBtn = el("button", { type: "button", className: "sim-button sim-quiet", textContent: "← Previous era" });
+    const nextEraBtn = el("button", { type: "button", className: "sim-button", textContent: "Next era →" });
+    prevEraBtn.addEventListener("click", () => { eraIndex = (eraIndex + 2) % 3; renderProgress(); });
+    nextEraBtn.addEventListener("click", () => { eraIndex = (eraIndex + 1) % 3; renderProgress(); });
+    controls.append(prevEraBtn, nextEraBtn);
+
     select.addEventListener("change", () => {
       trackId = select.value;
       eraIndex = 0;
       renderProgress();
     });
 
-    progRoot.querySelector(".sim-fallback").before(
-      el("div", { className: "sim-app" }, fields, controls, receipt, live)
+    fallback.before(
+      el("div", { className: "sim-app" }, head, srLabel, select, pillsWrap, timelineWrap, bento, controls, live)
     );
     progRoot.classList.add("is-live");
     renderProgress();
   }
 
-  // --- Mount 2: #sim-aisys-capacity (Fleet Bottleneck & Speculative Encoding) ---
-  const root = document.getElementById("sim-aisys-capacity");
-  if (!root) return;
+  // --- Mount 2: #sim-aisys-capacity (Interactive Sliders, KPI Tiles & SVG Decay Sparkline) ---
+  function mountCapacityLab() {
+    const root = document.getElementById("sim-aisys-capacity");
+    if (!root) return;
+    const fallback = root.querySelector(".sim-fallback");
+    if (!fallback) return;
 
-  const select = el("select", { id: "aisys-cap-case" });
-  select.append(...CASES.map(c => el("option", { value: c.id, textContent: c.title })));
+    const PRESET_SHORT = {
+      "env-bound": "1. Slow sandboxes",
+      "learner-bound": "2. Slow learner",
+      "verifier-bound": "3. Slow graders",
+      "swarm-sweet-spot": "4. 5-model team (64k)",
+      "multihop-drift": "5. 6-hop drift"
+    };
 
-  const fields = el("div", { className: "sim-fields" },
-    el("label", { htmlFor: select.id }, "Choose a synthetic cluster scenario", select)
-  );
-  const fleetBars = el("div", { className: "aisys-bars" });
-  const receipt = el("dl", { className: "aisys-receipt" });
-  const controls = el("div", { className: "sim-controls" });
-  const status = el("p", { className: "sim-status" });
-  const note = el("p", { className: "sim-note" });
-  const live = el("div", {}, status, note);
-  live.setAttribute("role", "status");
-  live.setAttribute("aria-atomic", "true");
-
-  let state = { ...CASES[0] };
-
-  const actions = [
-    ["Add +20/min Inference GPUs", () => { state.inference += 20; return "Added +20/min inference capacity."; }],
-    ["Add +20/min Sandboxes", () => { state.environments += 20; return "Added +20/min sandbox capacity."; }],
-    ["Add +20/min Verifiers", () => { state.verification += 20; return "Added +20/min grader capacity."; }],
-    ["Reset scenario", () => { state = { ...CASES.find(c => c.id === select.value) }; return "Reset scenario to baseline."; }]
-  ];
-
-  function barRow(label, valueText, pct, fillClass) {
-    return el("div", { className: "aisys-bar-row" },
-      el("div", { className: "aisys-bar-head" },
-        el("span", { textContent: label }),
-        el("strong", { textContent: valueText })
-      ),
-      el("div", { className: "aisys-bar-track" },
-        el("div", { className: `aisys-bar-fill ${fillClass}`.trim(), style: `width:${Math.max(4, Math.min(100, pct))}%` })
-      )
-    );
-  }
-
-  function render(actionMsg) {
-    const cap = evaluateCapacity(state);
-    const se = evaluateSpeculativeEncoding(state);
-    const maxRate = Math.max(state.inference, state.environments, state.verification, state.learner, 80);
-    const fleets = [
-      ["inference", "1. Inference GPUs"],
-      ["environments", "2. Sandboxes"],
-      ["verification", "3. Trusted Graders"],
-      ["learner", "4. Training Learner"]
+    const SLIDER_SPECS = [
+      { key: "inference", label: "Inference GPUs", min: 5, max: 120, step: 1, fmt: v => `${v}/min` },
+      { key: "environments", label: "Sandboxes", min: 5, max: 120, step: 1, fmt: v => `${v}/min` },
+      { key: "verification", label: "Trusted Graders", min: 5, max: 120, step: 1, fmt: v => `${v}/min` },
+      { key: "learner", label: "Training Learner", min: 5, max: 120, step: 1, fmt: v => `${v}/min` },
+      { key: "contextK", label: "Context length (K tokens)", min: 8, max: 128, step: 8, fmt: v => `${v}K` },
+      { key: "hops", label: "Cross-model hops", min: 0, max: 8, step: 1, fmt: v => `${v} ${v === 1 ? "hop" : "hops"}` }
     ];
-    const rows = fleets.map(([k, title]) => {
-      const isBottle = cap.bottlenecks.includes(k);
-      const val = state[k];
-      return barRow(
-        isBottle ? `${title} — BOTTLENECK` : title,
-        `${val}/min`,
-        (val / maxRate) * 100,
-        isBottle ? "aisys-bar-fill--bottle" : ""
+
+    const select = el("select", { id: "aisys-cap-case", className: "sr-only" });
+    select.append(...CASES.map(c => el("option", { value: c.id, textContent: c.title })));
+    const srLabel = el("label", { htmlFor: select.id, className: "sr-only", textContent: "Choose a synthetic cluster scenario" });
+
+    const modeBadge = el("span", { className: "aisys-pill aisys-pill--teal" });
+    const head = el("div", { className: "aisys-sim-head" },
+      el("span", { className: "aisys-pill aisys-pill--navy", textContent: "Cluster & Cross-Model Lab" }),
+      modeBadge
+    );
+
+    const pillsWrap = el("div", { className: "aisys-pills", role: "group", "aria-label": "Cluster presets" });
+    const pillButtons = new Map();
+    const slidersWrap = el("div", { className: "aisys-sliders" });
+    const kpisWrap = el("div", { className: "aisys-kpis" });
+    const fleetBars = el("div", { className: "aisys-bars" });
+    const chartBox = el("div", { className: "aisys-chart-box" });
+    const controls = el("div", { className: "sim-controls" });
+    const status = el("p", { className: "sim-status" });
+    const note = el("p", { className: "sim-note" });
+    const live = el("div", { role: "status", "aria-atomic": "true" }, status, note);
+
+    let activePresetId = CASES[0].id;
+    let state = { ...CASES[0] };
+    const sliderControls = new Map();
+
+    for (const preset of CASES) {
+      const btn = el("button", {
+        type: "button",
+        className: "aisys-pill-btn",
+        textContent: PRESET_SHORT[preset.id] || preset.title,
+        title: preset.title,
+        "aria-pressed": String(preset.id === activePresetId)
+      });
+      btn.addEventListener("click", () => {
+        activePresetId = preset.id;
+        select.value = preset.id;
+        state = { ...preset };
+        render("Loaded preset scenario.");
+      });
+      pillButtons.set(preset.id, btn);
+      pillsWrap.append(btn);
+    }
+
+    for (const spec of SLIDER_SPECS) {
+      const inputId = `aisys-slider-${spec.key}`;
+      const output = el("output", { className: "aisys-slider-val", for: inputId, textContent: spec.fmt(state[spec.key]) });
+      const range = el("input", {
+        id: inputId,
+        type: "range",
+        className: "aisys-range",
+        min: String(spec.min),
+        max: String(spec.max),
+        step: String(spec.step),
+        value: String(state[spec.key])
+      });
+      range.addEventListener("input", () => {
+        state[spec.key] = Number(range.value);
+        render(`Adjusted ${spec.label}.`);
+      });
+      sliderControls.set(spec.key, { range, output, spec });
+      slidersWrap.append(
+        el("div", { className: "aisys-slider-row" },
+          el("div", { className: "aisys-slider-head" },
+            el("label", { htmlFor: inputId, className: "aisys-slider-label", textContent: spec.label }),
+            output
+          ),
+          range
+        )
       );
+    }
+
+    function kpiTile(label, value, sub, tone) {
+      return el("div", { className: `aisys-kpi aisys-kpi--${tone}`, "data-tone": tone },
+        el("span", { className: "aisys-kpi-label", textContent: label }),
+        el("strong", { className: "aisys-kpi-val", textContent: value }),
+        el("span", { className: "aisys-kpi-sub", textContent: sub })
+      );
+    }
+
+    function barRow(label, valueText, pct, fillClass, badgeText) {
+      const headLeft = badgeText
+        ? el("span", { className: "aisys-bar-title" },
+            label,
+            " ",
+            el("span", { className: "aisys-badge aisys-badge--bottle", textContent: badgeText })
+          )
+        : el("span", { className: "aisys-bar-title", textContent: label });
+      return el("div", { className: "aisys-bar-row" },
+        el("div", { className: "aisys-bar-head" },
+          headLeft,
+          el("strong", { textContent: valueText })
+        ),
+        el("div", { className: "aisys-bar-track" },
+          el("div", { className: `aisys-bar-fill ${fillClass}`.trim(), style: `width:${Math.max(4, Math.min(100, pct))}%` })
+        )
+      );
+    }
+
+    function renderSparkline(baseAcc, currentHops, currentAcc) {
+      const points = buildDecayCurvePoints(baseAcc, 8);
+      const W = 560;
+      const H = 150;
+      const left = 46;
+      const right = 22;
+      const top = 22;
+      const bottom = 28;
+      const plotW = W - left - right;
+      const plotH = H - top - bottom;
+      const minY = Math.min(0.65, Math.floor(points[points.length - 1].acc * 20) / 20 - 0.05);
+      const maxY = 1.0;
+
+      const xFor = h => left + (h / 8) * plotW;
+      const yFor = acc => top + ((maxY - acc) / (maxY - minY)) * plotH;
+      const y85 = yFor(0.85);
+      const yBottom = top + plotH;
+
+      const svg = svgEl("svg", {
+        class: "aisys-sparkline",
+        viewBox: `0 0 ${W} ${H}`,
+        role: "img",
+        "aria-label": `Multi-hop accuracy decay curve from ${(baseAcc * 100).toFixed(0)}% across 0 to 8 hops`
+      });
+
+      // Danger zone below 85%
+      svg.append(
+        svgEl("rect", {
+          x: left,
+          y: y85,
+          width: plotW,
+          height: Math.max(0, yBottom - y85),
+          fill: "rgba(155, 44, 44, 0.08)"
+        }),
+        svgEl("text", {
+          x: left + 6,
+          y: yBottom - 5,
+          "font-size": "10",
+          fill: "#9b2c2c"
+        }, "Danger zone (< 85% floor)")
+      );
+
+      // Horizontal reference ticks
+      for (const tick of [1.0, 0.9, 0.85, 0.7]) {
+        if (tick < minY) continue;
+        const y = yFor(tick);
+        const isFloor = tick === 0.85;
+        svg.append(
+          svgEl("line", {
+            x1: left,
+            y1: y,
+            x2: W - right,
+            y2: y,
+            stroke: isFloor ? "#9b2c2c" : "#dce3eb",
+            "stroke-width": isFloor ? "1.5" : "1",
+            ...(isFloor ? { "stroke-dasharray": "5 4" } : {})
+          }),
+          svgEl("text", {
+            x: left - 6,
+            y: y + 3.5,
+            "text-anchor": "end",
+            "font-size": "10",
+            "font-weight": isFloor ? "700" : "500",
+            fill: isFloor ? "#9b2c2c" : "#5a6778"
+          }, `${Math.round(tick * 100)}%`)
+        );
+      }
+
+      // Vertical grid & X-axis labels (0..8 hops)
+      for (const pt of points) {
+        const x = xFor(pt.hops);
+        svg.append(
+          svgEl("line", {
+            x1: x,
+            y1: top,
+            x2: x,
+            y2: yBottom,
+            stroke: pt.hops === currentHops ? "#cbd5e1" : "#eef2f6",
+            "stroke-width": pt.hops === currentHops ? "1.5" : "1"
+          }),
+          svgEl("text", {
+            x,
+            y: H - 8,
+            "text-anchor": "middle",
+            "font-size": "10.5",
+            "font-weight": pt.hops === currentHops ? "700" : "500",
+            fill: pt.hops === currentHops ? "#102a43" : "#5a6778"
+          }, pt.hops === 0 ? "0" : `${pt.hops}`)
+        );
+      }
+
+      // Decay curve polyline
+      const polyPts = points.map(p => `${xFor(p.hops).toFixed(1)},${yFor(p.acc).toFixed(1)}`).join(" ");
+      svg.append(
+        svgEl("polyline", {
+          points: polyPts,
+          fill: "none",
+          stroke: "#0f766e",
+          "stroke-width": "2.5",
+          "stroke-linecap": "round",
+          "stroke-linejoin": "round"
+        })
+      );
+
+      // Hollow dots for every hop 0..8
+      for (const pt of points) {
+        svg.append(
+          svgEl("circle", {
+            cx: xFor(pt.hops).toFixed(1),
+            cy: yFor(pt.acc).toFixed(1),
+            r: "4",
+            fill: "#ffffff",
+            stroke: pt.safe ? "#0f766e" : "#9b2c2c",
+            "stroke-width": "2"
+          })
+        );
+      }
+
+      // Highlighted active dot + callout badge
+      const activePt = points[Math.min(points.length - 1, Math.max(0, currentHops))];
+      const ax = xFor(activePt.hops);
+      const ay = yFor(activePt.acc);
+      const badgeColor = activePt.safe ? "#0f766e" : "#9b2c2c";
+      const badgeText = `${currentHops} ${currentHops === 1 ? "hop" : "hops"}: ${(currentAcc * 100).toFixed(1)}%`;
+      const badgeW = 96;
+      const badgeH = 20;
+      const bx = Math.min(W - right - badgeW, Math.max(left + 2, currentHops >= 6 ? ax - badgeW - 10 : ax + 10));
+      const by = activePt.safe
+        ? Math.max(4, ay - badgeH - 10)
+        : Math.min(yBottom - badgeH - 4, ay + 12);
+
+      svg.append(
+        svgEl("circle", { cx: ax.toFixed(1), cy: ay.toFixed(1), r: "8.5", fill: badgeColor, "fill-opacity": "0.18" }),
+        svgEl("circle", { cx: ax.toFixed(1), cy: ay.toFixed(1), r: "5.5", fill: badgeColor, stroke: "#ffffff", "stroke-width": "2" }),
+        svgEl("rect", { x: bx.toFixed(1), y: by.toFixed(1), width: badgeW, height: badgeH, rx: "4", fill: badgeColor }),
+        svgEl("text", {
+          x: (bx + badgeW / 2).toFixed(1),
+          y: (by + 13.5).toFixed(1),
+          "text-anchor": "middle",
+          "font-size": "10.5",
+          "font-weight": "700",
+          fill: "#ffffff"
+        }, badgeText)
+      );
+
+      chartBox.replaceChildren(
+        el("div", { className: "aisys-chart-title" },
+          `Multi-hop accuracy decay (0.969^k × ${(baseAcc * 100).toFixed(0)}% native) · `,
+          el("span", { textContent: "Dashed line: 85% floor" })
+        ),
+        svg
+      );
+    }
+
+    function matchesPreset(preset) {
+      return SLIDER_SPECS.every(spec => state[spec.key] === preset[spec.key]);
+    }
+
+    function render(actionMsg) {
+      const cap = evaluateCapacity(state);
+      const se = evaluateSpeculativeEncoding(state);
+
+      // Sync preset pills & sliders
+      const matched = CASES.find(matchesPreset);
+      activePresetId = matched ? matched.id : "";
+      if (matched) select.value = matched.id;
+      for (const [id, btn] of pillButtons.entries()) {
+        btn.setAttribute("aria-pressed", String(id === activePresetId));
+      }
+      for (const { range, output, spec } of sliderControls.values()) {
+        range.value = String(state[spec.key]);
+        output.textContent = spec.fmt(state[spec.key]);
+      }
+
+      const accSafe = se.effectiveAcc >= 0.85;
+      modeBadge.textContent = accSafe ? "Accuracy ≥ 85% floor" : "Drift warning (< 85%)";
+      modeBadge.className = `aisys-pill ${accSafe ? "aisys-pill--teal" : "aisys-pill--red"}`;
+
+      const goodputTone = cap.goodput >= 40 || cap.bottlenecks.length === 4 ? "ok" : "warn";
+      kpisWrap.replaceChildren(
+        kpiTile("Steady-State Goodput", `${cap.goodput}/min`, `Bottleneck: ${cap.bottlenecks.join(", ")}`, goodputTone),
+        kpiTile("Cross-Model Speedup", `${se.speedup}×`, `${se.rawTotalMs} ms → ${se.translatedMs} ms`, "info"),
+        kpiTile(
+          "Multi-Hop Accuracy",
+          `${(se.effectiveAcc * 100).toFixed(1)}%`,
+          `Floor ≥ 85.0% · 0.969^${state.hops}`,
+          accSafe ? "ok" : "bad"
+        )
+      );
+
+      const maxRate = Math.max(state.inference, state.environments, state.verification, state.learner, 80);
+      const fleets = [
+        ["inference", "1. Inference GPUs"],
+        ["environments", "2. Sandboxes"],
+        ["verification", "3. Trusted Graders"],
+        ["learner", "4. Training Learner"]
+      ];
+      const rows = fleets.map(([k, title]) => {
+        const isBottle = cap.bottlenecks.includes(k);
+        const val = state[k];
+        return barRow(
+          title,
+          `${val}/min`,
+          (val / maxRate) * 100,
+          isBottle ? "aisys-bar-fill--bottle" : "",
+          isBottle ? "BOTTLENECK" : ""
+        );
+      });
+      rows.push(
+        barRow("Raw N× text reading", `${se.rawTotalMs} ms`, 100, "aisys-bar-fill--bottle", ""),
+        barRow(
+          `Speculative Encoding (${state.hops}-hop, ${(se.effectiveAcc * 100).toFixed(1)}% acc)`,
+          `${se.translatedMs} ms (${se.speedup}× faster)`,
+          (se.translatedMs / se.rawTotalMs) * 100,
+          accSafe ? "aisys-bar-fill--spec" : "aisys-bar-fill--bottle",
+          ""
+        )
+      );
+      fleetBars.replaceChildren(...rows);
+
+      renderSparkline(state.baseAcc, state.hops, se.effectiveAcc);
+
+      status.textContent = `${actionMsg} Goodput is ${cap.goodput}/min (${cap.bottlenecks.join(", ")}).`;
+      status.classList.toggle("sim-error", !accSafe);
+      note.textContent = !accSafe
+        ? `Warning: ${state.hops} chained latent translations drop synthetic accuracy to ${(se.effectiveAcc * 100).toFixed(1)}%; re-read raw text at a checkpoint before grading.`
+        : `Synthetic model only (not a hardware benchmark): steady-state rollouts cannot exceed the slowest fleet (${cap.bottlenecks.join(", ")}).`;
+    }
+
+    const actions = [
+      ["+20 GPUs", () => { state.inference = Math.min(120, state.inference + 20); return "Added +20/min inference capacity."; }, "sim-button"],
+      ["+20 Sandboxes", () => { state.environments = Math.min(120, state.environments + 20); return "Added +20/min sandbox capacity."; }, "sim-button"],
+      ["+20 Verifiers", () => { state.verification = Math.min(120, state.verification + 20); return "Added +20/min grader capacity."; }, "sim-button"],
+      ["Reset", () => { state = { ...(CASES.find(c => c.id === select.value) || CASES[0]) }; return "Reset scenario to baseline."; }, "sim-button sim-quiet"]
+    ];
+
+    for (const [label, fn, cls] of actions) {
+      const btn = el("button", { type: "button", className: cls, textContent: label });
+      btn.addEventListener("click", () => render(fn()));
+      controls.append(btn);
+    }
+
+    select.addEventListener("change", () => {
+      const chosen = CASES.find(c => c.id === select.value);
+      if (!chosen) return;
+      state = { ...chosen };
+      render("Loaded scenario.");
     });
-    rows.push(
-      barRow("Raw N× text reading", `${se.rawTotalMs} ms`, 100, "aisys-bar-fill--bottle"),
-      barRow(
-        `Speculative Encoding (${state.hops}-hop, ${(se.effectiveAcc * 100).toFixed(1)}% acc)`,
-        `${se.translatedMs} ms (${se.speedup}× faster)`,
-        (se.translatedMs / se.rawTotalMs) * 100,
-        se.effectiveAcc < 0.85 ? "aisys-bar-fill--bottle" : "aisys-bar-fill--spec"
+
+    fallback.before(
+      el("div", { className: "sim-app" },
+        head, srLabel, select, pillsWrap, slidersWrap, kpisWrap, fleetBars, chartBox,
+        el("p", { className: "sim-box-title", textContent: "Quick capacity actions" }),
+        controls, live
       )
     );
-    fleetBars.replaceChildren(...rows);
-
-    const facts = [
-      ["Steady-state goodput", `${cap.goodput}/min (bottleneck: ${cap.bottlenecks.join(", ")})`],
-      ["Cross-model speedup", `${se.speedup}× faster (${se.rawTotalMs} ms → ${se.translatedMs} ms)`],
-      ["Synthetic accuracy", `${(se.effectiveAcc * 100).toFixed(1)}% (0.969^${state.hops} × ${(state.baseAcc * 100).toFixed(0)}%)`]
-    ];
-    receipt.replaceChildren(...facts.map(([k, v]) => el("div", {}, el("dt", { textContent: k }), el("dd", { textContent: v }))));
-    status.textContent = `${actionMsg} Goodput is ${cap.goodput}/min (${cap.bottlenecks.join(", ")}).`;
-    status.classList.toggle("sim-error", se.effectiveAcc < 0.85);
-    note.textContent = se.effectiveAcc < 0.85
-      ? `Warning: ${state.hops} chained latent translations drop synthetic accuracy to ${(se.effectiveAcc * 100).toFixed(1)}%; re-read raw text at a checkpoint before grading.`
-      : `Synthetic model only (not a hardware benchmark): steady-state rollouts cannot exceed the slowest fleet (${cap.bottlenecks.join(", ")}).`;
+    root.classList.add("is-live");
+    render("Loaded baseline scenario.");
   }
 
-  for (const [label, fn] of actions) {
-    const btn = el("button", { type: "button", className: "sim-button", textContent: label });
-    btn.addEventListener("click", () => render(fn()));
-    controls.append(btn);
-  }
-
-  select.addEventListener("change", () => {
-    state = { ...CASES.find(c => c.id === select.value) };
-    render("Loaded scenario.");
-  });
-
-  root.querySelector(".sim-fallback").before(
-    el("div", { className: "sim-app" }, fields, fleetBars, receipt,
-      el("p", { className: "sim-box-title", textContent: "Test an infrastructure change" }),
-      controls, live)
-  );
-  root.classList.add("is-live");
-  render("Loaded baseline scenario.");
+  initGlossaryFilter();
+  initDiagramLightbox();
+  mountProgressExplorer();
+  mountCapacityLab();
 })();

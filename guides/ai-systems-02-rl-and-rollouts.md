@@ -4,6 +4,18 @@
 
 [Course home](../README.md) · [Part 1 · Building and serving models](ai-systems-01-model-and-serving.md) · [Part 3 · Environments, state and roadmap](ai-systems-03-environments-state-roadmap.md)
 
+<nav class="aisys-hero" aria-label="AI Systems 3-part series">
+  <div class="aisys-hero-eyebrow">
+    <span class="aisys-pill aisys-pill--navy">Beyond EASS · Optional Track</span>
+    <span class="aisys-hero-meta">4 Diagrams · 2 Live Labs · Python 3.14</span>
+  </div>
+  <ol class="aisys-hero-steps">
+    <li class="aisys-hero-step is-done"><a href="ai-systems-01-model-and-serving.html"><span class="aisys-step-num">1</span><span class="aisys-step-text"><strong>Build &amp; Serve</strong><small>Data, Weights, MoE &amp; KV</small></span></a></li>
+    <li class="aisys-hero-step is-active" aria-current="page"><span class="aisys-step-num">2</span><span class="aisys-step-text"><strong>RL &amp; Rollouts</strong><small>GRPO, Lag &amp; Parity</small></span></li>
+    <li class="aisys-hero-step"><a href="ai-systems-03-environments-state-roadmap.html"><span class="aisys-step-num">3</span><span class="aisys-step-text"><strong>Sandboxes &amp; State</strong><small>CoW, Rewind Wall &amp; Finish Line</small></span></a></li>
+  </ol>
+</nav>
+
 > **Optional; not graded:** This bonus lesson sits outside the EASS Class X syllabus and requires zero GPUs, cloud clusters, or paid accounts. Every interactive lab and Python 3.14 exercise runs locally on your own computer.
 
 **You will be able to:** compute GRPO group scores by hand, trace an agent rollout through its safety state machine, explain why faster learner updates can make training trajectories *staler*, compare 6 KV-cache rules across weight updates, and run and break a zero-GPU Python rollout state machine.
@@ -62,6 +74,13 @@
 
 ## Stages 5–6: learning by trying instead of copying
 
+<aside class="aisys-story" aria-label="Running 64k pytest case study" markdown="1">
+<div class="aisys-story-head"><span class="aisys-pill aisys-pill--teal">Running Case Study · Part 2 of 3</span></div>
+
+In Part 1, our coding agent learned to imitate patches and read the `64,000`-token repository fast. Now it spawns `4` parallel patch attempts, runs `pytest` inside isolated sandboxes, scores the group with `GRPO`, and protects training from stale policies and infrastructure crashes.
+
+</aside>
+
 In Part 1, SFT (Stage 4) gave our `64,000`-token coding agent weights that copy expert patches. Now, in **Stage 5 (Preference optimization)** and **Stage 6 (Reinforcement learning)**, the agent launches `4` candidate bug-fix patches in parallel, runs `pytest` inside sandboxes, and updates its weights from real test passes and failures:
 
 | Method | Simple core steps | Key innovation &amp; main problem | How addressed &amp; status |
@@ -110,6 +129,15 @@ Before looking at any formula, grade four tries at the *same* coding prompt by h
    - Failing tries (`0.0`): `(0.0 − 0.5) / 0.5 = -1.0` (discourage!).
 
 What if *all four* tries pass (`[1, 1, 1, 1]`) or *all four* fail (`[0, 0, 0, 0]`)? Then `σ_r = 0`: every advantage becomes `0.0`, and that group teaches the model nothing!
+
+<div class="sim aisys-sim" id="sim-aisys-grpo" role="group" aria-label="Interactive GRPO group advantage calculator" markdown="1">
+<h3 class="sim-title">Interactive lab: toggle GRPO try outcomes live</h3>
+<div class="sim-fallback" markdown="1">
+
+**Worked example without JavaScript:** Suppose our coding agent makes `4` candidate bug-fix patches on the `pytest` repository with outcomes `[Pass (1.0), Fail (0.0), Pass (1.0), Fail (0.0)]`: mean reward `r̄ = 0.50`, spread `σ_r = 0.50`, giving advantages `[+1.0, −1.0, +1.0, −1.0]`. If all `4` tries pass (`[1, 1, 1, 1]`), then `σ_r = 0` and every advantage becomes `0` (zero gradient signal—nothing distinguishes the tries). If Try 3 suffers a sandbox crash (`infra_failure`), exclude it cleanly and compute `r̄` and `σ_r` only across the remaining `3` valid tries rather than assigning a fake `0.0` failure.
+
+</div>
+</div>
 
 ### The four RL equations in plain English
 
@@ -227,7 +255,7 @@ Use this as an architecture reading exercise: identify who owns each responsibil
 
 Pick the safe scheduler decision for each synthetic rollout receipt. Remember the priority order: **exclude cluster crashes first → check active checkpoints → check KV parity → check staleness limit → check GRPO group**.
 
-<div class="sim" id="sim-aisys-rl" role="group" aria-label="RL rollout receipt decision lab" markdown="1">
+<div class="sim aisys-sim" id="sim-aisys-rl" role="group" aria-label="RL rollout receipt decision lab" markdown="1">
 
 <p class="sim-title"><strong>Decision lab: handle this RL rollout receipt</strong></p>
 

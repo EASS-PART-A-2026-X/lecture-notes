@@ -3585,3 +3585,1204 @@ $ed-code-languages: (
 }
 @container content (max-width: 30rem) { .main-content .example-key ul { grid-template-columns: minmax(0, 1fr); } }
 @media print { .main-content .example-key { font-size: 9pt; break-inside: avoid; } }
+
+// ---------------------------------------------------------------------------------------------
+// 13. AI Systems mini-series editorial UI & interactive surfaces
+// ---------------------------------------------------------------------------------------------
+
+// Shared mobile single-column stack mixin used by both @container content and @media (max-width: 600px)
+@mixin aisys-mobile-stack {
+  body.aisys-page .main-content .course-diagram {
+    margin-inline: 0;
+    max-width: 100%;
+    min-width: 0;
+
+    figcaption {
+      margin-inline: 0;
+    }
+  }
+
+  .main-content .aisys-hero,
+  .main-content .aisys-story,
+  .main-content .sim.aisys-sim {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .main-content .sim.aisys-sim {
+    padding: 1rem;
+  }
+
+  .main-content .aisys-hero-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .main-content .sim.aisys-sim {
+    .aisys-bento,
+    .aisys-sliders,
+    .aisys-grpo-grid,
+    .aisys-split-world,
+    .aisys-timeline {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .aisys-card,
+    .aisys-kpi,
+    .aisys-world-pane,
+    .aisys-grpo-try {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .aisys-rewind-divider {
+      writing-mode: horizontal-tb;
+      border-left: 0;
+      border-right: 0;
+      border-top: 2px dashed var(--ed-ink);
+      border-bottom: 2px dashed var(--ed-ink);
+      padding: 0.35rem;
+    }
+  }
+}
+
+// 13.1 Page-scoped diagram card elevation & click-to-zoom trigger
+body.aisys-page .main-content .course-diagram {
+  position: relative;
+  border: 1px solid var(--ed-rule);
+  border-radius: 10px;
+  background: var(--ed-bg);
+  box-shadow: 0 1px 2px rgba(15, 30, 58, 0.05), 0 6px 18px rgba(15, 30, 58, 0.05);
+  overflow: hidden;
+
+  &:hover {
+    border-color: var(--ed-navy);
+  }
+
+  .diagram-scroll {
+    background: var(--ed-bg);
+
+    img {
+      cursor: zoom-in;
+      border-radius: 6px;
+    }
+  }
+
+  figcaption {
+    margin: 0;
+    background: var(--ed-paper);
+    border-top: 1px solid var(--ed-rule);
+    padding: 0.85rem 1.05rem;
+  }
+
+  .aisys-zoom-btn {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    z-index: 2;
+    min-height: 2.2rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-family: var(--ed-sans);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    line-height: 1.2;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--ed-ink);
+    border: 1px solid var(--ed-rule-strong);
+    box-shadow: 0 2px 6px rgba(15, 30, 58, 0.08);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--ed-paper);
+      border-color: var(--ed-navy);
+      color: var(--ed-navy);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// 13.2 Series Hero Ribbon
+.main-content .aisys-hero {
+  max-width: none;
+  margin: 1rem 0 1.4rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(180deg, var(--ed-paper) 0%, var(--ed-bg) 100%);
+  border: 1px solid var(--ed-rule);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 30, 58, 0.05), 0 6px 18px rgba(15, 30, 58, 0.05);
+  font-family: var(--ed-sans);
+}
+
+.main-content .aisys-hero-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.main-content .aisys-hero-meta {
+  font-size: var(--fs-14);
+  color: var(--ed-muted);
+  font-weight: 500;
+}
+
+.main-content .aisys-hero-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+
+  li {
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+
+    &::before {
+      display: none !important;
+    }
+  }
+}
+
+.main-content .aisys-hero-step {
+  min-width: 0;
+  border: 1px solid var(--ed-rule);
+  border-radius: 8px;
+  background: var(--ed-bg);
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+
+  > a {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    width: 100%;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 6px;
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  &:has(> a):hover {
+    border-color: var(--ed-navy);
+    background: var(--ed-navy-tint);
+  }
+
+  &.is-active {
+    border-color: var(--ed-navy);
+    background: var(--ed-navy-tint);
+    box-shadow: 0 1px 4px rgba(29, 78, 137, 0.12);
+
+    .aisys-step-num {
+      background: var(--ed-navy);
+      color: var(--ed-on-ink);
+    }
+  }
+
+  &.is-done {
+    .aisys-step-num {
+      background: var(--ed-green-tint);
+      color: var(--ed-green);
+      border: 1px solid var(--ed-green);
+    }
+  }
+}
+
+.main-content .aisys-step-num {
+  flex: 0 0 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-14);
+  font-weight: 700;
+  line-height: 1;
+  background: var(--ed-paper-deep);
+  color: var(--ed-ink);
+}
+
+.main-content .aisys-step-text {
+  min-width: 0;
+  flex: 1 1 auto;
+
+  strong {
+    display: block;
+    font-size: var(--fs-15);
+    color: var(--ed-ink);
+    line-height: 1.3;
+  }
+
+  small {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: var(--fs-14);
+    color: var(--ed-muted);
+    line-height: 1.35;
+  }
+}
+
+// 13.3 Running Case Study Banner
+.main-content .aisys-story {
+  max-width: var(--ed-measure);
+  margin: 1.25rem 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--ed-teal);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--ed-teal-tint);
+  font-family: var(--ed-serif);
+
+  .aisys-story-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.4rem;
+    font-family: var(--ed-sans);
+    font-weight: 700;
+    color: var(--ed-teal);
+  }
+
+  > p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 13.4 Pill Badges (shared across main content and modal lightbox)
+.main-content .aisys-pill,
+dialog.aisys-lightbox .aisys-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-family: var(--ed-sans);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  line-height: 1.3;
+  border: 1px solid transparent;
+
+  &--navy {
+    background: var(--ed-navy-tint);
+    color: var(--ed-navy);
+    border-color: rgba(29, 78, 137, 0.24);
+  }
+
+  &--teal {
+    background: var(--ed-teal-tint);
+    color: var(--ed-teal);
+    border-color: rgba(34, 97, 107, 0.24);
+  }
+
+  &--green {
+    background: var(--ed-green-tint);
+    color: var(--ed-green);
+    border-color: rgba(42, 106, 71, 0.24);
+  }
+
+  &--ochre {
+    background: var(--ed-ochre-tint);
+    color: var(--ed-ochre);
+    border-color: rgba(125, 79, 11, 0.24);
+  }
+
+  &--red {
+    background: var(--ed-red-tint);
+    color: var(--ed-red);
+    border-color: rgba(155, 44, 44, 0.24);
+  }
+
+  &--plum {
+    background: var(--ed-plum-tint);
+    color: var(--ed-plum);
+    border-color: rgba(95, 59, 133, 0.24);
+  }
+
+  &--muted {
+    background: var(--ed-paper);
+    color: var(--ed-muted);
+    border-color: var(--ed-rule);
+  }
+}
+
+.main-content [id^="sim-aisys-"] select.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+}
+
+// 13.5 Enhanced Simulator Surface
+.main-content .sim.aisys-sim {
+  position: relative;
+  border: 1px solid var(--ed-rule-strong);
+  border-left: 4px solid var(--ed-navy);
+  border-radius: 10px;
+  padding: 1.25rem 1.35rem;
+  background: var(--ed-bg);
+  box-shadow: 0 1px 2px rgba(15, 30, 58, 0.05), 0 6px 18px rgba(15, 30, 58, 0.05);
+
+  .aisys-sim-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--ed-rule);
+  }
+
+  .aisys-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .aisys-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.65rem 0;
+  }
+
+  .aisys-pill-btn {
+    min-height: 2.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--ed-rule-ui);
+    background: var(--ed-paper);
+    color: var(--ed-ink);
+    font: 600 var(--fs-14)/1.25 var(--ed-sans);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    &:hover {
+      background: var(--ed-paper-deep);
+      border-color: var(--ed-navy);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-pressed="true"] {
+      background: var(--ed-navy);
+      border-color: var(--ed-navy);
+      color: var(--ed-on-ink);
+    }
+
+    &.is-solved {
+      box-shadow: 0 0 0 2px rgba(42, 106, 71, 0.22);
+
+      &:not([aria-pressed="true"]) {
+        background: var(--ed-green-tint);
+        border-color: var(--ed-green);
+        color: var(--ed-green);
+      }
+    }
+  }
+
+  // 3-Stage Interactive Timeline
+  .aisys-timeline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0.85rem 0;
+  }
+
+  .aisys-timeline-step {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--ed-rule-strong);
+    background: var(--ed-paper);
+    color: var(--ed-ink);
+    font: 600 var(--fs-14)/1.3 var(--ed-sans);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--ed-navy);
+      background: var(--ed-navy-tint);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+
+    &.is-active {
+      border-color: var(--ed-navy);
+      border-width: 2px;
+      background: var(--ed-navy-tint);
+      box-shadow: 0 1px 4px rgba(29, 78, 137, 0.14);
+
+      .aisys-timeline-dot {
+        background: var(--ed-navy);
+        color: var(--ed-on-ink);
+      }
+    }
+
+    &.is-done {
+      border-color: var(--ed-green);
+      background: var(--ed-green-tint);
+
+      .aisys-timeline-dot {
+        background: var(--ed-green);
+        color: var(--ed-on-ink);
+      }
+    }
+  }
+
+  .aisys-timeline-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.45rem;
+    height: 1.45rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    font-size: var(--fs-13);
+    font-weight: 700;
+    line-height: 1;
+    background: var(--ed-paper-deep);
+    color: var(--ed-ink);
+  }
+
+  .aisys-timeline-label {
+    display: block;
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--ed-ink);
+  }
+
+  // Bento Grid & Cards
+  .aisys-bento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin: 0.85rem 0;
+  }
+
+  .aisys-card {
+    min-width: 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--ed-rule);
+    border-left-width: 4px;
+    background: var(--ed-paper);
+
+    &--hero {
+      grid-column: 1 / -1;
+      background: var(--ed-navy-tint);
+      border-color: var(--ed-navy);
+    }
+
+    &--red {
+      background: var(--ed-red-tint);
+      border-left-color: var(--ed-red);
+      .aisys-card-label { color: var(--ed-red); }
+    }
+
+    &--green {
+      background: var(--ed-green-tint);
+      border-left-color: var(--ed-green);
+      .aisys-card-label { color: var(--ed-green); }
+    }
+
+    &--teal {
+      background: var(--ed-teal-tint);
+      border-left-color: var(--ed-teal);
+      .aisys-card-label { color: var(--ed-teal); }
+    }
+
+    &--ochre {
+      background: var(--ed-ochre-tint);
+      border-left-color: var(--ed-ochre);
+      .aisys-card-label { color: var(--ed-ochre); }
+    }
+
+    &--navy {
+      background: var(--ed-navy-tint);
+      border-left-color: var(--ed-navy);
+      .aisys-card-label { color: var(--ed-navy); }
+    }
+
+    &--plum {
+      background: var(--ed-plum-tint);
+      border-left-color: var(--ed-plum);
+      .aisys-card-label { color: var(--ed-plum); }
+    }
+  }
+
+  .aisys-card-label {
+    font-size: var(--fs-14);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--ed-term);
+    margin: 0 0 0.25rem;
+  }
+
+  .aisys-card-body {
+    margin: 0;
+    font-size: var(--fs-15);
+    color: var(--ed-ink);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  // KPI Strip
+  .aisys-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: 0.65rem;
+    margin: 0.85rem 0;
+  }
+
+  .aisys-kpi {
+    min-width: 0;
+    padding: 0.7rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--ed-rule);
+    background: var(--ed-paper);
+
+    &--ok { border-top: 3px solid var(--ed-green); background: var(--ed-green-tint); }
+    &--warn { border-top: 3px solid var(--ed-ochre); background: var(--ed-ochre-tint); }
+    &--bad { border-top: 3px solid var(--ed-red); background: var(--ed-red-tint); }
+    &--info { border-top: 3px solid var(--ed-navy); background: var(--ed-navy-tint); }
+  }
+
+  .aisys-kpi-label {
+    display: block;
+    font-size: var(--fs-14);
+    color: var(--ed-muted);
+    font-weight: 600;
+  }
+
+  .aisys-kpi-val {
+    display: block;
+    font-size: var(--fs-20);
+    font-weight: 700;
+    color: var(--ed-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+    margin: 0.15rem 0;
+  }
+
+  .aisys-kpi-sub {
+    display: block;
+    font-size: var(--fs-14);
+    color: var(--ed-muted);
+  }
+
+  // Sliders
+  .aisys-sliders {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    margin: 0.85rem 0;
+    padding: 0.85rem 1rem;
+    background: var(--ed-paper);
+    border: 1px solid var(--ed-rule);
+    border-radius: 8px;
+  }
+
+  .aisys-slider-row {
+    min-width: 0;
+  }
+
+  .aisys-slider-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--ed-ink);
+    margin-bottom: 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input.aisys-range {
+    width: 100%;
+    accent-color: var(--ed-navy);
+    cursor: pointer;
+    min-height: 2rem;
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  // Inline Sparkline / Chart Box
+  .aisys-chart-box {
+    margin: 0.85rem 0;
+    padding: 0.75rem 0.9rem;
+    background: var(--ed-paper);
+    border: 1px solid var(--ed-rule);
+    border-radius: 8px;
+    min-width: 0;
+  }
+
+  .aisys-chart-title {
+    font-size: var(--fs-14);
+    font-weight: 700;
+    color: var(--ed-ink);
+    margin: 0 0 0.45rem;
+  }
+
+  .aisys-sparkline {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  // Visual Mini FSM Strip
+  .aisys-fsm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.85rem 0;
+    padding: 0.75rem;
+    background: var(--ed-paper);
+    border: 1px solid var(--ed-rule);
+    border-radius: 8px;
+  }
+
+  .aisys-fsm-node {
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid var(--ed-rule-strong);
+    background: var(--ed-bg);
+    font-size: var(--fs-14);
+    font-weight: 600;
+    color: var(--ed-muted);
+
+    &.is-active {
+      border-width: 2px;
+      border-color: var(--ed-navy);
+      color: var(--ed-ink);
+      box-shadow: 0 2px 6px rgba(15, 30, 58, 0.08);
+    }
+
+    &.is-ok {
+      background: var(--ed-green-tint);
+      border-color: var(--ed-green);
+      color: var(--ed-green);
+    }
+
+    &.is-warn {
+      background: var(--ed-ochre-tint);
+      border-color: var(--ed-ochre);
+      color: var(--ed-ochre);
+    }
+
+    &.is-bad {
+      background: var(--ed-red-tint);
+      border-color: var(--ed-red);
+      color: var(--ed-red);
+    }
+
+    &.is-plum {
+      background: var(--ed-plum-tint);
+      border-color: var(--ed-plum);
+      color: var(--ed-plum);
+    }
+  }
+
+  .aisys-fsm-arrow {
+    color: var(--ed-muted);
+    font-weight: 700;
+    font-size: var(--fs-14);
+    user-select: none;
+  }
+
+  // Live GRPO Playground
+  .aisys-grpo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0.85rem 0;
+  }
+
+  .aisys-grpo-try {
+    min-width: 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--ed-rule-strong);
+    background: var(--ed-bg);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    color: var(--ed-ink);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(15, 30, 58, 0.08);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+
+    &--pass {
+      background: var(--ed-green-tint);
+      border-color: var(--ed-green);
+    }
+
+    &--fail {
+      background: var(--ed-red-tint);
+      border-color: var(--ed-red);
+    }
+
+    &--crash {
+      background: var(--ed-ochre-tint);
+      border-color: var(--ed-ochre);
+      border-style: dashed;
+    }
+  }
+
+  .aisys-grpo-axis {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--fs-13);
+    color: var(--ed-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aisys-grpo-bar-wrap {
+    position: relative;
+    width: 100%;
+    height: 0.85rem;
+    background: var(--ed-bg);
+    border: 1px solid var(--ed-rule-strong);
+    border-radius: 999px;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      margin-left: -1px;
+      background: var(--ed-ink);
+      opacity: 0.45;
+      z-index: 1;
+    }
+  }
+
+  .aisys-grpo-bar--pos,
+  .aisys-grpo-bar--neg,
+  .aisys-grpo-bar--zero {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    border-radius: 999px;
+  }
+
+  .aisys-grpo-bar--pos {
+    left: 50%;
+    background: var(--ed-green);
+  }
+
+  .aisys-grpo-bar--neg {
+    right: 50%;
+    background: var(--ed-red);
+  }
+
+  .aisys-grpo-bar--zero {
+    left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background: var(--ed-muted);
+  }
+
+  // Split-World Rewind Wall Stage
+  .aisys-split-world {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: stretch;
+    margin: 0.85rem 0;
+  }
+
+  .aisys-world-pane {
+    min-width: 0;
+    padding: 0.85rem 0.95rem;
+    border-radius: 8px;
+    border: 1px solid var(--ed-rule-strong);
+    background: var(--ed-paper);
+
+    &--local {
+      background: var(--ed-navy-tint);
+      border-color: var(--ed-navy);
+    }
+
+    &--external {
+      background: var(--ed-paper);
+    }
+
+    &.is-rewound {
+      background: var(--ed-green-tint);
+      border-color: var(--ed-green);
+    }
+
+    &.is-leaked {
+      background: var(--ed-red-tint);
+      border-color: var(--ed-red);
+      border-width: 2px;
+      box-shadow: 0 0 0 2px rgba(155, 44, 44, 0.12);
+    }
+  }
+
+  .aisys-rewind-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 0.4rem 0.25rem;
+    border-left: 2px dashed var(--ed-ink);
+    border-right: 2px dashed var(--ed-ink);
+    font-size: var(--fs-14);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ed-ink);
+    text-transform: uppercase;
+  }
+
+  // Interactive Token Tape & JSON Preview
+  .aisys-tape {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.85rem 0;
+    padding: 0.8rem;
+    background: var(--ed-paper);
+    border: 1px solid var(--ed-rule);
+    border-radius: 8px;
+  }
+
+  .aisys-tok {
+    min-height: 2.5rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid var(--ed-rule-ui);
+    font-family: var(--ed-mono);
+    font-size: var(--fs-14);
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    text-align: left;
+
+    &:focus-visible {
+      outline: 3px solid var(--ed-focus);
+      outline-offset: 2px;
+    }
+
+    &[aria-pressed="true"] {
+      box-shadow: 0 0 0 2px var(--ed-navy);
+    }
+
+    &--model {
+      background: var(--ed-green-tint);
+      border-color: var(--ed-green);
+      color: var(--ed-ink);
+    }
+
+    &--tool {
+      background: var(--ed-bg);
+      border-color: var(--ed-rule-strong);
+      border-style: dashed;
+      color: var(--ed-muted);
+    }
+  }
+
+  .aisys-tok-tag {
+    font-family: var(--ed-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .aisys-json-preview {
+    margin: 0.75rem 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: 8px;
+    background: var(--ed-code-bg);
+    border: 1px solid var(--ed-code-line);
+    font-family: var(--ed-mono);
+    font-size: var(--fs-14);
+    color: var(--ed-code-text);
+    overflow-x: auto;
+    max-width: 100%;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Upgraded progress bar tracks across all AI Systems simulators
+.main-content .sim.aisys-sim .aisys-bar-track,
+.main-content [id^="sim-aisys-"] .aisys-bar-track {
+  height: 0.75rem;
+  border-radius: 999px;
+}
+
+.main-content .sim.aisys-sim .aisys-bar-fill,
+.main-content [id^="sim-aisys-"] .aisys-bar-fill {
+  border-radius: 999px;
+}
+
+// 13.6 Live Glossary Search Filter
+.main-content .aisys-glossary-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: var(--ed-measure);
+  margin: 0.65rem 0 0.85rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--ed-paper);
+  border: 1px solid var(--ed-rule);
+  border-radius: 8px;
+  font-family: var(--ed-sans);
+}
+
+.main-content input.aisys-glossary-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 2.4rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--ed-rule-ui);
+  border-radius: 6px;
+  background: var(--ed-bg);
+  color: var(--ed-text);
+  font: inherit;
+  font-size: var(--fs-15);
+
+  &:focus-visible {
+    outline: 3px solid var(--ed-focus);
+    outline-offset: 2px;
+    border-color: var(--ed-navy);
+  }
+}
+
+.main-content .aisys-glossary-count {
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--ed-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.main-content .aisys-glossary-clear {
+  min-height: 2.4rem;
+  padding: 0.35rem 0.75rem;
+  font: 600 var(--fs-14)/1.2 var(--ed-sans);
+  color: var(--ed-link);
+  background: var(--ed-bg);
+  border: 1px solid var(--ed-rule-ui);
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ed-paper-deep);
+    border-color: var(--ed-navy);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--ed-focus);
+    outline-offset: 2px;
+  }
+}
+
+.main-content .aisys-glossary-list li.is-hidden {
+  display: none;
+}
+
+// 13.7 Native <dialog> Diagram Lightbox
+dialog.aisys-lightbox {
+  max-width: min(94vw, 72rem);
+  width: 100%;
+  max-height: 92vh;
+  padding: 0;
+  border: 1px solid var(--ed-rule-strong);
+  border-radius: 12px;
+  background: var(--ed-bg);
+  color: var(--ed-text);
+  box-shadow: 0 24px 60px rgba(15, 30, 58, 0.28);
+  overflow: hidden;
+  margin: auto;
+
+  &::backdrop {
+    background: rgba(15, 30, 58, 0.62);
+  }
+
+  &:not([open]) {
+    display: none;
+  }
+
+  .aisys-lb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: var(--ed-paper);
+    border-bottom: 1px solid var(--ed-rule);
+    font-family: var(--ed-sans);
+
+    .aisys-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    button {
+      min-height: 2.25rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      border: 1px solid var(--ed-rule-ui);
+      background: var(--ed-bg);
+      color: var(--ed-ink);
+      font: 600 var(--fs-14)/1.2 var(--ed-sans);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--ed-paper-deep);
+        border-color: var(--ed-navy);
+      }
+
+      &:focus-visible {
+        outline: 3px solid var(--ed-focus);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .aisys-lb-stage {
+    padding: 1rem;
+    background: #fff;
+    overflow: auto;
+    max-height: calc(92vh - 9.5rem);
+    text-align: center;
+
+    &.is-zoomed .aisys-lb-img {
+      width: 140%;
+      max-width: none;
+    }
+  }
+
+  .aisys-lb-img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .aisys-lb-caption {
+    padding: 0.75rem 1rem;
+    background: var(--ed-paper);
+    border-top: 1px solid var(--ed-rule);
+    font-family: var(--ed-sans);
+    font-size: var(--fs-14);
+    color: var(--ed-muted);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+}
+
+// 13.8 Reduced motion, responsive single-column safeguards, and print cleanup
+@media (prefers-reduced-motion: no-preference) {
+  body.aisys-page .main-content .course-diagram,
+  .main-content .aisys-hero-step,
+  .main-content .aisys-zoom-btn,
+  .main-content .sim.aisys-sim .aisys-pill-btn,
+  .main-content .sim.aisys-sim .aisys-timeline-step,
+  .main-content .sim.aisys-sim .aisys-grpo-try,
+  .main-content .sim.aisys-sim .aisys-tok,
+  .main-content .sim.aisys-sim .aisys-world-pane,
+  .main-content .sim.aisys-sim .aisys-fsm-node {
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  }
+
+  .main-content .sim.aisys-sim .aisys-bar-fill,
+  .main-content [id^="sim-aisys-"] .aisys-bar-fill,
+  .main-content .sim.aisys-sim .aisys-grpo-bar--pos,
+  .main-content .sim.aisys-sim .aisys-grpo-bar--neg {
+    transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+  }
+}
+
+@container content (max-width: 38rem) {
+  @include aisys-mobile-stack;
+}
+
+@media (max-width: 600px) {
+  @include aisys-mobile-stack;
+}
+
+@media print {
+  .main-content .aisys-glossary-bar,
+  .main-content .aisys-zoom-btn,
+  dialog.aisys-lightbox,
+  .main-content .aisys-sim .sim-app {
+    display: none !important;
+  }
+
+  .main-content .aisys-hero,
+  .main-content .aisys-story,
+  body.aisys-page .main-content .course-diagram {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .main-content .aisys-hero {
+    background: var(--ed-bg);
+  }
+}
